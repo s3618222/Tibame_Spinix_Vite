@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>建立對戰邀約｜Spinix</title>
+  <link rel="stylesheet" href="/src/assets/scss/style.scss">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body class="page-createBattle">
+  <div id="headerApp"></div>
+
+  <!-- 建立邀約區 -->
+  <section class="battle-sec-form battle-sec">
+    <div class="container">
+      <div class="content">
+        <a href="battle.html" class="return-link">
+          <i class="fa-solid fa-arrow-left"></i>
+          返回對戰配對列表
+        </a>
+        <div class='page-create-title'>
+          <h1>建立對戰邀約</h1>
+          <p>發布你的對戰邀請，找到志同道合的對手！</p>
+        </div>
+
+        <!-- 建立及預覽表單 -->
+        <div class="page-create-main">
+
+          <!-- 表單畫面 -->
+          <div class="create-view create-view--form">
+            <!-- 左側進度瀏覽 -->
+            <aside class="form-progress">
+              <div class="form-progress-sticky">
+                <div class="progress-spinner">
+                  <img src="/spinix_logo.png" alt="Spinix spintop">
+                </div>
+                <span class="progress-value">0%</span>
+              </div>
+            </aside>
+            <form id="battleForm" class="battle-form" action="" method="post" enctype="multipart/form-data">
+              <!-- 1. 基本資訊 -->
+              <section class="form-section">
+                <div class="form-section-title">
+                  <span class="section-accent"></span>
+                  <h3>1. 基本資訊</h3>
+                </div>
+
+                <div class="basic-info-layout">
+
+                  <!-- 上傳封面圖片 -->
+                  <div class="form-group cover-upload-group">
+                    <label class="cover-upload" for="battleCover">
+
+                      <!-- 尚未上傳時顯示區 -->
+                      <span class="cover-upload-placeholder">
+                        <i class="fa-regular fa-image"></i>
+                        <span class="cover-upload-title">上傳邀約圖片</span>
+                        <span class="cover-upload-hint">
+                          支援 JPG、PNG，建議比例 16:9
+                        </span>
+                      </span>
+
+                      <!-- 選擇圖片後顯示區 -->
+                      <img class="cover-preview-image" id="coverPreviewImage" src="" alt="邀約圖片預覽" hidden>
+                    </label>
+
+                    <input type="file" id="battleCover" name="coverImage" accept="image/jpeg, image/png" hidden>
+                  </div>
+
+                  <!-- 邀約標題 -->
+                  <div class="form-group">
+                    <label for="battleTitle">
+                      邀約標題
+                      <span class="required-mark">*</span>
+                    </label>
+
+                    <input type="text" id="battleTitle" name="title" maxlength="40" placeholder="請輸入一個吸引人的邀約標題"
+                      required>
+                  </div>
+
+                </div>
+              </section>
+
+              <!-- 2. 對戰設定 -->
+              <section class="form-section">
+                <div class="form-section-title">
+                  <span class="section-accent"></span>
+                  <h3>2. 對戰設定</h3>
+                </div>
+
+                <div class="form-grid form-grid-three">
+
+                  <div class="form-group">
+                    <label for="battleMode">
+                      <i class="fa-solid fa-trophy"></i>
+                      對戰模式
+                      <span class="required-mark">*</span>
+                    </label>
+
+                    <select id="battleMode" name="mode" required>
+                      <option value="">請選擇對戰模式</option>
+                      <option value="競技模式">競技模式</option>
+                      <option value="休閒模式">休閒模式</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="battleLevel">
+                      <i class="fa-solid fa-signal"></i>
+                      玩家程度
+                      <span class="required-mark">*</span>
+                    </label>
+
+                    <select id="battleLevel" name="level" required>
+                      <option value="">請選擇玩家程度</option>
+                      <option value="不限程度">不限程度</option>
+                      <option value="新手玩家">新手玩家</option>
+                      <option value="中階玩家">中階玩家</option>
+                      <option value="進階玩家">進階玩家</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="battleTarget">
+                      <i class="fa-solid fa-user-group"></i>
+                      適合對象
+                      <span class="required-mark">*</span>
+                    </label>
+
+                    <select id="battleTarget" name="target" required>
+                      <option value="">請選擇適合對象</option>
+                      <option value="不限對象">不限對象</option>
+                      <option value="成人限定">18歲以上</option>
+                      <option value="親子友善">親子友善</option>
+                    </select>
+                  </div>
+
+                </div>
+              </section>
+
+              <!-- 3. 時間與地點 -->
+              <section class="form-section time-location-section">
+                <div class="form-section-title">
+                  <span class="section-accent"></span>
+                  <h3>3. 時間與地點</h3>
+                </div>
+
+                <div class="form-grid form-grid-two battle-time-row">
+
+                  <div class="form-group">
+                    <label for="battleDate">
+                      <i class="fa-solid fa-calendar-days"></i>
+                      約戰日期
+                      <span class="required-mark">*</span>
+                    </label>
+
+                    <input type="date" id="battleDate" name="battleDate" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="battleTime">
+                      <i class="fa-regular fa-clock"></i>
+                      約戰時間
+                      <span class="required-mark">*</span>
+                    </label>
+
+                    <input type="time" id="battleTime" name="battleTime" required>
+                  </div>
+
+                </div>
+
+                <div class="form-group deadline-group">
+                  <label for="battleDeadline">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                    報名截止時間
+                    <span class="required-mark">*</span>
+                  </label>
+
+                  <input type="datetime-local" id="battleDeadline" name="deadline" required>
+
+                  <p class="field-hint">
+                    *報名截止時間需至少晚於目前時間 1 小時。
+                  </p>
+                </div>
+
+                <div class="form-grid form-grid-two location-row">
+
+                  <div class="form-group">
+                    <label for="battleCity">
+                      <i class="fa-solid fa-location-dot"></i>
+                      縣市
+                      <span class="required-mark">*</span>
+                    </label>
+
+                    <select id="battleCity" name="city" required>
+                      <option value="">選擇縣市</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="battleDistrict">
+                      <i class="fa-solid fa-map"></i>
+                      行政區
+                      <span class="required-mark">*</span>
+                    </label>
+
+                    <select id="battleDistrict" name="district" disabled required>
+                      <option value="">選擇行政區</option>
+                    </select>
+                  </div>
+
+                </div>
+
+                <div class="form-group">
+                  <label for="battleAddress">
+                    詳細集合地點
+                    <span class="required-mark">*</span>
+                  </label>
+
+                  <input type="text" id="battleAddress" name="address" maxlength="100" placeholder="配對成功後，才會顯示給對方"
+                    required>
+                </div>
+              </section>
+
+              <!-- 4. 聯絡方式 -->
+              <section class="form-section">
+                <div class="form-section-title with-hint">
+                  <span class="section-accent"></span>
+
+                  <div>
+                    <h3>4. 聯絡方式</h3>
+                    <p class="section-hint">
+                      配對成功後，才會顯示給對方
+                    </p>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="battleContact">
+                    <i class="fa-solid fa-envelope"></i>
+                    聯絡資訊
+                    <span class="required-mark">*</span>
+                  </label>
+
+                  <input type="text" id="battleContact" name="contact" maxlength="100"
+                    placeholder="例如，LINE ID、Discord 帳號、Email 或電話" required>
+                </div>
+              </section>
+
+              <!-- 5. 備註 -->
+              <section class="form-section">
+                <div class="form-section-title">
+                  <span class="section-accent"></span>
+                  <h3>5. 備註</h3>
+                </div>
+
+                <div class="form-group">
+                  <label for="battleDescription">
+                    邀約說明
+                    <span class="required-mark">*</span>
+                  </label>
+
+                  <textarea id="battleDescription" name="description" maxlength="250" rows="5"
+                    placeholder="補充對戰方式、攜帶物品或其他注意事項..." required></textarea>
+
+                  <p class="input-hint">
+                    最多 250 字
+                  </p>
+                </div>
+              </section>
+
+              <!-- 表單操作按鈕 -->
+              <div class="form-actions">
+                <button type="button" class="btnFill preview-btn" id="previewBtn">
+                  預覽邀約
+                </button>
+
+                <a href="battle.html" class="btnNoFill cancel-btn">
+                  取消
+                </a>
+              </div>
+
+              <!-- 表單系統提示 -->
+              <p id="form-message" hidden>
+                <i class="fa-solid fa-circle-exclamation"></i>
+                請確認所有必填欄位皆已完成。
+              </p>
+            </form>
+          </div>
+
+          <!-- 約戰卡預覽 記得要補回hidden -->
+          <div class="create-view create-view--preview" id="battlePreview" hidden>
+            <section class="preview-panel">
+
+              <!-- 預覽標題 -->
+              <div class="preview-heading">
+                <h2>邀約卡預覽</h2>
+                <p>即時預覽你建立的邀約卡片</p>
+              </div>
+
+              <!-- 預覽邀約卡 -->
+              <article class="battleCard preview-card">
+
+                <!-- 封面圖片 -->
+                <div class="pic">
+                  <img class="battle-cover" id="previewCover" src="/battle_card_default.jpg" alt="邀約封面預覽">
+
+                  <span class="target-tag" id="previewTarget">
+                    不限對象
+                  </span>
+                </div>
+
+                <!-- 卡片內容 -->
+                <div class="items">
+
+                  <!-- 截止倒數 -->
+                  <div class="timer">
+                    <i class="fa-regular fa-clock"></i>
+
+                    <p>
+                      截止倒數：
+                      <span class="countdown" id="previewCountdown" data-deadline="">
+                        尚未設定
+                      </span>
+                    </p>
+                  </div>
+
+                  <!-- 邀約主要資訊 -->
+                  <div class="info">
+
+                    <h4 class="battle-title" id="previewTitle">
+                      新手友善！一起開心打陀螺
+                    </h4>
+
+                    <div class="battle-meta">
+
+                      <!-- 地點 -->
+                      <div class="meta-item battle-location">
+                        <i class="fa-solid fa-location-dot"></i>
+
+                        <p>
+                          <span class="battle-city" id="previewCity">
+                            尚未選擇
+                          </span>
+
+                          <span>/</span>
+
+                          <span class="battle-district" id="previewDistrict">
+                            尚未選擇
+                          </span>
+                        </p>
+                      </div>
+
+                      <!-- 模式 -->
+                      <div class="meta-item battle-mode">
+                        <i class="fa-solid fa-trophy"></i>
+                        <p id="previewMode">尚未設定</p>
+                      </div>
+
+                      <!-- 日期與時間 -->
+                      <div class="meta-item battle-date">
+                        <i class="fa-solid fa-calendar-days"></i>
+
+                        <time id="previewDate" datetime="">
+                          尚未設定
+                        </time>
+                      </div>
+
+                      <!-- 程度 -->
+                      <div class="meta-item battle-level">
+                        <i class="fa-solid fa-signal"></i>
+                        <p id="previewLevel">尚未設定</p>
+                      </div>
+
+                    </div>
+
+                    <!-- 邀約說明 -->
+                    <p class="battle-desc" id="previewDescription">
+                      你填寫的邀約說明將顯示在這裡。
+                    </p>
+
+                  </div>
+
+                  <!-- 發起人與申請按鈕 -->
+                  <div class="card-footer">
+
+                    <button type="button" class="hostBtn" disabled>
+                      <img class="host-avatar" id="previewHostAvatar" src="/spinix_member_default.png" alt="發起人頭像">
+
+                      <span class="host-name" id="previewHostName">
+                        WeiChen
+                      </span>
+                    </button>
+
+                    <button type="button" class="btnFill applyBtn" disabled>
+                      申請加入
+                    </button>
+
+                  </div>
+
+                </div>
+              </article>
+
+              <!-- 聯絡資訊提醒 -->
+              <div class="preview-reminder">
+
+                <div class="preview-reminder-icon">
+                  <i class="fa-solid fa-lock"></i>
+                </div>
+
+                <div class="preview-reminder-content">
+                  <strong>聯絡方式將在成功配對後公開給對方</strong>
+                  <p>請確保填寫的資訊正確，以便後續聯繫！</p>
+                </div>
+
+              </div>
+
+              <!-- 預覽操作按鈕 -->
+              <div class="preview-actions">
+
+                <button type="button" class="btnNeutral confirm-create-btn" id="confirmCreateBtn">
+                  確認建立邀約
+                </button>
+
+                <button type="button" class="btnNoFill return-edit-btn" id="returnEditBtn">
+                  返回修改
+                </button>
+
+              </div>
+
+            </section>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div id="footerApp"></div>
+
+  <script type="module" src="/src/assets/js/createBattle.js"></script>
+</body>
+
+</html>

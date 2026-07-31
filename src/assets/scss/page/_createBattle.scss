@@ -1,0 +1,618 @@
+.page-createBattle {
+    padding-top: 88px;
+    background: #F7F5F3;
+
+    h1 {
+        font-size: 34px;
+        font-weight: 700;
+        color: #fec96b;
+    }
+
+    h2 {
+        font-size: 30px;
+        font-weight: 700;
+        color: #fec96b;
+    }
+
+    section p {
+        font-size: 18px;
+        color: #141C26;
+    }
+}
+
+//建立邀約section設定
+.battle-sec-form {
+    padding-block: 60px;
+    background: #F7F5F3;
+}
+
+.battle-sec-form .container {
+    width: min(1120px, 86vw);
+    margin-inline: auto;
+
+    .content {
+        width: 100%;
+    }
+}
+
+// 返回列表連結
+.battle-sec-form .return-link {
+    display: block;
+    margin-bottom: 36px;
+
+    text-decoration: none;
+    font-size: 18px;
+    color: #64748B;
+}
+
+.page-create-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 12px;
+}
+
+//建立及預覽表單
+.page-create-main {
+    width: 100%;
+    margin-block: 48px;
+}
+
+//表單建立區
+.create-view--form {
+    width: min(804px, 100%);
+    margin-inline: auto;
+
+    display: grid;
+
+    //劃分左側進度瀏覽、右側邀約表單兩區
+    grid-template-columns: 100px minmax(0, 620px);
+    gap: 36px;
+    align-items: start;
+}
+
+// ==== 左側陀螺進度區 ====
+.form-progress {
+    width: 100px;
+    height: 100%;
+    position: relative;
+}
+
+.form-progress-sticky {
+    position: sticky;
+    top: 120px;
+    z-index: 2;
+
+    width: 100px;
+    height: 48px;
+}
+
+.progress-spinner {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background-color: #141C26;
+}
+
+.progress-spinner img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+}
+
+// 進度數字顯示
+.progress-value {
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 32px);
+    transform: translateY(-50%);
+
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    color: #141C26;
+}
+
+//==== 右側邀約表單區 ====
+// 表單外框
+.battle-form {
+    width: 100%;
+    padding: 28px 24px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 44px;
+
+    border: 1px solid rgba(254, 201, 107, 0.55);
+    border-radius: 20px;
+
+    background:
+        linear-gradient(90deg,
+            #FFFDF9 0%,
+            #FFF5DE 100%);
+
+    box-shadow: 0 8px 12px rgba(20, 28, 38, 0.1);
+}
+
+// 每一個表單段落
+.form-section {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+//聯絡方式區塊單獨設定
+.form-section-title.with-hint {
+    align-items: flex-start;
+
+    .section-accent {
+        margin-top: 4px;
+    }
+}
+
+.form-section-title h3 {
+    margin: 0;
+
+    font-size: 24px; //原24px
+    font-weight: 700;
+    line-height: 1.3;
+    color: #141C26;
+
+}
+
+.section-accent {
+    width: 5px;
+    height: 28px;
+    flex-shrink: 0;
+
+    border-radius: 4px;
+    background-color: #F29B00;
+}
+
+.section-hint {
+    margin-top: 4px;
+
+    font-size: 14px;
+    color: #64748B;
+}
+
+// 欄位共用設定
+.form-group {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 16px;
+    font-weight: 600;
+    color: #141C26;
+}
+
+.form-group>label:not(.cover-upload) i {
+    width: 16px;
+    text-align: center;
+    color: #64748B;
+}
+
+.required-mark {
+    color: #C2413B;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    min-width: 0;
+
+    padding: 8px 12px;
+
+    border: 1px solid #DDD6C8;
+    border-radius: 10px;
+    outline: none;
+
+    background-color: #FFFFFF;
+
+    font-size: 16px;
+    line-height: 1.5;
+    color: #141C26;
+
+    box-shadow:
+        inset 0 1px 2px rgba(20, 28, 38, 0.04);
+
+    transition: border-color 0.2s ease;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #AAAAAA;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #F29B00;
+}
+
+.form-group select:disabled {
+    cursor: not-allowed;
+    color: #AAAAAA;
+    background-color: #F1EFEA;
+}
+
+// 基本資訊：圖片與標題區
+.basic-info-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: center;
+}
+
+.cover-upload {
+    min-height: 166px;
+    padding: 18px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    cursor: pointer;
+
+    border: 1.5px dashed rgba(254, 201, 107, 0.85);
+    border-radius: 20px;
+
+    background-color: #FFF9ED;
+
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease;
+
+    position: relative;
+    overflow: hidden;
+}
+
+.cover-upload:hover {
+    border-color: #F29B00;
+    background-color: #FFF4DC;
+}
+
+// 尚未上傳圖片時的提示內容
+.cover-upload-placeholder {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.cover-upload-placeholder[hidden] {
+    display: none;
+}
+
+// 使用者選擇後的圖片
+.cover-preview-image {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+}
+
+// 起始先隱藏預覽圖
+.cover-preview-image[hidden] {
+    display: none;
+}
+
+.cover-upload i {
+    font-size: 48px;
+    color: #F29B00;
+}
+
+.cover-upload-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #141C26;
+}
+
+.cover-upload-hint {
+    font-size: 14px;
+    color: #64748B;
+}
+
+// 欄位排列
+.form-grid {
+    display: grid;
+    column-gap: 20px;
+}
+
+.form-grid-three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.form-grid-two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.location-row {
+    width: 66%;
+}
+
+//時間與地點區塊 獨立設定
+.form-group:has(#battleAddress) {
+    margin-top: 12px;
+}
+
+// 約戰日期與約戰時間
+.battle-time-row {
+    width: 66%;
+}
+
+// 報名截止時間獨立一列
+.deadline-group {
+    width: 66%;
+    margin-block: 12px;
+}
+
+// 截止時間欄位說明
+.form-group .field-hint {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #64748B;
+    padding-left: 4px;
+}
+
+// 邀約說明區-系統文字
+.input-hint {
+    align-self: flex-end;
+
+    font-size: 14px;
+    color: #64748B;
+}
+
+// 按鈕
+.form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+}
+
+.preview-btn,
+.cancel-btn {
+    min-width: 120px;
+    padding: 8px 24px;
+    border-radius: 16px;
+    cursor: pointer;
+}
+
+.preview-btn {
+    border: 1px solid #FEC96B;
+    background-color: #FEC96B;
+    color: #141C26;
+
+    box-shadow: 0 4px 7px rgba(20, 28, 38, 0.08);
+}
+
+.cancel-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    text-decoration: none;
+
+    line-height: 1.3;
+    cursor: pointer;
+}
+
+// 系統提示
+#form-message {
+    margin: -16px 0 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    font-size: 14px;
+    color: #C2413B;
+}
+
+#form-message[hidden] {
+    display: none;
+}
+
+// ===== 邀約卡預覽區 =====
+
+.create-view--preview {
+    width: min(600px, 100%);
+    margin-inline: auto;
+}
+
+// 預覽區外層容器
+.preview-panel {
+    width: 100%;
+    padding: 32px 24px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 36px;
+
+    border: 1px solid rgba(254, 201, 107, 0.45);
+    border-radius: 20px;
+
+    background-color: #FFFEFC;
+
+    box-shadow:
+        0 8px 12px rgba(20, 28, 38, 0.1);
+}
+
+
+
+// 預覽區標題
+.preview-heading {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    text-align: center;
+}
+
+.preview-heading h2 {
+    margin: 0;
+
+    font-size: 30px; //原設定28px
+    font-weight: 700;
+    line-height: 1.3;
+    color: #F29B00;
+}
+
+.preview-heading p {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #64748B;
+}
+
+// 預覽邀約卡片
+.preview-panel .preview-card {
+    width: min(320px, 100%);
+    background-color: #ffffff;
+    border-radius: 18px;
+
+    box-shadow:
+        0 10px 12px rgba(20, 28, 38, 0.09);
+}
+
+// 預覽卡封面區
+.preview-card .pic {
+    aspect-ratio: 16 / 9;
+}
+
+// 預覽卡內容間距
+.preview-card .items {
+    padding: 16px;
+    gap: 24px;
+}
+
+// 預覽狀態下不能操作按鈕
+.preview-card .hostBtn:disabled {
+    opacity: 1;
+    cursor: default;
+}
+
+.preview-card .applyBtn:disabled {
+    opacity: 1;
+    cursor: default;
+
+    border-color: #FEC96B;
+    background-color: #FEC96B;
+    color: #141C26;
+}
+
+// 聯絡資訊區
+.preview-reminder {
+    width: min(472px, 100%);
+    padding: 16px 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+
+    border: 1px solid rgba(254, 201, 107, 0.55);
+    border-radius: 16px;
+    background-color: #FFF2D6;
+}
+
+.preview-reminder-icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background-color: #FFFFFF;
+
+    font-size: 24px;
+    color: #64748B;
+}
+
+.preview-reminder-content {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.preview-reminder-content strong {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #141C26;
+}
+
+.preview-reminder-content p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(20, 28, 38, 0.65);
+}
+
+// 預覽區操作按鈕
+.preview-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+}
+
+// 表單區與預覽區只要有加上hidden屬性，就隱藏起來
+.create-view[hidden] {
+    display: none;
+}

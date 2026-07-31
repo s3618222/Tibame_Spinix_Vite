@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>尋找下一場對戰｜Spinix</title>
+  <link rel="stylesheet" href="/src/assets/scss/style.scss">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body class="page-battle">
+  <div id="headerApp"></div>
+
+  <!-- Hero區 -->
+
+  <!-- Hero視差捲動外層 -->
+  <div class="battle-hero-scroll">
+    <section class="battle-sec-hero">
+      <div class="container">
+        <!-- 互動陀螺圖 -->
+        <div class="hero-spintop">
+          <img src="/spinix_spintop.png" alt="Spinix spintop">
+        </div>
+        <!-- 大標與CTA按鈕 -->
+        <div class="hero-content">
+          <h1>Spinix 對戰配對</h1>
+          <p>找到你的對手，轉出新的連結！</p>
+          <div class="hero-btns">
+            <a href="createBattle.html" class="btnFill createBattle-link">
+              建立邀約
+              <i class="fa-solid fa-plus"></i>
+            </a>
+
+            <a href="#battleCardArea" class="btnNeutral" id="browseBtn">
+              立即瀏覽
+              <i class="fa-solid fa-arrow-down"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 篩選分類標籤區 -->
+  <section class="battle-sec-tags battle-sec">
+    <div class='container'>
+      <div class="content">
+        <div class="tag-intro">
+          <img class="tag-intro-spintop" src="/battle_spintop.png" alt="Beyblade icon">
+          <p>開始設定你的搜尋條件，找到適合自己的陀螺對戰！</p>
+        </div>
+        <div class="tag-list">
+          <!-- 第一列：基本篩選 -->
+          <div class="tag-row tag-row-basic">
+
+            <div class="filter-item">
+              <label for="battleType">
+                <i class="fa-solid fa-trophy"></i>對戰類型
+              </label>
+              <select id="battleType">
+                <option value="">全部類型</option>
+                <option value="休閒模式">休閒模式</option>
+                <option value="競技模式">競技模式</option>
+              </select>
+            </div>
+
+            <div class="filter-item">
+              <label for="battleTarget">
+                <i class="fa-solid fa-user-group"></i>適合對象
+              </label>
+              <select id="battleTarget">
+                <option value="">不限對象</option>
+                <option value="成人限定">成人限定</option>
+                <option value="親子友善">親子友善</option>
+              </select>
+            </div>
+
+            <div class="filter-item">
+              <label for="playerLevel">
+                <i class="fa-solid fa-signal"></i>玩家程度
+              </label>
+              <select id="playerLevel">
+                <option value="">不限程度</option>
+                <option value="新手玩家">新手玩家</option>
+                <option value="中階玩家">中階玩家</option>
+                <option value="進階玩家">進階玩家</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- 第二列：地區選項 -->
+          <div class="tag-row tag-row-location">
+
+            <div class="filter-item">
+              <label for="citySelect">
+                <i class="fa-solid fa-location-dot"></i>
+                縣市
+              </label>
+
+              <select id="citySelect">
+                <option value="">全部縣市</option>
+              </select>
+            </div>
+
+            <div class="filter-item">
+              <label for="districtSelect">
+                <i class="fa-solid fa-map"></i>行政區
+              </label>
+
+              <select id="districtSelect" disabled>
+                <option value="">全部行政區</option>
+              </select>
+            </div>
+
+            <!-- 自動定位 -->
+            <div class="auto-locate">
+              <button type="button" id="locateBtn">
+                <i class="fa-solid fa-location-crosshairs"></i>
+                使用我現在的位置
+              </button>
+
+              <!-- 載入動畫 -->
+              <div class="location-loading" id="locationLoading">
+                <div class="loader"></div>
+                <p id="locationLoadingText">正在取得你的位置</p>
+              </div>
+
+              <p id="locationStatus"></p>
+            </div>
+
+          </div>
+
+          <!-- 第三列：日期 -->
+          <div class="tag-row tag-row-date">
+            <div class="filter-item filter-date">
+
+              <label>
+                <i class="fa-solid fa-calendar-days"></i>
+                對戰日期
+              </label>
+
+              <div class="date-range">
+                <input type="date" id="startDate">
+                <span>至</span>
+                <input type="date" id="endDate">
+              </div>
+
+            </div>
+
+            <button type="button" class="btnNeutral resetBtn" id="resetBtn">
+              <i class="fa-solid fa-rotate-left"></i>
+              清除全部篩選
+            </button>
+          </div>
+
+        </div>
+      </div>
+  </section>
+
+  <!-- 約戰資訊卡列表區 -->
+  <section class="battle-sec-cards battle-sec" id="battleCardArea">
+    <div class="container">
+      <div class="content">
+        <h2>對戰邀約列表</h2>
+        <div class="card-list" id="battleCardList">
+          <!-- 約戰卡實際容器：js動態生成卡片 -->
+
+          <!-- 參考-約戰邀約卡架構 -->
+          <div class="battleCard">
+            <!-- 封面圖與適合對象標籤 -->
+            <div class="pic">
+              <img src="/battle_card_default.jpg" alt="Battle Cover">
+              <span class="target-tag">不限對象</span>
+            </div>
+            <!-- 約戰卡內容 -->
+            <div class="items">
+              <!-- 倒數計時 -->
+              <div class="timer">
+                <i class="fa-regular fa-clock"></i>
+                <p>截止倒數：
+                  <span class="countdown">12時30分</span>
+                </p>
+              </div>
+              <!-- 約戰資訊 -->
+              <div class="info">
+                <!-- 標題 -->
+                <h4 class="battle-title">
+                  新手友善！開心打陀螺
+                </h4>
+                <!-- 配對條件 -->
+                <div class="battle-meta">
+                  <!-- 地點 -->
+                  <div class="meta-item battle-location">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <p>
+                      <span class="battle-city">桃園市</span>
+                      <span>/</span>
+                      <span class="battle-district">中壢區</span>
+                    </p>
+                  </div>
+                  <!-- 模式 -->
+                  <div class="meta-item battle-mode">
+                    <i class="fa-solid fa-trophy"></i>
+                    <p>休閒模式</p>
+                  </div>
+                  <!-- 日期 -->
+                  <div class="meta-item battle-date">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <time datetime="2026-08-15T14:00">
+                      2026/08/15（六）14:00
+                    </time>
+                  </div>
+                  <!-- 程度 -->
+                  <div class="meta-item battle-level">
+                    <i class="fa-solid fa-signal"></i>
+                    <p>中階玩家</p>
+                  </div>
+                </div>
+                <!-- 約戰簡介 -->
+                <p class="battle-desc">
+                  假日放鬆場，輕鬆交流，我帶戰鬥盤，你帶陀螺就好！
+                </p>
+              </div>
+              <!-- 發起人與申請按鈕 -->
+              <div class="card-footer">
+
+                <button type="button" class="hostBtn">
+                  <!-- 會員頭像初始圖記得補上!!! -->
+                  <img class="host-avatar" src="/spinix_member_default.png" alt="">
+                  <span class="host-name">WeiChen</span>
+                </button>
+
+                <button type="button" class="btnFill applyBtn" data-battle-id="1">
+                  申請加入
+                </button>
+
+              </div>
+            </div>
+          </div>
+          <div class="battleCard"></div>
+          <div class="battleCard"></div>
+          <div class="battleCard"></div>
+        </div>
+
+        <button type="button" class="btnNeutral moreBtn" id="moreBtn">
+          載入更多
+          <i class="fa-solid fa-arrow-down"></i>
+        </button>
+
+        <!-- 底部banner -->
+        <div class="battle-bottom-Banner">
+          <div class="banner-desc">
+            <p>還沒找到想挑戰的對手嗎？</p>
+            <p>立即建立對戰邀約，讓更多玩家看見你！</p>
+          </div>
+          <a href="createBattle.html" class="btnFill createBattle-link">
+            建立邀約
+            <i class="fa-solid fa-plus"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footerApp"></div>
+
+  <!-- 約戰發起人歷史紀錄燈箱 -->
+  <div class="history-modal" id="historyModal" hidden>
+    <!-- 燈箱打開後的背景遮罩 -->
+    <div class="history-mask" data-modal-close></div>
+
+    <!-- 燈箱內容本體 -->
+    <div class="history-main">
+      <!-- 關燈箱按鈕 -->
+      <button type="button" class="closeModalBtn" data-modal-close>
+        <i class=" fa-solid fa-xmark"></i>
+      </button>
+      <!-- 頭像與標題 -->
+      <div class="history-header">
+        <img src="pic/spinix_member_default.png" alt="Member picture" class="historyAvatar" id="historyAvatar">
+        <div>
+          <h3 id="history-title">
+            <!-- 插入發起人姓名 -->
+            <span id="history-hostName"></span>
+            的約戰參考資訊
+          </h3>
+          <p>加入前可先快速了解發起人的過往紀錄</p>
+        </div>
+      </div>
+      <!-- 場次與評分數據區 -->
+      <div class="host-statList">
+        <div class="host-stat">
+          <p>約戰總場次</p>
+          <strong>
+            <span id="totalBattles">0</span>
+            場
+          </strong>
+        </div>
+
+        <div class="host-stat">
+          <p>平均約戰評價</p>
+          <strong>
+            <span id="averageRating">0.0</span>
+            <span class="rating-star">★</span>
+          </strong>
+        </div>
+      </div>
+
+      <!-- 歷史評論區 -->
+      <section class="history-review">
+        <h4>近期約戰評價</h4>
+        <!-- 評論記錄列表 -->
+        <div class="review-list" id="reviewList"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- 申請加入約戰燈箱 -->
+  <div class="apply-modal" id="applyModal" hidden>
+    <!-- 燈箱背景遮罩 -->
+    <div class="apply-mask" data-apply-close></div>
+    <!-- 燈箱內容本體 -->
+    <div class="apply-main">
+      <!-- 關閉按鈕 -->
+      <button type="button" class="closeApplyBtn" data-apply-close>
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- 上方發起人頭像與邀約標題 -->
+      <div class="apply-header">
+        <img src="pic/spinix_member_default.png" alt="約戰發起人頭像" class="applyAvatar" id="applyAvatar">
+
+        <div class="apply-heading">
+          <h3 id="apply-title">申請加入約戰</h3>
+          <!-- 約戰標題與地區資訊 -->
+          <p class="apply-battle-info">
+            <span id="apply-battleTitle">週末輕鬆交流戰</span>
+            <span>｜</span>
+            <span id="apply-battleLocation">桃園・中壢</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- 公開聯絡資訊填寫區 -->
+      <form class="apply-form" id="applyForm">
+        <div class="apply-content">
+          <h4>本次約戰的公開聯絡資訊</h4>
+          <p class="apply-description">
+            請填寫你願意提供給對方的聯絡方式，例如手機、LINE ID 或 Email...等。
+          </p>
+
+          <div class="apply-field">
+            <label for="applyContact" class="sr-only">
+              公開聯絡資訊
+            </label>
+
+            <input type="text" id="applyContact" name="contact" placeholder="例如：LINE ID spinix_battle" maxlength="100"
+              required>
+          </div>
+
+          <!-- 隱私提醒 -->
+          <div class="apply-notice">
+            <strong>配對成功後才會雙向公開</strong>
+            <p>
+              系統將在發起人確認加入後，才會將你與發起人的聯絡資訊互相提供給對方。
+            </p>
+          </div>
+        </div>
+
+        <!-- 確認與取消按鈕 -->
+        <div class="apply-actions">
+          <button type="submit" class="btnFill confirmApplyBtn" id="confirmApplyBtn">
+            確認加入
+          </button>
+
+          <button type="button" class="btnNoFill cancelApplyBtn" data-apply-close>
+            取消
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- GSAP -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+
+  <!-- GSAP的ScrollTrigger -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script type="module" src="/src/assets/js/battle.js"></script>
+</body>
+
+</html>

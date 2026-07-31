@@ -1,0 +1,56 @@
+@use '../var';
+
+
+// 實心按鈕(橘)
+.btnFill {
+    border-radius: 12px;
+    padding: 8px 24px;
+    font-size: map-get(var.$fontSize, default);
+    text-align: center;
+    transition: all .3s;
+    background-color: map-get(var.$color, primary);
+    color: map-get(var.$color, secondary);
+    border: transparent;
+    cursor: pointer;
+
+    &:hover {
+        background-color: darken(map-get(var.$color, primary), 10);
+    }
+}
+
+
+// 實心按鈕(灰藍)
+.btnNeutral {
+    border-radius: 12px;
+    padding: 8px 24px;
+    font-size: map-get(var.$fontSize, default);
+    text-align: center;
+    transition: all .3s;
+    background-color: map-get(var.$color, neutral);
+    color: map-get(var.$color, tertiary);
+    border: transparent;
+    cursor: pointer;
+
+    &:hover {
+        background-color: darken(map-get(var.$color, neutral), 10);
+    }
+}
+
+
+// 空心按鈕
+.btnNoFill {
+    border-radius: 12px;
+    padding: 8px 24px;
+    font-size: map-get(var.$fontSize, default);
+    text-align: center;
+    transition: all .3s;
+    background-color: transparent;
+    color: map-get(var.$color, secondary);
+    border: 1px solid map-get(var.$color , secondary);
+    cursor: pointer;
+
+    &:hover {
+        border: 1px solid map-get(var.$color, primary);
+        color: map-get(var.$color, primary);
+    }
+}
