@@ -15,21 +15,21 @@ const memberRouter = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "/member/battle"
+      redirect: "/battle"
       //當前台透過href="./member.html"，進入會員中心時，會預設導覽至我的約戰專區，後續再調整成側邊欄位第一個顯示的區塊連結是什麼
     },
     {
-      path: "/member/battle",
+      path: "/battle",
       name: "member-battle",
       component: MyBattle
     },
     {
-      path: "/member/forum",
+      path: "/forum",
       name: "member-forum",
       component: MyForum
     },
     {
-      path: "/member/exchange",
+      path: "/exchange",
       name: "member-exchange",
       component: MyExchange
     }
