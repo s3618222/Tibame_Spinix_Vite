@@ -57,6 +57,30 @@
         @open-appeal="goToAppeal"
         @open-review="openReviewModal">
       </BattleRecord>
+
+      <!-- 當特定分類沒有約戰紀錄時顯示 -->
+      <div v-if="filteredBattles.length === 0" class="battle-empty">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <p class="empty-message">目前沒有相關約戰紀錄</p>
+
+        <!-- 若完全沒有資料，則依目前腳色區塊，顯示對應導覽連結 -->
+        <a
+          v-if="currentStatus === 'all' && currentRole === 'participant'"
+          href="./battle.html"
+          class="empty-link btnFill"
+        >
+          前往約戰配對
+        </a>
+
+        <a
+          v-else-if="currentStatus === 'all' && currentRole === 'initiator'"
+          href="./createBattle.html"
+          class="empty-link btnFill"
+        >
+          立即建立約戰
+        </a>
+
+      </div>
     </div>
 
     <!-- 約戰歷史燈箱 -->
@@ -467,10 +491,14 @@
   .my-battle {
     width: 100%;
     min-width: 0;
+    padding: 4px 0 36px;
 
     display: flex;
     flex-direction: column;
     gap:32px;
+
+    background-color: #fcfcfc;
+    color: #141c26;
   }
 
   h2 {
@@ -486,16 +514,23 @@
     font-size: 18px;
   }
 
+  .battle-controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
   // 發起人參加人區塊切換
   .battle-role-tabs {
     display: flex;
     gap: 12px;
-    margin-bottom: 20px;
   }
 
   .role-tab {
     color: rgba(20, 28, 38, 0.5);
     font-size: 16px;
+    line-height: 1.5;
 
     background-color: transparent;
     padding: 0 12px;
@@ -519,11 +554,14 @@
   }
 
   .status-tab {
-    color: rgba(20, 28, 38, 0.5);
-    font-size: 20px;
     padding: 0;
     border: 0;
     background: transparent;
+
+    color: rgba(20, 28, 38, 0.5);
+    font-size: 20px;
+    line-height: 1.4;
+
     cursor: pointer;
 
     &.active {
@@ -533,9 +571,58 @@
 
   //卡片記錄列表
   .my-battle-records {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 28px;
   }
+
+  // 沒有約戰紀錄時的空狀態
+  .battle-empty {
+    width: 100%;
+    min-height: 200px;
+    padding: 40px 24px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+
+    // border: 1px dashed #d8d2ca;
+    border: 1px dashed rgba(242, 155, 0, 0.35);
+    border-radius: 20px;
+    // background-color: #ffffff;
+    background-color: #fffaf2;
+
+    text-align: center;
+
+    i {
+      color: #f29b00;
+      font-size: 34px;
+    }
+  }
+
+  .empty-message {
+    color: #64748b;
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  //完全沒約戰紀錄時的導覽連結
+  .empty-link {
+    margin-top: 12px;
+    padding: 12px 24px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
 </style>
 
