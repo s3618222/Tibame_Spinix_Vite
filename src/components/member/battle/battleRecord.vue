@@ -133,6 +133,14 @@
     border: 1px solid #e3ddd5;
     border-radius: 20px;
     background-color: #ffffff;
+    box-shadow: 0 4px 4px rgba(20, 28, 38, 0.07);
+
+    transition: box-shadow 0.24s ease, transform 0.24s ease;
+
+    &:hover {
+      box-shadow: 0 6px 12px rgba(20, 28, 38, 0.1);
+      transform: translateY(-2px);
+    }
   }
 
   .record-main {
@@ -171,6 +179,7 @@
 
     border: 1px solid rgba(254, 201, 107, 0.75);
     border-radius: 16px;
+    box-shadow: 0 3px 4px rgba(20, 28, 38, 0.28);
 
     background-color: #141c26;
     color: #fec96b;
@@ -180,6 +189,9 @@
   .record-content {
     flex: 1;
     min-width: 0;
+
+    display: flex;
+    flex-direction: column;
   }
 
   .record-heading {
@@ -248,6 +260,7 @@
     p {
       color: #64748b;
       font-size: 16px;
+      line-height: 1.5;
     }
   }
 
