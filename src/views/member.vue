@@ -1,58 +1,40 @@
 <template>
   <div class="member-center">
     <aside class="member-sidebar">
-      <button
-        type="button"
-        @click="currentSection = 'battle'"
+      <RouterLink
+        :to="{ name: 'member-battle' }"
+        class="member-sidebar-link"
       >
         我的約戰
-      </button>
+      </RouterLink>
 
-      <button
-        type="button"
-        @click="currentSection = 'forum'"
+      <RouterLink
+        :to="{ name: 'member-forum' }"
+        class="member-sidebar-link"
       >
         我的論壇
-      </button>
+      </RouterLink>
 
-      <button
-        type="button"
-        @click="currentSection = 'exchange'"
+      <RouterLink
+        :to="{ name: 'member-exchange' }"
+        class="member-sidebar-link"
       >
         我的交換
-      </button>
+      </RouterLink>
     </aside>
 
+    
     <main class="member-content">
-      <MyBattle v-if="currentSection === 'battle'" />
-
-      <MyForum v-else-if="currentSection === 'forum'" />
-
-      <MyExchange v-else-if="currentSection === 'exchange'" />
+      <RouterView />
     </main>
+
   </div>
 </template>
 
 <script>
-import MyBattle from "@/components/member/battle/myBattle.vue";
-import MyForum from "@/components/myForum.vue";
-import MyExchange from "@/components/myExchange.vue";
-
-export default {
-  name: "Member",
-
-  components: {
-    MyBattle,
-    MyForum,
-    MyExchange
-  },
-
-  data() {
-    return {
-      currentSection: "battle"
-    };
-  }
-};
+  export default {
+    name: "Member"
+  };
 </script>
 
 <style lang="scss" scoped>
