@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import MyBattle from "@/components/myBattle.vue";
+import MyBattle from "@/components/member/battle/myBattle.vue";
 import MyForum from "@/components/myForum.vue";
 import MyExchange from "@/components/myExchange.vue";
 
