@@ -7,1080 +7,1121 @@
 //     hint : 14px
 // );
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 .page-battle {
-    background: #F7F5F3;
+  background: #F7F5F3;
 
-    h1 {
-        font-size: 34px;
-        font-weight: 700;
-        color: #fec96b;
-    }
+  h1 {
+    font-size: 34px;
+    font-weight: 700;
+    color: #fec96b;
+  }
 
-    h2 {
-        font-size: 30px;
-        font-weight: 700;
-        color: #fec96b;
-    }
+  h2 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #fec96b;
+  }
 
-    section p {
-        font-size: 18px;
-        color: #141C26;
-    }
+  section p {
+    font-size: 18px;
+    color: #141C26;
+  }
 }
 
 // hero區
 
 // 視差效果的捲動範圍
 .battle-hero-scroll {
-    //高度設定為Hero區本身高度再加上額外欲增加的捲動距離
-    height: calc(max(100svh, 540px) + 500px);
-    position: relative;
+  //高度設定為Hero區本身高度再加上額外欲增加的捲動距離
+  height: calc(max(100svh, 540px) + 500px);
+  position: relative;
 }
 
 .battle-sec-hero {
-    margin: 0;
-    width: 100%;
-    height: 100svh;
-    min-height: 540px;
+  margin: 0;
+  width: 100%;
+  height: 100svh;
+  min-height: 540px;
 
-    background-image: url("/battle_banner.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
+  background-image: url("/battle_banner.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
 
-    // 動畫起始位置
-    background-position: center 15%;
-    overflow: hidden;
+  // 動畫起始位置
+  background-position: center 15%;
+  overflow: hidden;
 
-    position: sticky;
-    top: 0; //從頂端就開始sticky行為
+  position: sticky;
+  top: 0; //從頂端就開始sticky行為
 }
 
 .battle-sec-hero .container {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 
-    position: absolute;
-    bottom: 80px;
+  position: absolute;
+  bottom: 80px;
 }
 
 //hero區按鈕組---optional 可考慮刪除
 .hero-btns {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
 }
 
 //建立邀約與立即瀏覽按鈕
 a.createBattle-link,
-a#browseBtn {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
+a#browseBtn,
+a.empty-createBattleBtn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 
-    text-decoration: none;
+  text-decoration: none;
 
-    line-height: 1.5;
-    cursor: pointer;
+  line-height: 1.5;
+  cursor: pointer;
 }
 
 //hero-陀螺圖
 .hero-spintop {
-    width: clamp(80px, 12vw, 180px);
-    aspect-ratio: 1 / 1;
-    overflow: hidden;
+  width: clamp(80px, 12vw, 180px);
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
 }
 
 .hero-spintop img {
-    width: 100%;
-    opacity: .1;
-    transform-origin: center;
+  width: 100%;
+  opacity: .1;
+  transform-origin: center;
 }
 
 //hero-大標與按鈕
 .hero-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 
 .battle-sec-hero .container .hero-content p {
-    font-size: 20px;
-    color: #ffffff;
+  font-size: 20px;
+  color: #ffffff;
 }
 
 // battle分頁 主內容section共同設定
 .battle-sec {
-    padding-block: 28px;
-    background: #F7F5F3;
+  padding-block: 28px;
+  background: #F7F5F3;
 }
 
 .battle-sec .container {
-    width: min(1120px, 86vw);
-    margin-inline: auto;
+  width: min(1120px, 86vw);
+  margin-inline: auto;
 
-    .content {
-        width: 100%;
-    }
+  .content {
+    width: 100%;
+  }
 }
 
 // 篩選區上方介紹文字
 .tag-intro {
-    width: 100%;
-    max-width: 760px;
-    margin-inline: auto;
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
 
-    overflow: hidden;
+  overflow: hidden;
 }
 
 // 介紹文字旁的小陀螺圖
 .tag-intro-spintop {
-    width: 56px;
-    aspect-ratio: 1 / 1;
-    flex-shrink: 0;
+  width: 56px;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
 
-    object-fit: contain;
-    transform-origin: center;
+  object-fit: contain;
+  transform-origin: center;
 
-    //由GSAP控制進場顯示
-    visibility: hidden;
+  //由GSAP控制進場顯示
+  visibility: hidden;
 }
 
 // 介紹文字
 .tag-intro p {
-    line-height: 1.6;
-    text-align: left;
+  line-height: 1.6;
+  text-align: left;
 
-    //由GSAP控制進場顯示
-    visibility: hidden;
+  //由GSAP控制進場顯示
+  visibility: hidden;
 }
 
 // 手機版時，介紹文字區動畫改上下排列
 @media screen and (max-width: 576px) {
-    .tag-intro {
-        flex-direction: column;
-        gap: 8px;
-    }
+  .tag-intro {
+    flex-direction: column;
+    gap: 8px;
+  }
 
-    .tag-intro-spintop {
-        width: 48px;
-    }
+  .tag-intro-spintop {
+    width: 48px;
+  }
 
-    .tag-intro p {
-        text-align: center;
-    }
+  .tag-intro p {
+    text-align: center;
+  }
 }
 
 // 篩選分類標籤區
 .battle-sec-tags {
-    padding-block: 72px 0px;
-    background: #F7F5F3;
+  padding-block: 72px 0px;
+  background: #F7F5F3;
 }
 
 .battle-sec-tags .container {
-    width: min(1120px, 86vw);
-    margin-inline: auto;
+  width: min(1120px, 86vw);
+  margin-inline: auto;
 
-    .content {
-        width: 100%;
-        text-align: center;
-    }
+  .content {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 .tag-list {
-    width: min(900px, 100%);
-    padding: 32px;
-    margin: 12px auto 32px;
+  width: min(900px, 100%);
+  padding: 32px;
+  margin: 12px auto 32px;
 
-    border: 1px solid rgba(254, 201, 107, 0.55);
-    border-radius: 20px;
+  border: 1px solid rgba(254, 201, 107, 0.55);
+  border-radius: 20px;
 
-    background:
-        linear-gradient(90deg,
-            #FFFDF9 0%,
-            #FFF5DE 100%);
+  background:
+    linear-gradient(90deg,
+      #FFFDF9 0%,
+      #FFF5DE 100%);
 
-    box-shadow: 0 8px 12px rgba(20, 28, 38, 0.1);
+  box-shadow: 0 8px 12px rgba(20, 28, 38, 0.1);
 
-    display: flex;
-    flex-direction: column;
-    justify-content: stretch;
-    align-items: stretch;
-    gap: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
+  gap: 28px;
 }
 
 // 每一列共同設定
 .tag-row {
-    font-size: 16px;
+  font-size: 16px;
 
-    width: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 28px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 28px;
 }
 
 /* 每個篩選欄位 */
 .filter-item {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 // 每個icon
 .filter-item i {
-    color: #64748B;
-    width: 18px;
-    text-align: center;
-    margin-inline: 4px 8px;
+  color: #64748B;
+  width: 18px;
+  text-align: center;
+  margin-inline: 4px 8px;
 }
 
 .filter-item label {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 
-    font-size: 16px;
-    color: #141C26;
+  font-size: 16px;
+  color: #141C26;
 }
 
 .filter-item select,
 .date-range input {
-    border: 1px solid #DDD6C8;
-    border-radius: 10px;
-    outline: none;
+  border: 1px solid #DDD6C8;
+  border-radius: 10px;
+  outline: none;
 
-    background-color: #FFFFFF;
+  background-color: #FFFFFF;
 
-    font-size: 16px;
-    line-height: 1.5;
-    color: #141C26;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #141C26;
 }
 
 .filter-item select {
-    width: auto;
-    min-width: 160px;
-    padding: 8px 36px 8px 12px;
+  width: auto;
+  min-width: 160px;
+  padding: 8px 36px 8px 12px;
 }
 
 .date-range input {
-    width: 160px;
-    padding: 8px 12px;
+  width: 160px;
+  padding: 8px 12px;
 }
 
 .filter-item select:focus,
 .date-range input:focus {
-    border-color: #F29B00;
+  border-color: #F29B00;
 }
 
 .tag-row-location select {
-    min-width: 160px;
+  min-width: 160px;
 }
 
 /* 自動定位 */
 .auto-locate {
-    align-self: flex-end;
+  align-self: flex-end;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 
 }
 
 .auto-locate button {
-    padding: 0;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    color: #64748B;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: #64748B;
 }
 
 .auto-locate button:hover {
-    color: #F29B00;
+  color: #F29B00;
 }
 
 .auto-locate p {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 // 自動定位期間的載入動畫
 .location-loading {
-    display: none;
-    align-items: center;
-    gap: 8px;
+  display: none;
+  align-items: center;
+  gap: 8px;
 }
 
 .location-loading.is-loading {
-    display: flex;
+  display: flex;
 }
 
 .loader {
-    width: 24px;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    border: 4px solid #dddddd;
-    border-right-color: #fec96b;
-    animation: loadingRotate 1s infinite linear;
+  width: 24px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 4px solid #dddddd;
+  border-right-color: #fec96b;
+  animation: loadingRotate 1s infinite linear;
 }
 
 #locationLoadingText,
 #locationStatus {
-    font-size: 14px;
-    font-weight: 600;
-    color: #aaaaaa;
+  font-size: 14px;
+  font-weight: 600;
+  color: #aaaaaa;
 }
 
 @keyframes loadingRotate {
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* 日期列 */
 .tag-row-date {
-    justify-content: space-between;
-    gap: 28px;
+  justify-content: space-between;
+  gap: 28px;
 
-    #resetBtn {
-        align-self: flex-end;
-    }
+  #resetBtn {
+    align-self: flex-end;
+  }
 }
 
 .filter-date {
-    width: auto;
+  width: auto;
 }
 
 .date-range {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .date-range input {
-    border: 1px solid;
-    border-radius: 4px;
-    width: 160px;
-    padding: 8px 12px;
+  border: 1px solid;
+  border-radius: 4px;
+  width: 160px;
+  padding: 8px 12px;
 }
 
 // 約戰資訊卡列表區
 .battle-sec-cards h2 {
-    text-align: left;
-    margin-bottom: 20px;
+  text-align: left;
+  margin-bottom: 20px;
 }
 
 .battle-sec-cards .card-list {
-    width: 100%;
+  width: 100%;
 
-    display: flex;
-    align-items: stretch;
-    flex-wrap: wrap;
-    gap: 36px 28px;
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 36px 28px;
 
-    // border: 1px solid gray;
+  // border: 1px solid gray;
 }
 
 .card-list .battleCard {
-    width: calc((100% - 56px) / 3);
+  width: calc((100% - 56px) / 3);
 
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    border: 1px solid #d7d7d7;
-    border-radius: 20px;
-    background-color: #ffffff;
-    overflow: hidden;
+  border: 1px solid #d7d7d7;
+  border-radius: 20px;
+  background-color: #ffffff;
+  overflow: hidden;
 
-    box-shadow: 0 4px 10px rgba(20, 28, 38, 0.06);
+  box-shadow: 0 4px 10px rgba(20, 28, 38, 0.06);
 
-    transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease,
-        border-color 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
 .card-list .battleCard:hover {
-    transform: translateY(-4px);
+  transform: translateY(-4px);
 
-    border-color: rgba(254, 201, 107, 0.75);
+  border-color: rgba(254, 201, 107, 0.75);
 
-    box-shadow:
-        0 10px 20px rgba(20, 28, 38, 0.1);
+  box-shadow:
+    0 10px 20px rgba(20, 28, 38, 0.1);
 }
 
-//無符合條件時的系統文字
+// 對戰邀約列表的空狀態共同樣式
 .battle-empty {
-    display: inline-block;
-    margin: 20px auto;
-    font-size: 18px;
-    color: #141C26;
+  width: 90%;
+  min-height: 280px;
+  margin: 20px auto;
+  padding: 32px 24px;
 
-    padding: 24px 32px;
-    background-color: #FFF2D6;
-    border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+
+  text-align: center;
+  color: #141c26;
+
+  background:
+    linear-gradient(135deg,
+      #fffdf9 0%,
+      #fff5de 100%);
+
+  border: 1px dashed rgba(242, 155, 0, 0.45);
+  border-radius: 20px;
+}
+
+// 空狀態圖片
+.battle-empty img {
+  width: 180px;
+  aspect-ratio: 1 / 1;
+
+  object-fit: contain;
+  margin-bottom: -8px;
+}
+
+// 空狀態時的標題
+.battle-empty h3 {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #141c26;
+}
+
+// 空狀態說明文字
+.page-battle .battle-empty p {
+  max-width: 520px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #64748b;
+
+  margin-bottom: 4px;
 }
 
 // 約戰卡封面圖
 .battleCard .pic {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
 
-    position: relative;
+  position: relative;
 
-    border-radius: 18px 18px 0 0;
-    background-color: #e5e7eb;
+  border-radius: 18px 18px 0 0;
+  background-color: #e5e7eb;
 }
 
 .battleCard .pic img {
-    display: block;
-    width: 100%;
-    height: 100%;
+  display: block;
+  width: 100%;
+  height: 100%;
 
-    object-fit: cover;
-    object-position: center;
+  object-fit: cover;
+  object-position: center;
 
-    transition: transform 0.4s ease;
+  transition: transform 0.4s ease;
 }
 
 .battleCard:hover .pic img {
-    transform: scale(1.04);
+  transform: scale(1.04);
 }
 
 .target-tag {
-    position: absolute;
-    top: 12px;
-    left: 12px;
+  position: absolute;
+  top: 12px;
+  left: 12px;
 
-    padding: 4px 12px;
-    border-radius: 999px;
+  padding: 4px 12px;
+  border-radius: 999px;
 
-    background-color: #141C26;
-    border: 1px solid #FEC96B;
-    color: #FEC96B;
-    font-size: 14px;
+  background-color: #141C26;
+  border: 1px solid #FEC96B;
+  color: #FEC96B;
+  font-size: 14px;
 
-    transition: transform 0.25s ease;
+  transition: transform 0.25s ease;
 }
 
 .battleCard:hover .target-tag {
-    transform: translateX(4px);
+  transform: translateX(4px);
 }
 
 // 約戰卡資訊內容
 .battleCard .items {
-    flex: 1;
-    padding: 16px;
+  flex: 1;
+  padding: 16px;
 
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 /* 截止倒數 */
 .battleCard .timer {
-    align-self: center;
+  align-self: center;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 
-    padding: 8px 16px;
-    border-radius: 999px;
+  padding: 8px 16px;
+  border-radius: 999px;
 
-    background-color: #eeeeee;
+  background-color: #eeeeee;
 }
 
 .battleCard .timer i {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .battleCard .timer p {
-    font-size: 16px;
-    line-height: 1;
-    white-space: nowrap;
+  font-size: 16px;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .battleCard .countdown {
-    font-weight: 700;
+  font-weight: 700;
 }
 
 /* 卡片主要資訊 */
 .battleCard .info {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* 約戰標題 */
 .battleCard .battle-title {
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 1.4;
-    color: #141c26;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #141c26;
 }
 
 // 條件列表
 .battleCard .battle-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 /* 每一筆條件 */
 .battleCard .meta-item {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
 
-    color: #141c26;
+  color: #141c26;
 }
 
 .battleCard .meta-item i {
-    width: 18px;
-    flex-shrink: 0;
+  width: 18px;
+  flex-shrink: 0;
 
-    text-align: center;
-    color: #64748b;
+  text-align: center;
+  color: #64748b;
 }
 
 .battleCard .meta-item p,
 .battleCard .meta-item time {
-    font-size: 16px;
-    line-height: 1.4;
-    color: #141c26;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #141c26;
 }
 
 /* 約戰簡介 */
 .battleCard .battle-desc {
-    font-size: 16px;
-    line-height: 1.5;
-    color: #141c26;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #141c26;
 }
 
 /* 發起人與申請按鈕 */
 .battleCard .card-footer {
-    margin-top: auto;
+  margin-top: auto;
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 /* 發起人按鈕 */
 .battleCard .hostBtn {
-    min-width: 0;
-    padding: 0;
-    border: 0;
-    text-decoration: underline;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  text-decoration: underline;
 
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
-    background-color: transparent;
-    color: #141c26;
-    cursor: pointer;
+  background-color: transparent;
+  color: #141c26;
+  cursor: pointer;
 }
 
 /* 發起人顯示頭像 */
 .battleCard .host-avatar {
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
 
-    border-radius: 50%;
-    object-fit: cover;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 /* 發起人名稱 */
 .battleCard .host-name {
-    max-width: 120px;
-    font-size: 16px;
+  max-width: 120px;
+  font-size: 16px;
 
-    overflow: hidden;
-    white-space: nowrap;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 /* 申請加入按鈕 */
 .battleCard .applyBtn {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 // 報名截止時的按鈕狀態設定
 .battleCard .applyBtn:disabled {
-    background-color: #b8b8b8;
-    border-color: #b8b8b8;
-    color: #ffffff;
+  background-color: #b8b8b8;
+  border-color: #b8b8b8;
+  color: #ffffff;
 
-    cursor: not-allowed;
-    opacity: 0.7;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 // 約戰發起人歷史紀錄燈箱
 .history-modal {
-    position: fixed;
-    inset: 0; // 將燈箱覆蓋整個版面
-    z-index: 1000;
+  position: fixed;
+  inset: 0; // 將燈箱覆蓋整個版面
+  z-index: 1000;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    //預設隱藏
-    visibility: hidden;
-    opacity: 0;
-    pointer-events: none;
+  //預設隱藏
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 
-    transition:
-        opacity 0.25s ease,
-        visibility 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
 }
 
 // 燈箱開啟狀態
 .history-modal.is-open {
-    visibility: visible;
-    opacity: 1;
-    pointer-events: auto;
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 // 背景遮罩
 .history-mask {
-    position: absolute;
-    inset: 0;
-    background-color: rgba(20, 28, 38, 0.58);
+  position: absolute;
+  inset: 0;
+  background-color: rgba(20, 28, 38, 0.58);
 }
 
 // 燈箱本體
 .history-main {
-    position: relative;
-    z-index: 1;
+  position: relative;
+  z-index: 1;
 
-    width: min(500px, calc(100% - 32px));
-    max-height: calc(100vh - 48px);
-    padding: 26px;
+  width: min(500px, calc(100% - 32px));
+  max-height: calc(100vh - 48px);
+  padding: 26px;
 
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 
-    overflow-y: auto;
+  overflow-y: auto;
 
-    background-color: #f7f5f3;
-    border: 1px solid #ffffff;
-    border-radius: 14px;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+  background-color: #f7f5f3;
+  border: 1px solid #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
 }
 
 // 關閉按鈕
 .closeModalBtn {
-    position: absolute;
-    top: 18px;
-    right: 18px;
+  position: absolute;
+  top: 18px;
+  right: 18px;
 
-    width: 36px;
-    height: 36px;
+  width: 36px;
+  height: 36px;
 
-    border: 0;
-    background-color: transparent;
+  border: 0;
+  background-color: transparent;
 
-    font-size: 22px;
-    color: #64748b;
-    cursor: pointer;
+  font-size: 22px;
+  color: #64748b;
+  cursor: pointer;
 }
 
 // 頭像與標題
 .history-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 
-    padding-right: 24px;
+  padding-right: 24px;
 }
 
 .historyAvatar {
-    width: 60px;
-    height: 60px;
-    flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
 
-    border-radius: 50%;
-    object-fit: cover;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .history-header>div {
-    min-width: 0;
+  min-width: 0;
 
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .history-header h3,
 .apply-heading h3 {
-    font-size: 20px;
-    line-height: 1.4;
-    color: #141c26;
+  font-size: 20px;
+  line-height: 1.4;
+  color: #141c26;
 }
 
 #history-hostName {
-    color: #f29b00;
+  color: #f29b00;
 }
 
 .history-header p {
-    font-size: 14px;
-    color: #64748b;
+  font-size: 14px;
+  color: #64748b;
 }
 
 // 約戰總場次與平均評價
 .host-statList {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 28px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
 }
 
 .host-stat {
-    min-height: 88px;
-    padding: 12px 16px;
+  min-height: 88px;
+  padding: 12px 16px;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
 
-    background-color: #ffffff;
-    border: 1px solid #aaaaaa;
-    border-radius: 10px;
+  background-color: #ffffff;
+  border: 1px solid #aaaaaa;
+  border-radius: 10px;
 }
 
 .host-stat p {
-    font-size: 14px;
-    color: #3a3a3a;
+  font-size: 14px;
+  color: #3a3a3a;
 }
 
 .host-stat strong {
-    font-size: 26px;
-    line-height: 1.2;
-    color: #141c26;
+  font-size: 26px;
+  line-height: 1.2;
+  color: #141c26;
 }
 
 .rating-star {
-    color: #f29b00;
+  color: #f29b00;
 }
 
 // 歷史評論區
 .history-review {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .history-review h4,
 .apply-content h4 {
-    padding-left: 12px;
+  padding-left: 12px;
 
-    border-left: 4px solid #f29b00;
+  border-left: 4px solid #f29b00;
 
-    font-size: 18px;
-    line-height: 1.4;
-    color: #141c26;
+  font-size: 18px;
+  line-height: 1.4;
+  color: #141c26;
 }
 
 // 評論列表
 .review-list {
-    height: 160px;
-    padding: 4px 12px;
+  height: 160px;
+  padding: 4px 12px;
 
-    overflow-y: auto;
+  overflow-y: auto;
 
-    background-color: #ffffff;
-    border: 1px solid #aaaaaa;
-    border-radius: 10px;
+  background-color: #ffffff;
+  border: 1px solid #aaaaaa;
+  border-radius: 10px;
 }
 
 .review-item {
-    padding-block: 12px;
-    border-bottom: 1px solid #dddddd;
+  padding-block: 12px;
+  border-bottom: 1px solid #dddddd;
 }
 
 //最後一則評論不用加底線
 .review-item:last-child {
-    border-bottom: 0;
+  border-bottom: 0;
 }
 
 .review-info {
-    margin-bottom: 6px;
+  margin-bottom: 6px;
 
-    display: flex;
-    align-items: center;
-    gap: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .reviewer-name {
-    font-weight: 700;
-    color: #141c26;
+  font-weight: 700;
+  color: #141c26;
 }
 
 .review-rating {
-    font-weight: 700;
-    color: #141c26;
+  font-weight: 700;
+  color: #141c26;
 }
 
 .review-content {
-    font-size: 14px;
-    line-height: 1.5;
-    color: #3a3a3a;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #3a3a3a;
 }
 
 .review-date {
-    display: block;
-    margin-top: 6px;
+  display: block;
+  margin-top: 6px;
 
-    font-size: 12px;
-    color: #aaaaaa;
+  font-size: 12px;
+  color: #aaaaaa;
 }
 
 // 申請加入約戰燈箱
 .apply-modal {
-    //燈箱布局滿版
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
+  //燈箱布局滿版
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    //起始隱藏燈箱
-    visibility: hidden;
-    opacity: 0;
-    pointer-events: none;
+  //起始隱藏燈箱
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 
-    transition:
-        opacity 0.25s ease,
-        visibility 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
 }
 
 // 燈箱開啟狀態
 .apply-modal.is-open {
-    visibility: visible;
-    opacity: 1;
-    pointer-events: auto;
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 // 背景遮罩
 .apply-mask {
-    position: absolute;
-    inset: 0;
-    background-color: rgba(20, 28, 38, 0.58);
+  position: absolute;
+  inset: 0;
+  background-color: rgba(20, 28, 38, 0.58);
 }
 
 // 申請加入燈箱內容本體
 .apply-main {
-    position: relative;
-    z-index: 1;
+  position: relative;
+  z-index: 1;
 
-    width: min(536px, calc(100% - 32px));
-    max-height: calc(100vh - 48px);
-    padding: 28px;
+  width: min(536px, calc(100% - 32px));
+  max-height: calc(100vh - 48px);
+  padding: 28px;
 
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 
-    overflow-y: auto;
+  overflow-y: auto;
 
-    background-color: #f7f5f3;
-    border: 1px solid #ffffff;
-    border-radius: 14px;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+  background-color: #f7f5f3;
+  border: 1px solid #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
 }
 
 // 右上角關閉按鈕
 .closeApplyBtn {
-    position: absolute;
-    top: 18px;
-    right: 18px;
+  position: absolute;
+  top: 18px;
+  right: 18px;
 
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    border: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
 
-    background-color: transparent;
-    color: #64748b;
-    font-size: 22px;
+  background-color: transparent;
+  color: #64748b;
+  font-size: 22px;
 
-    cursor: pointer;
+  cursor: pointer;
 }
 
 // 上方頭像與標題
 .apply-header {
-    padding-right: 24px;
+  padding-right: 24px;
 
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .applyAvatar {
-    width: 60px;
-    height: 60px;
-    flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
 
-    border-radius: 50%;
-    object-fit: cover;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .apply-heading {
-    min-width: 0;
+  min-width: 0;
 
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .apply-battle-info {
-    font-size: 14px;
-    line-height: 1.4;
-    color: #64748b;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #64748b;
 }
 
 // 表單區 (參加人輸入聯絡資訊)
 .apply-form {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
 
 // 聯絡資訊主要內容
 .apply-content {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .apply-description {
-    font-size: 14px;
-    line-height: 1.6;
-    color: #3a3a3a;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #3a3a3a;
 }
 
 // 聯絡資訊輸入欄位
 .apply-field {
-    width: 100%;
+  width: 100%;
 }
 
 .apply-field input {
-    width: 100%;
-    min-height: 52px;
-    padding: 12px 16px;
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 16px;
 
-    border: 1px solid #b3b3b3;
-    border-radius: 8px;
-    background-color: #ffffff;
+  border: 1px solid #b3b3b3;
+  border-radius: 8px;
+  background-color: #ffffff;
 
-    font-size: 16px;
-    color: #141c26;
+  font-size: 16px;
+  color: #141c26;
 }
 
 .apply-field input::placeholder {
-    color: #aaaaaa;
+  color: #aaaaaa;
 }
 
 // 下方提醒區
 .apply-notice {
-    padding: 12px 16px;
+  padding: 12px 16px;
 
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 
-    background-color: #fff5df;
-    border-radius: 10px;
+  background-color: #fff5df;
+  border-radius: 10px;
 }
 
 .apply-notice strong {
-    font-size: 14px;
-    color: #141c26;
+  font-size: 14px;
+  color: #141c26;
 }
 
 .apply-notice p {
-    font-size: 14px;
-    line-height: 1.5;
-    color: rgba(58, 58, 58, 0.8);
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(58, 58, 58, 0.8);
 }
 
 // 確認申請與取消按鈕
 .apply-actions {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 16px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
 }
 
 .confirmApplyBtn,
 .cancelApplyBtn {
-    min-width: 112px;
+  min-width: 112px;
 }
 
 //載入更多按鈕
 .battle-sec-cards .moreBtn {
-    display: block;
-    margin: 24px auto 0 auto;
+  display: block;
+  margin: 24px auto 0 auto;
 }
 
 // 底部banner
 .battle-bottom-Banner {
-    width: 90%;
-    min-height: 200px;
-    margin: 48px auto 32px;
-    padding: 28px 24px;
+  width: 90%;
+  min-height: 200px;
+  margin: 48px auto 32px;
+  padding: 28px 24px;
 
-    border: 1px solid gray;
-    border-radius: 14px;
+  border: 1px solid gray;
+  border-radius: 14px;
 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+
+  background-image:
+    linear-gradient(rgba(20, 28, 38, 0.45),
+      rgba(20, 28, 38, 0.45)),
+    url("/battle_bottom_banner.jpg");
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+
+  border-radius: 24px;
+  overflow: hidden;
+
+  .banner-desc {
     display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     justify-content: center;
-    align-items: center;
-    gap: 16px;
+    gap: 8px;
 
-    background-image:
-        linear-gradient(rgba(20, 28, 38, 0.45),
-            rgba(20, 28, 38, 0.45)),
-        url("/battle_bottom_banner.jpg");
-
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-
-    border-radius: 24px;
-    overflow: hidden;
-
-    .banner-desc {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        gap: 8px;
-
-        p {
-            color: #ffffff;
-        }
+    p {
+      color: #ffffff;
     }
+  }
 }
