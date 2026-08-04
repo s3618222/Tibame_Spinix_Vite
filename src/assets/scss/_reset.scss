@@ -2,6 +2,8 @@
    v2.0 | 20110126
    License: none (public domain)
 */
+
+@use '_var' as *;
 * {
     box-sizing: border-box;
 }
@@ -139,4 +141,9 @@ q:after {
 table {
     border-collapse: collapse;
     border-spacing: 0;
+}
+
+a {
+    text-decoration: none;
+    color: map-get($color, secondary);
 }
