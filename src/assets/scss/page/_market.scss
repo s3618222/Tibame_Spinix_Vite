@@ -1,0 +1,112 @@
+@use '../_var' as *;
+
+body {
+   font-size: map-get($fontSize , hint);
+   letter-spacing: 2px;
+}
+
+// 交換區 hero
+.market-hero {
+   background-image: url(../../../../public/market-banner.png);
+   background-size: cover;
+   background-repeat: no-repeat;
+   height: 100vh;
+   width: 100%;
+   position: relative;
+
+   &::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100vh;
+      background-color: rgba(map-get($color , secondary), $alpha: .7);
+   }
+
+
+   .hero-info {
+      position: absolute;
+      bottom: 15%;
+      display: flex;
+      flex-direction: column;
+      z-index: 1;
+      gap: 1rem;
+      padding-inline: 1rem;
+
+      h1 {
+         color: map-get($color, secondary2);
+         font-size: map-get($fontSize, h3);
+         font-weight: 900;
+      }
+
+      p {
+         color: map-get($color, white);
+         // font-size: map-get($fontSize, hint);
+         font-weight: 600;
+         line-height: 1.5;
+      }
+
+      .btnFill {
+         display: inline-block;
+         width: fit-content;
+         font-size: map-get($fontSize , hint);
+      }
+
+      .btn-guide {
+         display: none;
+      }
+
+      .btn-exchaunge {
+         display: block;
+      }
+   }
+}
+
+// @media screen and (width <768px) {
+//    .market-hero {
+//       .hero-info {
+//          p {}
+
+//          .btnFill {}
+
+
+//       }
+//    }
+// }
+
+// 平板
+@media screen and (width >=768px) {
+
+   // 交換區 hero
+   .market-hero {
+      background-size: 80% auto;
+      height: 80vh;
+      background-position: right 20%;
+
+      &::after {
+         height: 100%;
+         background: linear-gradient(to right, map-get($color, secondary) 35%, transparent);
+      }
+
+      .hero-info {
+         bottom: 10%;
+         padding-inline: 1.5rem;
+
+         h1 {
+            font-size: map-get($fontSize, h1);
+         }
+
+         .btn-guide {
+            display: block;
+         }
+
+         .btn-exchaunge {
+            display: none;
+         }
+      }
+   }
+
+
+}
+
+// 電腦
+@media screen and (width >=1200px) {}
