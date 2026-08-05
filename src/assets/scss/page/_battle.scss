@@ -466,7 +466,7 @@ a.empty-createBattleBtn {
 
 // 空狀態說明文字
 .page-battle .battle-empty p {
-  max-width: 520px;
+  max-width: 524px;
   font-size: 16px;
   line-height: 1.5;
   color: #64748b;
@@ -638,6 +638,13 @@ a.empty-createBattleBtn {
   background-color: transparent;
   color: #141c26;
   cursor: pointer;
+
+  transition: color .24s ease;
+
+  &:hover {
+    color: #FEC96B;
+  }
+
 }
 
 /* 發起人顯示頭像 */
