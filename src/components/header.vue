@@ -1,3 +1,5 @@
+
+
 <template>
   <header
   :class="{
@@ -10,7 +12,7 @@
         <img src="/spinix_logo.png" alt="Spinix Logo">
       </a>
 
-      <nav>
+      <nav :class="{active: isMenuOpen}">
         <ul>
           <li>
             <a href="index.html">首頁</a>
@@ -32,12 +34,21 @@
             <a href="market.html">交換專區</a>
           </li>
         </ul>
+        <div class="header-btns">
+          <a class="signUp-btn" href="signUp.html">註冊</a>
+          <a class="signIn-btn" href="signIn.html">登入</a>
+        </div>
       </nav>
+      
     </div>
 
-    <div class="header-btns">
+    <!-- <div class="header-btns">
       <a class="signUp-btn" href="signUp.html">註冊</a>
       <a class="signIn-btn" href="signIn.html">登入</a>
+    </div> -->
+
+    <div id="burger" @click="toggleMenu">
+      <i class="fa-solid fa-bars"></i>
     </div>
   </header>
 </template>
@@ -55,7 +66,8 @@ export default {
 
   data() {
     return {
-      isScrolled: false
+      isScrolled: false,
+      isMenuOpen: false
     };
   },
 
@@ -68,6 +80,10 @@ export default {
       }
 
       this.isScrolled = window.scrollY > 40;
+    },
+    // 控制手機板選單
+    toggleMenu(){
+      this.isMenuOpen = !this.isMenuOpen;
     }
   },
 
@@ -86,6 +102,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
   /* header高度88px，置頂後脫離文件流，
   須設定body {padding-top: 88px} 
   撐回原本高度 */
@@ -127,6 +144,8 @@ export default {
       display: flex;
       align-items: center;
       gap: 24px;
+      width: 100%;
+      
   }
 
   .header-main .logo {
@@ -157,9 +176,18 @@ export default {
       }
   }
 
+  .header-main nav{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    
+    
+  }
+
   .header-main nav ul {
-      list-style: none;
+      // list-style: none;
       display: flex;
+      flex: 1;
       gap: 24px;
   }
 
@@ -199,6 +227,7 @@ export default {
       justify-content: center;
       align-items: center;
       gap: 24px;
+      // flex: 1;
   }
 
   .header-btns a {
@@ -243,5 +272,60 @@ export default {
 
   .header-btns a:active {
       transform: translateY(0);
+  }
+
+  // 漢堡選單
+  #burger{
+    display: none;
+    .fa-bars{
+      color: #F7F5F3;
+      font-size: 26px;
+    }
+  }
+
+  // RWD
+  // 手機板
+  @media screen and (width < 768px) {
+    header{
+      // position: relative;
+      background-color: #141C26;
+    }
+    .header-main {
+      gap: 16px;
+      nav{      
+        background-color: #141C26;
+        height: calc(100vh - 88px);
+        width: fit-content;
+        position: absolute;
+        top: 88px;
+        padding:12px 24px;
+        right: -100%;
+        transition: .6s ease;
+        flex-direction: column;
+        // align-content: center;
+        // align-items: end;
+        // justify-content: space-between;
+        // align-content: space-between;
+          &.active{
+            right: 0;
+          }
+          ul{
+            flex-direction: column;
+            gap: 24px;
+            // flex: 1;
+            
+          }
+          .header-btns{
+            flex-direction: column;
+            gap: 16px;
+            
+          }
+        }
+    }
+
+    #burger{
+      display: block;
+      
+    }
   }
 </style>

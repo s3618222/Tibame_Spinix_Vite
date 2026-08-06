@@ -5,26 +5,22 @@
         <a href="index.html" class="footer-logo">
           <img src="/spinix_logo_words.png" alt="Spinix Logo">
         </a>
+        <!-- <p>
+          從尋找對戰、分享配置到交流心得與交換陀螺，讓每一次旋轉都能連結新的玩家。
+        </p> -->
+      </div>
+
+      <div class="footer-col footer-intro ">
+        <h4>網站介紹</h4>
         <p>
           從尋找對戰、分享配置到交流心得與交換陀螺，讓每一次旋轉都能連結新的玩家。
         </p>
       </div>
 
-      <div class="footer-col footer-links">
-        <p>網站導覽</p>
-        <ul>
-          <li><a href="index.html">首頁</a></li>
-          <li><a href="battle.html">對戰配對</a></li>
-          <li><a href="build.html">陀螺配置</a></li>
-          <li><a href="forum.html">Spinix論壇</a></li>
-          <li><a href="market.html">交換專區</a></li>
-        </ul>
-      </div>
-
       <div class="footer-col footer-contact">
-        <p>合作與洽詢</p>
-        <p>對合作、活動舉辦、聯名宣傳有興趣？</p>
-        <p>歡迎與我們聯繫！</p>
+        <h4>合作與洽詢</h4>
+          <p>對合作、活動舉辦、聯名宣傳有興趣？</p>
+          <p>歡迎與我們聯繫！</p>
         <a href="mailto:contact@spinix.com.tw">contact@spinix.com.tw</a>
       </div>
     </div>
@@ -61,6 +57,22 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      &:first-child{
+        width: fit-content;
+        img{
+          margin-inline: auto;
+        }
+      }
+      h4{
+        color: #FEC96B;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+      p{
+        color: #ffffff;
+        line-height: 1.5;
+      }
   }
 
   .footer-brand {
@@ -96,12 +108,8 @@
       }
   }
 
-  .footer-links p:first-of-type,
-  .footer-contact p:first-of-type {
-      color: #FEC96B;
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 12px;
+  .footer-contact{
+    flex: 1;
   }
 
   .footer-contact a {
@@ -115,12 +123,6 @@
 
   .footer-contact a:hover {
       color: #FEC96B;
-  }
-
-  .footer-brand p,
-  .footer-contact p {
-      color: #ffffff;
-      line-height: 1.5;
   }
 
   .footer-col ul {
@@ -155,5 +157,11 @@
 
       color: #999;
       font-size: 14px;
+  }
+
+  @media screen and (width < 768px) {
+    .footer-intro{
+      display: none;
+    }
   }
 </style>
