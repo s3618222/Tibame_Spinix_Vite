@@ -3,6 +3,42 @@
 body {
    font-size: map-get($fontSize , hint);
    letter-spacing: 2px;
+   background-color: var(--tertiary);
+}
+
+section {
+   width: 100%;
+   padding: 20px 40px;
+}
+
+.card {
+   width: 25%;
+   min-width: 120px;
+   background-color: white;
+   padding: 12px;
+   border: 1px solid var(--tertiary);
+   border-radius: 10px;
+   box-shadow: 0 4px 10px rgba(20, 28, 38, 0.06);
+   transition: transform .5s ease,border .25s ease;
+   cursor: pointer;
+
+   &:hover {
+      border: 1px solid var(--primary);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(20, 28, 38, 0.1);;
+   }
+
+   .pic {
+      border-radius: 10px;
+      overflow: hidden;
+
+      img {
+         display: block;
+         width: 100%;
+         aspect-ratio: 16 / 9;
+         object-fit: cover;
+      }
+   }
 }
 
 // 交換區 hero
@@ -10,7 +46,7 @@ body {
    background-image: url(../../../../market-banner.png);
    background-size: cover;
    background-repeat: no-repeat;
-   height: 100vh;
+   height: 80vh;
    width: 100%;
    position: relative;
 
@@ -18,7 +54,7 @@ body {
       content: '';
       position: absolute;
       width: 100%;
-      height: 100vh;
+      height: 100%;
       background-color: rgba(map-get($color , secondary), $alpha: .7);
    }
 
@@ -61,6 +97,71 @@ body {
    }
 }
 
+// 篩選列
+.wrapper {
+   display: flex;
+   gap: 16px;
+   justify-content: center;
+
+   form {
+      display: flex;
+      gap: 40px;
+
+      label {
+         display: none;
+      }
+   }
+}
+
+#marketFilter {
+   padding-top: 12px;
+   font-weight: bold;
+}
+
+.sort {
+   display: none;
+}
+
+.icon-sort {
+   color: map-get($color , secondary);
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+
+   .fa-sort-up,
+   .fa-sort-down {
+      display: flex;
+      // height: fit-content;
+
+      cursor: pointer;
+      color: map-get($color , hint);
+   }
+
+   .fa-sort-down {
+      margin-top: -4px;
+   }
+}
+
+select {
+   // appearance: none;
+   text-align: center;
+   cursor: pointer;
+
+   border: 1px solid map-get($color , hint);
+   border-radius: 10px;
+   outline: none;
+
+   background-color: #FFFFFF;
+
+   font-size: 16px;
+   line-height: 1.5;
+   color: #141C26;
+
+   width: auto;
+   min-width: 120px;
+   padding: 8px 36px 8px 12px;
+}
+
 // @media screen and (width <768px) {
 //    .market-hero {
 //       .hero-info {
@@ -82,7 +183,6 @@ body {
    // 交換區 hero
    .market-hero {
       background-size: 80% auto;
-      height: 80vh;
       background-position: right 20%;
 
       &::after {
@@ -112,8 +212,52 @@ body {
       }
    }
 
+   .wrapper {
+      padding: 32px;
+      margin: 12px auto 32px;
+      border: 1px solid rgba(254, 201, 107, 0.55);
+      border-radius: 20px;
+      background: linear-gradient(90deg, #FFFDF9 0%, #FFF5DE 100%);
+      box-shadow: 0 8px 12px rgba(20, 28, 38, 0.1);
+      display: flex;
+      flex-direction: column;
+      width: 80%;
 
+
+      form {
+         gap: 16px;
+
+         label {
+            display: inline-flex;
+            align-items: center;
+         }
+
+         select {
+            border: 1px solid #DDD6C8;
+         }
+      }
+
+      .sort {
+         display: inline-flex;
+         align-items: center;
+         gap: 32px;
+
+         span {
+            display: inline-block;
+            margin-right: -16px;
+
+         }
+
+         button:last-of-type {
+            margin-left: auto;
+         }
+      }
+
+      .icon-sort {
+         display: none;
+      }
+   }
 }
 
 // 電腦
-@media screen and (width >=1200px) {}
+@media screen and (width >=1024px) {}
