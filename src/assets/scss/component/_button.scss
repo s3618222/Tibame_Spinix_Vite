@@ -3,54 +3,72 @@
 
 // 實心按鈕(橘)
 .btnFill {
-    border-radius: 12px;
-    padding: 8px 24px;
-    font-size: map-get(var.$fontSize, default);
-    text-align: center;
-    transition: all .3s;
-    background-color: map-get(var.$color, primary);
-    color: map-get(var.$color, secondary);
-    border: transparent;
-    cursor: pointer;
+  border-radius: 12px;
+  padding: 8px 24px;
+  font-size: map-get(var.$fontSize, default);
+  text-align: center;
+  transition: all .3s;
+  background-color: map-get(var.$color, primary);
+  color: map-get(var.$color, secondary);
+  border: transparent;
+  cursor: pointer;
 
-    &:hover {
-        background-color: darken(map-get(var.$color, primary), 10);
-    }
+  &:hover {
+    background-color: darken(map-get(var.$color, primary), 10);
+  }
 }
 
 
 // 實心按鈕(灰藍)
 .btnNeutral {
-    border-radius: 12px;
-    padding: 8px 24px;
-    font-size: map-get(var.$fontSize, default);
-    text-align: center;
-    transition: all .3s;
-    background-color: map-get(var.$color, neutral);
-    color: map-get(var.$color, tertiary);
-    border: transparent;
-    cursor: pointer;
+  border-radius: 12px;
+  padding: 8px 24px;
+  font-size: map-get(var.$fontSize, default);
+  text-align: center;
+  transition: all .3s;
+  background-color: map-get(var.$color, neutral);
+  color: map-get(var.$color, tertiary);
+  border: transparent;
+  cursor: pointer;
 
-    &:hover {
-        background-color: darken(map-get(var.$color, neutral), 10);
-    }
+  &:hover {
+    background-color: darken(map-get(var.$color, neutral), 10);
+  }
 }
 
 
 // 空心按鈕
 .btnNoFill {
-    border-radius: 12px;
-    padding: 8px 24px;
-    font-size: map-get(var.$fontSize, default);
-    text-align: center;
-    transition: all .3s;
-    background-color: transparent;
-    color: map-get(var.$color, secondary);
-    border: 1px solid map-get(var.$color , secondary);
-    cursor: pointer;
+  border-radius: 12px;
+  padding: 8px 24px;
+  font-size: map-get(var.$fontSize, default);
+  text-align: center;
+  transition: all .3s;
+  background-color: transparent;
+  color: map-get(var.$color, secondary);
+  border: 1px solid map-get(var.$color , secondary);
+  cursor: pointer;
 
-    &:hover {
-        border: 1px solid map-get(var.$color, primary);
-        color: map-get(var.$color, primary);
-    }
+  &:hover {
+    border: 1px solid map-get(var.$color, primary);
+    color: map-get(var.$color, primary);
+  }
+}
+
+// 下架按鈕(紅色)
+.btnRemove {
+  padding: 6px 20px;
+  border: 0;
+  border-radius: 16px;
+  font-size: 18px;
+
+  background-color: rgba(230, 57, 70, 0.7);
+  color: #ffffff;
+  transition: all .3s;
+
+  cursor: pointer;
+
+  &:hover {
+    background-color: #e63946;
+  }
 }
