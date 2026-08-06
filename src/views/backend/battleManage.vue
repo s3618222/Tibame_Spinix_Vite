@@ -139,12 +139,12 @@
                 <td>{{ battle.battleDate }}</td>
                 <!-- 約戰狀態欄位；根據不同狀態，顯示對應膠囊樣式 -->
                 <td>
-                  <span class="battle-status" :class="`battle-status-${battle.status}`">
-                    {{ getStatusLabel(battle.status) }}
+                  <span class="battle-status" :class="getDisplayStatusClass(battle)">
+                    {{ getDisplayStatusLabel(battle) }}
                   </span>
                 </td>
                 <td>
-                  <button type="button">查看</button>
+                  <button type="button" @click="openBattleDetail(battle)">查看</button>
                 </td>
               </tr>
 
@@ -174,6 +174,218 @@
         </div>
       </div>
     </div>
+
+    <!-- 約戰詳情燈箱 -->
+    <el-dialog v-model="isDetailDialogOpen" class="battle-detail-dialog">
+      <!-- #header：讓element plus的燈箱可以使用自己設計的標題內容與樣式 -->
+      <template #header>
+        <div v-if="selectedBattle" class="battle-detail-header">
+          <div class="battle-detail-heading">
+            <span class="battle-detail-heading-accent"></span>
+            <h3>約戰資訊</h3>
+          </div>
+
+          <span class="battle-status" :class="getDisplayStatusClass(selectedBattle)">
+            {{ getDisplayStatusLabel(selectedBattle) }}
+          </span>
+        </div>
+      </template>
+
+      <!-- 燈箱上方摘要 -->
+      <div v-if="selectedBattle" class="battle-detail-summary">
+        <div class="battle-detail-meta">
+          <span>{{ selectedBattle.battleId }}</span>
+          <span class="battle-detail-divider"></span>
+          <span>{{ getModeLabel(selectedBattle.mode) }}</span>
+          <span class="battle-detail-divider"></span>
+          <span>發起人：{{ selectedBattle.hostName }}</span>
+        </div>
+
+        <p class="battle-detail-created-time">
+          建立時間：{{ selectedBattle.createdAt }}
+        </p>
+      </div>
+
+      <!-- 詳情主要內容 -->
+      <div v-if="selectedBattle" class="battle-detail-content">
+        <!-- 左側：公開約戰內容 -->
+        <section class="battle-detail-public">
+          <div class="battle-detail-section-title">
+            <i class="fa-regular fa-eye"></i>
+            <h4>公開約戰內容</h4>
+          </div>
+
+          <div class="battle-public-main">
+            <div class="battle-public-cover">
+              <img
+                v-if="selectedBattle.coverImage"
+                :src="selectedBattle.coverImage"
+                :alt="selectedBattle.title"
+              >
+
+              <div
+                v-else
+                class="battle-public-cover-empty"
+              >
+                暫無封面
+              </div>
+            </div>
+
+            <div class="battle-public-text">
+              <div class="battle-public-field">
+                <span class="battle-public-label">約戰標題</span>
+                <p>{{ selectedBattle.title }}</p>
+              </div>
+
+              <div class="battle-public-field">
+                <span class="battle-public-label">約戰說明</span>
+                <p>{{ selectedBattle.description }}</p>
+              </div>
+            </div>
+
+            <div class="battle-public-info">
+              <div class="battle-public-info-row">
+                <span>約戰日期</span>
+                <p>
+                  {{ selectedBattle.battleDate }}，{{ selectedBattle.battleTime }}
+                </p>
+              </div>
+
+              <div class="battle-public-info-row">
+                <span>報名截止</span>
+                <p>{{ selectedBattle.deadline }}</p>
+              </div>
+
+              <div class="battle-public-info-row">
+                <span>集合地點</span>
+                <p>{{ selectedBattle.meetingPlace }}</p>
+              </div>
+
+              <div class="battle-public-info-row">
+                <span>玩家程度</span>
+                <p>{{ selectedBattle.playerLevel }}</p>
+              </div>
+
+              <div class="battle-public-info-row">
+                <span>適合對象</span>
+                <p>{{ selectedBattle.targetAudience }}</p>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- 右側：聯絡資訊、勝者與管理處置 -->
+        <div class="battle-detail-side">
+
+          <!-- 雙方聯絡資訊 -->
+          <section class="battle-detail-contact">
+            <div class="battle-detail-section-title">
+              <i class="fa-regular fa-address-card"></i>
+              <h4>聯絡資訊</h4>
+            </div>
+            <!-- 發起人聯絡資訊 -->
+            <div class="battle-contact-list">
+              <div class="battle-contact-item">
+                <p class="battle-contact-person">
+                  發起人<strong>{{ selectedBattle.hostName }}</strong>
+                </p>
+                <div class="battle-contact-value">
+                  {{ selectedBattle.hostContact || "尚未提供" }}
+                </div>
+              </div>
+              <!-- 參加人聯絡資訊 -->
+              <div class="battle-contact-item">
+                <p class="battle-contact-person">
+                  參加人<strong>{{ selectedBattle.participantName || "尚無參加人" }}</strong>
+                </p>
+                <div class="battle-contact-value">
+                  {{ selectedBattle.participantContact || "尚未提供" }}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 勝者記錄：當約戰為競技模式，且狀態為配對成功時才顯示 -->
+          <section
+            v-if="selectedBattle.mode === 'competitive' && selectedBattle.status === 'success'"
+            class="battle-detail-winner"
+          >
+            <div class="battle-detail-section-title">
+              <i class="fa-solid fa-trophy"></i>
+              <h4>勝者記錄</h4>
+            </div>
+
+            <p class="battle-winner-text">
+              由
+              <strong>{{ getWinnerName(selectedBattle) }}</strong>
+              獲勝
+            </p>
+          </section>
+
+          <!-- 管理員操作處置 -->
+          <section class="battle-detail-handle">
+            <div class="battle-detail-handle-title">
+              <span class="battle-detail-handle-accent"></span>
+              <i class="fa-solid fa-shield-halved"></i>
+              <h4>管理處置</h4>
+            </div>
+
+            <div class="battle-handle-options">
+              <label>
+                <input type="radio" value="keep" v-model="manageAction">
+                保留邀約
+              </label>
+              <label class="battle-handle-remove">
+                <input type="radio" value="remove" v-model="manageAction">
+                下架邀約
+              </label>
+            </div>
+            
+            <!-- 當radio選項被切換至與該筆紀錄本身狀態不同的處置時，才會出現處置確認按鈕 -->
+            <template v-if="hasManageActionChanged">
+              <!-- 處置通知內容輸入 -->
+              <div class="battle-handle-notice">
+                <label for="memberNotice">
+                  通知會員內容（將顯示給發起人）
+                </label>
+                <!-- 當管理者輸入訊息時，就自動清除下方的錯誤提示文字 -->
+                <textarea 
+                  id="memberNotice" 
+                  v-model.trim="memberNotice" 
+                  placeholder="請輸入將通知會員的內容"
+                  @input="memberNoticeError = ''" 
+                >
+                </textarea>
+                <!-- 錯誤提示文字 -->
+                <p v-if="memberNoticeError" class="battle-handle-error">
+                  {{ memberNoticeError }}
+                </p>
+              </div>
+              <!-- 處置操作按鈕 -->
+              <div class="battle-handle-buttons">
+                <button type="button" class="battle-handle-cancel" @click="cancelManageAction">
+                  取消
+                </button>
+
+                <button 
+                  type="button" 
+                  class="battle-handle-confirm"
+                  :class="{'battle-handle-confirm-restore': manageAction === 'keep'}"
+                  @click="confirmManageAction"
+                >
+                  {{ manageAction === "remove" ? "確認下架" : "恢復上架" }}
+                </button>
+              </div>
+            </template>
+          </section>
+
+        </div>
+      </div>
+
+    </el-dialog>
+
   </section>
 </template>
 
@@ -193,7 +405,14 @@ export default {
       battles: [], //用來存放約戰紀錄的陣列
 
       currentPage: 1,
-      pageSize: 2,
+      pageSize: 10,
+
+      selectedBattle: null, //用來存取被點選的那筆約戰紀錄資料
+      isDetailDialogOpen: false, //詳情燈箱是否開啟
+
+      manageAction: "keep", //管理員選擇約戰紀錄保留或下架
+      memberNotice: "", //管理員處置的通知內容
+      memberNoticeError: "", //未輸入通知內容時，出現的錯誤訊息
 
       filters: {
         mode: "",
@@ -268,7 +487,12 @@ export default {
 
         const matchStatus =
           !this.filters.status ||
-          battle.status === this.filters.status;
+          (
+            this.filters.status === "removed"
+              ? battle.is_show === false
+              : battle.is_show === true &&
+                battle.status === this.filters.status
+          );
 
         const matchStartDate =
           !this.filters.startDate ||
@@ -292,6 +516,18 @@ export default {
       const endIndex = startIndex + this.pageSize;
 
       return this.filteredBattles.slice(startIndex, endIndex);
+    },
+
+    currentManageStatus() { //根據約戰紀錄原先的上下架狀態，決定打開燈箱時，預設勾選的radio處置
+      if (!this.selectedBattle) {
+        return "";
+      }
+
+      return this.selectedBattle.is_show ? "keep" : "remove";
+    },
+
+    hasManageActionChanged() { //比較管理員目前勾選的radio處置，是否和該筆資料目前的is_show狀態不同
+      return this.manageAction !== this.currentManageStatus; //只有不同時，才顯示處置操作按鈕
     }
   },
 
@@ -323,6 +559,89 @@ export default {
       );
 
       return statusItem ? statusItem.label : status;
+    },
+
+    getDisplayStatusLabel(battle) { //決定畫面要顯示什麼狀態文字
+      if (!battle.is_show) { //被下架的紀錄，直接顯示已下架
+        return "已下架";
+      }
+      return this.getStatusLabel(battle.status); //未下架的紀錄，才進一步顯示實際配對狀態
+    },
+
+    getDisplayStatusClass(battle) { //用來決定狀態標籤要套上什麼class樣式
+      if (!battle.is_show) { //當記錄為已下架時，套用removed class
+        return "battle-status-removed";
+      }
+
+      return `battle-status-${battle.status}`; //其餘套用原先配對狀態的對應class
+    },
+
+    openBattleDetail(battle) { //點擊查看按鈕,開啟燈箱函式
+      this.selectedBattle = battle; //把被選中的約戰紀錄資料先放進data裡的selectedBattle變數中
+      this.isDetailDialogOpen = true; //開啟詳情燈箱
+
+      // 根據is_show決定radio處置的預設位置
+      this.manageAction = battle.is_show ? "keep" : "remove";
+      this.memberNotice = "";
+    },
+
+    getModeLabel(mode) { //對戰模式標籤英中切換
+      const modeItem = this.modeOptions.find(
+        option => option.value === mode
+      );
+
+      return modeItem ? modeItem.label : mode;
+    },
+
+    getWinnerName(battle) { //取得約戰勝者資訊
+      if (battle.winner === 0) { //資料為0時，代表發起人勝利
+        return battle.hostName;
+      }
+
+      if (battle.winner === 1) { //資料為1時，代表參加人勝利
+        return battle.participantName;
+      }
+
+      return "尚未回傳";
+    },
+
+    confirmManageAction() {  //確認處置操作
+      if (!this.selectedBattle) {
+        return;
+      }
+
+      // 未填寫通知內容時，停止後續動作
+      if (!this.memberNotice) {
+        this.memberNoticeError = "請先輸入通知會員的內容";
+        return;
+      }
+
+      // 根據目前選擇，決定confrim時的顯示文字
+      const actionText =
+        this.manageAction === "remove"
+          ? "下架"
+          : "恢復上架";
+
+      const isConfirmed = confirm(
+        `確定要${actionText}這筆約戰邀約嗎？`
+      );
+
+      if (!isConfirmed) {
+        return;
+      }
+
+      // 確認後才真正修改上下架狀態
+      //判斷管理員最終選擇的處置操作是否為keep，不是的話為false，判斷下架約戰
+      this.selectedBattle.is_show = this.manageAction === "keep";
+      this.currentPage = 1; //將畫面跳回列表第一頁
+      this.memberNotice = "";
+      this.isDetailDialogOpen = false;
+    },
+
+    cancelManageAction() { //取消處置操作按鈕
+      this.manageAction = this.currentManageStatus; //將預設的radio選項先恢復成該筆約戰紀錄本身的真實狀態
+      this.memberNotice = ""; //清空未送出的通知內容
+      this.isDetailDialogOpen = false; //關閉燈箱
     }
   },
 
@@ -344,8 +663,11 @@ export default {
     width: 100%;
   }
 
-  .battle-manage-title {
-    margin: 0;
+  h2.battle-manage-title {
+    color: #F29B00;
+    font-weight: 700;
+    font-size: 30px;
+    margin-bottom: 28px;
   }
 
   /* 篩選區外層 */
@@ -360,10 +682,10 @@ export default {
     display: flex;
     align-items: flex-end;
     flex-wrap: wrap;
-    gap: 24px;
+    gap: 28px;
   }
 
-  /* 單一篩選欄位 */
+  /* 單一篩選欄位共同樣式 */
   .filter-item {
     display: flex;
     flex-direction: column;
@@ -373,14 +695,13 @@ export default {
     label {
       display: flex;
       align-items: center;
-
       font-size: 16px;
       color: #141c26;
 
+      //label左側小icon
       i {
-        width: 18px;
+        width: 16px;
         margin-right: 8px;
-
         text-align: center;
         color: #64748b;
       }
@@ -393,11 +714,10 @@ export default {
 
     select,
     .date-range input {
+      background-color: #F7F5F3;
       border: 1px solid #ddd6c8;
       border-radius: 10px;
       outline: none;
-
-      background-color: #ffffff;
 
       font-size: 16px;
       line-height: 1.5;
@@ -423,10 +743,9 @@ export default {
 
   /* 重置按鈕 */
   .battle-filter-reset {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
+    display: inline-block;
+    min-width: 80px;
+    text-align: center;
 
     padding: 8px 12px;
 
@@ -440,10 +759,9 @@ export default {
     cursor: pointer;
   }
 
-  /* 列表底部 */
+  /* 列表底部區域：分頁器、總筆數顯示 */
   .battle-manage-list-footer {
     width: 100%;
-
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -454,7 +772,7 @@ export default {
     justify-content: flex-end;
   }
 
-  //約戰資訊列表區
+  //約戰資訊列表
   .battle-table-wrap {
     width: 100%;
     overflow-x: auto;
@@ -516,4 +834,447 @@ export default {
     background-color: #eeeeee;
     color: #64748b;
   }
+
+  // 約戰詳情燈箱本體
+  :deep(.battle-detail-dialog) {
+    width: min(814px, 92vw);
+    background-color: #f7f5f3;
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .battle-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+  }
+
+  .battle-detail-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    h3 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: #141c26;
+    }
+  }
+  //左側橘色裝飾條
+  .battle-detail-heading-accent {
+    width: 4px;
+    height: 28px;
+    border-radius: 3px;
+    background-color: #f29b00;
+  }
+
+  //詳情燈箱上方摘要區
+  .battle-detail-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  //約戰編號、模式、發起人資訊列
+  .battle-detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 18px;
+    color: #141c26;
+  }
+
+  .battle-detail-divider {
+    width: 2px;
+    height: 32px;
+    background-color: #ddd6c8;
+  }
+
+  .battle-detail-created-time {
+    margin: 0;
+    font-size: 18px;
+    color: #aaaaaa;
+  }
+
+  //燈箱內主要資訊
+  .battle-detail-content {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: //內容分左右兩欄
+      minmax(0, 0.95fr)
+      minmax(0, 1fr);
+    align-items: start;
+    gap: 24px;
+  }
+
+  //主內容左側欄：約戰公開資訊
+    .battle-detail-public {
+    min-width: 0;
+    padding: 16px 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    border: 2px solid #e3ddd5;
+    border-radius: 12px;
+
+    background-color: #ffffff;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.12);
+  }
+
+  //主內容右側欄：勝者資訊、聯絡方式、操作處置
+  .battle-detail-side {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    //因左側公開資訊區域高度較高，設定sticky，讓右側內容可以跟著捲動，同時看得到兩邊資訊
+    position: sticky;
+    top: 16px;
+    align-self: start;
+  }
+
+  .battle-detail-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    h4 {
+      font-size: 20px;
+      font-weight: 500;
+      color: #141c26;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .battle-detail-content {
+      grid-template-columns: 1fr;
+    }
+
+    .battle-detail-side {
+      position: static;
+    }
+  }
+
+  .battle-public-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  //約戰封面圖
+  .battle-public-cover {
+    width: min(100%, 180px);
+    aspect-ratio: 8 / 7;
+
+    overflow: hidden;
+    border-radius: 12px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+  }
+
+  //沒有讀取到封面圖時的空狀態樣式
+  .battle-public-cover-empty {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #f7f5f3;
+    color: #aaaaaa;
+    font-size: 16px;
+  }
+
+  .battle-public-text {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .battle-public-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    p {
+      margin: 0;
+      color: #141c26;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  .battle-public-label {
+    color: #808080;
+    font-size: 16px;
+  }
+
+    .battle-public-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .battle-public-info-row {
+    display: grid;
+    grid-template-columns: minmax(100px, 32%) minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+
+    span {
+      color: #808080;
+      font-size: 16px;
+    }
+
+    p {
+      min-width: 0;
+      margin: 0;
+
+      color: #141c26;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  // 聯絡資訊
+  .battle-detail-contact {
+    padding: 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    border: 2px solid #e3ddd5;
+    border-radius: 12px;
+
+    background-color: #ffffff;
+  }
+
+  .battle-contact-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .battle-contact-item {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .battle-contact-person {
+    color: #64748b;
+    font-size: 16px;
+
+    strong {
+      margin-left: 4px;
+      color: #141c26;
+      font-weight: 500;
+    }
+  }
+
+  .battle-contact-value {
+    min-height: 36px;
+    padding: 8px;
+
+    display: flex;
+    align-items: center;
+
+    border: 1px solid #ddd6c8;
+    border-radius: 8px;
+
+    color: #141c26;
+    font-size: 16px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 600px) {
+    .battle-contact-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  //勝者記錄區
+  .battle-detail-winner {
+    padding: 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    border: 2px solid #e3ddd5;
+    border-radius: 12px;
+
+    background-color: #fff9ed;
+  }
+
+  .battle-winner-text {
+    margin: 0;
+    text-align: center;
+
+    color: #64748b;
+    font-size: 18px;
+
+    strong {
+      margin: 0 4px;
+      color: #f29b00;
+      font-weight: 600;
+    }
+  }
+
+  //處置操作區
+  .battle-detail-handle {
+    padding: 12px 12px 16px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    border: 2px solid #e3ddd5;
+    border-radius: 12px;
+    background-color: #ffffff;
+  }
+
+  .battle-detail-handle-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    h4 {
+      margin: 0;
+      color: #141c26;
+      font-size: 20px;
+      font-weight: 500;
+    }
+  }
+
+  .battle-detail-handle-accent {
+    width: 4px;
+    height: 24px;
+    border-radius: 3px;
+    background-color: #e63946;
+  }
+
+  .battle-handle-options {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      color: #141c26;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  }
+
+  .battle-handle-remove {
+    color: #e63946 !important;
+  }
+
+  .battle-handle-notice {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+      color: #141c26;
+      font-size: 16px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+
+      resize: vertical;
+
+      border: 1px solid #ddd6c8;
+      border-radius: 8px;
+      outline: none;
+
+      color: #141c26;
+      font-size: 16px;
+
+      &:focus {
+        border-color: #f29b00;
+      }
+    }
+  }
+
+  //錯誤提示文字
+  .battle-handle-error {
+    display: inline-block;
+    margin-inline: auto;
+    margin-bottom: 8px;
+
+    color: #e63946;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .battle-handle-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 36px;
+
+    button {
+      padding: 6px 20px;
+      border: 0;
+      border-radius: 16px;
+
+      font-size: 18px;
+      cursor: pointer;
+    }
+  }
+
+  .battle-handle-cancel {
+    background-color: #ffffff;
+    color: #141c26;
+  }
+
+  //下架按鈕樣式
+  .battle-handle-confirm {
+    background-color: rgba(230, 57, 70, 0.7);
+    color: #ffffff;
+    transition: all .3s;
+
+    &:hover {
+      background-color: #e63946;
+    }
+
+  }
+
+  //恢復上架按鈕樣式
+  .battle-handle-confirm-restore {
+    background-color: #64748b;
+
+    &:hover {
+      background-color: darken(#64748b, 10%);
+    }
+  }
+
 </style>
