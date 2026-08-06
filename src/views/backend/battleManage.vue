@@ -7,7 +7,8 @@
 
     <!-- 篩選區 -->
     <div class="battle-manage-filter">
-      <div class="battle-filter-fields">
+      <!-- 第一列：對戰模式、縣市、狀態 -->
+      <div class="battle-filter-main">
 
         <!-- 對戰模式篩選 -->
         <div class="filter-item">
@@ -17,8 +18,9 @@
           </label>
           <select id="battleType" v-model="filters.mode">
             <option value="">全部模式</option>
-            <option v-for="option in modeOptions" 
-              :key="option.value" 
+            <option
+              v-for="option in modeOptions"
+              :key="option.value"
               :value="option.value"
             >
               {{ option.label }}
@@ -32,7 +34,6 @@
             <i class="fa-solid fa-location-dot"></i>
             縣市
           </label>
-
           <select id="citySelect" v-model="filters.city">
             <option value="">全部縣市</option>
             <option
@@ -51,7 +52,6 @@
             <i class="fa-solid fa-circle-info"></i>
             約戰狀態
           </label>
-
           <select id="battleStatus" v-model="filters.status">
             <option value="">全部狀態</option>
             <option
@@ -64,7 +64,11 @@
           </select>
         </div>
 
-        <!-- 約戰日期篩選 -->
+      </div>
+
+      <!-- 第二列：約戰日期與重置按鈕 -->
+      <div class="battle-filter-bottom">
+
         <div class="filter-item filter-date">
           <label>
             <i class="fa-solid fa-calendar-days"></i>
@@ -77,9 +81,7 @@
               id="startDate"
               v-model="filters.startDate"
             >
-
             <span>至</span>
-
             <input
               type="date"
               id="endDate"
@@ -87,18 +89,19 @@
             >
           </div>
         </div>
+
+        <button
+          type="button"
+          class="battle-filter-reset"
+          id="resetBtn"
+          @click="resetFilters"
+        >
+          <i class="fa-solid fa-rotate-left"></i>
+          重置
+        </button>
+
       </div>
 
-      <!-- 重置按鈕 -->
-      <button
-        type="button"
-        class="battle-filter-reset"
-        id="resetBtn"
-        @click="resetFilters"
-      >
-        <i class="fa-solid fa-rotate-left"></i>
-        重置
-      </button>
     </div>
 
     <!-- 約戰列表區 -->
@@ -672,17 +675,32 @@ export default {
 
   /* 篩選區外層 */
   .battle-manage-filter {
+    width: 100%;
+    padding: 20px;
+
     display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+    flex-direction: column;
+    gap: 20px;
+
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(20, 28, 38, 0.05);
   }
 
-  /* 篩選欄位容器 */
-  .battle-filter-fields {
+  /* 篩選第一列：對戰模式、縣市、約戰狀態 */
+  .battle-filter-main {
     display: flex;
     align-items: flex-end;
     flex-wrap: wrap;
-    gap: 28px;
+    gap: 24px;
+  }
+
+  /* 第二列：約戰日期與重置按鈕 */
+  .battle-filter-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
   }
 
   /* 單一篩選欄位共同樣式 */
@@ -709,7 +727,7 @@ export default {
 
     select {
       min-width: 160px;
-      padding: 8px 36px 8px 12px;
+      padding: 8px 30px 8px 12px;
     }
 
     select,
@@ -719,9 +737,11 @@ export default {
       border-radius: 10px;
       outline: none;
 
-      font-size: 16px;
+      font-size: 14px;
       line-height: 1.5;
       color: #141c26;
+
+      transition: border-color 0.24s;
 
       &:focus {
         border-color: #f29b00;
@@ -743,11 +763,13 @@ export default {
 
   /* 重置按鈕 */
   .battle-filter-reset {
-    display: inline-block;
-    min-width: 80px;
-    text-align: center;
+    min-width: 92px;
+    padding: 8px 16px;
 
-    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 
     border: 1px solid #141c26;
     border-radius: 12px;
@@ -757,31 +779,147 @@ export default {
 
     font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.24s, transform 0.24s;
+
+    &:hover {
+      background-color: #253240;
+    }
+
+    &:active {
+      transform: translateY(1px);
+    }
   }
 
   /* 列表底部區域：分頁器、總筆數顯示 */
   .battle-manage-list-footer {
     width: 100%;
+    padding: 16px;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 24px;
+
+    border-top: 1px solid #dddddd;
+    background-color: #ffffff;
+
+    //資料總筆數顯示文字
+    p {
+      font-size: 14px;
+      line-height: 1.5;
+      white-space: nowrap;
+    }
+
   }
 
   .battle-manage-paginator {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
   }
 
   //約戰資訊列表
+  .battle-manage-list {
+    width: 100%;
+    margin-top: 32px;
+
+    overflow: hidden;
+
+    border: 1px solid #e4e2e0;
+    border-radius: 12px;
+
+    background-color: #ffffff;
+    box-shadow: 0 4px 20px rgba(20, 28, 38, 0.05);
+  }
+
   .battle-table-wrap {
     width: 100%;
-    overflow-x: auto;
+    overflow-x: auto;  //表格可橫向捲動外層
   }
 
   .battle-table {
       width: 100%;
+      min-width: 900px;
       border-collapse: collapse;
+
     }
+
+  //約戰資料表格內容
+  .battle-table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+
+    color: #141c26;
+    font-size: 16px;
+
+    th,
+    td {
+      padding: 16px;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    //表頭標題
+    thead {
+      background-color: #ffe9c4;
+    }
+
+    th {
+      color: #141c26;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    //表單內容列
+    tbody tr {
+      border-top: 1px solid rgba(228, 226, 224, 0.5);
+      transition: background-color 0.2s;
+    }
+
+    tbody tr:hover {
+      background-color: #fffaf2;
+    }
+
+    td {
+      line-height: 1.5;
+    }
+
+    //約戰日期欄
+    td:nth-child(5) {
+      color: #808080;
+      white-space: nowrap;
+    }
+
+    //操作欄按鈕不折行
+    td:last-child {
+      white-space: nowrap;
+    }
+
+    td button {
+      padding: 5px 12px;
+
+      border: 1px solid #141c26;
+      border-radius: 6px;
+
+      background-color: #ffffff;
+      color: #141c26;
+
+      font-size: 14px;
+      cursor: pointer;
+
+      transition:
+        background-color 0.2s,
+        color 0.2s,
+        box-shadow 0.2s;
+
+      &:hover {
+        background-color: #141c26;
+        color: #ffffff;
+        box-shadow: 0 2px 6px rgba(20, 28, 38, 0.12);
+      }
+    }
+  }
 
   //篩選後，未有符合資料時的空狀態
   .battle-table-empty {
@@ -837,10 +975,12 @@ export default {
 
   // 約戰詳情燈箱本體
   :deep(.battle-detail-dialog) {
-    width: min(814px, 92vw);
+    width: min(760px, 90vw);
+
     background-color: #f7f5f3;
     border-radius: 12px;
-    padding: 24px;
+
+    padding: 28px;
   }
 
   .battle-detail-header {
@@ -861,6 +1001,31 @@ export default {
       color: #141c26;
     }
   }
+
+  //右上角關閉按鈕
+  :deep(.battle-detail-dialog .el-dialog__headerbtn) {
+    top: 12px;
+    right: 12px;
+
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  //關閉圖案X本身
+  :deep(.battle-detail-dialog .el-dialog__headerbtn .el-dialog__close) {
+    color: #64748b;
+    font-size: 24px;
+    transition: color 0.24s;
+  }
+
+  :deep(.battle-detail-dialog .el-dialog__headerbtn:hover .el-dialog__close) {
+    color: #141c26;
+  }
+
   //左側橘色裝飾條
   .battle-detail-heading-accent {
     width: 4px;
@@ -943,6 +1108,13 @@ export default {
     display: flex;
     align-items: center;
     gap: 8px;
+
+    //區塊標題左側圖示icon
+    i {
+      width: 20px;
+      color: #f29b00;
+      text-align: center;
+    }
 
     h4 {
       font-size: 20px;
@@ -1056,13 +1228,13 @@ export default {
 
   // 聯絡資訊
   .battle-detail-contact {
-    padding: 12px;
+    padding: 16px;
 
     display: flex;
     flex-direction: column;
     gap: 20px;
 
-    border: 2px solid #e3ddd5;
+    border: 1px solid #e3ddd5;
     border-radius: 12px;
 
     background-color: #ffffff;
@@ -1070,7 +1242,7 @@ export default {
 
   .battle-contact-list {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 20px;
   }
 
@@ -1085,44 +1257,43 @@ export default {
     color: #64748b;
     font-size: 16px;
 
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
     strong {
-      margin-left: 4px;
       color: #141c26;
       font-weight: 500;
     }
   }
 
   .battle-contact-value {
+    width: 100%;
     min-height: 36px;
-    padding: 8px;
+    padding: 8px 12px;
 
     display: flex;
     align-items: center;
 
+    background-color: #f7f5f3;
     border: 1px solid #ddd6c8;
     border-radius: 8px;
 
     color: #141c26;
     font-size: 16px;
-    line-height: 1.4;
+    line-height: 1.5;
     overflow-wrap: anywhere;
-  }
-
-  @media (max-width: 600px) {
-    .battle-contact-list {
-      grid-template-columns: 1fr;
-    }
   }
 
   //勝者記錄區
   .battle-detail-winner {
-    padding: 12px;
+    padding: 16px;
 
     display: flex;
     flex-direction: column;
     gap: 16px;
 
-    border: 2px solid #e3ddd5;
+    border: 1px solid rgba(254, 201, 107, 0.7);
     border-radius: 12px;
 
     background-color: #fff9ed;
@@ -1144,13 +1315,13 @@ export default {
 
   //處置操作區
   .battle-detail-handle {
-    padding: 12px 12px 16px;
+    padding: 16px;
 
     display: flex;
     flex-direction: column;
     gap: 20px;
 
-    border: 2px solid #e3ddd5;
+    border: 1px solid #e3ddd5;
     border-radius: 12px;
     background-color: #ffffff;
   }
@@ -1159,6 +1330,12 @@ export default {
     display: flex;
     align-items: center;
     gap: 8px;
+
+    i {
+      width: 20px;
+      color: #64748b;
+      text-align: center;
+    }
 
     h4 {
       margin: 0;
@@ -1171,6 +1348,9 @@ export default {
   .battle-detail-handle-accent {
     width: 4px;
     height: 24px;
+
+    flex-shrink: 0;
+
     border-radius: 3px;
     background-color: #e63946;
   }
