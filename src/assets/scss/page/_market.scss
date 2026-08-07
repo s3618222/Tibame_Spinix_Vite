@@ -225,7 +225,15 @@ section {
    }
 }
 
+// 分頁器
+#paginationApp {
+   display: none;
+}
 
+.btnNeutral{
+   display: block;
+   margin: 12px auto;
+}
 
 // 平板
 @media screen and (width >=768px) {
@@ -358,10 +366,6 @@ section {
             .card-footer {
                align-items: center;
 
-               p {
-                  // flex: 1;
-               }
-
                .btnNoFill {
                   display: block;
                   margin-left: auto;
@@ -370,5 +374,16 @@ section {
             }
          }
       }
+   }
+
+   #paginationApp {
+      display: block;
+      width: fit-content;
+      margin: auto;
+      padding-top: 20px;
+   }
+
+   #moreBtn{
+      display: none;
    }
 }
