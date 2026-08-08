@@ -39,10 +39,10 @@
               <i class="fa-solid fa-plus"></i>
             </a>
 
-            <a href="#battleCardArea" class="btnNeutral" id="browseBtn">
+            <!-- <a href="#battleCardArea" class="btnNeutral" id="browseBtn">
               立即瀏覽
               <i class="fa-solid fa-arrow-down"></i>
-            </a>
+            </a> -->
           </div>
         </div>
       </div>
@@ -258,18 +258,39 @@
 
         <!-- 底部banner -->
         <div class="battle-bottom-Banner">
-          <div class="banner-desc">
-            <p>還沒找到想挑戰的對手嗎？</p>
-            <p>立即建立對戰邀約，讓更多玩家看見你！</p>
+
+          <div class="bottom-spintop-wrap">
+            <!-- 左側互動陀螺 -->
+            <button type="button" class="bottom-spintopBtn" id="bottomSpintopBtn" aria-label="Go Shoot">
+              <img src="/battle_bottom_spintop.png" alt="Spintop img" class="bottom-spintop">
+            </button>
+
+            <span class="bottom-goShoot" id="bottomGoShoot">
+              GO SHOOT!
+            </span>
           </div>
-          <a href="createBattle.html" class="btnFill createBattle-link">
-            建立邀約
-            <i class="fa-solid fa-plus"></i>
-          </a>
+
+          <!-- 右側 CTA -->
+          <div class="bottom-banner-cta">
+            <div class="banner-desc">
+              <p>還沒找到想挑戰的對手嗎？</p>
+              <p>立即建立對戰邀約，讓更多玩家看見你！</p>
+            </div>
+            <a href="createBattle.html" class="btnFill createBattle-link">
+              建立邀約
+              <i class="fa-solid fa-plus"></i>
+            </a>
+          </div>
+
         </div>
       </div>
     </div>
   </section>
+
+  <!-- 至頂按鈕 -->
+  <button type="button" class="battle-backToTopBtn" id="backToTopBtn">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
 
   <div id="footerApp"></div>
 

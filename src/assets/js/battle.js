@@ -899,7 +899,7 @@ function renderBattleCards(battles) {
         <h3>目前還沒有進行中的對戰邀約</h3>
 
         <p>
-          成為第一位發起挑戰的玩家，建立一場邀約，找到附近的陀螺同好吧！
+          成為第一位發起挑戰的玩家，找到附近的陀螺同好吧！
         </p>
 
         <a href="createBattle.html" class="btnFill empty-createBattleBtn">
@@ -1359,6 +1359,10 @@ function battleFilter() {
   //選好篩選條件後，重新render約戰卡，並同步套用截止日期倒數函式
   renderBattleCards(filteredBattles);
   updateAllCountdowns();
+
+  requestAnimationFrame(() => {
+    ScrollTrigger.refresh();
+  });
 }
 
 //將所有頁面上的篩選分類欄位 select 或 input 集結成陣列，然後對陣列中的每個條件都綁定change事件，只要有設定任一篩選條件，都會跑一次約戰卡的過濾篩選函式
@@ -1374,4 +1378,177 @@ const filterElements = [
 
 filterElements.forEach(element => {
   element.addEventListener("change", battleFilter);
+});
+
+// back to top: 回到約戰列表設定
+const battleCardArea = document.getElementById("battleCardArea"); //約戰列表區
+const backToTopBtn = document.getElementById("backToTopBtn"); // 置頂按鈕
+
+//置頂函式
+function handleBackToTop() {
+  //取得約戰列表區離瀏覽器畫面頂部的距離
+  const cardAreaTop = battleCardArea.getBoundingClientRect().top;
+
+  //當距離<0，代表畫面已經捲動到列表區塊，這時才顯示出現置頂按鈕；設定-200，這樣當使用者已經在列表區往下捲動200px後，才出現置頂按鈕
+  if (cardAreaTop < -200) {
+    backToTopBtn.classList.add("is-show");
+  } else {
+    backToTopBtn.classList.remove("is-show");
+  }
+}
+
+window.addEventListener("scroll", handleBackToTop);
+
+// 點擊按鈕後回到約戰列表頂部
+backToTopBtn.addEventListener("click", function () {
+  battleCardArea.scrollIntoView({
+    behavior: "smooth",
+    block: "start" //讓battleCardArea的頂端對齊畫面頂端
+  });
+});
+
+// Bottom Banner中的小陀螺
+const bottomSpintop = document.querySelector(".bottom-spintop");
+
+// 設定Bottom Banner陀螺進場動畫的起始狀態
+gsap.set(bottomSpintop, {
+  x: -36,
+  rotation: -180,
+  opacity: 0
+});
+
+
+// 建立一個觀察器，讓瀏覽器查看 Banner 是否真正進入畫面，來控制觸發動畫
+const bottomBannerObserver = new IntersectionObserver(
+  entries => {
+
+    entries.forEach(entry => {
+
+      // 還沒進入畫面就不執行
+      if (!entry.isIntersecting) return;
+
+      // 看到 Banner 時才開始播放
+      gsap.to(bottomSpintop, {
+        x: 0,
+        rotation: 0,
+        opacity: 0.75,
+        duration: 0.8,
+        ease: "power2.out"
+      });
+
+      // 只播放一次
+      bottomBannerObserver.unobserve(bottomBanner);
+    });
+
+  },
+  {
+    threshold: 0.3 // 指Banner大約有30%進入畫面時觸發
+  }
+);
+
+
+// 設定觀察bottom banner
+bottomBannerObserver.observe(bottomBanner);
+
+//go shoot提示文字
+const bottomGoShoot = document.querySelector("#bottomGoShoot");
+let isBottomSpintopPlaying = false;
+
+//點擊小陀螺圖時，執行轉動動畫
+bottomSpintopBtn.addEventListener("click", () => {
+
+  // 動畫播放期間禁止重複點擊
+  if (isBottomSpintopPlaying) return;
+
+  isBottomSpintopPlaying = true;
+
+  //儲存bottomBanner的寬度
+  const bannerWidth = bottomBanner.offsetWidth;
+
+  const tl = gsap.timeline({
+    onComplete: () => { //先設定動畫結束後的狀態
+
+      //將動畫是否播放中的變數切回false
+      isBottomSpintopPlaying = false;
+
+      // 回到起始opacity
+      gsap.to(bottomSpintopBtn, {
+        opacity: 0.6,
+        duration: 0.25
+      });
+    }
+  });
+
+
+  tl //往下依序設定動畫期間執行的動作
+
+    // 1.點擊陀螺後後先讓陀螺圖亮起來
+    .to(bottomSpintopBtn, {
+      opacity: 1,
+      duration: 0.15
+    })
+
+    // 2.GO SHOOT文字出現
+    .to(bottomGoShoot, {
+      opacity: 1,
+      visibility: "visible",
+      y: 0,
+      duration: 0.2
+    })
+
+    // 3.陀螺接著先在原地快速旋轉
+    .to(bottomSpintop, {
+      rotation: 720,
+      duration: 0.45,
+      ease: "power2.in" // power in 速度漸快
+    }, "<") //第三個參數 "<" 是用來設定動畫的時間位置， < 代表跟前一個動畫同一時間執行
+
+    // 4.往右衝出banner
+    .to(bottomSpintopBtn, {
+      x: bannerWidth, //往右移動寬度設定為banner本身寬度
+      duration: 0.6,
+      ease: "power3.in"
+    })
+
+    // 5. 設定跟前一動畫同時開始，讓陀螺在一邊往右移出banner時，同時一邊旋轉
+    .to(bottomSpintop, {
+      rotation: 1800,
+      duration: 0.6,
+      ease: "none" //設定動畫期間等速執行
+    }, "<")
+
+    // 6. GO SHOOT文字淡出
+    .to(bottomGoShoot, {
+      opacity: 0,
+      duration: 0.2
+    }, "-=0.25") // -=0.25指比原本預定開始的時間(即前步驟執行完)提早0.25s執行
+
+
+    /*
+      7. 利用set瞬間把陀螺移到Banner的左側外
+          set和to不一樣；使用to時，動畫會依照設定的duration漸漸變化過去，但如果使用set，動畫會瞬間執行到設定的值，不會有中間過程
+    */
+    .set(bottomSpintopBtn, {
+      x: -bannerWidth
+    })
+
+    // 8. 再讓陀螺從左側旋轉回原位
+    .to(bottomSpintopBtn, {
+      x: 0, //設定回到原本位置
+      duration: 0.75,
+      ease: "power3.out" //power out 一開始快 後面慢
+    })
+
+    // 9. 從左側回到原先位置時，搭配一邊旋轉
+    .to(bottomSpintop, {
+      rotation: 2880,
+      duration: 0.75,
+      ease: "none"
+    }, "<")
+
+    // 10. 最後把go shoot文字隱藏
+    .set(bottomGoShoot, {
+      visibility: "hidden"
+    });
+
 });

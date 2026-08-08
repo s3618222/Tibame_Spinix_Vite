@@ -837,13 +837,6 @@ export default {
     overflow-x: auto;  //表格可橫向捲動外層
   }
 
-  .battle-table {
-      width: 100%;
-      min-width: 900px;
-      border-collapse: collapse;
-
-    }
-
   //約戰資料表格內容
   .battle-table {
     width: 100%;
@@ -990,14 +983,17 @@ export default {
   }
 
   .battle-detail-heading {
+    min-width: 0;
+
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 
     h3 {
       margin: 0;
       font-size: 24px;
       font-weight: 700;
+      line-height: 1.4;
       color: #141c26;
     }
   }
@@ -1036,30 +1032,42 @@ export default {
 
   //詳情燈箱上方摘要區
   .battle-detail-summary {
+    width: 100%;
+
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-bottom: 16px;
+
+    padding-inline: 4px 12px;
+
+    margin-bottom: 20px;
   }
 
   //約戰編號、模式、發起人資訊列
   .battle-detail-meta {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+
     gap: 12px;
     font-size: 18px;
+    font-weight: 500;
+    line-height: 1.5;
     color: #141c26;
   }
 
   .battle-detail-divider {
     width: 2px;
-    height: 32px;
+    height: 24px;
+
+    flex-shrink: 0;
+
     background-color: #ddd6c8;
   }
 
   .battle-detail-created-time {
     margin: 0;
-    font-size: 18px;
+    font-size: 16px;
     color: #aaaaaa;
   }
 
@@ -1078,13 +1086,13 @@ export default {
   //主內容左側欄：約戰公開資訊
     .battle-detail-public {
     min-width: 0;
-    padding: 16px 12px;
+    padding: 16px;
 
     display: flex;
     flex-direction: column;
     gap: 20px;
 
-    border: 2px solid #e3ddd5;
+    border: 1px solid #e3ddd5;
     border-radius: 12px;
 
     background-color: #ffffff;
@@ -1146,7 +1154,11 @@ export default {
     aspect-ratio: 8 / 7;
 
     overflow: hidden;
+    border: 1px solid #e3ddd5;
     border-radius: 12px;
+
+    background-color: #f7f5f3;
+    box-shadow: 0 8px 8px rgba(20, 28, 38, 0.06);
 
     img {
       width: 100%;
@@ -1180,7 +1192,7 @@ export default {
   .battle-public-field {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 
     p {
       margin: 0;
@@ -1190,6 +1202,12 @@ export default {
       line-height: 1.5;
       overflow-wrap: anywhere;
     }
+
+    //約戰標題文字
+    &:first-child p {
+      font-size: 18px;
+      font-weight: 600;
+    }
   }
 
   .battle-public-label {
@@ -1197,10 +1215,16 @@ export default {
     font-size: 16px;
   }
 
-    .battle-public-info {
+  .battle-public-info {
+    width: 100%;
+
     display: flex;
     flex-direction: column;
     gap: 12px;
+
+    padding: 6px;
+    border-radius: 8px;
+    background-color: #f7f5f3;
   }
 
   .battle-public-info-row {
@@ -1208,6 +1232,17 @@ export default {
     grid-template-columns: minmax(100px, 32%) minmax(0, 1fr);
     align-items: center;
     gap: 16px;
+    padding: 6px 0;
+    border-bottom: 1px solid #e3ddd5;
+    
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
 
     span {
       color: #808080;

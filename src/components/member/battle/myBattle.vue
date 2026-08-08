@@ -135,6 +135,7 @@
             participantAvatar: "/spinix_member_default.png",
 
             status: "pending",
+            mode: "casual",
             title: "新手友善！一起開心打陀螺",
             battleDate: "2026/08/15",
             weekday: "六",
@@ -162,6 +163,7 @@
             participantAvatar: "/spinix_member_test1.png",
 
             status: "confirmed",
+            mode: "competitive",
             title: "週末競技交流場",
             battleDate: "2026/08/20",
             weekday: "四",
@@ -174,6 +176,36 @@
             meetingPlace: "新北板橋火車站一樓北3門外",
             initiatorContact: "LINE：bill0714",
             participantContact: "LINE：Liao_1701"
+          },
+          {
+            id: 7,
+            role: "initiator",
+
+            initiatorId: 100,
+            participantId: 102,
+
+            initiatorName: "Bill0714",
+            participantName: "旋風阿凱",
+
+            initiatorAvatar: "/spinix_member_default.png",
+            participantAvatar: "/spinix_member_default.png",
+
+            status: "confirmed",
+            mode: "casual",
+            title: "輕鬆交流！下班後玩陀螺",
+            battleDate: "2026/08/22",
+            weekday: "六",
+            battleTime: "18:30",
+            city: "桃園市",
+            district: "桃園區",
+            coverImage: "/battle_card_default.jpg",
+            target: "不限對象",
+
+            meetingPlace: "桃園市桃園區統領廣場一樓入口",
+            initiatorContact: "LINE：bill0714",
+            participantContact: "Discord：spin_kai",
+
+            hasReviewed: false
           },
           {
             id: 3,
@@ -189,6 +221,7 @@
             participantAvatar: "/spinix_member_default.png",
 
             status: "cancelled",
+            mode: "casual",
             title: "下班後來場陀螺對戰吧",
             battleDate: "2026/08/25",
             weekday: "二",
@@ -213,6 +246,7 @@
             participantAvatar: "/spinix_member_default.png",
 
             status: "pending",
+            mode: "casual",
             title: "桃園玩家友誼交流戰",
             battleDate: "2026/08/17",
             weekday: "一",
@@ -240,6 +274,7 @@
             participantAvatar: "/spinix_member_default.png",
 
             status: "confirmed",
+            mode: "competitive",
             title: "中壢車站陀螺挑戰",
             battleDate: "2026/08/13",
             weekday: "六",
@@ -267,6 +302,7 @@
             participantAvatar: "/spinix_member_default.png",
             
             status: "cancelled",
+            mode: "casual",
             title: "成人限定競技對戰",
             battleDate: "2026/08/23",
             weekday: "日",
