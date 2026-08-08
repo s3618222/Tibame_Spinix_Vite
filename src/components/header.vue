@@ -47,9 +47,17 @@
       <a class="signIn-btn" href="signIn.html">登入</a>
     </div> -->
 
-    <div id="burger" @click="toggleMenu">
-      <i class="fa-solid fa-bars"></i>
-    </div>
+    <!-- 手機漢堡選單 -->
+    <button 
+      id="burger"
+      type="button"
+      :class="{ active: isMenuOpen, closing: isMenuClosing }" 
+      @click="toggleMenu"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </header>
 </template>
 
@@ -67,7 +75,8 @@ export default {
   data() {
     return {
       isScrolled: false,
-      isMenuOpen: false
+      isMenuOpen: false,
+      isMenuClosing: false
     };
   },
 
@@ -83,7 +92,21 @@ export default {
     },
     // 控制手機板選單
     toggleMenu(){
-      this.isMenuOpen = !this.isMenuOpen;
+      if (this.isMenuClosing) return; //避免動畫期間重複點擊
+
+      // 開啟選單
+      if (!this.isMenuOpen) {
+        this.isMenuOpen = true;
+        return;
+      }
+
+      // 關閉選單前，播放滾出動畫
+      this.isMenuClosing = true;
+
+      setTimeout(() => {
+        this.isMenuOpen = false;
+        this.isMenuClosing = false;
+      }, 500);
     }
   },
 
@@ -277,9 +300,97 @@ export default {
   // 漢堡選單
   #burger{
     display: none;
-    .fa-bars{
-      color: #F7F5F3;
-      font-size: 26px;
+    margin-right: 8px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+
+    position: relative;
+    cursor: pointer;
+
+    span{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      transform-origin: center;
+
+      width: 28px;
+      height: 3px;
+      background-color: #FEC96B;
+      border-radius: 999px;
+
+      transition:
+        top 0.32s ease,
+        width 0.32s ease,
+        height 0.32s ease,
+        transform 0.32s ease,
+        background-color 0.24s ease,
+        border-width 0.32s ease,
+        border-color 0.32s ease,
+        border-radius 0.32s ease;
+    }
+
+    span:nth-child(1) {
+      top: 10px;
+    }
+
+    span:nth-child(2) {
+      top: 18px;
+    }
+
+    span:nth-child(3) {
+      top: 26px;
+    }
+
+    &.active {
+      span:nth-child(1) {
+        top: 18px;
+        transform:
+          translateX(-50%)
+          rotate(45deg)
+          scaleX(0.72);
+      }
+
+      span:nth-child(2) {
+        top: 4px;
+
+        width: 32px;
+        height: 32px;
+
+        background-color: transparent;
+        border: 2px solid #FEC96B;
+        border-radius: 50%;
+      }
+
+      span:nth-child(3) {
+        top: 18px;
+        transform:
+          translateX(-50%)
+          rotate(-45deg)
+          scaleX(0.72);
+      }
+    }
+
+    transition: transform .5s ease, opacity .24s ease;
+
+    &.closing { 
+      pointer-events: none;
+      animation: burgerRollOut 0.5s ease-in forwards;
+    }
+  }
+
+  //收起選單時的漢堡動畫
+  @keyframes burgerRollOut {
+    0% {
+      transform: translateX(0) rotate(0deg);
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateX(80px) rotate(360deg);
+      opacity: 0;
     }
   }
 
@@ -293,31 +404,61 @@ export default {
     .header-main {
       gap: 16px;
       nav{      
-        background-color: #141C26;
+        background-color: rgba(20, 28, 38, 0.88);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+
+        border-left: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: -12px 0 32px rgba(20, 28, 38, 0.22);
+
         height: calc(100vh - 88px);
-        width: fit-content;
+        width: min(180px, 82vw);
         position: absolute;
         top: 88px;
-        padding:12px 24px;
+        padding:28px 24px;
         right: -100%;
         transition: .6s ease;
         flex-direction: column;
         // align-content: center;
         // align-items: end;
-        // justify-content: space-between;
+        justify-content: flex-start;
         // align-content: space-between;
           &.active{
             right: 0;
           }
           ul{
+            width: 100%;
+            text-align: center;
             flex-direction: column;
-            gap: 24px;
+            flex: initial;
+            gap: 28px;
             // flex: 1;
+
+            li {
+              width: 100%;
+              cursor: pointer;
+
+              a {
+                display: inline-block; 
+              }
+
+              &:hover a {
+                color: #FEC96B;
+              }
+
+              &:hover a::after {
+                width: 100%;
+              }
+
+            }
             
           }
           .header-btns{
+            width: 80%;
+            margin-top: 28px;
             flex-direction: column;
-            gap: 16px;
+            align-items: stretch;
+            gap: 20px;
             
           }
         }
