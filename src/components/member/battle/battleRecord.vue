@@ -11,7 +11,11 @@
       <div class="record-content">
         <!-- 卡片標題 -->
         <div class="record-heading">
-          <p class="record-title">{{ battle.title }}</p>
+          <p class="record-title">
+            {{ battle.title }}
+            <!-- 約戰模式備註文字 -->
+            <span class="record-mode">（{{ modeText }}）</span>
+          </p>
           <span 
             class="record-status"
             :class="`status-${battle.status}`">
@@ -111,7 +115,17 @@
         };
 
         return statusMap[this.battle.status];
+      },
+
+      modeText() {
+        const modeMap = { //競技模式文字切換
+          competitive: "競技",
+          casual: "休閒"
+        };
+
+        return modeMap[this.battle.mode] || "";
       }
+
     },
 
     methods: {
@@ -205,6 +219,16 @@
     color: #141c26;
     font-size: 20px;
     font-weight: 500;
+
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .record-mode {
+    color: #64748b;
+    font-size: 16px;
+    font-weight: 400;
   }
 
   .record-status {

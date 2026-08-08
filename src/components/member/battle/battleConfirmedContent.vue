@@ -3,7 +3,7 @@
   <div class="confirmed-content">
 
     <!-- 已確認後顯示的詳細資訊；依照會員身分為發起人/參加人，顯示另一方的資訊 -->
-    <div class="confirmed-details">
+    <div class="confirmed-details" :class="{ 'is-casual': battle.mode === 'casual' }">
       <!-- 對戰玩家頭像/暱稱 -->
       <div class="confirmed-player">
         <span class="detail-label">對戰玩家</span>
@@ -39,8 +39,8 @@
         <p>{{ opponentContact }}</p>
       </div>
 
-      <!-- 對戰結果顯示 -->
-      <div class="confirmed-result">
+      <!-- 對戰結果顯示: 只有在競技模式時才顯示 -->
+      <div v-if="battle.mode === 'competitive'" class="confirmed-result">
         
         <!-- 已經有勝者結果時 -->
         <template v-if="battle.winner">
@@ -227,6 +227,14 @@
     // align-items: flex-start;
     gap: 12px;
     padding-block: 4px;
+  }
+
+  //當約戰模式為休閒時，因底部資訊只剩三欄，另增加對應class，調整排版
+  .confirmed-details.is-casual {
+    grid-template-columns:
+      minmax(160px, 1fr)
+      minmax(0, 1.3fr)
+      minmax(0, 1.3fr);
   }
 
   .confirmed-player,
