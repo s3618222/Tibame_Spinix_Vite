@@ -4,6 +4,7 @@ body {
    font-size: map-get($fontSize , hint);
    letter-spacing: 2px;
    background-color: var(--tertiary);
+   color: var(--secondary);
 }
 
 section {
@@ -70,37 +71,39 @@ section {
    }
 }
 
-// 篩選列
+// == 篩選列 ================================
 .filter-container {
    display: flex;
    gap: 16px;
-   justify-content: center;
 
    form {
       display: flex;
       gap: 20px;
+      padding-inline: 20px;
+      width: 100%;
+      flex-direction: column;
 
-      label {
-         display: none;
-      }
+      .filter {
+         display: flex;
+         gap: 40px;
 
-      select {
-         // appearance: none;
-         text-align: center;
-         cursor: pointer;
+         label {
+            display: none;
+         }
 
-         border: 1px solid map-get($color , hint);
-         border-radius: 10px;
-         outline: none;
-
-         background-color: #FFFFFF;
-
-         font-size: 16px;
-         line-height: 1.5;
-         color: #141C26;
-
-         width: auto;
-         padding: 8px 12px;
+         select {
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid map-get($color , hint);
+            border-radius: 10px;
+            outline: none;
+            background-color: #FFFFFF;
+            line-height: 1.5;
+            color: #141C26;
+            font-size: 15px;
+            width: auto;
+            padding: 8px 12px;
+         }
       }
    }
 }
@@ -115,122 +118,38 @@ section {
 }
 
 .icon-sort {
-   color: map-get($color , secondary);
    display: flex;
-   flex-direction: column;
-   justify-content: center;
+   gap: 12px;
 
-   .fa-sort-up,
-   .fa-sort-down {
+   button {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--hint);
       display: flex;
-      // height: fit-content;
-
-      cursor: pointer;
-      color: map-get($color , hint);
+      gap: 4px;
+      align-items: center;
+      padding: 4px;
    }
 
-   .fa-sort-down {
-      margin-top: -4px;
+   .btn-reset {
+      color: var(--neutral);
+      padding: 0;
+      font-size: 14px;
    }
-}
 
-// == 交換案例卡 =============================================
-#marketCardInfo {
-   .container {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      padding-inline: 16px;
-
-      .wrapper {
-         align-items: center;
-         gap: 8px;
-
-         img {
-            width: 36px;
-         }
-
-         p {
-            height: fit-content;
-         }
-      }
-
-      .card {
-         width: 100%;
-         background-color: white;
-         padding: 12px;
-         border: 1px solid var(--tertiary);
-         border-radius: 10px;
-         box-shadow: 0 4px 10px rgba(20, 28, 38, 0.06);
-         height: fit-content;
-
-         .pic {
-            border-radius: 10px;
-            overflow: hidden;
-
-            img {
-               display: block;
-               width: 100%;
-               aspect-ratio: 16 / 9;
-               object-fit: cover;
-            }
-         }
-
-         .card-info {
-            padding-top: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-
-            h4 {
-               font-weight: 600;
-               font-size: map-get($fontSize , default);
-            }
-
-            p {
-               font-size: map-get($fontSize , hini);
-               line-height: 18px;
-            }
-
-            span {
-               margin-left: 4px;
-            }
-
-            .date {
-               display: none;
-            }
-         }
-
-         .card-footer {
-            display: flex;
-            padding-top: 12px;
-            font-size: map-get($fontSize , hint);
-            // gap: 12px;
-            align-items: center;
-            justify-content: space-between;
-
-            .state {
-               background-color: var(--lightGreen);
-               padding: 4px 8px;
-               border-radius: 4px;
-               color: var(--olive);
-               font-weight: 550;
-            }
-
-            .btnNoFill {
-               display: none;
-            }
-         }
-      }
+   .-select {
+      color: var(--secondary2);
    }
 }
+
+
 
 // 分頁器
 #paginationApp {
    display: none;
 }
 
-.btnNeutral{
+.btnNeutral {
    display: block;
    margin: 12px auto;
 }
@@ -277,7 +196,7 @@ section {
       }
    }
 
-   // == 篩選列 ===============================================
+   // == 篩選列 ============================================
    .filter-container {
       padding: 32px;
       margin: 12px auto 32px;
@@ -291,86 +210,84 @@ section {
 
 
       form {
-         gap: 16px;
+         .filter {
+            justify-content: start;
+            gap: 60px;
 
-         label {
+            select {
+               border: 1px solid #DDD6C8;
+            }
+         }
+
+         .sort {
             display: inline-flex;
             align-items: center;
+            gap: 32px;
+
+            span {
+               display: none;
+               margin-right: -16px;
+            }
+
+
+            button:last-of-type {
+               margin-left: auto;
+            }
+
+            .btn-reset {
+               color: var(--neutral);
+               padding: 0;
+               font-size: 14px;
+            }
+
+            .-select {
+               background-color: var(--primary);
+               color: #141C26;
+               border-color: var(--primary);
+            }
          }
 
-         select {
-            border: 1px solid #DDD6C8;
-         }
-      }
 
-      .sort {
-         display: inline-flex;
-         align-items: center;
-         gap: 32px;
-
-         span {
-            display: inline-block;
-            margin-right: -16px;
-
-         }
-
-         button:last-of-type {
-            margin-left: auto;
-         }
       }
 
       .icon-sort {
          display: none;
       }
    }
-
-   // == 交換卡 ===============================================
-   #marketCardInfo {
-      .container {
-         grid-template-columns: repeat(3, 1fr);
-         gap: 20px;
-      }
-   }
 }
 
 // 電腦
-@media screen and (width >=1024px) {
-   #marketCardInfo {
-      .container {
-         grid-template-columns: repeat(4, 1fr);
-         gap: 20px;
+@media screen and (width >=992px) {
 
-         .card {
-            cursor: pointer;
-            transition: transform .5s ease, border .25s ease;
+   // == 篩選列 ============================================
+   .filter-container {
+      form {
+         .filter {
+            justify-content: start;
+            gap: 16px;
 
-            &:hover {
-               border: 1px solid var(--primary);
-               transform: translateY(-4px);
-               box-shadow: 0 10px 20px rgba(20, 28, 38, 0.1);
-            }
-
-            .card-info {
-               font-size: 16px;
-               gap: 16px;
-
-               .wrapper {
-                  display: flex;
-
-                  .date {
-                     display: block;
-                  }
-               }
-            }
-
-            .card-footer {
+            label {
+               display: inline-flex;
                align-items: center;
+            }
 
-               .btnNoFill {
-                  display: block;
-                  margin-left: auto;
-                  padding: 12px 16px;
-               }
+            select {
+               border: 1px solid #DDD6C8;
+            }
+         }
+
+         .sort {
+            span {
+               display: inline-block;
+               margin-right: -16px;
+            }
+
+            .btn-reset {
+               cursor: pointer;
+            }
+
+            button:last-of-type {
+               margin-left: auto;
             }
          }
       }
@@ -383,7 +300,7 @@ section {
       padding-top: 20px;
    }
 
-   #moreBtn{
+   #moreBtn {
       display: none;
    }
 }

@@ -396,7 +396,7 @@ export default {
 
   // RWD
   // 手機板
-  @media screen and (width < 768px) {
+  @media screen and (width < 992px) {
     header{
       // position: relative;
       background-color: #141C26;
