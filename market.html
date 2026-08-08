@@ -2,47 +2,211 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二手交換</title>
-    <link rel="stylesheet" href="./src/assets/scss/_reset.scss">
-    <link rel="stylesheet" href="./src/assets/scss/style.scss">
-    <script src="https://kit.fontawesome.com/865a269d64.js" crossorigin="anonymous"></script>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>二手交換</title>
+   <link rel="stylesheet" href="./src/assets/scss/_reset.scss">
+   <link rel="stylesheet" href="./src/assets/scss/style.scss">
+   <script src="https://kit.fontawesome.com/865a269d64.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
 
-    <!-- header -------------------------------------------->
-    <div id="headerApp" class=""></div>
+   <!-- header -------------------------------------------->
+   <div id="headerApp" class=""></div>
 
-    <div class="market-hero">
-        <div class="hero-info">
-            <h1>二手交換區</h1>
-            <p>找到想交換的陀螺、零件與配件， 和玩家一起打造你的最強組合。</p>
-            <button type="button" class="btnFill btn-guide">
-                <a href="#marketTitle">開始導覽</a>
+   <div class="market-hero">
+      <div class="hero-info">
+         <h1>二手交換區</h1>
+         <p>找到想交換的陀螺、零件與配件， 和玩家一起打造你的最強組合。</p>
+         <button type="button" class="btnFill btn-guide">
+            <a href="#marketCardInfo">開始導覽</a>
+         </button>
+         <button type="button" class="btnFill btn-exchaunge">
+            <a href="./addChange.html">建立交換</a>
+         </button>
+      </div>
+   </div>
+
+   <section id="marketFilter">
+      <div class="filter-container">
+         <form action="">
+            <label for="type">類型:</label>
+            <select name="type" id="">
+               <option value="all">全部</option>
+               <option value="beyblade">陀螺本體</option>
+               <option value="blade">上蓋</option>
+               <option value="ratchet">固鎖</option>
+               <option value="bit">軸心</option>
+               <option value="bit">其他</option>
+            </select>
+            <label for="city">縣市:</label>
+            <select name="city" id="">
+               <option value="KEE">基隆市</option>
+               <option value="NWT">新北市</option>
+               <option value="TPE">台北市</option>
+               <option value="TAO">桃園市</option>
+               <option value="HSZ">新竹市</option>
+               <option value="HSQ">新竹縣</option>
+            </select>
+            <label for="district">行政區:</label>
+            <select name="district" id="">
+               <option value="仁愛區">仁愛區</option>
+               <option value="中正區">中正區</option>
+               <option value="信義區">信義區</option>
+               <option value="中山區">中山區</option>
+               <option value="安樂區">安樂區</option>
+               <option value="暖暖區">暖暖區</option>
+            </select>
+         </form>
+         <div class="sort">
+            <span>排序:</span>
+            <button type="button" class="btnNoFill btn-desc">由新到舊</button>
+            <button type="button" class="btnNoFill btn-asc">由舊到新</button>
+            <button type="button" class="btnFill">
+               <a href="./addChange.html">我要刊登</a>
             </button>
-            <button type="button" class="btnFill btn-exchaunge">
-                <a href="#">建立交換</a>
-            </button>
-        </div>
-    </div>
+         </div>
+         <div class="icon-sort">
+            <i class="fa-solid fa-sort-up"></i>
+            <i class="fa-solid fa-sort-down"></i>
+         </div>
+      </div>
+   </section>
 
-    <div>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime provident explicabo modi quis necessitatibus
-            temporibus laboriosam reiciendis fugit repudiandae. Quis sint culpa debitis eum id tempora modi, odit
-            laborum! Dicta quas impedit, corporis a placeat magni reiciendis voluptate magnam quaerat cum alias maxime!
-            Dolore explicabo harum quasi ullam modi aperiam eligendi non consequatur velit molestiae ipsam officia
-            aliquam, doloremque sed quidem architecto est quas? Facilis consectetur distinctio aliquid sint. Adipisci
-            porro dolores debitis numquam ducimus architecto repellendus quos vel veritatis libero, sit quasi culpa
-            molestiae eaque laboriosam! Illum accusantium non animi id placeat perspiciatis! Quam consectetur placeat
-            quo aspernatur expedita.</p>
-    </div>
+   <!-- 交換內容區 ----------------------------------------->
+   <section id="marketCardInfo">
+      <div class="container">
+         <div class="card">
+            <a href="./product_detail.html">
+               <div class="pic">
+                  <img src="./public/CX13_01.webp">
+               </div>
+               <div class="card-info">
+                  <h4>鳳凰飛翼</h4>
+                  <div class="wrapper">
+                     <img src="./public/spinix_member_default.png" alt="">
+                     <p>Lone軍團長</p>
+                  </div>
+                  <div class="wrapper">
+                     <p class="date">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        刊登日期:
+                     </p>
+                     <span>2026-08-06</span>
+                  </div>
+                  <p>
+                     <i class="fa-solid fa-location-dot"></i>
+                     台北市<span>中正區</span>
+                  </p>
+               </div>
+               <div class="card-footer">
+                  <p class="state">可交換</p>
+                  <a href="./pro    duct_detail.html" class="btnNoFill">查看詳情</a>
+               </div>
+            </a>
+         </div>
+         <div class="card">
+            <a href="./product_detail.html">
+               <div class="pic">
+                  <img src="./public/CX13_01.webp">
+               </div>
+               <div class="card-info">
+                  <h4>鳳凰飛翼</h4>
+                  <div class="wrapper">
+                     <img src="./public/spinix_member_default.png" alt="">
+                     <p>Lone軍團長</p>
+                  </div>
+                  <div class="wrapper">
+                     <p class="date">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        刊登日期:
+                     </p>
+                     <span>2026-08-06</span>
+                  </div>
+                  <p>
+                     <i class="fa-solid fa-location-dot"></i>
+                     台北市<span>中正區</span>
+                  </p>
+               </div>
+               <div class="card-footer">
+                  <p class="state">可交換</p>
+                  <a href="./pro    duct_detail.html" class="btnNoFill">查看詳情</a>
+               </div>
+            </a>
+         </div>
+         <div class="card">
+            <a href="./product_detail.html">
+               <div class="pic">
+                  <img src="./public/CX13_01.webp">
+               </div>
+               <div class="card-info">
+                  <h4>鳳凰飛翼</h4>
+                  <div class="wrapper">
+                     <img src="./public/spinix_member_default.png" alt="">
+                     <p>Lone軍團長</p>
+                  </div>
+                  <div class="wrapper">
+                     <p class="date">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        刊登日期:
+                     </p>
+                     <span>2026-08-06</span>
+                  </div>
+                  <p>
+                     <i class="fa-solid fa-location-dot"></i>
+                     台北市<span>中正區</span>
+                  </p>
+               </div>
+               <div class="card-footer">
+                  <p class="state">可交換</p>
+                  <a href="./pro    duct_detail.html" class="btnNoFill">查看詳情</a>
+               </div>
+            </a>
+         </div>
+         <div class="card">
+            <a href="./product_detail.html">
+               <div class="pic">
+                  <img src="./public/CX13_01.webp">
+               </div>
+               <div class="card-info">
+                  <h4>鳳凰飛翼</h4>
+                  <div class="wrapper">
+                     <img src="./public/spinix_member_default.png" alt="">
+                     <p>Lone軍團長</p>
+                  </div>
+                  <div class="wrapper">
+                     <p class="date">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        刊登日期:
+                     </p>
+                     <span>2026-08-06</span>
+                  </div>
+                  <p>
+                     <i class="fa-solid fa-location-dot"></i>
+                     台北市<span>中正區</span>
+                  </p>
+               </div>
+               <div class="card-footer">
+                  <p class="state">可交換</p>
+                  <a href="./pro    duct_detail.html" class="btnNoFill">查看詳情</a>
+               </div>
+            </a>
+         </div>
+      </div>
+      <!-- 分頁器 ------------------------------------------>
+      <div id="paginationApp"></div>
+      <!-- 載入更多按鈕 ------------------------------------>
+      <button type="button" class="btnNeutral" id="moreBtn">
+         載入更多
+         <i class="fa-solid fa-arrow-down"></i>
+      </button>
+   </section>
 
-    <!-- footer -------------------------------------------->
-    <div id="footerApp"></div>
-    <script src="./src/assets/js/public.js"></script>
-    <script src="./src/assets/js/market.js" type="module"></script>
+   <!-- footer -------------------------------------------->
+   <div id="footerApp"></div>
+   <script src="./src/assets/js/public.js"></script>
+   <script src="./src/assets/js/market.js" type="module"></script>
 </body>
 
 </html>

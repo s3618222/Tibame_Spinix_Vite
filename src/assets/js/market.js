@@ -2,23 +2,15 @@ import { createApp } from "vue";
 
 import Header from "@/components/header.vue";
 import Footer from "@/components/footer.vue";
+// 分頁器
+import Pagination from "@/components/pagination.vue";
+import ElementPlus from "element-plus";
 
 createApp(Header).mount("#headerApp");
 createApp(Footer).mount("#footerApp");
+createApp(Pagination, {
+   currentPage: 1,
+   pageSize: 20,
+   total: 24
+}).use(ElementPlus).mount("#paginationApp");
 
-
-// 判斷視窗寬度
-// const width = window.innerWidth;
-// console.log(width);
-// const header = document.getElementById('headerApp');
-// const footer = document.getElementById('footerApp');
-// const heroBtn = document.getElementById('btn-hero');
-// if (width < 768) {
-//    // heroBtn.style.display = 'none';
-//    header.style.display = 'none';
-//    footer.style.display = 'none';
-// } else if (width >= 768) {
-//    // heroBtn.style.display = 'block';
-//    header.style.display = 'block';
-//    footer.style.display = 'block';
-// }

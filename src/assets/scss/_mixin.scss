@@ -1,0 +1,35 @@
+
+// 1. 全域斷點地圖 ($breakpoints)
+
+$breakpoints: (
+  "phone-lg":   576px,   // 大螢幕手機 / 橫向拿手機
+  "tablet":     768px,   // 平板
+  "desktop":    992px,   // 一般電腦 (主要桌機切換點)
+  "desktop-lg": 1024px  // 大螢幕桌機 / 高解析度顯示器
+);
+
+
+// 2. RWD 響應式工具包 (@mixin rwd)
+// 【使用範例】：
+//  .card {
+//    width: 100%; // 手機版
+//    @include rwd("desktop") {
+//      width: 50%; // 電腦版
+//    }
+//  }
+
+@mixin rwd($device) {
+  // 情況 A：傳入字典裡有的名稱 (如 "desktop")
+  @if map-has-key($breakpoints, $device) {
+    $width: map-get($breakpoints, $device);
+    @media (min-width: $width) {
+      @content;
+    }
+  } 
+  // 情況 B：傳入自訂數字 (如 1200px)
+  @else {
+    @media (min-width: $device) {
+      @content;
+    }
+  }
+}

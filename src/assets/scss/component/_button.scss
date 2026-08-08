@@ -5,7 +5,7 @@
 .btnFill {
   border-radius: 12px;
   padding: 8px 24px;
-  font-size: map-get(var.$fontSize, default);
+  font-size: map-get(var.$fontSize, hint);
   text-align: center;
   transition: all .3s;
   background-color: map-get(var.$color, primary);
@@ -23,7 +23,7 @@
 .btnNeutral {
   border-radius: 12px;
   padding: 8px 24px;
-  font-size: map-get(var.$fontSize, default);
+  font-size: map-get(var.$fontSize, hint);
   text-align: center;
   transition: all .3s;
   background-color: map-get(var.$color, neutral);
@@ -41,17 +41,21 @@
 .btnNoFill {
   border-radius: 12px;
   padding: 8px 24px;
-  font-size: map-get(var.$fontSize, default);
+  font-size: map-get(var.$fontSize, hint);
   text-align: center;
   transition: all .3s;
   background-color: transparent;
-  color: map-get(var.$color, secondary);
-  border: 1px solid map-get(var.$color , secondary);
+  color: var(--neutral);
+  border: 1px solid var(--neutral);
   cursor: pointer;
-
+  
   &:hover {
-    border: 1px solid map-get(var.$color, primary);
-    color: map-get(var.$color, primary);
+    // border: 1px solid map-get(var.$color, primary);
+    // color: map-get(var.$color, primary);
+    
+    border-color: var(--primary);
+    background-color: var(--primary);
+    color: var(--secondary);
   }
 }
 
