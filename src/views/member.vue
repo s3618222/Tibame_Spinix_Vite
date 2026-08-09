@@ -113,7 +113,7 @@
   }
 
   .member-sidebar {
-    position: sticky; //取消sticky
+    position: static; //取消sticky
     flex-direction: row;
     overflow-x: auto;
     gap: 24px;
