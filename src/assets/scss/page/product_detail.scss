@@ -39,6 +39,55 @@
          }
       }
 
+      // 表單
+      #addMsg {
+         padding: 12px;
+         position: fixed;
+         margin: 0 auto;
+         inset: 0;
+         width: 40%;
+         max-width: 400px;
+         background-color: map-get($color , tertiary);
+         // background-color: orange;
+         border: 1px solid red;
+         border-radius: 16px;
+
+         #msgForm {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+         }
+      }
+
+      .form-label-style {
+         display: flex;
+         flex-direction: column;
+         gap: 12px;
+
+         &:has(input[required]) label::after {
+            content: ' *';
+            color: map-get($color, error);
+         }
+
+         input,
+         textarea {
+            border: 1px solid map-get($color , hint);
+            border-radius: 8px;
+            padding: 8px;
+            outline: none;
+
+            &:focus {
+               border-color: map-get($color, primary);
+            }
+         }
+
+         textarea {
+            resize: none;
+            height: 120px;
+            overflow-y: auto;
+         }
+      }
+
       // =============================================================
       h1 {
          color: map-get($color, secondary2);
@@ -103,7 +152,7 @@
 
          }
 
-         // == 留言板 ================================
+         // == 留言區 ================================
          .message-board {
             >h1 {
                font-size: map-get($fontSize , h4);
@@ -150,6 +199,8 @@
                }
             }
          }
+
+
 
          .panel {
             max-width: 700px;
@@ -209,6 +260,7 @@
             }
          }
       }
+
    }
 
 
@@ -330,6 +382,17 @@
 
                      &.is-active {
                         border: 2px solid map-get($color, primary);
+                     }
+                  }
+               }
+            }
+
+            .message-board {
+               .msg-list {
+                  ul {
+
+                     li {
+                        padding-block: 20px;
                      }
                   }
                }
