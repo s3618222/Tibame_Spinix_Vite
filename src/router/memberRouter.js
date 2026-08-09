@@ -4,9 +4,12 @@ import {
   createWebHashHistory
 } from "vue-router";
 
+import MyProfile from "@/components/myProfile.vue";
 import MyBattle from "@/components/member/battle/myBattle.vue";
 import MyForum from "@/components/myForum.vue";
 import MyExchange from "@/components/myExchange.vue";
+import MyAppeal from "@/components/myAppeal.vue";
+import MyViolation from "@/components/myViolation.vue";
 
 const memberRouter = createRouter({
   history: createWebHashHistory(),
@@ -15,8 +18,15 @@ const memberRouter = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "/battle"
-      //當前台透過href="./member.html"，進入會員中心時，會預設導覽至我的約戰專區，後續再調整成側邊欄位第一個顯示的區塊連結是什麼
+      redirect: {
+        name: "member-profile"
+      }
+      // 進入 member.html 時，預設先導覽至「個人資料」
+    },
+    {
+      path: "/profile",
+      name: "member-profile",
+      component: MyProfile
     },
     {
       path: "/battle",
@@ -32,6 +42,16 @@ const memberRouter = createRouter({
       path: "/exchange",
       name: "member-exchange",
       component: MyExchange
+    },
+    {
+      path: "/appeal",
+      name: "member-appeal",
+      component: MyAppeal
+    },
+    {
+      path: "/violation",
+      name: "member-violation",
+      component: MyViolation
     }
   ]
 });
