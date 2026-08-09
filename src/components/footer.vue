@@ -160,8 +160,29 @@
   }
 
   @media screen and (width < 768px) {
-    .footer-intro{
+    footer {
+      padding: 24px;
+    }
+
+    .footer-main {
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .footer-intro {
       display: none;
     }
-  }
+
+    .footer-col:first-child,
+    .footer-contact {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .footer-contact a {
+      overflow-wrap: anywhere;
+    }
+}
+
+  
 </style>
