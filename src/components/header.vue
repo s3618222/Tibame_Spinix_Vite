@@ -409,22 +409,24 @@ export default {
         -webkit-backdrop-filter: blur(14px);
 
         border-left: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: -12px 0 32px rgba(20, 28, 38, 0.22);
+        box-shadow: none;
 
         height: calc(100vh - 88px);
         width: min(180px, 82vw);
         position: absolute;
         top: 88px;
         padding:28px 24px;
-        right: -100%;
-        transition: .6s ease;
+        right: 0;
+        transform: translateX(100%);
+        transition: transform 0.6s ease;
         flex-direction: column;
         // align-content: center;
         // align-items: end;
         justify-content: flex-start;
         // align-content: space-between;
           &.active{
-            right: 0;
+            transform: translateX(0);
+            box-shadow: -12px 0 32px rgba(20, 28, 38, 0.22);
           }
           ul{
             width: 100%;
@@ -469,4 +471,7 @@ export default {
       
     }
   }
+
+  
+
 </style>
