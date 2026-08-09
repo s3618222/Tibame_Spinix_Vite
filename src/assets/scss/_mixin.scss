@@ -1,3 +1,5 @@
+@use '_var' as *;
+
 // 1. 全域斷點地圖 ($breakpoints)
 
 $breakpoints: (
@@ -37,4 +39,41 @@ $breakpoints: (
       @content;
     }
   }
+}
+
+// 狀態標籤
+// 【使用範例】:在要加入標籤的元素上加上 class="chip chip--state(根據樣式做調整)"
+
+// ---- 基礎樣式（所有chip共用）----
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px; // 依照圖中圓角弧度微調
+  font-size: 14px;
+  font-weight: 550;
+  white-space: nowrap;
+
+  // ---- Modifier: 依「語意類型」區分顏色 ----
+  &--exchangeable {
+    background-color: #E4EEE7; // 淺綠底
+    color: #4F8A5B;
+  }
+
+  &--state {
+    background-color: #FFF2D6; // 淺橘底
+    color: #A86B00;
+  }
+
+  &--category {
+    background-color: #E1F6FF; // 淺藍底
+    color: #3E6EBB;
+  }
+
+
+  &--error {
+    background-color: #F9D7DA;
+    color: #e63946;
+  }
+
 }

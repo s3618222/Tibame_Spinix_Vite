@@ -1,11 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Document</title>
+   <title>商品詳情</title>
+   <link rel="stylesheet" href="./src/assets/scss/_reset.scss">
+   <link rel="stylesheet" href="./src/assets/scss/style.scss">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+
+   <script src="https://kit.fontawesome.com/865a269d64.js" crossorigin="anonymous"></script>
 </head>
-<body>
-   交換商品詳情頁
+
+<body id="prod_detail">
+
+   <!-- header -------------------------------------------->
+   <div id="headerApp"></div>
+
+   <section id="prodDetail">
+      <h1>商品詳情</h1>
+      <a href="./market.html">返回</a>
+      <div class="container">
+         <div class="panel">
+
+            <div class="gallery-wrap">
+               <div class="slider-for">
+                  <div class="img-big"><img src="./public/CX02_01.webp" alt=""></div>
+                  <div class="img-big"><img src="./public/BX23_01.webp" alt=""></div>
+                  <div class="img-big"><img src="./public/BX_02.webp" alt=""></div>
+                  <div class="img-big"><img src="./public/CX13_01.webp" alt=""></div>
+                  <div class="img-big"><img src="./public/BX-28.webp" alt=""></div>
+               </div>
+            </div>
+
+            <div class="slider-nav">
+               <div class="thumb is-active" data-index="0"><img src="./public/CX02_01.webp" alt=""></div>
+               <div class="thumb" data-index="1"><img src="./public/BX23_01.webp" alt=""></div>
+               <div class="thumb" data-index="2"><img src="./public/BX_02.webp" alt=""></div>
+               <div class="thumb" data-index="3"><img src="./public/CX13_01.webp" alt=""></div>
+               <div class="thumb" data-index="4"><img src="./public/BX-28.webp" alt=""></div>
+            </div>
+
+         </div>
+         <div class="prod-info">
+            <p class="title">CX 系列 對戰陀螺 改裝版</p>
+            <div class="tags">
+               <span class="chip chip--exchangeable">可交換</span>
+               <span class="chip chip--state">全新</span>
+               <span class="chip chip--category">陀螺本體</span>
+            </div>
+            <div class="user box-style">
+               <div class="img-user">
+                  <img src="./public/spinix_member_test1.png" alt="">
+               </div>
+               <p>Lone軍團長</p>
+               <a href="./complaint.html">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+               </a>
+            </div>
+            <div class="prod-txt box-style">
+               <p class="title">商品描述</p>
+               <p class="prod-content">關於交換戰鬥陀螺這件事，我們都可能想錯了，交換戰鬥陀螺，是很多人每天都在做的事，但真正把它做出意義的人，寥寥可數。
+                  當我們認真審視交換戰鬥陀螺這件事，會發現它所牽涉的，遠比表面看來複雜得多。
+               </p>
+            </div>
+            <button type="button" class="btnFill">我想交換</button>
+            <div class="message-board box-style">
+               <h1>交換留言區</h1>
+               <div class="icon-sort">
+                  <button type="button" data-sort="newest">
+                     最新
+                  </button>
+                  <button type="button" data-sort="oldest">
+                     最舊
+                  </button>
+               </div>
+
+               <div class="msg-list">
+                  <ul>
+                     <li>
+                        <div class="img-msg-user">
+                           <div class="img-user">
+                              <img src="./public/spinix_member_test2.jpg" alt="">
+                           </div>
+                        </div>
+                        <div class="msg-content">
+                           <div class="user-info">
+                              <p class="user-name">已讀不回的飯糰</p>
+                              <a href="./complaint.html">
+                                 <i class="fa-solid fa-triangle-exclamation"></i>
+                              </a>
+                           </div>
+                           <p class="msg-date">2026-08-06</p>
+                           <p class="msg-txt">想用CX 系列改裝陀螺跟版主做交換！</p>
+                        </div>
+                     </li>
+                     <li>
+                        <div class="img-msg-user">
+                           <div class="img-user">
+                              <img src="./public/spinix_member_test3.png" alt="">
+                           </div>
+                        </div>
+                        <div class="msg-content">
+                           <div class="user-info">
+                              <p class="user-name">虛空將</p>
+                              <a href="./complaint.html">
+                                 <i class="fa-solid fa-triangle-exclamation"></i>
+                              </a>
+                           </div>
+                           <p class="msg-date">2026-08-16</p>
+                           <p class="msg-txt">想用CX 系列改裝陀螺跟版主做交換！</p>
+                        </div>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <!-- 我想交換燈箱 -->
+      <div id="addMsg">
+         <!-- 我是交換留言燈箱 -->
+      </div>
+   </section>
+
+   <!-- footer -------------------------------------------->
+   <div id="footerApp"></div>
+
+   <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+   <script src="./src/assets/js/public.js"></script>
+   <script src="./src/assets/js/sort.js" type="module"></script>
+   <script src="./src/assets/js/product_detail.js" type="module"></script>
+
 </body>
+
 </html>
