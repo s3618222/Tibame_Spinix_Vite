@@ -785,7 +785,7 @@ function createBattleCard(battle) {
         <div class="timer">
           <i class="fa-regular fa-clock"></i>
           <p>
-            截止倒數：
+            截止倒數:
             <span
               class="countdown"
               data-deadline="${battle.deadline}"
@@ -796,6 +796,18 @@ function createBattleCard(battle) {
         </div>
 
         <div class="info">
+          <button
+              type="button"
+              class="hostBtn"
+              data-host-id="${host.hostId}"
+            >
+              <img
+                class="host-avatar"
+                src="${host.avatar}"
+                alt=""
+              >
+              <span class="host-name">${host.name}</span>
+            </button>
           <h4 class="battle-title">${battle.title}</h4>
 
           <div class="battle-meta">
@@ -830,19 +842,6 @@ function createBattleCard(battle) {
         </div>
 
         <div class="card-footer">
-          <button
-            type="button"
-            class="hostBtn"
-            data-host-id="${host.hostId}"
-          >
-            <img
-              class="host-avatar"
-              src="${host.avatar}"
-              alt=""
-            >
-            <span class="host-name">${host.name}</span>
-          </button>
-
           ${createApplyButton(battle)}
         </div>
       </div>
