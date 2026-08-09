@@ -100,7 +100,7 @@
                     </label>
 
                     <select id="battleMode" name="mode" required>
-                      <option value="">請選擇對戰模式</option>
+                      <option value="">選擇對戰模式</option>
                       <option value="競技模式">競技模式</option>
                       <option value="休閒模式">休閒模式</option>
                     </select>
@@ -114,7 +114,7 @@
                     </label>
 
                     <select id="battleLevel" name="level" required>
-                      <option value="">請選擇玩家程度</option>
+                      <option value="">選擇玩家程度</option>
                       <option value="不限程度">不限程度</option>
                       <option value="新手玩家">新手玩家</option>
                       <option value="中階玩家">中階玩家</option>
@@ -130,7 +130,7 @@
                     </label>
 
                     <select id="battleTarget" name="target" required>
-                      <option value="">請選擇適合對象</option>
+                      <option value="">選擇適合對象</option>
                       <option value="不限對象">不限對象</option>
                       <option value="成人限定">18歲以上</option>
                       <option value="親子友善">親子友善</option>
@@ -232,7 +232,7 @@
                   <div>
                     <h3>4. 聯絡方式</h3>
                     <p class="section-hint">
-                      配對成功後，才會顯示給對方
+                      *配對成功後，才會顯示雙方聯絡資訊
                     </p>
                   </div>
                 </div>
@@ -329,6 +329,13 @@
 
                   <!-- 邀約主要資訊 -->
                   <div class="info">
+                    <button type="button" class="hostBtn" disabled>
+                      <img class="host-avatar" id="previewHostAvatar" src="/spinix_member_default.png" alt="發起人頭像">
+
+                      <span class="host-name" id="previewHostName">
+                        WeiChen
+                      </span>
+                    </button>
 
                     <h4 class="battle-title" id="previewTitle">
                       新手友善！一起開心打陀螺
@@ -386,14 +393,6 @@
                   <!-- 發起人與申請按鈕 -->
                   <div class="card-footer">
 
-                    <button type="button" class="hostBtn" disabled>
-                      <img class="host-avatar" id="previewHostAvatar" src="/spinix_member_default.png" alt="發起人頭像">
-
-                      <span class="host-name" id="previewHostName">
-                        WeiChen
-                      </span>
-                    </button>
-
                     <button type="button" class="btnFill applyBtn" disabled>
                       申請加入
                     </button>
@@ -421,7 +420,7 @@
               <div class="preview-actions">
 
                 <button type="button" class="btnNeutral confirm-create-btn" id="confirmCreateBtn">
-                  確認建立邀約
+                  確認送出
                 </button>
 
                 <button type="button" class="btnNoFill return-edit-btn" id="returnEditBtn">
