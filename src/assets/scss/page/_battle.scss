@@ -59,6 +59,7 @@ html {
 }
 
 .battle-sec-hero .container {
+  width: min(1120px, 86vw);
   display: flex;
   align-items: center;
   gap: 16px;
@@ -75,6 +76,7 @@ html {
 //建立邀約按鈕
 a.createBattle-link,
 a.empty-createBattleBtn {
+  font-size: 18px;
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -196,7 +198,7 @@ a.empty-createBattleBtn {
 }
 
 .tag-list {
-  width: min(900px, 100%);
+  width: min(840px, 100%);
   padding: 32px;
   margin: 12px auto 32px;
 
@@ -269,7 +271,7 @@ a.empty-createBattleBtn {
 .filter-item select {
   width: auto;
   min-width: 160px;
-  padding: 8px 36px 8px 12px;
+  padding: 8px 36px 8px 16px;
 }
 
 .date-range input {
@@ -349,12 +351,15 @@ a.empty-createBattleBtn {
 /* 日期列 */
 .tag-row-date {
   justify-content: space-between;
+  align-items: flex-end;
   gap: 28px;
-
-  #resetBtn {
-    align-self: flex-end;
-  }
 }
+
+.tag-row-date #resetBtn {
+  margin: 0;
+  align-self: auto;
+}
+
 
 .filter-date {
   width: auto;
@@ -617,12 +622,12 @@ a.empty-createBattleBtn {
 
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: center;
 }
 
 /* 發起人按鈕 */
 .battleCard .hostBtn {
+  // margin-inline: auto;
   min-width: 0;
   padding: 0;
   border: 0;
@@ -1086,6 +1091,7 @@ a.empty-createBattleBtn {
 
 //載入更多按鈕
 .battle-sec-cards .moreBtn {
+  font-size: 18px;
   display: block;
   margin: 24px auto 0 auto;
 }
@@ -1251,4 +1257,425 @@ a.empty-createBattleBtn {
 
   background-color: #FEC96B;
   color: #141C26;
+}
+
+// ===================RWD設定=========================
+@media screen and (max-width: 1024px) {
+  .page-battle {
+    .card-list .battleCard {
+      //約戰邀約卡片改2欄排列
+      width: calc((100% - 28px) / 2);
+    }
+  }
+}
+
+
+@media screen and (max-width: 768px) {
+  .page-battle {
+
+    .battle-sec .container,
+    .battle-sec-tags .container {
+      width: min(1120px, 90vw);
+    }
+
+    // 篩選面板
+    .tag-list {
+      width: 100%;
+      padding: 24px;
+      gap: 24px;
+    }
+
+    .tag-row {
+      gap: 20px;
+    }
+
+    // 篩選列改兩欄
+    .filter-item {
+      flex: 0 1 calc(50% - 10px);
+      min-width: 0;
+    }
+
+    .filter-item select {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .auto-locate {
+      flex: 1 1 100%;
+      align-self: auto;
+      align-items: flex-start;
+    }
+
+    // 日期列開始改成上下排列
+    .tag-row-date {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+    }
+
+    .filter-date {
+      width: 100%;
+    }
+
+    .date-range {
+      width: 100%;
+    }
+
+    .date-range input {
+      flex: 1;
+      width: auto;
+      min-width: 0;
+    }
+
+    .tag-row-date #resetBtn {
+      margin-top: 8px;
+      align-self: flex-end;
+    }
+
+    .battleCard .timer {
+      max-width: 100%;
+      min-width: 0;
+
+      padding: 6px 10px;
+      gap: 6px;
+    }
+
+    .battleCard .timer p {
+      font-size: 14px;
+    }
+  }
+
+}
+
+@media screen and (max-width: 576px) {
+  .page-battle {
+
+    // Hero區內容改垂直column排列
+    .battle-sec-hero .container {
+      width: 90vw;
+
+      left: 50%;
+      bottom: 72px;
+      transform: translateX(-50%);
+
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .hero-spintop {
+      width: 88px;
+      flex-shrink: 0;
+    }
+
+    .hero-content {
+      align-items: center;
+      gap: 12px;
+    }
+
+    // 主標
+    .hero-content h1 {
+      font-size: 30px;
+    }
+
+    // 副標
+    .battle-sec-hero .container .hero-content p {
+      font-size: 18px;
+      line-height: 1.5;
+      white-space: nowrap;
+    }
+
+    // CTA
+    .hero-content .createBattle-link {
+      font-size: 16px;
+    }
+
+    //篩選面板區
+    .battle-sec-tags {
+      padding-block: 44px 0px;
+    }
+
+    .tag-intro {
+      margin-bottom: 20px;
+    }
+
+    .battle-sec-cards .card-list {
+      width: 100%;
+      gap: 28px;
+    }
+
+    .card-list .battleCard {
+      margin-inline: auto;
+      width: 80%;
+    }
+
+    .battle-bottom-Banner {
+      width: 100%;
+    }
+
+    .bottom-banner-cta p:first-of-type {
+      margin-bottom: 4px;
+    }
+
+  }
+}
+
+@media screen and (max-width: 430px) {
+  .page-battle {
+
+    .card-list .battleCard {
+      width: 90%;
+    }
+
+    // ===== 篩選面板 =====
+    .tag-list {
+      padding: 16px 28px;
+      gap: 20px;
+    }
+
+    .tag-row {
+      gap: 20px;
+    }
+
+    // 篩選欄位改成單欄
+    .filter-item {
+      flex: 0 0 100%;
+      width: 100%;
+    }
+
+    .filter-item select {
+      width: 100%;
+    }
+
+    .auto-locate {
+      width: 100%;
+    }
+
+    .date-range {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .date-range input {
+      width: 100%;
+      flex: none;
+    }
+
+    .date-range span {
+      font-size: 14px;
+      text-align: center;
+      color: #64748B;
+    }
+
+    .tag-row-date #resetBtn {
+      align-self: center;
+      margin-top: 4px;
+      font-size: 14px;
+    }
+
+
+    //bottom banner區
+    .battle-bottom-Banner {
+      min-height: auto;
+      padding: 20px 8px 24px;
+      gap: 16px;
+      flex-direction: column;
+    }
+
+    .bottom-spintopBtn {
+      width: 80px;
+    }
+
+    .bottom-banner-cta {
+      width: 100%;
+      gap: 16px;
+    }
+
+    .battle-bottom-Banner .banner-desc {
+      gap: 4px;
+    }
+
+    .battle-bottom-Banner .banner-desc p {
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .bottom-banner-cta .createBattle-link {
+      font-size: 14px;
+      padding: 8px 18px;
+    }
+
+    .bottom-goShoot {
+      font-size: 12px;
+    }
+
+    //約戰紀錄燈箱
+    .history-main {
+      width: calc(100% - 24px);
+      max-height: calc(100dvh - 32px);
+
+      padding: 20px 16px;
+      gap: 20px;
+    }
+
+    //關閉按鈕
+    .closeModalBtn {
+      top: 12px;
+      right: 12px;
+
+      width: 28px;
+      height: 28px;
+
+      font-size: 20px;
+    }
+
+    // 頭像與標題區
+    .history-header {
+      margin-top: 8px;
+      align-items: flex-start;
+      gap: 10px;
+      padding-right: 28px;
+    }
+
+    .historyAvatar {
+      width: 48px;
+      height: 48px;
+    }
+
+    .history-header h3 {
+      font-size: 18px;
+    }
+
+    .history-header p {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .host-stat {
+      min-height: 72px;
+      padding: 16px 12px;
+    }
+
+    .host-stat strong {
+      font-size: 22px;
+    }
+
+    // 評論區
+    .history-review h4 {
+      font-size: 16px;
+    }
+
+    .review-list {
+      height: 180px;
+      padding: 4px 12px;
+    }
+
+    .review-info {
+      gap: 12px;
+    }
+
+    .review-content {
+      font-size: 14px;
+    }
+
+
+    //申請加入燈箱
+    .apply-main {
+      width: calc(100% - 24px);
+      max-height: calc(100dvh - 32px);
+
+      padding: 20px 16px;
+      gap: 20px;
+    }
+
+    //關閉按鈕
+    .closeApplyBtn {
+      top: 12px;
+      right: 12px;
+
+      width: 28px;
+      height: 28px;
+
+      font-size: 20px;
+    }
+
+    //頭像區
+    .apply-header {
+      margin-top: 8px;
+      padding-right: 28px;
+
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .applyAvatar {
+      width: 48px;
+      height: 48px;
+    }
+
+    .apply-heading {
+      gap: 6px;
+    }
+
+    .apply-heading h3 {
+      font-size: 18px;
+    }
+
+    .apply-battle-info {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    //表單整體間距
+    .apply-form {
+      gap: 20px;
+    }
+
+    .apply-content {
+      gap: 14px;
+    }
+
+    .apply-content h4 {
+      font-size: 16px;
+    }
+
+    .apply-description {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .apply-field input {
+      min-height: 48px;
+      padding: 10px 12px;
+      font-size: 16px;
+    }
+
+    //隱私提醒區
+    .apply-notice {
+      padding: 12px;
+      gap: 6px;
+    }
+
+    .apply-notice strong,
+    .apply-notice p {
+      font-size: 14px;
+    }
+
+    //底部按鈕
+    .apply-actions {
+      margin-inline: auto;
+      width: 90%;
+      gap: 12px;
+    }
+
+    .confirmApplyBtn,
+    .cancelApplyBtn {
+      flex: 1;
+      min-width: 0;
+      padding-inline: 12px;
+    }
+  }
 }
