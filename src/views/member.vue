@@ -78,19 +78,26 @@
 
   .member-center {
     width: min(1200px, calc(100% - 64px));
-    margin: 60px auto 60px;
+    margin: 60px auto;
     display: grid;
     grid-template-columns: 200px minmax(0, 1fr);
     gap: 32px;
   }
 
+  //側邊導覽列改sticky，分頁高度讓主內容頁負責撐開
   .member-sidebar {
     border: 1px solid black;
+    padding-block: 16px;
+    border-radius: 12px;
     text-align: center;
 
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
+
+    position: sticky;
+    top: 118px; //預留和header(88px)之間約30px的距離
+    align-self: start;
   }
 
   section.member-content {
@@ -106,11 +113,12 @@
   }
 
   .member-sidebar {
+    position: sticky; //取消sticky
     flex-direction: row;
     overflow-x: auto;
     gap: 24px;
 
-    padding: 12px 16px;
+    padding: 16px;
     white-space: nowrap;
     text-align: left;
   }
