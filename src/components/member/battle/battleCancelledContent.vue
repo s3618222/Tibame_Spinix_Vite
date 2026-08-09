@@ -129,4 +129,30 @@
     }
   }
 
+  // ========================= RWD調整 =============================
+  
+  //約戰紀錄下方資訊改單欄呈現
+  @media screen and (max-width: 900px) {
+    .cancelled-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+    }
+
+    .cancelled-row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+
+    .cancelled-user {
+      width: fit-content;
+    }
+
+    .cancelled-message {
+      width: 100%;
+    }
+  }
+
 </style>

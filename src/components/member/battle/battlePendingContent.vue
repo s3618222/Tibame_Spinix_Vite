@@ -136,11 +136,43 @@
   }
 
   .pending-btn {
-  min-width: 96px;
-  padding: 6px 16px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 500;
-}
+    min-width: 96px;
+    padding: 6px 16px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  // ===================== RWD調整 ==========================
+
+  //約戰紀錄下方資訊改上下單欄呈現
+  @media screen and (max-width: 900px) {
+    .pending-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+    }
+
+    .pending-row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+
+    .pending-user {
+      width: fit-content;
+    }
+
+    .pending-message {
+      width: 100%;
+    }
+
+    .pending-actions {
+      width: 100%;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+  }
 
 </style>

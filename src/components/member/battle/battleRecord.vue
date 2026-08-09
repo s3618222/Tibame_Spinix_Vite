@@ -13,8 +13,6 @@
         <div class="record-heading">
           <p class="record-title">
             {{ battle.title }}
-            <!-- 約戰模式備註文字 -->
-            <span class="record-mode">（{{ modeText }}）</span>
           </p>
           <span 
             class="record-status"
@@ -25,6 +23,11 @@
 
         <!-- 卡片約戰資訊 -->
         <div class="record-info">
+          <p class="record-mode">
+            <i class="fa-solid fa-trophy"></i>
+            {{ modeText }}
+          </p>
+
           <p class="record-date">
             <i class="fa-regular fa-calendar"></i>
             {{ battle.battleDate }}（{{ battle.weekday }}）{{ battle.battleTime }}
@@ -168,10 +171,10 @@
   //卡片封面圖
   .record-cover {
     position: relative;
-    width: 192px;
-    // min-height: 180px;
-    height: 184px;
-    flex-shrink: 0;
+    width: clamp(144px, 15vw, 180px);
+    aspect-ratio: 1 / 1;
+    // height: 184px;
+    flex-shrink: 1;
     overflow: hidden;
     border-radius: 12px;
 
@@ -219,16 +222,6 @@
     color: #141c26;
     font-size: 20px;
     font-weight: 500;
-
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .record-mode {
-    color: #64748b;
-    font-size: 16px;
-    font-weight: 400;
   }
 
   .record-status {
@@ -264,15 +257,21 @@
     display: flex;
     align-items: center;
     gap: 40px;
-    margin-top: 16px;
+    margin-top: 20px;
     padding-bottom: 16px;
     border-bottom: 1px solid #e3ddd5;
+
+    // 資訊列icon
+    i {
+      color: #64748b;
+    }
   }
 
+  .record-mode,
   .record-date,
   .record-location {
     color: #141c26;
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .record-detail {
@@ -317,5 +316,142 @@
     text-decoration: underline;
     cursor: pointer;
   }
+
+  // =================== RWD調整 ======================
+
+  //封面圖和標題改單欄
+  @media screen and (max-width: 900px) {
+    .battle-record {
+      height: 620px;
+
+      display: flex;
+      flex-direction: column;
+      // padding-bottom: 16px;
+    }
+
+    .record-main {
+      min-height: 0;
+      flex: 1;
+
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+    }
+
+    .record-cover {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      flex-shrink: 0;
+    }
+
+    .record-content {
+      width: 100%;
+      min-height: 0;
+      flex: 1;
+    }
+
+    //卡片標題列
+    .record-heading {
+      margin-bottom: 8px;
+      flex-shrink: 0;
+      flex-direction: column-reverse;
+
+      .record-title {
+        align-self: flex-start;
+      }
+
+      .record-status {
+        margin-bottom: 4px;
+        align-self: flex-start;
+      }
+    }
+
+    .record-info {
+      flex-shrink: 0;
+
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+
+      margin-top: 12px;
+      padding-bottom: 12px;
+    }
+
+    .record-detail {
+      flex: 1;
+      min-height: 0;
+
+      display: block;
+
+      padding-top: 12px;
+      padding-right: 6px;
+
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .record-appeal {
+      flex-shrink: 0;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 12px;
+    }
+
+    //固定讓scroll-bar可以出現，提示會員可以滑動
+      .record-detail {
+        overflow-y: auto;
+        scrollbar-width: thin;
+      }
+
+      .record-detail::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      .record-detail::-webkit-scrollbar-thumb {
+        background: rgba(100, 116, 139, 0.45);
+        border-radius: 999px;
+      }
+  }
+
+  @media screen and (max-width: 576px) {
+    .battle-record {
+      height: 640px;
+    }
+
+    .record-detail {
+      padding-top: 0px;
+    }
+
+    .record-heading {
+      .record-title {
+        align-self: center;
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+    }
+  }
+
+  @media screen and (max-width: 375px) {
+    .battle-record {
+      // height: 588px;
+      height: 620px;
+    }
+
+    //固定讓scroll-bar可以出現，提示會員可以滑動
+    .record-detail {
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .record-detail::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .record-detail::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.45);
+      border-radius: 999px;
+    }
+  }
+
 
 </style>

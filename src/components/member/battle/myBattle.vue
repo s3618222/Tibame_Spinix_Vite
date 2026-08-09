@@ -345,6 +345,29 @@
                 createdAt: "2026-06-29"
               }
             ]
+          },
+          102: {
+            memberId: 102,
+            name: "旋風阿凱",
+            avatar: "/spinix_member_default.png",
+            totalBattles: 12,
+            averageRating: 4.5,
+            reviews: [
+              {
+                reviewId: 2001,
+                reviewerName: "SpinKing",
+                rating: 5,
+                content: "對戰很投入，也很準時。",
+                createdAt: "2026-07-20"
+              },
+              {
+                reviewId: 2002,
+                reviewerName: "阿宇",
+                rating: 4,
+                content: "交流過程很順利，是不錯的對戰玩家。",
+                createdAt: "2026-07-02"
+              }
+            ]
           }
         },
 
@@ -405,9 +428,28 @@
         changeRole(role) {
           this.currentRole = role;
           this.currentStatus = "all"; //切換腳色的同時，卡片狀態預設顯示全部
+
+          //this.$nextTick() → 資料變動後，讓vue將畫面也更新完成後，才接著執行 () 內的事
+          this.$nextTick(() => {
+            // this.$el 只從目前myBattle.vue自己產生出的畫面範圍中，去找出約戰紀錄列表.my-battle-records
+            const records = this.$el.querySelector(".my-battle-records");
+
+            //找到列表後，將列表區的水平卷軸拉回最左邊起始處
+            if (records) {
+              records.scrollLeft = 0;
+            }
+          });
         },
         changeStatus(status) {
           this.currentStatus = status;
+
+          this.$nextTick(() => {
+            const records = this.$el.querySelector(".my-battle-records");
+
+            if (records) {
+              records.scrollLeft = 0;
+            }
+          });
         },
         closeHistoryModal() {
           this.isHistoryModalOpen = false;
@@ -658,6 +700,83 @@
     text-decoration: none;
     font-size: 18px;
     font-weight: 600;
+  }
+
+  // ====================== RWD調整 ============================
+  
+  //約戰紀錄改橫向排列
+  @media screen and (max-width: 900px) {
+  .my-battle-records {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 24px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    padding: 24px 16px;
+    background-color: #fffaf2;
+    border-radius: 8px;
+    scroll-behavior: smooth;
+  }
+
+  .my-battle-records > * {
+    flex: 0 0 380px;
+  }
+
+  .battle-empty {
+    flex: 0 0 100%;
+  }
+  }
+
+  @media screen and (max-width: 576px) {
+  
+    .my-battle-records > * {
+      flex: 0 0 calc(100vw - 100px);
+    }
+
+    //約戰狀態篩選列改 auto scroll
+    .battle-status-tabs {
+      width: 100%;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 24px;
+
+      overflow-x: auto;
+      overflow-y: hidden;
+
+      white-space: nowrap;
+      padding-bottom: 12px;
+    }
+
+    .status-tab {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+  }
+
+  @media screen and (max-width: 375px) {
+
+    .my-battle-records {
+      padding-inline: 12px;
+      gap: 16px;
+    }
+
+    // .my-battle-records > * {
+    //   flex: 0 0 calc(100vw - 48px);
+    // }
+
+    .battle-status-tabs {
+      gap: 20px;
+      padding-block: 8px;
+    }
+
+    .status-tab {
+      font-size: 16px;
+    }
   }
 
 </style>
