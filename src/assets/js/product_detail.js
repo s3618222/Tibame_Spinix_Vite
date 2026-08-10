@@ -3,6 +3,7 @@ import { createApp } from "vue";
 
 import Header from "@/components/header.vue";
 import Footer from "@/components/footer.vue";
+import { el } from "element-plus/es/locales.mjs";
 
 createApp(Header, {
    solid: true
@@ -40,3 +41,104 @@ $(document).ready(function () {
    });
 
 });
+
+
+// 燈箱
+const addMsg = document.getElementById('Btn-addMsg');
+const MsgModal = document.querySelector('.example-modal');
+const btnClose = document.querySelector('.btn-close');
+const mask = document.querySelector('.modal-mask');
+const btnReset = document.querySelector('.btnNoFill');
+const form = document.getElementById('msgForm');
+const btnSubmit = document.querySelector('button[type="submit"].btnFill');
+let requiredInputs = document.querySelectorAll('[required]');
+
+// console.log(forminput[0].values);
+// 開啟燈箱
+addMsg.addEventListener('click', () => {
+   document.body.style.overflow = 'hidden';
+   MsgModal.classList.add('is-open');
+});
+
+// 關閉燈箱
+function closeMsgModal() {
+   document.body.style.overflow = '';
+   MsgModal.classList.remove('is-open');
+}
+btnClose.addEventListener('click', () => {
+   closeMsgModal();
+});
+mask.addEventListener('click', () => {
+   closeMsgModal();
+});
+
+// 燈箱取消按鈕
+btnReset.addEventListener('click', (e) => {
+   e.preventDefault();
+
+   // 是否為空字串
+   let hasEmpty = [...requiredInputs].every(input => input.value.trim() === '');
+
+
+   if (hasEmpty) {
+      window.alert('請輸入內容');
+      return;
+   }
+
+   const isConfirm = window.confirm('是否全部清空?');
+   if (isConfirm) {
+      form.reset();
+   } else {
+      return;
+   }
+});
+
+// 送出按鈕
+btnSubmit.addEventListener('click', () => {
+   requiredInputs.forEach(input => {
+      if (input.value.trim() === '') {
+         input.classList.add('-isError');
+      } else {
+         input.classList.remove('-isError');
+      }
+   });
+
+});
+
+requiredInputs.forEach(input => {
+   input.addEventListener('blur', () => {
+      if (input.value.trim() !== '') {
+         input.classList.remove('-isError');
+      } else {
+         input.classList.add('-isError'); // 離開時還是空的，繼續顯示紅框
+      }
+   });
+});
+
+// == 置頂按鈕 ===================================
+const prodHeader = document.getElementById('prodDetail');
+const backToTopBtn = document.getElementById("backToTopBtn"); // 置頂按鈕
+
+//置頂函式
+function handleBackToTop() {
+   //取得約戰列表區離瀏覽器畫面頂部的距離
+   const cardAreaTop = prodHeader.getBoundingClientRect().top;
+
+   //當距離<0，代表畫面已經捲動到列表區塊，這時才顯示出現置頂按鈕；設定-200，這樣當使用者已經在列表區往下捲動200px後，才出現置頂按鈕
+   if (cardAreaTop < -200) {
+      backToTopBtn.classList.add("is-show");
+   } else {
+      backToTopBtn.classList.remove("is-show");
+   }
+}
+
+window.addEventListener("scroll", handleBackToTop);
+
+// 點擊按鈕後回到約戰列表頂部
+backToTopBtn.addEventListener("click", function () {
+   prodHeader.scrollIntoView({
+      behavior: "smooth",
+      block: "start" //讓battleCardArea的頂端對齊畫面頂端
+   });
+});
+

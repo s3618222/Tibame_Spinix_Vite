@@ -6,11 +6,19 @@
       padding: 20px;
       background-color: map-get($color, tertiary);
 
+
       p {
          font-size: 16px;
       }
 
       // == 通用 class ================================================
+      // 手機板去掉:hover
+      @media (hover: none) {
+         .btnFill:hover {
+            background: initial; // 或直接寫回原本的預設背景色
+         }
+      }
+
       // 申訴icon
       .fa-triangle-exclamation {
          color: map-get($color, error);
@@ -39,30 +47,17 @@
          }
       }
 
-      // 表單
-      #addMsg {
-         padding: 12px;
-         position: fixed;
-         margin: 0 auto;
-         inset: 0;
-         width: 40%;
-         max-width: 400px;
-         background-color: map-get($color , tertiary);
-         // background-color: orange;
-         border: 1px solid red;
-         border-radius: 16px;
 
-         #msgForm {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-         }
-      }
 
+      // 表單欄位
       .form-label-style {
          display: flex;
          flex-direction: column;
-         gap: 12px;
+         gap: 8px;
+
+         >label {
+            font-weight: 550;
+         }
 
          &:has(input[required]) label::after {
             content: ' *';
@@ -88,6 +83,18 @@
          }
       }
 
+      // 燈箱開啟
+      .example-modal.is-open {
+         visibility: visible;
+         opacity: 1;
+         pointer-events: auto;
+      }
+
+      // 錯誤
+      input.-isError {
+         border-color: map-get($color, error);
+      }
+
       // =============================================================
       h1 {
          color: map-get($color, secondary2);
@@ -111,10 +118,12 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            
 
             .title {
                font-size: map-get($fontSize, h4);
                font-weight: 900;
+               padding-top: 12px;
             }
 
             .tags {
@@ -200,8 +209,6 @@
             }
          }
 
-
-
          .panel {
             max-width: 700px;
 
@@ -261,9 +268,57 @@
          }
       }
 
+
+      // 留言表單
+      #addMsg {
+         padding: 20px;
+         position: fixed;
+         width: 40%;
+         max-width: 400px;
+         min-width: 300px;
+         background-color: map-get($color , tertiary);
+         border-radius: 16px;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+
+         .btn-close {
+            display: flex;
+            justify-content: end;
+
+            #icon-closeBox {
+               color: map-get($color, neutral);
+               padding: 4px;
+               padding-top: 0;
+            }
+
+         }
+
+         #msgForm {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            .form-title {
+               font-size: map-get($fontSize, default);
+               text-align: center;
+               font-weight: 600;
+            }
+
+            .form-hint {
+               font-size: map-get($fontSize, hint);
+               color: map-get($color, hint);
+               line-height: 1.5;
+            }
+
+            .form-btn {
+               display: flex;
+               gap: 24px;
+               justify-content: center;
+            }
+         }
+      }
    }
-
-
 
    // == 平板 ===========================
    @media screen and (width >=768px) {}
@@ -297,11 +352,14 @@
             padding-top: 8px;
             flex-direction: row;
 
+
             .panel {
                width: 40%;
                padding-inline: 44px;
                padding-top: 12px;
-               // background-color: blue;
+               position: sticky;
+               top: 90px;
+               height: fit-content;
 
                .gallery-wrap {
 
@@ -394,6 +452,26 @@
                      li {
                         padding-block: 20px;
                      }
+                  }
+               }
+            }
+         }
+
+         // 留言表單
+         #addMsg {
+            #msgForm {
+               gap: 20px;
+
+               .form-title {
+                  font-size: map-get($fontSize, h4);
+                  font-weight: 700;
+               }
+
+               .form-btn {
+                  .btnNoFill:hover {
+                     background-color: map-get($color , neutral);
+                     border-color: map-get($color , neutral);
+                     color: map-get($color , tertiary);
                   }
                }
             }
