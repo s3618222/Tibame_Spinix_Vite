@@ -840,7 +840,9 @@ export default {
   //約戰資料表格內容
   .battle-table {
     width: 100%;
-    min-width: 900px;
+    // min-width: 900px;
+    min-width: 820px;
+    table-layout: fixed;
     border-collapse: collapse;
 
     color: #141c26;
@@ -848,7 +850,7 @@ export default {
 
     th,
     td {
-      padding: 16px;
+      padding: 16px 8px;
       text-align: center;
       vertical-align: middle;
     }
@@ -912,6 +914,50 @@ export default {
         box-shadow: 0 2px 6px rgba(20, 28, 38, 0.12);
       }
     }
+
+    //  調整特定欄位寬度
+    // 邀約 ID
+    th:nth-child(1),
+    td:nth-child(1) {
+      width: 80px;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 160px;
+    }
+
+    //發起人
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 96px;
+    }
+
+    //地區
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 180px;
+    }
+
+    // 日期
+    th:nth-child(5),
+    td:nth-child(5) {
+      width: 100px;
+    }
+
+    // 狀態
+    th:nth-child(6),
+    td:nth-child(6) {
+      width: 100px;
+    }
+
+    // 操作
+    th:nth-child(7),
+    td:nth-child(7) {
+      width: 80px;
+    }
+
+    
   }
 
   //篩選後，未有符合資料時的空狀態
