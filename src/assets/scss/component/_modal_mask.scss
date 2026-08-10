@@ -28,7 +28,7 @@ html參考架構
 }
 
 .modal-mask {
-    position: absolute;
+    position:fixed;
     inset: 0;
     background-color: rgba(20, 28, 38, 0.58);
 }

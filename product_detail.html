@@ -18,7 +18,7 @@
    <!-- header -------------------------------------------->
    <div id="headerApp"></div>
 
-   <section id="prodDetail">
+   <section id="prodDetail" class="sec">
       <h1>商品詳情</h1>
       <a href="./market.html">返回</a>
       <div class="container">
@@ -65,7 +65,7 @@
                   當我們認真審視交換戰鬥陀螺這件事，會發現它所牽涉的，遠比表面看來複雜得多。
                </p>
             </div>
-            <button type="button" class="btnFill">我想交換</button>
+            <button type="button" id="Btn-addMsg" class="btnFill">我想交換</button>
             <div class="message-board box-style">
                <h1>交換留言區</h1>
                <div class="icon-sort">
@@ -113,43 +113,143 @@
                            <p class="msg-txt">想用CX 系列改裝陀螺跟版主做交換！</p>
                         </div>
                      </li>
+                     <li>
+                        <div class="img-msg-user">
+                           <div class="img-user">
+                              <img src="./public/spinix_member_test3.png" alt="">
+                           </div>
+                        </div>
+                        <div class="msg-content">
+                           <div class="user-info">
+                              <p class="user-name">虛空將</p>
+                              <a href="./complaint.html">
+                                 <i class="fa-solid fa-triangle-exclamation"></i>
+                              </a>
+                           </div>
+                           <p class="msg-date">2026-08-16</p>
+                           <p class="msg-txt">想用CX 系列改裝陀螺跟版主做交換！</p>
+                        </div>
+                     </li>
+                     <li>
+                        <div class="img-msg-user">
+                           <div class="img-user">
+                              <img src="./public/spinix_member_test3.png" alt="">
+                           </div>
+                        </div>
+                        <div class="msg-content">
+                           <div class="user-info">
+                              <p class="user-name">虛空將</p>
+                              <a href="./complaint.html">
+                                 <i class="fa-solid fa-triangle-exclamation"></i>
+                              </a>
+                           </div>
+                           <p class="msg-date">2026-08-16</p>
+                           <p class="msg-txt">想用CX 系列改裝陀螺跟版主做交換！</p>
+                        </div>
+                     </li>
+                     <li>
+                        <div class="img-msg-user">
+                           <div class="img-user">
+                              <img src="./public/spinix_member_test3.png" alt="">
+                           </div>
+                        </div>
+                        <div class="msg-content">
+                           <div class="user-info">
+                              <p class="user-name">虛空將</p>
+                              <a href="./complaint.html">
+                                 <i class="fa-solid fa-triangle-exclamation"></i>
+                              </a>
+                           </div>
+                           <p class="msg-date">2026-08-16</p>
+                           <p class="msg-txt">想用CX 系列改裝陀螺跟版主做交換！</p>
+                        </div>
+                     </li>
+                     <li>
+                        <div class="img-msg-user">
+                           <div class="img-user">
+                              <img src="./public/spinix_member_test3.png" alt="">
+                           </div>
+                        </div>
+                        <div class="msg-content">
+                           <div class="user-info">
+                              <p class="user-name">虛空將</p>
+                              <a href="./complaint.html">
+                                 <i class="fa-solid fa-triangle-exclamation"></i>
+                              </a>
+                           </div>
+                           <p class="msg-date">2026-08-16</p>
+                           <p class="msg-txt">想用CX 系列改裝陀螺跟版主做交換！</p>
+                        </div>
+                     </li>
+                     <li>
+                        <div class="img-msg-user">
+                           <div class="img-user">
+                              <img src="./public/spinix_member_test3.png" alt="">
+                           </div>
+                        </div>
+                        <div class="msg-content">
+                           <div class="user-info">
+                              <p class="user-name">虛空將</p>
+                              <a href="./complaint.html">
+                                 <i class="fa-solid fa-triangle-exclamation"></i>
+                              </a>
+                           </div>
+                           <p class="msg-date">2026-08-16</p>
+                           <p class="msg-txt">想用CX 系列改裝陀螺跟版主做交換！</p>
+                        </div>
+                     </li>
                   </ul>
                </div>
             </div>
          </div>
       </div>
 
-      <!-- 我想交換燈箱 -->
-      <div class="modal-mask"></div>
-      <div id="addMsg">
-         <form action="" id="msgForm">
-            <div class="name form-label-style">
-               <label for="name">您的暱稱</label>
-               <input type="text" name="name" required>
-            </div>
-            <div class="change-item form-label-style">
-               <label for="change-item">想交換物品</label>
-               <input type="text" name="change-item" required>
 
+
+
+      <div class="add-mag example-modal">
+         <!-- 遮罩 -->
+         <div class="modal-mask"></div>
+         <!-- 交換留言燈箱 -->
+         <div id="addMsg">
+            <div class="btn-close">
+               <button type="button" id="icon-closeBox">
+                  <i class="fa-solid fa-xmark"></i>
+               </button>
             </div>
-            <div class="phone form-label-style">
-               <label for="phone">聯絡方式</label>
-               <input type="tel" name="phone" required>
-            </div>
-            <div class="remark form-label-style">
-               <label for="Remark">備註</label>
-               <textarea name="Remark"></textarea>
-            </div>
-            <div class="txt-hint ">
-               <p>當雙方皆確認交換後，聯絡資訊將提供給對方作為聯繫用途。</p>
-            </div>
-            <div class="form-btn">
-               <button type="reset" class="btnNoFill">取消</button>
-               <button type="submit" class="btnFill">送出</button>
-            </div>
-         </form>
+            <form action="" id="msgForm">
+               <p class="form-title">留下您的交換提議與聯絡方式</p>
+               <div class="name form-label-style">
+                  <label for="name">您的暱稱</label>
+                  <input type="text" name="name" required>
+               </div>
+               <div class="change-item form-label-style">
+                  <label for="change-item">想交換物品</label>
+                  <input type="text" name="change-item" required>
+
+               </div>
+               <div class="phone form-label-style">
+                  <label for="phone">聯絡方式</label>
+                  <input type="tel" name="phone" required>
+               </div>
+               <div class="remark form-label-style">
+                  <label for="Remark">備註</label>
+                  <textarea name="Remark"></textarea>
+               </div>
+               <p class="form-hint ">當雙方皆確認交換後，聯絡資訊將提供給對方作為聯繫用途。</p>
+               <div class="form-btn">
+                  <button type="reset" class="btnNoFill">取消</button>
+                  <button type="submit" class="btnFill">送出</button>
+               </div>
+            </form>
+         </div>
       </div>
    </section>
+
+   <!-- 至頂按鈕 -->
+   <button type="button" class="battle-backToTopBtn" id="backToTopBtn">
+      <i class="fa-solid fa-arrow-up"></i>
+   </button>
 
    <!-- footer -------------------------------------------->
    <div id="footerApp"></div>
