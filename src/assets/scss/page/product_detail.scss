@@ -1,480 +1,488 @@
-   @use '../_var' as *;
+@use '../_var' as *;
 
-   #prodDetail {
-      margin-top: 88px;
-      width: 100%;
-      padding: 20px;
-      background-color: map-get($color, tertiary);
+// 表單欄位
+.form-label-style {
+   display: flex;
+   flex-direction: column;
+   gap: 8px;
 
+   >label {
+      font-weight: 550;
+   }
 
-      p {
-         font-size: 16px;
-      }
-
-      // == 通用 class ================================================
-      // 手機板去掉:hover
-      @media (hover: none) {
-         .btnFill:hover {
-            background: initial; // 或直接寫回原本的預設背景色
-         }
-      }
-
-      // 申訴icon
-      .fa-triangle-exclamation {
+      &:has(input[required]) label::after {
+         content: ' *';
          color: map-get($color, error);
       }
 
-      // bgstyle
-      .box-style {
-         background-color: white;
-         padding: 12px;
-         border-radius: 8px;
-         border: 1px solid map-get($color , gray);
-         box-shadow: 2px 2px 12px rgba(20, 28, 38, 0.1);
+   input,
+   textarea {
+      border: 1px solid map-get($color , hint);
+      border-radius: 8px;
+      padding: 8px;
+      outline: none;
+
+      &:focus {
+         border-color: map-get($color, primary);
       }
+   }
 
-      // 會員大頭貼
-      .img-user {
-         width: 50px;
-         aspect-ratio: 1/1;
-         overflow: hidden;
-         border-radius: 50%;
-         background-color: white;
-         border: 1px solid map-get($color, hint);
+   textarea {
+      resize: none;
+      height: 120px;
+      overflow-y: auto;
+   }
+}
 
-         img {
-            width: 100%;
-         }
+.sec {
+   margin-top: 88px;
+   width: 100%;
+   padding: 20px;
+   background-color: map-get($color, tertiary);
+
+   h1 {
+      color: map-get($color, secondary2);
+      font-size: map-get($fontSize, h3);
+      font-weight: 900;
+   }
+
+   >a {
+      display: inline-block;
+      color: map-get($color , neutral);
+      font-weight: 600;
+      padding-block: 12px;
+   }
+}
+
+
+
+#prodDetail {
+
+   p {
+      font-size: 16px;
+   }
+
+   // == 通用 class ================================================
+   // 手機板去掉:hover
+   @media (hover: none) {
+      .btnFill:hover {
+         background: initial; // 或直接寫回原本的預設背景色
       }
+   }
+
+   // 申訴icon
+   .fa-triangle-exclamation {
+      color: map-get($color, error);
+   }
+
+   // bgstyle
+   .box-style {
+      background-color: white;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid map-get($color , gray);
+      box-shadow: 2px 2px 12px rgba(20, 28, 38, 0.1);
+   }
+
+   // 會員大頭貼
+   .img-user {
+      width: 50px;
+      aspect-ratio: 1/1;
+      overflow: hidden;
+      border-radius: 50%;
+      background-color: white;
+      border: 1px solid map-get($color, hint);
+
+      img {
+         width: 100%;
+      }
+   }
 
 
 
-      // 表單欄位
-      .form-label-style {
+
+
+   // 燈箱開啟
+   .example-modal.is-open {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+   }
+
+   // 錯誤
+   input.-isError {
+      border-color: map-get($color, error);
+   }
+
+   // =============================================================
+
+
+   .container {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+
+      .prod-info {
          display: flex;
          flex-direction: column;
-         gap: 8px;
+         gap: 16px;
 
-         >label {
-            font-weight: 550;
+
+         .title {
+            font-size: map-get($fontSize, h4);
+            font-weight: 900;
+            padding-top: 12px;
          }
 
-         &:has(input[required]) label::after {
-            content: ' *';
-            color: map-get($color, error);
-         }
-
-         input,
-         textarea {
-            border: 1px solid map-get($color , hint);
-            border-radius: 8px;
-            padding: 8px;
-            outline: none;
-
-            &:focus {
-               border-color: map-get($color, primary);
+         .tags {
+            .chip--state {
+               margin-inline: 8px;
             }
          }
 
-         textarea {
-            resize: none;
-            height: 120px;
-            overflow-y: auto;
-         }
-      }
-
-      // 燈箱開啟
-      .example-modal.is-open {
-         visibility: visible;
-         opacity: 1;
-         pointer-events: auto;
-      }
-
-      // 錯誤
-      input.-isError {
-         border-color: map-get($color, error);
-      }
-
-      // =============================================================
-      h1 {
-         color: map-get($color, secondary2);
-         font-size: map-get($fontSize, h3);
-         font-weight: 900;
-      }
-
-      >a {
-         display: inline-block;
-         color: map-get($color , neutral);
-         font-weight: 600;
-         padding-block: 12px;
-      }
-
-      .container {
-         display: flex;
-         flex-direction: column;
-         gap: 40px;
-
-         .prod-info {
+         .user {
             display: flex;
-            flex-direction: column;
-            gap: 16px;
-            
+            align-items: center;
+            gap: 12px;
 
-            .title {
-               font-size: map-get($fontSize, h4);
-               font-weight: 900;
-               padding-top: 12px;
+
+            >p {
+               font-size: map-get($fontSize, default);
             }
-
-            .tags {
-               .chip--state {
-                  margin-inline: 8px;
-               }
-            }
-
-            .user {
-               display: flex;
-               align-items: center;
-               gap: 12px;
-
-
-               >p {
-                  font-size: map-get($fontSize, default);
-               }
-            }
-
-            .prod-txt {
-               .title {
-                  font-size: map-get($fontSize , default);
-                  padding-bottom: 12px;
-               }
-
-               .prod-content {
-                  line-height: 1.5;
-               }
-            }
-
-            .btnFill {
-               width: fit-content;
-            }
-
-
          }
 
-         // == 留言區 ================================
-         .message-board {
-            >h1 {
-               font-size: map-get($fontSize , h4);
+         .prod-txt {
+            .title {
+               font-size: map-get($fontSize , default);
                padding-bottom: 12px;
             }
 
-            .msg-list {
-               ul {
-                  margin-inline: -12px;
+            .prod-content {
+               line-height: 1.5;
+            }
+         }
 
-                  li {
-                     padding: 12px;
-                     display: flex;
-                     border-bottom: 1px solid map-get($color , gray);
+         .btnFill {
+            width: fit-content;
+         }
 
-                     &:last-of-type {
-                        border: none;
-                        padding-bottom: 0;
-                     }
 
-                     &:first-of-type {
-                        border-top: 1px solid map-get($color , gray);
-                     }
+      }
 
-                     .img-msg-user {
-                        padding-right: 12px;
-                     }
+      // == 留言區 ================================
+      .message-board {
+         >h1 {
+            font-size: map-get($fontSize , h4);
+            padding-bottom: 12px;
+         }
 
-                     .msg-content {
-                        .user-info {
-                           display: flex;
-                           gap: 12px;
+         .msg-list {
+            ul {
+               margin-inline: -12px;
 
-                           .user-name {
-                              font-weight: 600;
-                           }
+               li {
+                  padding: 12px;
+                  display: flex;
+                  border-bottom: 1px solid map-get($color , gray);
+
+                  &:last-of-type {
+                     border: none;
+                     padding-bottom: 0;
+                  }
+
+                  &:first-of-type {
+                     border-top: 1px solid map-get($color , gray);
+                  }
+
+                  .img-msg-user {
+                     padding-right: 12px;
+                  }
+
+                  .msg-content {
+                     .user-info {
+                        display: flex;
+                        gap: 12px;
+
+                        .user-name {
+                           font-weight: 600;
                         }
+                     }
 
-                        .msg-date {
-                           padding-block: 12px;
-                        }
+                     .msg-date {
+                        padding-block: 12px;
                      }
                   }
                }
             }
          }
+      }
+
+      .panel {
+         max-width: 700px;
+
+         .gallery-wrap {
+            position: relative;
+            margin: 0 auto;
+
+            .slider-for {
+               .img-big {
+                  border: 1px solid map-get($color , gray);
+                  overflow: hidden;
+                  border-radius: 4px;
+
+
+                  img {
+                     width: 100%;
+                     display: block;
+                     aspect-ratio: 1 / 1;
+                     object-fit: cover;
+                  }
+               }
+            }
+
+            // 手機：dots 顯示在主圖下方
+            .slick-dots {
+               bottom: -28px;
+
+               li button:before {
+                  font-size: 8px;
+                  color: map-get($color, neutral);
+                  opacity: .5;
+               }
+
+               li.slick-active button:before {
+                  color: map-get($color, primary);
+                  opacity: 1;
+               }
+            }
+
+            .slick-prev,
+            .slick-next {
+               display: none;
+            }
+
+
+            .slick-prev:before,
+            .slick-next:before {
+               content: '' !important;
+               /* 清空官方預設箭頭符號 */
+            }
+         }
+
+         // ---- 縮圖列：靜態排列，手機先隱藏 ----
+         .slider-nav {
+            display: none;
+         }
+      }
+   }
+
+
+   // 留言表單
+   #addMsg {
+      padding: 20px;
+      position: fixed;
+      width: 40%;
+      max-width: 400px;
+      min-width: 300px;
+      background-color: map-get($color , tertiary);
+      border-radius: 16px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      .btn-close {
+         display: flex;
+         justify-content: end;
+
+         #icon-closeBox {
+            color: map-get($color, neutral);
+            padding: 4px;
+            padding-top: 0;
+         }
+
+      }
+
+      #msgForm {
+         display: flex;
+         flex-direction: column;
+         gap: 12px;
+
+         .form-title {
+            font-size: map-get($fontSize, default);
+            text-align: center;
+            font-weight: 600;
+         }
+
+         .form-hint {
+            font-size: map-get($fontSize, hint);
+            color: map-get($color, hint);
+            line-height: 1.5;
+         }
+
+         .form-btn {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+         }
+      }
+   }
+}
+
+// == 平板 ===========================
+@media screen and (width >=768px) {}
+
+// == 桌機 ==============================
+@media screen and (width >=992px) {
+   #prodDetail {
+
+      >a {
+         padding: 12px 0 4px;
+         position: relative;
+
+         &::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            width: 0;
+            height: 2px;
+            background-color: map-get($color, neutral);
+            transition: .3s ease;
+         }
+
+         &:hover::after {
+            width: 100%;
+            transform: translateX(-50%);
+         }
+      }
+
+      .container {
+         padding-top: 8px;
+         flex-direction: row;
+
 
          .panel {
-            max-width: 700px;
+            width: 40%;
+            padding-inline: 44px;
+            padding-top: 12px;
+            position: sticky;
+            top: 90px;
+            height: fit-content;
 
             .gallery-wrap {
-               position: relative;
-               margin: 0 auto;
 
-               .slider-for {
-                  .img-big {
-                     border: 1px solid map-get($color , gray);
-                     overflow: hidden;
-                     border-radius: 4px;
+               overflow: visible;
 
+               .slick-arrow {
+                  display: flex;
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 50%;
+                  background: #fff;
+                  align-items: center;
+                  justify-content: center;
+                  top: 50%;
+                  transition: background .15s ease, transform .15s ease;
 
-                     img {
-                        width: 100%;
-                        display: block;
-                        aspect-ratio: 1 / 1;
-                        object-fit: cover;
+                  svg {
+                     width: 18px;
+                     height: 18px;
+
+                     path {
+                        stroke: map-get($color, primary);
+                        transition: stroke .15s ease;
+                     }
+                  }
+
+                  &:hover {
+                     background: map-get($color, primary);
+                     transform: translateY(-50%) scale(1.06);
+
+                     svg path {
+                        stroke: #fff;
                      }
                   }
                }
 
-               // 手機：dots 顯示在主圖下方
-               .slick-dots {
-                  bottom: -28px;
-
-                  li button:before {
-                     font-size: 8px;
-                     color: map-get($color, neutral);
-                     opacity: .5;
-                  }
-
-                  li.slick-active button:before {
-                     color: map-get($color, primary);
-                     opacity: 1;
-                  }
+               .slick-prev {
+                  left: -44px; // 箭頭離圖片的距離，改這個數字就好
                }
 
-               .slick-prev,
                .slick-next {
-                  display: none;
+                  right: -44px;
                }
-
 
                .slick-prev:before,
                .slick-next:before {
                   content: '' !important;
                   /* 清空官方預設箭頭符號 */
                }
+
+               // 桌機關閉 dots，改用下面的縮圖列
+               .slick-dots {
+                  display: none !important;
+               }
             }
 
-            // ---- 縮圖列：靜態排列，手機先隱藏 ----
+            // 桌機才顯示縮圖列
             .slider-nav {
-               display: none;
+               display: flex;
+               gap: 12px;
+               margin-top: 14px;
+
+
+               .thumb {
+                  flex: 1 1 0;
+                  aspect-ratio: 1 / 1;
+                  border-radius: 4px;
+                  border: 1px solid map-get($color, gray);
+                  overflow: hidden;
+                  cursor: pointer;
+                  transition: border-color .15s ease;
+
+                  img {
+                     width: 100%;
+                     height: 100%;
+                     object-fit: cover;
+                  }
+
+                  &.is-active {
+                     border: 2px solid map-get($color, primary);
+                  }
+               }
+            }
+         }
+
+         .message-board {
+            .msg-list {
+               ul {
+
+                  li {
+                     padding-block: 20px;
+                  }
+               }
             }
          }
       }
-
 
       // 留言表單
       #addMsg {
-         padding: 20px;
-         position: fixed;
-         width: 40%;
-         max-width: 400px;
-         min-width: 300px;
-         background-color: map-get($color , tertiary);
-         border-radius: 16px;
-         top: 50%;
-         left: 50%;
-         transform: translate(-50%, -50%);
-
-         .btn-close {
-            display: flex;
-            justify-content: end;
-
-            #icon-closeBox {
-               color: map-get($color, neutral);
-               padding: 4px;
-               padding-top: 0;
-            }
-
-         }
-
          #msgForm {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            gap: 20px;
 
             .form-title {
-               font-size: map-get($fontSize, default);
-               text-align: center;
-               font-weight: 600;
-            }
-
-            .form-hint {
-               font-size: map-get($fontSize, hint);
-               color: map-get($color, hint);
-               line-height: 1.5;
+               font-size: map-get($fontSize, h4);
+               font-weight: 700;
             }
 
             .form-btn {
-               display: flex;
-               gap: 24px;
-               justify-content: center;
-            }
-         }
-      }
-   }
-
-   // == 平板 ===========================
-   @media screen and (width >=768px) {}
-
-   // == 桌機 ==============================
-   @media screen and (width >=992px) {
-      #prodDetail {
-
-         >a {
-            padding: 12px 0 4px;
-            position: relative;
-
-            &::after {
-               content: '';
-               position: absolute;
-               left: 50%;
-               bottom: 0;
-               width: 0;
-               height: 2px;
-               background-color: map-get($color, neutral);
-               transition: .3s ease;
-            }
-
-            &:hover::after {
-               width: 100%;
-               transform: translateX(-50%);
-            }
-         }
-
-         .container {
-            padding-top: 8px;
-            flex-direction: row;
-
-
-            .panel {
-               width: 40%;
-               padding-inline: 44px;
-               padding-top: 12px;
-               position: sticky;
-               top: 90px;
-               height: fit-content;
-
-               .gallery-wrap {
-
-                  overflow: visible;
-
-                  .slick-arrow {
-                     display: flex;
-                     width: 40px;
-                     height: 40px;
-                     border-radius: 50%;
-                     background: #fff;
-                     align-items: center;
-                     justify-content: center;
-                     top: 50%;
-                     transition: background .15s ease, transform .15s ease;
-
-                     svg {
-                        width: 18px;
-                        height: 18px;
-
-                        path {
-                           stroke: map-get($color, primary);
-                           transition: stroke .15s ease;
-                        }
-                     }
-
-                     &:hover {
-                        background: map-get($color, primary);
-                        transform: translateY(-50%) scale(1.06);
-
-                        svg path {
-                           stroke: #fff;
-                        }
-                     }
-                  }
-
-                  .slick-prev {
-                     left: -44px; // 箭頭離圖片的距離，改這個數字就好
-                  }
-
-                  .slick-next {
-                     right: -44px;
-                  }
-
-                  .slick-prev:before,
-                  .slick-next:before {
-                     content: '' !important;
-                     /* 清空官方預設箭頭符號 */
-                  }
-
-                  // 桌機關閉 dots，改用下面的縮圖列
-                  .slick-dots {
-                     display: none !important;
-                  }
-               }
-
-               // 桌機才顯示縮圖列
-               .slider-nav {
-                  display: flex;
-                  gap: 12px;
-                  margin-top: 14px;
-
-
-                  .thumb {
-                     flex: 1 1 0;
-                     aspect-ratio: 1 / 1;
-                     border-radius: 4px;
-                     border: 1px solid map-get($color, gray);
-                     overflow: hidden;
-                     cursor: pointer;
-                     transition: border-color .15s ease;
-
-                     img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                     }
-
-                     &.is-active {
-                        border: 2px solid map-get($color, primary);
-                     }
-                  }
-               }
-            }
-
-            .message-board {
-               .msg-list {
-                  ul {
-
-                     li {
-                        padding-block: 20px;
-                     }
-                  }
-               }
-            }
-         }
-
-         // 留言表單
-         #addMsg {
-            #msgForm {
-               gap: 20px;
-
-               .form-title {
-                  font-size: map-get($fontSize, h4);
-                  font-weight: 700;
-               }
-
-               .form-btn {
-                  .btnNoFill:hover {
-                     background-color: map-get($color , neutral);
-                     border-color: map-get($color , neutral);
-                     color: map-get($color , tertiary);
-                  }
+               .btnNoFill:hover {
+                  background-color: map-get($color , neutral);
+                  border-color: map-get($color , neutral);
+                  color: map-get($color , tertiary);
                }
             }
          }
       }
    }
+}
