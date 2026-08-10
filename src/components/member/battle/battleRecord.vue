@@ -4,7 +4,10 @@
     <div class="record-main">
       <!-- 卡片封面 -->
       <div class="record-cover">
-        <img :src="battle.coverImage" :alt="battle.title">
+        <img 
+          :src="`${baseUrl}${battle.coverImage}`" 
+          :alt="battle.title"
+        >
         <span class="target-tag">{{ battle.target }}</span>
       </div>
 
@@ -91,6 +94,12 @@
       BattlePendingContent,
       BattleCancelledContent,
       BattleConfirmedContent
+    },
+
+    data() {
+      return {
+        baseUrl: import.meta.env.BASE_URL
+      };
     },
 
     props: { //由父元件myBattle.vue傳進來的約戰紀錄資料，因為有這筆資料，上面的模板才可以寫battle.id、battle.role...
