@@ -840,8 +840,8 @@ export default {
   //約戰資料表格內容
   .battle-table {
     width: 100%;
-    // min-width: 900px;
-    min-width: 820px;
+    // min-width: 820px;
+    min-width: 780px;
     table-layout: fixed;
     border-collapse: collapse;
 
@@ -919,7 +919,7 @@ export default {
     // 邀約 ID
     th:nth-child(1),
     td:nth-child(1) {
-      width: 80px;
+      width: 64px;
     }
 
     th:nth-child(2),
@@ -1174,16 +1174,6 @@ export default {
       font-size: 20px;
       font-weight: 500;
       color: #141c26;
-    }
-  }
-
-  @media (max-width: 900px) {
-    .battle-detail-content {
-      grid-template-columns: 1fr;
-    }
-
-    .battle-detail-side {
-      position: static;
     }
   }
 
@@ -1535,6 +1525,146 @@ export default {
 
     &:hover {
       background-color: darken(#64748b, 10%);
+    }
+  }
+
+  //========================= RWD調整 ==================================
+  @media screen and (max-width: 1024px) {
+    .battle-manage-filter {
+      padding: 16px;
+    }
+
+    .battle-filter-main {
+      gap: 16px;
+    }
+
+    .battle-filter-bottom {
+      gap: 16px;
+    }
+
+    .filter-item {
+      select {
+        min-width: 140px;
+      }
+    }
+
+    .date-range {
+      input {
+        width: 145px;
+      }
+    }
+  }
+
+  //詳情燈箱改單欄，並限制燈箱高度
+  @media (max-width: 900px) {
+    :deep(.battle-detail-dialog) {
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .battle-detail-content {
+      grid-template-columns: 1fr;
+    }
+
+    .battle-detail-side {
+      position: static;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .battle-table {
+      min-width: 560px;
+    }
+
+    //將標題欄位隱藏
+    .battle-table {
+      th:nth-child(2),
+      td:nth-child(2) {
+        display: none;
+      }
+    }
+
+    //將發起人欄位隱藏
+    .battle-table {
+      th:nth-child(3),
+      td:nth-child(3) {
+        display: none;
+      }
+    }
+  }
+
+  @media screen and (max-width: 576px) {
+    // 篩選面板區改單欄顯示
+    .battle-filter-main,
+    .battle-filter-bottom {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+    }
+
+    // 篩選欄位全部滿版
+    .filter-item {
+      width: 100%;
+
+      label {
+        padding-left: 10px;
+      }
+
+      select {
+        width: 95%;
+        margin-inline: auto;
+        min-width: 0;
+      }
+    }
+
+    // 日期區改上下排列
+    .date-range {
+      width: 95%;
+      margin-inline: auto;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+
+      input {
+        width: 100%;
+        min-width: 0;
+      }
+
+      // 中間的「至」
+      span {
+        // display: none;
+        // margin-inline: auto;
+        padding-left: 8px;
+      }
+    }
+
+    // 重置按鈕
+    .battle-filter-reset {
+      margin-inline: auto;
+      width: 95%;
+    }
+
+    //總筆數與分頁區
+    .battle-manage-list-footer {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+
+      //分頁器
+      .battle-manage-paginator {
+        align-self: center;
+      }
+
+    }
+    
+  }
+
+  //詳情燈箱資訊內容改單欄
+  @media screen and (max-width: 400px) {
+    .battle-public-info-row {
+      grid-template-columns: 1fr;
+      align-items: start;
+      gap: 4px;
     }
   }
 
