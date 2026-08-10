@@ -15,28 +15,28 @@
       <nav :class="{active: isMenuOpen}">
         <ul>
           <li>
-            <a href="index.html">首頁</a>
+            <a :href="`${baseUrl}index.html`">首頁</a>
           </li>
 
           <li>
-            <a href="battle.html">對戰配對</a>
+            <a :href="`${baseUrl}battle.html`">對戰配對</a>
           </li>
 
           <li>
-            <a href="build.html">陀螺配置</a>
+            <a :href="`${baseUrl}build.html`">陀螺配置</a>
           </li>
 
           <li>
-            <a href="forum.html">Spinix論壇</a>
+            <a :href="`${baseUrl}forum.html`">Spinix論壇</a>
           </li>
 
           <li>
-            <a href="market.html">交換專區</a>
+            <a :href="`${baseUrl}market.html`">交換專區</a>
           </li>
         </ul>
         <div class="header-btns">
-          <a class="signUp-btn" href="signUp.html">註冊</a>
-          <a class="signIn-btn" href="signIn.html">登入</a>
+          <a class="signUp-btn" :href=" `${baseUrl}signUp.html`">註冊</a>
+          <a class="signIn-btn" :href="`${baseUrl}signIn.html`">登入</a>
         </div>
       </nav>
       
@@ -74,6 +74,7 @@ export default {
 
   data() {
     return {
+      baseUrl: import.meta.env.BASE_URL,
       isScrolled: false,
       isMenuOpen: false,
       isMenuClosing: false
