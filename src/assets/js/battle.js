@@ -3,6 +3,10 @@ import { createApp } from "vue";
 import Header from "@/components/header.vue";
 import Footer from "@/components/footer.vue";
 
+//import TestPic from "/public/battle_bottom_spintop.png";
+
+//document.querySelector("img.bottom-spintop").src = new URL("/ckd101/g2/front/battle_bottom_spintop.png").href;
+
 createApp(Header).mount("#headerApp");
 createApp(Footer).mount("#footerApp");
 
@@ -485,7 +489,7 @@ const hostReviewData = {
   101: {
     hostId: 101,
     name: "WeiChen",
-    avatar: "/spinix_member_default.png",
+    avatar: "spinix_member_default.png",
     totalBattles: 18,
     averageRating: 4.7,
     //過往評論紀錄
@@ -531,7 +535,7 @@ const hostReviewData = {
   102: {
     hostId: 102,
     name: "SpinRay",
-    avatar: "/spinix_member_default.png",
+    avatar: "spinix_member_default.png",
     totalBattles: 18,
     averageRating: 4.7,
     reviews: [
@@ -699,7 +703,7 @@ const battleData = [
   {
     battleId: 9,
     title: "桃園陀螺玩家輕鬆聚",
-    coverImage: "/battle_card_default.jpg",
+    coverImage: "battle_card_default.jpg",
     target: "親子友善",
     city: "桃園市",
     district: "桃園區",
@@ -775,7 +779,7 @@ function createBattleCard(battle) {
       <div class="pic">
         <img
           class="battle-cover"
-          src="${battle.coverImage}"
+          src="${import.meta.env.BASE_URL + battle.coverImage}"
           alt="${battle.title}的邀約封面"
         >
         <span class="target-tag">${battle.target}</span>
@@ -803,7 +807,7 @@ function createBattleCard(battle) {
             >
               <img
                 class="host-avatar"
-                src="${host.avatar}"
+                src="${import.meta.env.BASE_URL + host.avatar}"
                 alt=""
               >
               <span class="host-name">${host.name}</span>
@@ -878,6 +882,7 @@ function getAvailableBattles() {
 
 //render出每張邀約卡片
 function renderBattleCards(battles) {
+  console.log("tt2");
 
   // 保存目前要顯示的邀約資料
   currentBattleList = battles;
@@ -965,9 +970,10 @@ moreBtn.addEventListener("click", () => {
   //因重新render後產生了新的倒數DOM，所以要立即更新一次倒數內容。
   updateAllCountdowns();
 });
-
+console.log("a3222222222222222");
 // 取得目前所有可公開顯示的邀約，並在載入網頁時，首次生成卡片
 renderBattleCards(getAvailableBattles());
+
 
 // 卡片生成後，進行倒數計時
 function updateCountdown(element) {
@@ -1164,7 +1170,7 @@ const applyContact = document.querySelector("#applyContact"); //參加人輸入�
 function renderApplyModal(battle) {
   const host = hostReviewData[battle.hostId];
 
-  applyAvatar.src = host.avatar;
+  applyAvatar.src = import.meta.env.BASE_URL + host.avatar;
   applyAvatar.alt = `${host.name}的會員頭像`;
 
   applyBattleTitle.textContent = battle.title;
