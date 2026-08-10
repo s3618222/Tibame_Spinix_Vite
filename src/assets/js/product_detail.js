@@ -3,7 +3,6 @@ import { createApp } from "vue";
 
 import Header from "@/components/header.vue";
 import Footer from "@/components/footer.vue";
-import { el } from "element-plus/es/locales.mjs";
 
 createApp(Header, {
    solid: true
