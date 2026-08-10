@@ -296,21 +296,39 @@
       z-index: 900;
     }
 
+     // sidebar 控制按鈕固定畫面左上
     .back-menu-btn {
-      display: flex;
-      position: static;
-    }
+      width: 40px;
+      height: 40px;
 
-    .back-menu-btn.active {
       position: fixed;
-
       top: 8px;
-      left: 32px;
-
+      left: 20px;
       z-index: 1100;
 
+      display: flex;
+
+      border: 2px solid #fec96b;
+      border-radius: 10px;
+
+      background-color: #ffffff;
+
+      box-shadow: 0 3px 10px rgba(20, 28, 38, 0.16);
+
+      span {
+        width: 22px;
+        height: 2px;
+
+        background-color: #141c26;
+      }
+    }
+
+
+    // sidebar 打開後，同一顆按鈕變成 X
+    .back-menu-btn.active {
       border-color: #fec96b;
       border-radius: 50%;
+
       background-color: #141c26;
 
       span {
@@ -330,14 +348,19 @@
       }
     }
 
-    .back-header {
-      justify-content: space-between;
-    }
 
+    .back-header {
+      justify-content: flex-end;
+
+      // 左側保留一些空間，
+      // 避免 header 內容未來撞到固定漢堡
+      padding-left: 76px;
+    }
 
     .back-content {
       padding: 32px;
     }
+
   }
 
 </style>
