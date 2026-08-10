@@ -12,7 +12,7 @@ import MyAppeal from "@/components/myAppeal.vue";
 import MyViolation from "@/components/myViolation.vue";
 
 const memberRouter = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
 
   //後續新建區塊，需在此處增加對應路徑與名稱
   routes: [

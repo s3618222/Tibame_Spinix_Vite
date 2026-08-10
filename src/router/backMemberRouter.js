@@ -13,7 +13,7 @@ import ComplaintManage from "@/views/backend/complaintManage.vue";
 import AdminAccountManage from "@/views/backend/adminAccountManage.vue";
 
 const backMemberRouter = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
 
   routes: [
     {
