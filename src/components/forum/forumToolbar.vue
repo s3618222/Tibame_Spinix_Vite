@@ -13,7 +13,7 @@
     </div>
     <button type="button" class="btnFill btn-post">
       <i class="fa-regular fa-pen-to-square"></i>
-      <a href="/forumForm.html">我要發文</a>
+      <a :href="`${baseUrl}forumForm.html`">我要發文</a>
     </button>
 
 
@@ -23,7 +23,13 @@
 
 <script>
   export default {
-    name: "ForumToolbar"
+    name: "ForumToolbar",
+
+    data(){
+      return {
+        baseUrl: import.meta.env.BASE_URL
+      }
+    }
   }
 </script>
 

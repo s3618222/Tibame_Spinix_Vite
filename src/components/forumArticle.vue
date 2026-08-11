@@ -1,6 +1,6 @@
 <template>
   <div class="forum-article-page">
-    <a href="/forum.html" class="back-link">
+    <a :href="`${baseUrl}forum.html`" class="back-link">
       <i class="fa-solid fa-arrow-left"></i>
       <span>返回論壇列表</span>
     </a>
@@ -28,6 +28,12 @@ export default {
     ArticleMain,
     CommentForm,
     CommentList
+  },
+
+  data(){
+    return {
+      baseUrl: import.meta.env.BASE_URL
+    }
   }
 }
 
