@@ -34,14 +34,14 @@
             <a :href="`${baseUrl}market.html`">交換專區</a>
           </li>
         </ul>
-        <div class="header-btns">
+        <div class="header-btns" v-if="!isLogin">
           <a class="signUp-btn" :href=" `${baseUrl}signUp.html`">註冊</a>
           <a class="signIn-btn" :href="`${baseUrl}signIn.html`">登入</a>
         </div>
 
       </nav>
       <!-- 登入後會員頭貼 -->
-        <div class="member-center" ref="userMenuWrapper">
+        <div class="member-center" ref="userMenuWrapper" v-if="isLogin">
           <div class="header-user-headshot" @click="openUserPanel">
             <img src="../../public/spinix_member_test1.png" alt="">
           </div>
@@ -112,7 +112,8 @@ export default {
       isScrolled: false,
       isMenuOpen: false,
       isMenuClosing: false,
-      isUserPanelOpen: false
+      isUserPanelOpen: false,
+      isLogin:true // 檢查是否登入
     };
   },
 
@@ -156,6 +157,7 @@ export default {
         this.isUserPanelOpen = false;
       }
     }
+    
   },
 
   mounted() {
@@ -191,7 +193,6 @@ export default {
 
       width: 100%;
       height: 88px;
-      // padding-inline: 20px;
 
       background-color: transparent;
       border-bottom: 1px solid transparent;
@@ -352,7 +353,6 @@ export default {
   .header-main {
     .member-center{
       padding-right: 32px;
-      // position: relative;
       .header-user-headshot{
         width: 50px;
         background-color: white;
@@ -553,7 +553,6 @@ export default {
   // 手機板
   @media screen and (width < 992px) {
     header{
-      // position: relative;
       background-color: #141C26;
     }
     .header-main {
@@ -575,10 +574,7 @@ export default {
         transform: translateX(100%);
         transition: transform 0.6s ease;
         flex-direction: column;
-        // align-content: center;
-        // align-items: end;
         justify-content: flex-start;
-        // align-content: space-between;
           &.active{
             transform: translateX(0);
             box-shadow: -12px 0 32px rgba(20, 28, 38, 0.22);
@@ -589,7 +585,6 @@ export default {
             flex-direction: column;
             flex: initial;
             gap: 28px;
-            // flex: 1;
 
             li {
               width: 100%;
