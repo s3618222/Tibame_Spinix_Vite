@@ -59,7 +59,7 @@ html {
 }
 
 .battle-sec-hero .container {
-  width: min(1120px, 86vw);
+  width: min(1360px, 86vw);
   display: flex;
   align-items: center;
   gap: 16px;
@@ -121,7 +121,7 @@ a.empty-createBattleBtn {
 }
 
 .battle-sec .container {
-  width: min(1120px, 86vw);
+  width: min(1360px, 86vw);
   margin-inline: auto;
 
   .content {
@@ -307,7 +307,7 @@ a.empty-createBattleBtn {
 }
 
 .battle-sec-tags .container {
-  width: min(1120px, 86vw);
+  width: min(1320px, 86vw);
   margin-inline: auto;
 
   .content {
@@ -317,7 +317,7 @@ a.empty-createBattleBtn {
 }
 
 .tag-list {
-  width: min(840px, 100%);
+  width: min(920px, 100%);
   padding: 32px;
   margin: 12px auto 32px;
 
@@ -335,7 +335,7 @@ a.empty-createBattleBtn {
   flex-direction: column;
   justify-content: stretch;
   align-items: stretch;
-  gap: 28px;
+  gap: 36px;
 }
 
 // 每一列共同設定
@@ -347,7 +347,7 @@ a.empty-createBattleBtn {
   justify-content: flex-start;
   align-items: center;
   flex-wrap: wrap;
-  gap: 28px;
+  gap: 36px;
 }
 
 /* 每個篩選欄位 */
@@ -504,19 +504,19 @@ a.empty-createBattleBtn {
 }
 
 .battle-sec-cards .card-list {
-  width: 95%;
+  width: 100%;
   margin-inline: auto;
 
   display: flex;
   align-items: stretch;
   flex-wrap: wrap;
-  gap: 36px 28px;
+  gap: 40px 36px;
 
   // border: 1px solid gray;
 }
 
 .card-list .battleCard {
-  width: calc((100% - 56px) / 3);
+  width: calc((100% - 72px) / 3);
 
   display: flex;
   flex-direction: column;
@@ -1379,6 +1379,36 @@ a.empty-createBattleBtn {
 }
 
 // ===================RWD設定=========================
+@media screen and (max-width: 1440px) {
+  .page-battle {
+
+    .battle-sec .container,
+    .battle-sec-tags .container,
+    .battle-sec-hero .container {
+      width: min(1120px, 86vw);
+    }
+
+    .tag-list {
+      width: min(840px, 100%);
+      gap: 28px;
+    }
+
+    .tag-row {
+      gap: 28px;
+    }
+
+    .battle-sec-cards .card-list {
+      width: 95%;
+      gap: 36px 28px;
+    }
+
+    .card-list .battleCard {
+      width: calc((100% - 56px) / 3);
+    }
+
+  }
+}
+
 @media screen and (max-width: 1024px) {
   .page-battle {
     .card-list .battleCard {
