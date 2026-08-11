@@ -896,7 +896,7 @@ function renderBattleCards(battles) {
     battleCardList.innerHTML = `
       <div class="battle-empty battle-empty-all">
         <img
-          src="/battle_empty_state.png"
+          src="battle_empty_state.png"
           alt="等待發起對戰的戰鬥陀螺"
         >
 
@@ -1365,9 +1365,9 @@ function battleFilter() {
   renderBattleCards(filteredBattles);
   updateAllCountdowns();
 
-  requestAnimationFrame(() => {
-    ScrollTrigger.refresh();
-  });
+  // requestAnimationFrame(() => {
+  //   ScrollTrigger.refresh();
+  // });
 }
 
 //將所有頁面上的篩選分類欄位 select 或 input 集結成陣列，然後對陣列中的每個條件都綁定change事件，只要有設定任一篩選條件，都會跑一次約戰卡的過濾篩選函式
