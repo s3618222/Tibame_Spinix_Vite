@@ -38,16 +38,48 @@
           <a class="signUp-btn" :href=" `${baseUrl}signUp.html`">註冊</a>
           <a class="signIn-btn" :href="`${baseUrl}signIn.html`">登入</a>
         </div>
+
       </nav>
-      
-    </div>
-
-    <!-- <div class="header-btns">
-      <a class="signUp-btn" href="signUp.html">註冊</a>
-      <a class="signIn-btn" href="signIn.html">登入</a>
-    </div> -->
-
-    <!-- 手機漢堡選單 -->
+      <!-- 登入後會員頭貼 -->
+        <div class="member-center" ref="userMenuWrapper">
+          <div class="header-user-headshot" @click="openUserPanel">
+            <img src="../../public/spinix_member_test1.png" alt="">
+          </div>
+          <!-- 下拉選單 -->
+          <div class="user-menu"  :class="{ open: isUserPanelOpen }">
+            <div class="menu-user-info">
+              <div class="user-headshot">
+                <img src="../../public/spinix_member_test1.png" alt="">
+              </div>
+              <p class="user-name">Lone軍團長</p>
+            </div>
+            <div class="menu-list">
+              <ul>
+                <li>
+                  <button type="button" class="menu-item">
+                      <i class="fa-solid fa-bell"></i>
+                      <p class="item-label">會員通知</p>
+                      <i class="fa-solid fa-angle-right"></i>
+                  </button>
+                </li>
+                <li>
+                  <a :href=" `${baseUrl}member.html`" class="menu-item">
+                      <i class="fa-solid fa-user"></i>
+                      <p class="item-label">會員中心</p>
+                      <i class="fa-solid fa-angle-right"></i>
+                  </a>
+                </li>
+                <li>
+                  <a href="../../index.html" class="menu-item">
+                      <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                      <p class="item-label">登出</p>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- 手機漢堡選單 -->
     <button 
       id="burger"
       type="button"
@@ -58,6 +90,8 @@
       <span></span>
       <span></span>
     </button>
+    </div>
+    
   </header>
 </template>
 
@@ -77,7 +111,8 @@ export default {
       baseUrl: import.meta.env.BASE_URL,
       isScrolled: false,
       isMenuOpen: false,
-      isMenuClosing: false
+      isMenuClosing: false,
+      isUserPanelOpen: false
     };
   },
 
@@ -108,6 +143,18 @@ export default {
         this.isMenuOpen = false;
         this.isMenuClosing = false;
       }, 500);
+    },
+
+    // 打開會員中心面板
+    openUserPanel(){
+      this.isUserPanelOpen = !this.isUserPanelOpen;
+    },
+     // 點擊選單以外的地方要關閉
+    handleClickOutside(e) {
+      // this.$refs.userMenuWrapper 是包住頭貼+下拉選單的外層容器
+      if (this.$refs.userMenuWrapper && !this.$refs.userMenuWrapper.contains(e.target)) {
+        this.isUserPanelOpen = false;
+      }
     }
   },
 
@@ -117,12 +164,16 @@ export default {
     if (!this.solid) {
       window.addEventListener("scroll", this.changeHeader);
     }
+    document.addEventListener("click", this.handleClickOutside);
   },
 
   beforeUnmount() {
     window.removeEventListener("scroll", this.changeHeader);
+    document.removeEventListener("click", this.handleClickOutside);
   }
 };
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -140,7 +191,7 @@ export default {
 
       width: 100%;
       height: 88px;
-      padding-inline: 20px;
+      // padding-inline: 20px;
 
       background-color: transparent;
       border-bottom: 1px solid transparent;
@@ -169,7 +220,7 @@ export default {
       align-items: center;
       gap: 24px;
       width: 100%;
-      
+      padding-inline: 20px;
   }
 
   .header-main .logo {
@@ -203,9 +254,7 @@ export default {
   .header-main nav{
     width: 100%;
     display: flex;
-    align-items: center;
-    
-    
+    align-items: center; 
   }
 
   .header-main nav ul {
@@ -296,6 +345,111 @@ export default {
 
   .header-btns a:active {
       transform: translateY(0);
+  }
+
+
+
+  .header-main {
+    .member-center{
+      padding-right: 32px;
+      // position: relative;
+      .header-user-headshot{
+        width: 50px;
+        background-color: white;
+        border-radius:50% ;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition:.3s ease;
+        &:hover{
+          border-color: #F29B00;
+        }
+        img{
+          width: 100%;
+        }
+      }
+      // 下拉選單
+      .user-menu{
+        background-color: #F7F5F3;
+        position: absolute;
+        right: 20px;
+        margin-top: 20px;
+        border-radius: 10px;
+        padding: 20px 12px;
+        min-width: 200px;
+
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-8px);
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+
+        &.open {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+
+        .menu-user-info{
+          display: flex;
+          gap: 16px;
+          align-items: center;
+
+          .user-headshot{
+            width: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: white;
+            border: 1px solid #dddddd;
+            
+            img{
+              width: 100%;
+            }
+          }
+        }
+
+        .menu-list{
+
+          ul{
+            padding-top: 4px ;
+
+            li{  
+              width: 100%;
+              border-radius: 8px;
+              transition: all .3s ease;
+              margin-top: 12px;
+              
+
+              &:hover{
+                background-color: #fec96b;
+
+                .menu-item{
+                  color: #a86B00 ;
+                }
+
+                
+              }
+
+              .menu-item{
+                display: flex;
+                gap: 8px;
+                padding: 8px 4px;
+                align-items: center;
+                justify-content: start;
+                width: 100%;
+                font-size: 18px;
+
+                .item-label{
+                  flex: 1;
+                  text-align: left;
+                  font-weight: lighter;
+                  
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   // 漢堡選單
@@ -464,6 +618,10 @@ export default {
             gap: 20px;
             
           }
+        }
+      
+        .logo{
+          flex: 1;
         }
     }
 
