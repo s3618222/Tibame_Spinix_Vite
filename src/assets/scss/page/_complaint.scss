@@ -1,0 +1,8 @@
+@use "sass:map";
+@use "../var" as *;
+
+.page-complaint {
+  padding-top: 88px;
+  min-height: 100vh;
+  background-color: map.get($color, tertiary);
+}
