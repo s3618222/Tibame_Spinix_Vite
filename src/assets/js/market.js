@@ -23,8 +23,6 @@ createApp(ProductList).mount("#exchangeApp");
 
 
 // == 篩選列 =====================================================
-
-
 // == 縣市篩選 ======================================
 const taiwanDistricts = {
    '基隆市': ['仁愛區', '信義區', '中正區', '中山區', '安樂區', '暖暖區', '七堵區'],
@@ -47,4 +45,7 @@ selectCity.addEventListener('change', function () {
       selectDistrict.appendChild(option);
    });
 });
+
+
+
 

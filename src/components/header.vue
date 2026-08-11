@@ -371,6 +371,8 @@ export default {
       // 下拉選單
       .user-menu{
         background-color: #F7F5F3;
+        border: 1px solid #dddddd;
+        box-shadow: 0 8px 12px rgba(20, 28, 38, 0.1);
         position: absolute;
         right: 20px;
         margin-top: 20px;
