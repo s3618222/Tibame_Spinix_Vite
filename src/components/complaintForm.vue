@@ -366,6 +366,7 @@ export default {
 
 .form-actions {
   display: flex;
+  justify-content: left;
   gap: 12px;
 }
 
