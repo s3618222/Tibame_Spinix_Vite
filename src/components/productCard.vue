@@ -169,7 +169,7 @@ function goToDetail() {
          transition: transform .5s ease, border .25s ease;
 
          &:hover {
-            border: 1px solid var(--primary);
+            border: 1px solid map-get($color , primary );
             transform: translateY(-4px);
             box-shadow: 0 10px 20px rgba(20, 28, 38, 0.1);
          }
