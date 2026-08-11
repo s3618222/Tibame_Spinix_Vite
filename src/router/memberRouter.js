@@ -9,6 +9,7 @@ import MyBattle from "@/components/member/battle/myBattle.vue";
 import MyForum from "@/components/myForum.vue";
 import MyExchange from "@/components/myExchange.vue";
 import MyAppeal from "@/components/myAppeal.vue";
+import MyAppealDetail from "@/components/myAppealDetail.vue";
 import MyViolation from "@/components/myViolation.vue";
 
 const memberRouter = createRouter({
@@ -47,6 +48,11 @@ const memberRouter = createRouter({
       path: "/appeal",
       name: "member-appeal",
       component: MyAppeal
+    },
+    {
+      path: "/appeal/:id",
+      name: "member-appeal-detail",
+      component: MyAppealDetail
     },
     {
       path: "/violation",

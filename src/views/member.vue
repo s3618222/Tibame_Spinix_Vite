@@ -15,7 +15,7 @@
             :key="item.name"
             :to="{ name: item.name }"
             class="member-sidebar-link"
-            :class="{ active: $route.name === item.name }"
+            :class="{ active: $route.name.startsWith(item.name) }"
           >
             <i :class="item.icon"></i>
             {{ item.label }}
