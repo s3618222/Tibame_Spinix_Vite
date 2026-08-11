@@ -45,38 +45,3 @@ $color: (
 
     lightYellow: #FFE9C4 // hover色
 );
-
-:root{
-    --primary: #fec96b;
-    // 橘色,用在實心按鈕、標題
-    --secondary:#141C26;
-    // 深藍，用在header、footer背景色、內文
-    --secondary2:#F29B00;
-    //深橘，用在大標題
-    --tertiary:#F7F5F3;
-    // 米白，頁面底色
-    --neutral:#64748B;
-    // 灰藍，中性色 /次要資訊文字
-    --error:#e63946;
-    // 錯誤訊息
-    --hint:#aaaaaa;
-    // 提示文字
-    // 黑白灰
-    --black:#3A3A3A;
-    // 黑色
-    --gray:#dddddd;
-    // 淺灰
-
-    // 系統狀態配色
-    --brown: #A86B00;
-    //待確認-文字黃
-    --pending: #FFF2D6;
-    //待確認-背景
-
-    --olive: #4F8A5B;
-    // 成功-文字
-    --lightGreen: #E4EEE7;
-    // 成功-背景
-
-    --lightRed: #F9D7DA; // 失敗, 取消 背景
-}
