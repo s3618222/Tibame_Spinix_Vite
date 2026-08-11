@@ -27,7 +27,7 @@
 
       <div class="card-footer">
          <p class="state">{{ state }}</p>
-         <a :href="`./product_detail.html?id=${id}`" class="btnNoFill" @click.stop>查看詳情</a>
+         <a :href="'product_detail.html'" class="btnNoFill" @click.stop>查看詳情</a>
       </div>
    </div>
 </template>
@@ -73,14 +73,13 @@ const props = defineProps({
 })
 
 function goToDetail() {
-   window.location.href = `./product_detail.html?id=${props.id}`
+   window.location.href = `product_detail.html`;
 }
 </script>
 
 
 <style lang="scss">
    @use '@/assets/scss/_var' as *;
-   @use '@/assets/scss/style' as *;
 
    .card {
       width: 100%;
@@ -157,7 +156,7 @@ function goToDetail() {
             font-weight: 550;
          }
 
-         .btnNoFill {
+         :deep(.btnNoFill) {
             display: none;
          }
       }
@@ -199,7 +198,7 @@ function goToDetail() {
          .card-footer {
             align-items: center;
 
-            .btnNoFill {
+            :deep(.btnNoFill) {
                display: block;
                // margin-left: auto;
                padding: 12px 16px;

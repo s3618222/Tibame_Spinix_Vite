@@ -70,7 +70,7 @@
                   </a>
                 </li>
                 <li>
-                  <a href="../../index.html" class="menu-item">
+                  <a href="#" class="menu-item" @click="isLogin = false">
                       <i class="fa-solid fa-arrow-right-from-bracket"></i>
                       <p class="item-label">登出</p>
                   </a>

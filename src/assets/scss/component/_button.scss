@@ -41,21 +41,21 @@
 .btnNoFill {
   border-radius: 12px;
   padding: 8px 24px;
-  font-size: map-get(var.$fontSize, hint);
+  font-size: map-get(var.$color, hint);
   text-align: center;
   transition: all .3s;
   background-color: transparent;
-  color: var(--neutral);
-  border: 1px solid var(--neutral);
+  color: map-get(var.$color, neutral);
+  border: 1px solid map-get(var.$color, neutral);
   cursor: pointer;
-  
+
   &:hover {
     // border: 1px solid map-get(var.$color, primary);
     // color: map-get(var.$color, primary);
-    
-    border-color: var(--primary);
-    background-color: var(--primary);
-    color: var(--secondary);
+
+    border-color: map-get(var.$color, primary);
+    background-color:  map-get(var.$color, primary);;
+    color: map-get(var.$color, secondary);
   }
 }
 

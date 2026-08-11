@@ -25,6 +25,8 @@ export default defineConfig({
         build: path.resolve(__dirname, "build.html"),
         forum: path.resolve(__dirname, "forum.html"),
         market: path.resolve(__dirname, "market.html"),
+        product_detail: path.resolve(__dirname, "product_detail.html"),
+        addChange: path.resolve(__dirname, "addChange.html"),
         member: path.resolve(__dirname, "member.html"),
         signIn: path.resolve(__dirname, "signIn.html"),
         signUp: path.resolve(__dirname, "signUp.html"),
