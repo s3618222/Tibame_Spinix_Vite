@@ -87,7 +87,7 @@
   .member-sidebar {
     background-color: rgba(map.get($color, primary), 0.25);
     box-shadow: 0 0 16px rgba(0, 0, 0, 0.15);
-    padding: 40px 16px;
+    padding: 40px 16px 300px;
     border-radius: 16px;
 
     display: flex;
@@ -123,7 +123,7 @@
   .sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 32px;
   }
 
   .member-sidebar-link {
