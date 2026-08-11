@@ -26,7 +26,7 @@
       </div>
 
       <div class="card-footer">
-         <p class="state">{{ state }}</p>
+         <p class="chip chip--exchangeable ">{{ state }}</p>
          <a :href="'product_detail.html'" class="btnNoFill" @click.stop>查看詳情</a>
       </div>
    </div>
@@ -85,7 +85,7 @@ function goToDetail() {
       width: 100%;
       background-color: white;
       padding: 12px;
-      border: 1px solid var(--tertiary);
+      border: 1px solid map-get($color , tertiary);
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(20, 28, 38, 0.06);
       height: fit-content;
@@ -147,14 +147,6 @@ function goToDetail() {
          // gap: 12px;
          align-items: center;
          justify-content: space-between;
-
-         .state {
-            background-color: var(--lightGreen);
-            padding: 4px 8px;
-            border-radius: 4px;
-            color: var(--olive);
-            font-weight: 550;
-         }
 
          :deep(.btnNoFill) {
             display: none;
