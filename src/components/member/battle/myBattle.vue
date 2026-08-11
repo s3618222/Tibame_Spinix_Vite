@@ -527,7 +527,7 @@
           });
 
           //!!!!!!跳轉到申訴分頁 (記得到時候要更換成真的申訴分頁的名稱)
-          window.location.href = `appeal.html?${query.toString()}`;
+          window.location.href = `complaint.html?${query.toString()}`;
         },
 
         openReviewModal(reviewData) { //開啟評價燈箱時，帶入對手的相關資訊
