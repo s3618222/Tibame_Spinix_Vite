@@ -8,14 +8,14 @@
   }"
 >
     <div class="header-main">
-      <a href="index.html" class="logo">
+      <a href="homepage.html" class="logo">
         <img src="/spinix_logo.png" alt="Spinix Logo">
       </a>
 
       <nav :class="{active: isMenuOpen}">
         <ul>
           <li>
-            <a :href="`${baseUrl}index.html`">首頁</a>
+            <a :href="`${baseUrl}homepage.html`">首頁</a>
           </li>
 
           <li>

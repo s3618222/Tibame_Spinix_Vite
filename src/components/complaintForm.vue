@@ -145,7 +145,7 @@ export default {
 
     handleSubmit() {
       alert("申訴已送出！");
-      window.location.href = `${import.meta.env.BASE_URL}index.html`;
+      window.location.href = `${import.meta.env.BASE_URL}homepage.html`;
     },
 
     handleCancel() {

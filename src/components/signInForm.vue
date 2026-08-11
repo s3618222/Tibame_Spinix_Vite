@@ -81,7 +81,7 @@ export default {
 
     handleSubmit() {
       alert("登入成功！");
-      window.location.href = `${this.baseUrl}index.html`;
+      window.location.href = `${this.baseUrl}homepage.html`;
     }
   }
 };
