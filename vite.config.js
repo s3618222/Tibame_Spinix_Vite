@@ -18,8 +18,8 @@ export default defineConfig({
   build: {
     rolldownOptions: {
       input: {
-        entry: path.resolve(__dirname, "entry.html"),
         index: path.resolve(__dirname, "index.html"),
+        homepage: path.resolve(__dirname, "homepage.html"),
         battle: path.resolve(__dirname, "battle.html"),
         createBattle: path.resolve(__dirname, "createBattle.html"),
         build: path.resolve(__dirname, "build.html"),

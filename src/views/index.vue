@@ -161,7 +161,7 @@
 
       goToTarget() { //跳轉分頁函式
         if (this.selectedTarget === "front") {
-          window.location.href = `${this.URL_BASE}index.html`; // !!!之後首頁檔案名稱要改homepage
+          window.location.href = `${this.URL_BASE}homepage.html`; // !!!之後首頁檔案名稱要改homepage
         }
 
         if (this.selectedTarget === "back") {

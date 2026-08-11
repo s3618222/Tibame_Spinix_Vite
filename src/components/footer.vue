@@ -2,7 +2,7 @@
   <footer>
     <div class="footer-main">
       <div class="footer-col footer-brand">
-        <a href="index.html" class="footer-logo">
+        <a href="homepage.html" class="footer-logo">
           <img src="/spinix_logo_words.png" alt="Spinix Logo">
         </a>
         <!-- <p>
