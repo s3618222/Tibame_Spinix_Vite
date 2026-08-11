@@ -5,7 +5,7 @@
 
       <aside class="member-sidebar">
         <div class="sidebar-user">
-          <img class="sidebar-avatar" :src="currentUser.avatar" alt="使用者頭像" />
+          <img class="sidebar-avatar" :src="baseUrl + currentUser.avatar" alt="使用者頭像" />
           <p class="sidebar-username">{{ currentUser.username }}</p>
         </div>
 
@@ -49,7 +49,7 @@
       return {
         //側邊選單頂部顯示的使用者資訊，先寫死假資料
         currentUser: {
-          avatar: "/spinix_member_default.png",
+          avatar: "spinix_member_default.png",
           username: "陀螺戰神123"
         },
 
@@ -63,6 +63,12 @@
           { name: "member-violation", label: "違規紀錄", icon: "fa-solid fa-shield-halved" }
         ]
       };
+    },
+
+    computed: {
+      baseUrl() {
+        return import.meta.env.BASE_URL;
+      }
     }
   };
 </script>

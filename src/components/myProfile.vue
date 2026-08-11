@@ -18,7 +18,7 @@
 
       <div class="account-body">
         <div class="avatar-block">
-          <img class="avatar" :src="profile.avatar" alt="使用者頭像" />
+          <img class="avatar" :src="baseUrl + profile.avatar" alt="使用者頭像" />
           <button type="button" class="avatar-edit-link">
             更換頭貼
             <i class="fa-regular fa-pen-to-square"></i>
@@ -119,7 +119,7 @@ export default {
     return {
       //帳戶資料假資料，先寫死
       profile: {
-        avatar: "/spinix_member_default.png",
+        avatar: "spinix_member_default.png",
         account: "bill0714",
         username: "陀螺戰神123",
         email: "bill0714@example.com",
@@ -140,6 +140,10 @@ export default {
   },
 
   computed: {
+    baseUrl() {
+      return import.meta.env.BASE_URL;
+    },
+
     passwordMask() {
       return "*".repeat(9);
     }
