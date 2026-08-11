@@ -1,7 +1,7 @@
 <template>
   <div class="form-label-style">
     <!-- form-section -->
-    <label class="label-title">商品照片（最多 {{ MAX_PHOTOS }} 張）</label>
+    <label class="label-title">物品照片（最多 {{ MAX_PHOTOS }} 張）</label>
 
     <div class="photo-grid">
       <div v-for="(photo, index) in photos" :key="photo.id" class="photo-tile">
