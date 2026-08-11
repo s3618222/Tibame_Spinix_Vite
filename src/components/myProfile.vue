@@ -42,10 +42,6 @@
               <label>使用者名稱</label>
               <div class="readonly-box">{{ profile.username }}</div>
             </div>
-            <div class="form-group">
-              <label>聯絡信箱</label>
-              <div class="readonly-box">{{ profile.email }}</div>
-            </div>
           </div>
 
           <div class="form-row">
@@ -120,9 +116,8 @@ export default {
       //帳戶資料假資料，先寫死
       profile: {
         avatar: "spinix_member_default.png",
-        account: "bill0714",
+        account: "bill0714@gmail.com",
         username: "陀螺戰神123",
-        email: "bill0714@example.com",
         phone: "0912345678",
         landline: "",
         birthYear: "1999",
