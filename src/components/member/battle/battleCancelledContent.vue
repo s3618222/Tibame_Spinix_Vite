@@ -5,7 +5,10 @@
     <div class="cancelled-row">
       <!-- 會員是發起人，顯示參加人資訊 -->
       <button v-if="battle.role === 'initiator'" type="button" class="cancelled-user" @click="$emit('open-history', battle.participantId)">
-        <img :src="battle.participantAvatar" :alt="battle.participantName">
+        <img 
+          :src="`${baseUrl}${battle.participantAvatar}`" 
+          :alt="battle.participantName"
+        >
         <span>
           參加人：{{ battle.participantName }}
         </span>
@@ -13,7 +16,10 @@
 
       <!-- 會員是參加人，顯示發起人資訊 -->
       <button v-else-if="battle.role === 'participant'" type="button" class="cancelled-user" @click="$emit('open-history', battle.initiatorId)">
-        <img :src="battle.initiatorAvatar" :alt="battle.initiatorName">
+        <img 
+          :src="`${baseUrl}${battle.initiatorAvatar}`" 
+          :alt="battle.initiatorName"
+        >
         <span>
           發起人：{{ battle.initiatorName }}
         </span>
@@ -31,6 +37,12 @@
 <script>
   export default {
     name: "BattleCancelledContent",
+
+    data() {
+      return {
+        baseUrl: import.meta.env.BASE_URL
+      };
+    },
 
     props: {
       battle: {
