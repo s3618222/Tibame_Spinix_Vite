@@ -9,7 +9,7 @@
 
       <div class="history-header">
         <img
-          :src="member.avatar"
+          :src="`${baseUrl}${member.avatar}`"
           :alt="`${member.name} 的會員頭像`"
           class="history-avatar"
         >
@@ -60,6 +60,12 @@
 <script>
   export default {
     name: "HistoryModal",
+
+    data() {
+      return {
+        baseUrl: import.meta.env.BASE_URL
+      };
+    },
 
     props: {
       member: {

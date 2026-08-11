@@ -12,7 +12,10 @@
           class="confirmed-user"
           @click="$emit('open-history', opponentId)"
         >
-          <img :src="opponentAvatar" :alt="opponentName">
+          <img 
+            :src="`${baseUrl}${opponentAvatar}`" 
+            :alt="opponentName"
+          >
           <span>{{ opponentName }}</span>
         </button>
 
@@ -98,17 +101,18 @@
   export default {
     name: "BattleConfirmedContent",
 
+    data() {
+      return {
+        baseUrl: import.meta.env.BASE_URL,
+        selectedWinner: ""
+      };
+    },
+
     props: {
       battle: {
         type: Object,
         required: true
       }
-    },
-
-    data() {
-      return {
-        selectedWinner: ""
-      };
     },
 
     emits: [

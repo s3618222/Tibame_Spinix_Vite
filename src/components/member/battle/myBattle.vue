@@ -66,7 +66,7 @@
         <!-- 若完全沒有資料，則依目前腳色區塊，顯示對應導覽連結 -->
         <a
           v-if="currentStatus === 'all' && currentRole === 'participant'"
-          href="./battle.html"
+          :href="`${baseUrl}battle.html`"
           class="empty-link btnFill"
         >
           前往約戰配對
@@ -74,7 +74,7 @@
 
         <a
           v-else-if="currentStatus === 'all' && currentRole === 'initiator'"
-          href="./createBattle.html"
+          :href="`${baseUrl}createBattle.html`"
           class="empty-link btnFill"
         >
           立即建立約戰
@@ -112,6 +112,8 @@
 
     data () {
       return {
+        baseUrl: import.meta.env.BASE_URL,
+
         currentRole: "initiator", //預設顯示作為發起人的紀錄區
         currentStatus: "all", //預設顯示全部的紀錄卡
         isHistoryModalOpen: false, //歷史燈箱是否開啟，預設關閉
@@ -131,8 +133,8 @@
             initiatorName: "Bill0714",
             participantName: "陀螺小宇",
 
-            initiatorAvatar: "/spinix_member_default.png",
-            participantAvatar: "/spinix_member_default.png",
+            initiatorAvatar: "spinix_member_default.png",
+            participantAvatar: "spinix_member_default.png",
 
             status: "pending",
             mode: "casual",
@@ -142,7 +144,7 @@
             battleTime: "14:00",
             city: "桃園市",
             district: "中壢區",
-            coverImage: "/battle_card_default.jpg",
+            coverImage: "battle_card_default.jpg",
             target: "不限對象",
 
             meetingPlace: "桃園市中壢區中央西路一段",
@@ -159,8 +161,8 @@
             initiatorName: "Bill0714",
             participantName: "陀螺殺手",
 
-            initiatorAvatar: "/spinix_member_default.png",
-            participantAvatar: "/spinix_member_test1.png",
+            initiatorAvatar: "spinix_member_default.png",
+            participantAvatar: "spinix_member_test1.png",
 
             status: "confirmed",
             mode: "competitive",
@@ -170,7 +172,7 @@
             battleTime: "10:00",
             city: "新北市",
             district: "板橋區",
-            coverImage: "/battle_card_test1.jpg",
+            coverImage: "battle_card_test1.jpg",
             target: "不限對象",
 
             meetingPlace: "新北板橋火車站一樓北3門外",
@@ -187,8 +189,8 @@
             initiatorName: "Bill0714",
             participantName: "旋風阿凱",
 
-            initiatorAvatar: "/spinix_member_default.png",
-            participantAvatar: "/spinix_member_default.png",
+            initiatorAvatar: "spinix_member_default.png",
+            participantAvatar: "spinix_member_default.png",
 
             status: "confirmed",
             mode: "casual",
@@ -198,7 +200,7 @@
             battleTime: "18:30",
             city: "桃園市",
             district: "桃園區",
-            coverImage: "/battle_card_default.jpg",
+            coverImage: "battle_card_default.jpg",
             target: "不限對象",
 
             meetingPlace: "桃園市桃園區統領廣場一樓入口",
@@ -217,8 +219,8 @@
             initiatorId: 100,
             participantId: 101,
 
-            initiatorAvatar: "/spinix_member_default.png",
-            participantAvatar: "/spinix_member_default.png",
+            initiatorAvatar: "spinix_member_default.png",
+            participantAvatar: "spinix_member_default.png",
 
             status: "cancelled",
             mode: "casual",
@@ -228,7 +230,7 @@
             battleTime: "19:00",
             city: "桃園市",
             district: "八德區",
-            coverImage: "/battle_card_default.jpg",
+            coverImage: "battle_card_default.jpg",
             target: "成人限定"
           },
           //參加的約戰紀錄
@@ -242,8 +244,8 @@
             initiatorId: 101,
             participantId: 100,
 
-            initiatorAvatar: "/spinix_member_test2.jpg",
-            participantAvatar: "/spinix_member_default.png",
+            initiatorAvatar: "spinix_member_test2.jpg",
+            participantAvatar: "spinix_member_default.png",
 
             status: "pending",
             mode: "casual",
@@ -253,7 +255,7 @@
             battleTime: "20:00",
             city: "桃園市",
             district: "中壢區",
-            coverImage: "/battle_card_test2.jpg",
+            coverImage: "battle_card_test2.jpg",
             target: "親子友善",
 
             meetingPlace: "桃園市中壢區中央西路一段",
@@ -270,8 +272,8 @@
             initiatorName: "陀螺著火啦",
             participantName: "Bill0714",
 
-            initiatorAvatar: "/spinix_member_default.png",
-            participantAvatar: "/spinix_member_default.png",
+            initiatorAvatar: "spinix_member_default.png",
+            participantAvatar: "spinix_member_default.png",
 
             status: "confirmed",
             mode: "competitive",
@@ -281,7 +283,7 @@
             battleTime: "21:00",
             city: "桃園市",
             district: "中壢區",
-            coverImage: "/battle_card_default.jpg",
+            coverImage: "battle_card_default.jpg",
             target: "不限對象",
 
             meetingPlace: "桃園市中壢區中壢火車站大廳",
@@ -298,8 +300,8 @@
             initiatorName: "擱共",
             participantName: "Bill0714",
 
-            initiatorAvatar: "/spinix_member_test3.png",
-            participantAvatar: "/spinix_member_default.png",
+            initiatorAvatar: "spinix_member_test3.png",
+            participantAvatar: "spinix_member_default.png",
             
             status: "cancelled",
             mode: "casual",
@@ -309,7 +311,7 @@
             battleTime: "15:00",
             city: "台北市",
             district: "中山區",
-            coverImage: "/battle_card_default.jpg",
+            coverImage: "battle_card_default.jpg",
             target: "成人限定"
           }
         ],
@@ -319,7 +321,7 @@
           101: {
             memberId: 101,
             name: "陀螺小宇",
-            avatar: "/spinix_member_default.png",
+            avatar: "spinix_member_default.png",
             totalBattles: 18,
             averageRating: 4.7,
             reviews: [
@@ -349,7 +351,7 @@
           102: {
             memberId: 102,
             name: "旋風阿凱",
-            avatar: "/spinix_member_default.png",
+            avatar: "spinix_member_default.png",
             totalBattles: 12,
             averageRating: 4.5,
             reviews: [
@@ -653,6 +655,10 @@
     display: flex;
     flex-direction: column;
     gap: 28px;
+
+    max-height: 780px; //桌機模式瀏覽下，約最多呈現三筆紀錄後，出現垂直卷軸
+    overflow-y: auto;
+    padding-right: 12px;
   }
 
   // 沒有約戰紀錄時的空狀態
@@ -707,6 +713,7 @@
   //約戰紀錄改橫向排列
   @media screen and (max-width: 900px) {
   .my-battle-records {
+    max-height: none; //清除桌機模式下的高度限制設定
     width: 100%;
 
     display: flex;

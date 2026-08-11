@@ -17,29 +17,30 @@ export default {
 
   data(){
     return {
+      
       partList: [
         {
           id: 1,
           name: "蒼龍突擊",
-          image: "/public/build/blade/BX-49 蒼龍突擊.png",
+          image: `build/blade/BX-49 蒼龍突擊.png`,
           type: "blade"
         },
         {
           id: 2,
           name: "衝擊龍神",
-          image: "/public/build/blade/BX-50-03 衝擊龍神.png",
+          image: `build/blade/BX-50-03 衝擊龍神.png`,
           type: "blade"
         },
         {
           id: 1,
           name: "暴風天馬",
-          image: "/public/build/blade/BXG-47 暴風天馬.png",
+          image: `build/blade/BXG-47 暴風天馬.png`,
           type: "blade"
         },
         {
           id: 1,
           name: "蒼龍神劍",
-          image: "/public/build/blade/BXG-49 蒼龍神劍.png",
+          image: `build/blade/BXG-49 蒼龍神劍.png`,
           type: "blade"
         }
       ]
