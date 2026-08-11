@@ -224,7 +224,7 @@ function getBattleFormData() {
 
         // 未上傳圖片時，使用平台預設圖
         coverImage:
-            battleCoverInput.files[0] ? coverPreviewImage.src : "/battle_card_default.jpg"
+            battleCoverInput.files[0] ? coverPreviewImage.src : "battle_card_default.jpg"
     };
 }
 
