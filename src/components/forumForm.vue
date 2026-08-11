@@ -4,7 +4,7 @@
     <div class="form-container">
       
       <!-- 返回列表 -->
-      <a href="forum.html" class="back-link">
+      <a :href="`${baseUrl}forum.html`" class="back-link">
         <i class="fa-solid fa-arrow-left"></i> 
         <span>返回論壇列表</span>
       </a>
@@ -92,12 +92,15 @@ export default {
 
   data() {
     return {
+      baseUrl: import.meta.env.BASE_URL,
       articleId: null,
       formData: {
         category: "",
         title: "",
         content: ""
-      }
+      },
+      
+  
     };
   },
 

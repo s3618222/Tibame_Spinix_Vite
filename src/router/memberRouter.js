@@ -9,7 +9,9 @@ import MyBattle from "@/components/member/battle/myBattle.vue";
 import MyForum from "@/components/myForum.vue";
 import MyExchange from "@/components/myExchange.vue";
 import MyAppeal from "@/components/myAppeal.vue";
+import MyAppealDetail from "@/components/myAppealDetail.vue";
 import MyViolation from "@/components/myViolation.vue";
+import MyViolationDetail from "@/components/myViolationDetail.vue";
 
 const memberRouter = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -49,9 +51,19 @@ const memberRouter = createRouter({
       component: MyAppeal
     },
     {
+      path: "/appeal/:id",
+      name: "member-appeal-detail",
+      component: MyAppealDetail
+    },
+    {
       path: "/violation",
       name: "member-violation",
       component: MyViolation
+    },
+    {
+      path: "/violation/:id",
+      name: "member-violation-detail",
+      component: MyViolationDetail
     }
   ]
 });

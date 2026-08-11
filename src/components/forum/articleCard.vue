@@ -1,5 +1,5 @@
 <template>
-  <a href="/forumArticle.html" class="article-card-link">
+  <a :href="`${baseUrl}forumArticle.html`" class="article-card-link">
     <article class="article-card">
       <p class="type-article">{{article.type}}</p>
       
@@ -38,7 +38,20 @@
   export default {
     name: "ArticleCard",
 
-    props: ["article"]
+    props: ["article"],
+
+    data(){
+      return {
+        baseUrl: import.meta.env.BASE_URL
+      }
+    },
+
+    computed: {
+      imgURL() {
+        const baseUrl = import.meta.env.BASE_URL;
+        return `${baseUrl}${this.article.image.replace(/^\//, '')}`;
+      }
+    }
   }
 </script>
 
