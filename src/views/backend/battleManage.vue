@@ -222,7 +222,7 @@
             <div class="battle-public-cover">
               <img
                 v-if="selectedBattle.coverImage"
-                :src="selectedBattle.coverImage"
+                :src="`${baseUrl}${selectedBattle.coverImage}`"
                 :alt="selectedBattle.title"
               >
 
@@ -405,6 +405,8 @@ export default {
 
   data() {
     return {
+      baseUrl: import.meta.env.BASE_URL,
+
       battles: [], //用來存放約戰紀錄的陣列
 
       currentPage: 1,
