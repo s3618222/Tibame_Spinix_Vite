@@ -1,5 +1,6 @@
 import { createApp } from "vue";
-import Header from "@/components/header.vue";
-import Footer from "@/components/footer.vue";
-createApp(Header, { solid: true }).mount("#headerApp");
-createApp(Footer).mount("#footerApp");
+import Entry from "@/views/index.vue";
+
+const entryApp = createApp(Entry);
+
+entryApp.mount("#entryApp");
