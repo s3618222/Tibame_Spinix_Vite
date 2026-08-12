@@ -589,7 +589,7 @@ const battleData = [
     district: "中壢區",
     mode: "休閒模式",
     battleDate: "2026-08-15T14:00:00",
-    deadline: "2026-08-21T22:00:00",
+    deadline: "2026-08-14T22:00:00",
     level: "新手玩家",
     description: "假日放鬆場，輕鬆交流，我帶戰鬥盤，你帶陀螺就好！",
     hostId: 101,
