@@ -63,7 +63,7 @@ const messages = ref([
       postDate: '2026-08-02',
       msgtxt: '想用CX 系列改裝陀螺跟版主做交換！'
    }
-   // ...其餘留言,記得每筆物件之間要有逗號
+
 ]);
 
 const sortOrder = ref('newest')
@@ -73,7 +73,7 @@ function handleSortChange(e) {
 }
 
 onMounted(() => {
-   // 保險起見,先讀一次目前按鈕狀態(如果有預設 active 的按鈕的話)
+   
    window.addEventListener('msg-sort-change', handleSortChange)
 })
 onUnmounted(() => {

@@ -43,41 +43,58 @@
       <!-- 登入後會員頭貼 -->
         <div class="member-center" ref="userMenuWrapper" v-if="isLogin">
           <div class="header-user-headshot" @click="openUserPanel">
-            <img src="../../public/spinix_member_test1.png" alt="">
+            <img src="/spinix_member_test1.png" alt="">
           </div>
-          <!-- 下拉選單 -->
-          <div class="user-menu"  :class="{ open: isUserPanelOpen }">
-            <div class="menu-user-info">
-              <div class="user-headshot">
-                <img src="../../public/spinix_member_test1.png" alt="">
+          
+          <div class="user-panel"  :class="{ open: isUserPanelOpen }">
+            <Transition :name="transitionName">
+                <!-- 菜單面板 -->
+              <div class="user-menu" v-if="currentPanel === 'menu'" key="menu">
+                <div class="menu-user-info">
+                  <div class="user-headshot">
+                    <img src="/spinix_member_test1.png" alt="">
+                  </div>
+                  <p class="user-name">Lone軍團長</p>
+                </div>
+              <div class="menu-list">
+                <ul>
+                  <li>
+                    <button type="button" class="menu-item" @click="goToPanel('notice')">
+                        <i class="fa-solid fa-bell"></i>
+                        <p class="item-label">會員通知</p>
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                  </li>
+                  <li>
+                    <a :href=" `${baseUrl}member.html`" class="menu-item">
+                        <i class="fa-solid fa-user"></i>
+                        <p class="item-label">會員中心</p>
+                        <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                  </li>
+                  <li class="btn-login">
+                    <a href="#" class="menu-item " @click="isLogin = false">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <p class="item-label">登出</p>
+                    </a>
+                  </li>
+                </ul>
               </div>
-              <p class="user-name">Lone軍團長</p>
-            </div>
-            <div class="menu-list">
-              <ul>
-                <li>
-                  <button type="button" class="menu-item">
-                      <i class="fa-solid fa-bell"></i>
-                      <p class="item-label">會員通知</p>
-                      <i class="fa-solid fa-angle-right"></i>
-                  </button>
-                </li>
-                <li>
-                  <a :href=" `${baseUrl}member.html`" class="menu-item">
-                      <i class="fa-solid fa-user"></i>
-                      <p class="item-label">會員中心</p>
-                      <i class="fa-solid fa-angle-right"></i>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="menu-item" @click="isLogin = false">
-                      <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                      <p class="item-label">登出</p>
-                  </a>
-                </li>
-              </ul>
-            </div>
+              </div>
+
+
+              <!-- 通知面板 -->
+              <noticePanel 
+                v-else-if="currentPanel === 'notice'" 
+                key="notice"
+                @close="goToPanel('menu')"
+              />
+            </Transition>
+
           </div>
+        
+  
+
         </div>
         <!-- 手機漢堡選單 -->
     <button 
@@ -96,8 +113,14 @@
 </template>
 
 <script>
+import noticePanel from "./Userpanel.vue";
 export default {
   name: "Header",
+
+  components: {
+    noticePanel   
+  },
+
 
   props: {
     solid: {
@@ -113,7 +136,9 @@ export default {
       isMenuOpen: false,
       isMenuClosing: false,
       isUserPanelOpen: false,
-      isLogin:true // 檢查是否登入
+      isLogin:true, // 檢查是否登入
+      currentPanel: "menu",   // menu | notice
+      transitionName: "slide-left"  // 控制滑動方向
     };
   },
 
@@ -149,6 +174,9 @@ export default {
     // 打開會員中心面板
     openUserPanel(){
       this.isUserPanelOpen = !this.isUserPanelOpen;
+      if (this.isUserPanelOpen) {
+        this.currentPanel = "menu";
+      }
     },
      // 點擊選單以外的地方要關閉
     handleClickOutside(e) {
@@ -156,6 +184,12 @@ export default {
       if (this.$refs.userMenuWrapper && !this.$refs.userMenuWrapper.contains(e.target)) {
         this.isUserPanelOpen = false;
       }
+    },
+    goToPanel(panelName) {
+      // 進入通知面板 → 從右往左滑入
+      // 返回選單面板 → 從左往右滑入 (退回去的感覺)
+      this.transitionName = panelName === "notice" ? "slide-left" : "slide-right";
+      this.currentPanel = panelName;
     }
     
   },
@@ -353,14 +387,18 @@ export default {
   .header-main {
     .member-center{
       padding-right: 32px;
+
       .header-user-headshot{
         width: 50px;
+        height: 50px;
         background-color: white;
         border-radius:50% ;
         overflow: hidden;
         cursor: pointer;
         border: 2px solid transparent;
         transition:.3s ease;
+        flex-shrink: 0;
+
         &:hover{
           border-color: #F29B00;
         }
@@ -369,7 +407,7 @@ export default {
         }
       }
       // 下拉選單
-      .user-menu{
+      .user-panel{
         background-color: #F7F5F3;
         border: 1px solid #dddddd;
         box-shadow: 0 8px 12px rgba(20, 28, 38, 0.1);
@@ -377,13 +415,23 @@ export default {
         right: 20px;
         margin-top: 20px;
         border-radius: 10px;
-        padding: 20px 12px;
-        min-width: 200px;
-
+        min-width: 300px;
+        height: 350px;
+        display: flex;  
+        overflow: hidden;
         opacity: 0;
         visibility: hidden;
         transform: translateY(-8px);
         transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+
+        .user-menu{
+          width: 100%;
+          padding: 20px 12px;
+          height: 100%;
+          display: flex;              
+          flex-direction: column;   
+        }
+        
 
         &.open {
           opacity: 1;
@@ -391,10 +439,39 @@ export default {
           transform: translateY(0);
         }
 
+        .slide-left-enter-active,
+        .slide-left-leave-active,
+        .slide-right-enter-active,
+        .slide-right-leave-active {
+          transition: transform 0.32s ease;   
+          position: absolute;                  
+          top: 0;
+          left: 0;
+          width: 100%;
+        }
+
+         // 前往通知面板：新面板從右邊滑進來，舊面板往左邊滑出去
+        .slide-left-enter-from {
+          transform: translateX(100%);
+        }
+        .slide-left-leave-to {
+          transform: translateX(-100%);
+        }
+
+        // 返回選單面板：新面板從左邊滑進來，舊面板往右邊滑出去
+        .slide-right-enter-from {
+          transform: translateX(-100%);
+        }
+        .slide-right-leave-to {
+          transform: translateX(100%);
+        }
+
         .menu-user-info{
           display: flex;
           gap: 16px;
           align-items: center;
+          flex-shrink: 0; 
+          
 
           .user-headshot{
             width: 40px;
@@ -410,15 +487,24 @@ export default {
         }
 
         .menu-list{
-
+          flex: 1;                // ⚠️ 確認這裡有沒有寫？
+          min-height: 0;           // ⚠️ 確認這裡有沒有寫？（固定公式）
+          
+          height: 100%;
           ul{
             padding-top: 4px ;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
 
             li{  
               width: 100%;
               border-radius: 8px;
               transition: all .3s ease;
               margin-top: 12px;
+              &:last-child {
+                margin-top: auto;
+              }
               
 
               &:hover{
@@ -447,7 +533,9 @@ export default {
                   
                 }
               }
+              
             }
+            
           }
         }
       }
@@ -550,6 +638,8 @@ export default {
       opacity: 0;
     }
   }
+
+
 
   // RWD
   // 手機板

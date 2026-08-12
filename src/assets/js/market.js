@@ -5,6 +5,7 @@ import Header from "@/components/header.vue";
 import Footer from "@/components/footer.vue";
 import Pagination from "@/components/pagination.vue";
 import ElementPlus from "element-plus";
+import "element-plus/dist/index.css";
 import ProductList from "@/components/ProductList.vue";
 
 createApp(Header).mount("#headerApp");
@@ -12,7 +13,7 @@ createApp(Footer).mount("#footerApp");
 createApp(Pagination, {
    currentPage: 1,
    pageSize: 20,
-   total: 5
+   total: 24
 }).use(ElementPlus).mount("#paginationApp");
 
 createApp(ProductList).mount("#exchangeApp");
