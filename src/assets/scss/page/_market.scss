@@ -2,8 +2,9 @@
 
 #market {
    font-size: 16px;
-   background-color: var(--tertiary);
-   color: var(--secondary);
+
+   background-color: map-get($color , tertiary);
+   color: map-get($color , secondary);
 
    section {
       width: 100%;
@@ -15,7 +16,7 @@
 
 // 交換區 hero
 .market-hero {
-   background-image: url(../../../../market-banner.png);
+   background-image: url(/market-banner.png);
    background-size: cover;
    background-repeat: no-repeat;
    background-position: right 50% top;
@@ -239,15 +240,15 @@
             }
 
             .btn-reset {
-               color: var(--neutral);
+               color: map-get($color, neutral );
                padding: 0;
                font-size: 14px;
             }
 
             .-select {
-               background-color: var(--primary);
+               background-color:  map-get($color, primary );
                color: #141C26;
-               border-color: var(--primary);
+               border-color:  map-get($color, primary );
             }
          }
 

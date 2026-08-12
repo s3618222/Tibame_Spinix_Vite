@@ -4,7 +4,7 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>刊登交換卡</title>
+   <title>刊登交換頁</title>
    <link rel="stylesheet" href="./src/assets/scss/_reset.scss">
    <link rel="stylesheet" href="./src/assets/scss/style.scss">
    <script src="https://kit.fontawesome.com/865a269d64.js" crossorigin="anonymous"></script>
@@ -15,23 +15,17 @@
    <!-- header -------------------------------------------->
    <div id="headerApp" class=""></div>
 
-   <section class="sec">
+   <section class="sec" id="addChange">
       <h1>刊登物品</h1>
       <a href="./market.html">返回</a>
       <div class="form-add-prod">
-         <form action="">
-            <div class="form-img-file form-label-style">
-               <label for="title">商品照片<span>(最多上傳5張)</span></label>
-               <div class="img-upload-list">
-                  <ul>
-                     <li><input type="file"></li>
-                  </ul>
-               </div>
-            </div>
-            <div>
-               <span class="form-prod-type form-label-style">
-                  <label for="prod-type">類型</label>
+         <form action="" method="post">
+            <div id="uploadImgApp"></div>
+            <div class="form-flex">
+               <span class="form-label-style form-control">
+                  <label for="prod-type" class="label-title">類型</label>
                   <select name="prod-type" id="" required>
+                     <option value="" disabled selected>請選擇物品的類型</option>
                      <option value="beyblade">陀螺本體</option>
                      <option value="blade">戰刃</option>
                      <option value="ratchet">固鎖</option>
@@ -39,20 +33,29 @@
                      <option value="other">其他</option>
                   </select>
                </span>
-               <span class="form-prod-name form-label-style">
-                  <label for="prod-name">物品名稱</label>
+               <span class="form-prod-name form-label-style form-control">
+                  <label for="prod-name" class="label-title">物品名稱</label>
                   <input type="text" required>
                </span>
             </div>
-            <div class="form-prod-state form-label-style">
-               <label for="prod-state">商品狀況</label>
-               <input type="radio" name="state" value="new" checked required>全新
-               <input type="radio" name="state" value="good">二手-狀態良好
-               <input type="radio" name="state" value="flaw">二手-有瑕疵
+            <div class=" form-prod-state form-label-style">
+               <span class="label-title">物品狀況</span>
+               <span class="form-state-opts">
+                  <label for="state-new">
+                     <input type="radio" name="state" value="new" id="state-new" checked required>全新
+                  </label>
+
+                  <label for="state-good">
+                     <input type="radio" name="state" value="good" id="state-good">二手-狀態良好
+                  </label>
+                  <label for="state-flaw">
+                     <input type="radio" name="state" value="flaw" id="state-flaw">二手-有瑕疵
+                  </label>
+               </span>
             </div>
-            <div class="form-user-contact">
-               <span class="form-label-style">
-                  <label for="city">所在縣市</label>
+            <div class="form-contact-info form-flex">
+               <span class="form-label-style form-control">
+                  <label for="city" class="label-title">所在縣市</label>
                   <select name="city" id="select-city" required>
                      <option value="" disabled selected>請選擇縣市</option>
                      <option value="基隆市">基隆市</option>
@@ -60,34 +63,34 @@
                      <option value="新北市">新北市</option>
                   </select>
                </span>
-               <span class="form-label-style">
-                  <label for="district">行政區:</label>
+               <span class="form-label-style form-control">
+                  <label for="district" class="label-title">行政區:</label>
                   <select name="district" id="select-district" required>
                      <option value="" disabled selected>請選擇行政區</option>
-                     <option value="基隆市">基隆市</option>
-                     <option value="台北市">台北市</option>
                   </select>
                </span>
-               <span class="form-label-style">
-                  <label for="">聯絡資訊</label>
+               <span class="form-label-style form-control form-contact-info__input">
+                  <label for="" class="label-title">聯絡資訊</label>
                   <input type="text" required>
                </span>
             </div>
-            <div class="form-want-item form-label-style">
-               <label for="want-item">期望交換物品<span>(選填)</span></label>
+            <div class="form-want-item form-label-style form-control">
+               <label for="want-item" class="label-title">期望交換物品<span>(選填)</span></label>
                <input type="text" name="want-item">
             </div>
-            <div class="form-prod-info form-label-style">
-               <label for="">商品描述</label>
+            <div class="form-prod-info form-label-style form-control">
+               <label for="" class="label-title">對你想換出物品做簡單描述</label>
                <textarea name="" id="" required></textarea>
             </div>
             <div class="form-btn">
-               <button type="reset" class="btnNoFill">取消</button>
-               <button type="submit" class="btnFill">送出</button>
+               <button type="reset" class="btnNoFill">全部清除</button>
+               <button type="submit" class="btnFill">送出刊登</button>
             </div>
          </form>
       </div>
    </section>
+
+
 
    <!-- footer -------------------------------------------->
    <div id="footerApp"></div>

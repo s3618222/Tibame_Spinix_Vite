@@ -1,9 +1,166 @@
 @use '../_var' as *;
 
 #addChange {
-   .form-add-prod{
+   .form-add-prod {
       background-color: white;
-      border-radius: 8px;
+      border: 1px solid map-get($color, gray);
+      border-radius: 12px;
       padding: 20px 28px;
+
+      form {
+         display: flex;
+         flex-direction: column;
+         gap: 20px;
+
+         .form-flex {
+            display: flex;
+            gap: 20px;
+
+         }
+
+         .form-label-style {
+
+            .label-title {
+               padding-block: 8px;
+            }
+
+            .photo-grid {
+               display: flex;
+               gap: 24px;
+               flex-wrap: wrap;
+
+               .photo-tile {
+                  border: 1px solid #ddd;
+                  width: 100px;
+                  aspect-ratio: 1/1;
+                  position: relative;
+
+                  img {
+                     width: 100%;
+                     height: 100%;
+                     object-fit: cover;
+                     display: block;
+                  }
+
+                  .photo-tile__remove {
+                     position: absolute;
+                     top: 4px;
+                     right: 4px;
+                     width: 24px;
+                     height: 24px;
+                     border-radius: 50%;
+                     border: none;
+                     background: rgba(20, 28, 38, 0.7);
+                     color: #fff;
+                     display: inline-flex;
+                     align-items: center;
+                     justify-content: center;
+                  }
+               }
+
+               .photo-tile--add {
+                  border: 1.5px dashed map-get($color, neutral);
+
+
+               }
+
+               .photo-tile__plus {
+                  color: map-get($color, neutral);
+                  transition: .3s;
+               }
+            }
+
+            // 隱藏上傳檔案 input
+            .visually-hidden {
+               display: none;
+               visibility: hidden;
+            }
+
+         }
+      }
+   }
+}
+
+.form-state-opts {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 16px;
+}
+
+.form-contact-info {
+   flex-wrap: wrap;
+
+   .form-contact-info__input {
+      flex: 1;
+   }
+}
+
+.form-control {
+   min-width: 80px;
+}
+
+.form-prod-name {
+   flex: 1;
+}
+
+
+
+// 桌機
+@media screen and (width >=992px) {
+   #addChange {
+      .form-add-prod {
+         form {
+            .form-label-style {
+               .photo-grid {
+
+                  .photo-tile {
+
+                     .photo-tile__remove {
+                        width: 18px;
+                        height: 18px;
+                        cursor: pointer;
+                        transition: background 0.15s ease;
+
+                        &:hover {
+                           background: map-get($color, error);
+                        }
+                     }
+                  }
+
+                  .photo-tile--add {
+                     transition: .3s ease;
+
+                     &:hover {
+                        border-color: map-get($color, primary);
+                        background-color: map-get($color, pending);
+
+                        .photo-tile__plus {
+                           color: #A86B00;
+                        }
+                     }
+                  }
+
+               }
+
+            }
+         }
+      }
+   }
+
+   .form-state-opts {
+      >label {
+         padding-right: 20px;
+         cursor: pointer;
+      }
+   }
+
+   .form-control {
+      min-width: 200px;
+   }
+
+
+
+   .form-btn {
+      justify-content: start;
    }
 }

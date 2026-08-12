@@ -47,10 +47,8 @@ const addMsg = document.getElementById('Btn-addMsg');
 const MsgModal = document.querySelector('.example-modal');
 const btnClose = document.querySelector('.btn-close');
 const mask = document.querySelector('.modal-mask');
-const btnReset = document.querySelector('.btnNoFill');
-const form = document.getElementById('msgForm');
-const btnSubmit = document.querySelector('button[type="submit"].btnFill');
-let requiredInputs = document.querySelectorAll('[required]');
+
+
 
 // console.log(forminput[0].values);
 // 開啟燈箱
@@ -71,16 +69,16 @@ mask.addEventListener('click', () => {
    closeMsgModal();
 });
 
-// 燈箱取消按鈕
+// == 取消按鈕 ==========================================
+const btnReset = document.querySelector('.btnNoFill');
+const form = document.querySelector('form');
+const btnSubmit = document.querySelector('button[type="submit"].btnFill');
+
+// console.log(btnSubmit);
 btnReset.addEventListener('click', (e) => {
    e.preventDefault();
-
-   // 是否為空字串
-   let hasEmpty = [...requiredInputs].every(input => input.value.trim() === '');
-
-
-   if (hasEmpty) {
-      window.alert('請輸入內容');
+   if (isFormInvalid()) {
+      window.alert('請先填入資料');
       return;
    }
 
@@ -92,27 +90,100 @@ btnReset.addEventListener('click', (e) => {
    }
 });
 
-// 送出按鈕
-btnSubmit.addEventListener('click', () => {
-   requiredInputs.forEach(input => {
-      if (input.value.trim() === '') {
-         input.classList.add('-isError');
-      } else {
-         input.classList.remove('-isError');
-      }
+function isFormInvalid() {
+   // 1. 檢查一般輸入框 (text, select, textarea)
+   // 排除 radio 與 checkbox，因為它們需要靠 checked 判斷
+   const standardFields = document.querySelectorAll(
+      'input:not([type="radio"]):not([type="checkbox"]), select, textarea'
+   );
+
+   // 只要有「任何一個」一般欄位是空的，就回傳 true
+   const hasEmptyStandard = [...standardFields].every(
+      input => input.value.trim() === ''
+   );
+
+   // 2. 檢查 Radio 群組
+   const requiredRadios = document.querySelectorAll('input[type="radio"]');
+   // 取得所有 required radio 的 name（用 Set 去除重複的 name）
+   const radioNames = [...new Set([...requiredRadios].map(r => r.name))];
+
+   // 檢查是否「有任何一個 Radio 群組完全沒有被勾選」
+   const hasEmptyRadioGroup = radioNames.some(name => {
+      const isChecked = document.querySelector(`input[type="radio"][name="${name}"]:checked`);
+      return !isChecked;
    });
+
+   // 只要一般欄位有空，或 Radio 有空，就代表表單無效 (Has Empty)
+   return hasEmptyStandard || hasEmptyRadioGroup;
+}
+
+
+
+// == 送出按鈕 =====================================
+btnSubmit.addEventListener('click', (e) => {
+   e.preventDefault(); // 1. 先阻擋表單預設送出
+
+   // 2. 抓取所有必填的一般輸入框、下拉選單與多行文字框
+   const requiredFields = form.querySelectorAll(
+      'input[required]:not([type="radio"]):not([type="checkbox"]), select[required], textarea[required]'
+   );
+
+   let hasError = false;
+   let firstErrorField = null;
+
+
+   // 3. 逐一檢查是否空白
+   requiredFields.forEach(field => {
+      const isEmpty = field.value.trim() === '';
+      if (isEmpty) {
+         field.classList.add('-isError'); // 空白則加上紅框
+         hasError = true;
+
+         // 紀錄第一個出錯的欄位，等一下將焦點移過去
+         if (!firstErrorField) firstErrorField = field;
+      } else {
+         field.classList.remove('-isError'); // 有填寫則移除紅框
+      }
+
+      // 4. 【高 UX 細節】當使用者開始輸入/修改時，自動把紅框移除
+      field.addEventListener('input', () => {
+         if (field.value.trim() !== '') {
+            field.classList.remove('-isError');
+         }
+      });
+   });
+
+   // 5. 判斷驗證結果
+   if (hasError) {
+      window.alert('星號*為必填項目');
+      // 將游標自動聚焦到第一個沒填的欄位（體貼使用者的操作體驗）
+      firstErrorField?.focus();
+      return;
+   } else {
+
+      handleFormSuccess();
+   }
+
 
 });
 
-requiredInputs.forEach(input => {
-   input.addEventListener('blur', () => {
-      if (input.value.trim() !== '') {
-         input.classList.remove('-isError');
-      } else {
-         input.classList.add('-isError'); // 離開時還是空的，繼續顯示紅框
-      }
-   });
-});
+// 假設表單送出成功後觸發這個函式
+function handleFormSuccess() {
+   // 1. 關閉彈窗
+   closeMsgModal()
+
+   // 2. 清空彈窗內的表單內容（避免下次開啟時留有上次的資料）
+   const form = document.querySelector('#msgForm');
+   form.reset();
+
+   // 3. 跳出輕量的成功提示（如 Toast 或原生 alert）
+   alert('交換申請已成功送出！');
+
+   // 4. (選填) 即時更新商品頁上的按鈕狀態（讓 UX 更好）
+   const btnExchange = document.getElementById('Btn-addMsg');
+   btnExchange.textContent = '已送出交換申請';
+   btnExchange.disabled = true; // 避免重複點擊
+}
 
 // == 置頂按鈕 ===================================
 const prodHeader = document.getElementById('prodDetail');

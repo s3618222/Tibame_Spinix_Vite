@@ -55,7 +55,7 @@
                   <img src="./public/spinix_member_test1.png" alt="">
                </div>
                <p>Lone軍團長</p>
-               <a href="./complaint.html">
+               <a href="./complaint.html" target="_blank">
                   <i class="fa-solid fa-triangle-exclamation"></i>
                </a>
             </div>
@@ -88,7 +88,7 @@
                         <div class="msg-content">
                            <div class="user-info">
                               <p class="user-name">已讀不回的飯糰</p>
-                              <a href="./complaint.html">
+                              <a href="./complaint.html" target="_blank">
                                  <i class="fa-solid fa-triangle-exclamation"></i>
                               </a>
                            </div>
@@ -105,7 +105,7 @@
                         <div class="msg-content">
                            <div class="user-info">
                               <p class="user-name">虛空將</p>
-                              <a href="./complaint.html">
+                              <a href="./complaint.html" target="_blank">
                                  <i class="fa-solid fa-triangle-exclamation"></i>
                               </a>
                            </div>
@@ -122,7 +122,7 @@
                         <div class="msg-content">
                            <div class="user-info">
                               <p class="user-name">虛空將</p>
-                              <a href="./complaint.html">
+                              <a href="./complaint.html" target="_blank">
                                  <i class="fa-solid fa-triangle-exclamation"></i>
                               </a>
                            </div>
@@ -139,7 +139,7 @@
                         <div class="msg-content">
                            <div class="user-info">
                               <p class="user-name">虛空將</p>
-                              <a href="./complaint.html">
+                              <a href="./complaint.html" target="_blank">
                                  <i class="fa-solid fa-triangle-exclamation"></i>
                               </a>
                            </div>
@@ -156,7 +156,7 @@
                         <div class="msg-content">
                            <div class="user-info">
                               <p class="user-name">虛空將</p>
-                              <a href="./complaint.html">
+                              <a href="./complaint.html" target="_blank">
                                  <i class="fa-solid fa-triangle-exclamation"></i>
                               </a>
                            </div>
@@ -173,7 +173,7 @@
                         <div class="msg-content">
                            <div class="user-info">
                               <p class="user-name">虛空將</p>
-                              <a href="./complaint.html">
+                              <a href="./complaint.html" target="_blank">
                                  <i class="fa-solid fa-triangle-exclamation"></i>
                               </a>
                            </div>
@@ -190,7 +190,7 @@
                         <div class="msg-content">
                            <div class="user-info">
                               <p class="user-name">虛空將</p>
-                              <a href="./complaint.html">
+                              <a href="./complaint.html" target="_blank">
                                  <i class="fa-solid fa-triangle-exclamation"></i>
                               </a>
                            </div>
@@ -207,7 +207,7 @@
 
 
 
-      <div class="add-mag example-modal">
+      <div class="example-modal">
          <!-- 遮罩 -->
          <div class="modal-mask"></div>
          <!-- 交換留言燈箱 -->
@@ -217,28 +217,28 @@
                   <i class="fa-solid fa-xmark"></i>
                </button>
             </div>
-            <form action="" id="msgForm">
+            <form action="" id="msgForm" method="post">
                <p class="form-title">留下您的交換提議與聯絡方式</p>
                <div class="name form-label-style">
-                  <label for="name">您的暱稱</label>
+                  <label for="name" class="label-title">您的暱稱</label>
                   <input type="text" name="name" required>
                </div>
                <div class="change-item form-label-style">
-                  <label for="change-item">想交換物品</label>
+                  <label for="change-item" class="label-title">想交換物品</label>
                   <input type="text" name="change-item" required>
 
                </div>
                <div class="phone form-label-style">
-                  <label for="phone">聯絡方式</label>
+                  <label for="phone" class="label-title">聯絡方式</label>
                   <input type="tel" name="phone" required>
                </div>
                <div class="remark form-label-style">
-                  <label for="Remark">備註</label>
+                  <label for="Remark" class="label-title">備註</label>
                   <textarea name="Remark"></textarea>
                </div>
                <p class="form-hint ">當雙方皆確認交換後，聯絡資訊將提供給對方作為聯繫用途。</p>
                <div class="form-btn">
-                  <button type="reset" class="btnNoFill">取消</button>
+                  <button type="reset" class="btnNoFill">清除</button>
                   <button type="submit" class="btnFill">送出</button>
                </div>
             </form>
@@ -256,7 +256,7 @@
 
    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-   <script src="./src/assets/js/public.js"></script>
+   <!-- <script src="./src/assets/js/public.js"></script> -->
    <script src="./src/assets/js/sort.js" type="module"></script>
    <script src="./src/assets/js/product_detail.js" type="module"></script>
 

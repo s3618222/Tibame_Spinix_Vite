@@ -26,8 +26,8 @@
       </div>
 
       <div class="card-footer">
-         <p class="state">{{ state }}</p>
-         <a :href="`./product_detail.html?id=${id}`" class="btnNoFill" @click.stop>查看詳情</a>
+         <p class="chip chip--exchangeable ">{{ state }}</p>
+         <a :href="'product_detail.html'" class="btnNoFill" @click.stop>查看詳情</a>
       </div>
    </div>
 </template>
@@ -73,20 +73,19 @@ const props = defineProps({
 })
 
 function goToDetail() {
-   window.location.href = `./product_detail.html?id=${props.id}`
+   window.location.href = `product_detail.html`;
 }
 </script>
 
 
 <style lang="scss">
    @use '@/assets/scss/_var' as *;
-   @use '@/assets/scss/style' as *;
 
    .card {
       width: 100%;
       background-color: white;
       padding: 12px;
-      border: 1px solid var(--tertiary);
+      border: 1px solid map-get($color , tertiary);
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(20, 28, 38, 0.06);
       height: fit-content;
@@ -149,15 +148,7 @@ function goToDetail() {
          align-items: center;
          justify-content: space-between;
 
-         .state {
-            background-color: var(--lightGreen);
-            padding: 4px 8px;
-            border-radius: 4px;
-            color: var(--olive);
-            font-weight: 550;
-         }
-
-         .btnNoFill {
+         :deep(.btnNoFill) {
             display: none;
          }
       }
@@ -178,7 +169,7 @@ function goToDetail() {
          transition: transform .5s ease, border .25s ease;
 
          &:hover {
-            border: 1px solid var(--primary);
+            border: 1px solid map-get($color , primary );
             transform: translateY(-4px);
             box-shadow: 0 10px 20px rgba(20, 28, 38, 0.1);
          }
@@ -199,7 +190,7 @@ function goToDetail() {
          .card-footer {
             align-items: center;
 
-            .btnNoFill {
+            :deep(.btnNoFill) {
                display: block;
                // margin-left: auto;
                padding: 12px 16px;

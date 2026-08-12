@@ -6,17 +6,18 @@
    flex-direction: column;
    gap: 8px;
 
-   >label {
+   .label-title {
       font-weight: 550;
    }
 
-      &:has(input[required]) label::after {
-         content: ' *';
-         color: map-get($color, error);
-      }
+   &:has([required]) .label-title::after {
+      content: ' *';
+      color: map-get($color, error);
+   }
 
    input,
-   textarea {
+   textarea,
+   select {
       border: 1px solid map-get($color , hint);
       border-radius: 8px;
       padding: 8px;
@@ -31,6 +32,26 @@
       resize: none;
       height: 120px;
       overflow-y: auto;
+   }
+}
+
+form {
+
+   // 錯誤
+   .-isError {
+      border:1.5px solid map-get($color, error) !important;
+   }
+}
+
+.form-btn {
+   display: flex;
+   gap: 24px;
+   justify-content: center;
+
+   .btnNoFill:hover {
+      background-color: map-get($color, neutral);
+      color: map-get($color, tertiary);
+      border-color: map-get($color, neutral);
    }
 }
 
@@ -109,10 +130,8 @@
       pointer-events: auto;
    }
 
-   // 錯誤
-   input.-isError {
-      border-color: map-get($color, error);
-   }
+
+
 
    // =============================================================
 
@@ -319,11 +338,7 @@
             line-height: 1.5;
          }
 
-         .form-btn {
-            display: flex;
-            gap: 24px;
-            justify-content: center;
-         }
+
       }
    }
 }
