@@ -77,3 +77,47 @@ $breakpoints: (
   }
 
 }
+
+// 後台共用膠囊狀態標籤
+// 使用方式 e.g. <span class="status-badge status-badge--pending">處理中</span>
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: nowrap;
+
+  // 黃色：等待中、進行中
+  &--pending {
+    border-color: rgba(254, 201, 107, 0.75);
+    background-color: #fff2d6;
+    color: #a86b00;
+  }
+
+  // 綠色：成功、完成、正常
+  &--success {
+    border-color: rgba(79, 138, 91, 0.35);
+    background-color: #e4eee7;
+    color: #4f8a5b;
+  }
+
+  // 紅色：失敗、錯誤
+  &--error {
+    border-color: rgba(230, 57, 70, 0.35);
+    background-color: #f9d7da;
+    color: #e63946;
+  }
+
+  // 灰色：停用、下架
+  &--disabled {
+    border-color: rgba(100, 116, 139, 0.4);
+    background-color: #eeeeee;
+    color: #64748b;
+  }
+}
