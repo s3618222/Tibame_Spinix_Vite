@@ -16,7 +16,8 @@
         
         <!-- 1. 選擇文章類別 -->
         <div class="form-group">
-          <label>選擇文章類別</label>
+          <label>選擇文章類別<span class="required">*</span>
+          </label>
           <select v-model="formData.category" required>
             <option value="" disabled selected>請選擇文章類別...</option>
             <option value="announcement">公告</option>
@@ -30,7 +31,9 @@
 
         <!-- 2. 文章標題 -->
         <div class="form-group">
-          <label>文章標題</label>
+          <label>文章標題
+            <span class="required">*</span>
+          </label>
           <input 
             type="text" 
             v-model="formData.title" 
@@ -41,7 +44,9 @@
 
         <!-- 3. 文章內容 -->
         <div class="form-group">
-          <label>文章內容</label>
+          <label>文章內容
+            <span class="required">*</span>
+          </label>
           <div class="custom-editor">
             <textarea name="" id="default"></textarea>
 
@@ -202,6 +207,10 @@ export default {
       font-weight: bold;
       color: #333;
       font-size: 14px;
+
+      .required {
+        color: red;
+      }
     }
     
     input[type="text"],

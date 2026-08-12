@@ -57,7 +57,7 @@
             type: "賽事情報",
             title: "台北大賽各組別賽程表公佈（附導航地圖）",
             content: "請各位家長與選手注意，本次報到地點位於二樓多功能大廳...",
-            imgArticle: "/battle_empty_state.png",
+            imgArticle: `battle_empty_state.png`,
             imgWriter: "",
             name: "賽事委員555555555555555",
             time: "3 小時前",
