@@ -11,7 +11,7 @@
          :postDate="item.date"
          :city="item.city"
          :district="item.district"
-         :state="item.state"
+         :state="statusLabelMap[item.status]"
       />
       <p v-if="filteredCards.length === 0" class="empty-state">
          查無符合條件的商品
@@ -22,69 +22,9 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import ProductCard from './productCard.vue';
+import { exchangeList, statusLabelMap } from '../assets/js/mockExchangeData.js';   // ✅ 改用共用資料
 
-const ExChangeInfo = ref([
-   {
-      id: 1,
-      type: 'beyblade',
-      product_img: 'CX13_01.webp',
-      title: '龍王閃擊',
-      headshot: 'spinix_member_default.png',
-      name: 'Lone軍團長',
-      date: '2026-07-26',
-      city: '基隆市',
-      district: '信義區',
-      state: '可交換'
-   },
-   {
-      id: 2,
-      type: 'blade',
-      product_img: 'BX_02.webp',
-      title: '蒼龍突擊',
-      headshot: 'spinix_member_default.png',
-      name: 'Lone軍團長',
-      date: '2026-08-06',
-      city: '台北市',
-      district: '中正區',
-      state: '可交換'
-   },
-   {
-      id: 3,
-      type: 'ratchet',
-      product_img: 'BX23_01.webp',
-      title: '鳳凰飛翼',
-      headshot: 'spinix_member_default.png',
-      name: 'Lone軍團長',
-      date: '2026-07-06',
-      city: '新北市',
-      district: '板橋區',
-      state: '可交換'
-   },
-   {
-      id: 4,
-      type: 'bit',
-      product_img: 'CX02_01.webp',
-      title: '魔導致尊',
-      headshot: 'spinix_member_default.png',
-      name: 'Lone軍團長',
-      date: '2026-08-12',
-      city: '台北市',
-      district: '中正區',
-      state: '可交換'
-   },
-   {
-      id: 5,
-      type: 'other',
-      product_img: 'BX-28.webp',
-      title: '旋風發射器 白色版',
-      headshot: 'spinix_member_default.png',
-      name: 'Lone軍團長',
-      date: '2026-08-13',
-      city: '台北市',
-      district: '中正區',
-      state: '可交換'
-   }
-]);
+const ExChangeInfo = ref(exchangeList);   // ✅ 不用自己重複寫一份
 
 const currentFilters = ref({
    type: 'all',
@@ -98,7 +38,6 @@ function handleFilterChange(e) {
 }
 
 onMounted(() => {
-   // 保險機制:主動讀一次 DOM 現值,避免漏接 main.js 的初始廣播
    const form = document.querySelector('#marketFilter form');
    if (form) {
       const typeEl = form.querySelector('[name="type"]');
@@ -121,10 +60,14 @@ onUnmounted(() => {
 const filteredCards = computed(() => {
    let result = ExChangeInfo.value.filter(item => {
       const f = currentFilters.value;
+
+      // ✅ 新增：只顯示「可交換」狀態的商品，這是公開頁面的規則
+      const matchStatus = item.status === 'available';
+
       const matchType = f.type === 'all' || item.type === f.type;
       const matchCity = !f.city || item.city === f.city;
       const matchDistrict = !f.district || item.district === f.district;
-      return matchType && matchCity && matchDistrict;
+      return matchStatus && matchType && matchCity && matchDistrict;
    });
 
    result = [...result].sort((a, b) => {
