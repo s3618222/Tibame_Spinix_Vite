@@ -5,9 +5,9 @@
         <a href="homepage.html" class="footer-logo">
           <img src="/spinix_logo_words.png" alt="Spinix Logo">
         </a>
-        <!-- <p>
-          從尋找對戰、分享配置到交流心得與交換陀螺，讓每一次旋轉都能連結新的玩家。
-        </p> -->
+        <p class="footer-slogan">
+          One Spin, Endless Connections
+        </p>
       </div>
 
       <div class="footer-col footer-intro ">
@@ -26,7 +26,10 @@
     </div>
 
     <div class="footer-bottom">
-      <p>© 2026 Spinix. All rights reserved.</p>
+      <p>本網站為緯育TibaMe_前端工程師班第100期學員專題成果作品,本平台僅供學習、
+展示之用。若有抵觸有關著作權,或有第三人主張侵害智慧財產權等情事,均由學
+員負法律上責任。若有侵權疑慮,您可以私訊[緯育TibaMe],後續會由專人協助處
+理。</p>
     </div>
   </footer>
 </template>
@@ -53,12 +56,21 @@
       gap: 40px;
   }
 
+  .footer-slogan {
+    max-width: 220px;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 14px;
+    letter-spacing: .5px;
+  }
+
   .footer-col {
+      flex: 1;
+
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       &:first-child{
-        width: fit-content;
+        // width: fit-content;
         img{
           margin-inline: auto;
         }
@@ -76,7 +88,8 @@
   }
 
   .footer-brand {
-      width: 25%;
+      flex: 1.05;
+      align-items: center;
   }
 
   .footer-logo {
@@ -85,8 +98,8 @@
 
   .footer-brand img {
       display: block;
-      width: 120px;
-      margin-bottom: 24px;
+      width: 140px;
+      margin-bottom: 8px;
 
       transition:
           transform 0.32s ease,
@@ -106,10 +119,6 @@
       to {
           transform: rotate(360deg);
       }
-  }
-
-  .footer-contact{
-    flex: 1;
   }
 
   .footer-contact a {
@@ -157,6 +166,7 @@
 
       color: #999;
       font-size: 14px;
+      line-height: 1.3;
   }
 
   @media screen and (width < 768px) {
@@ -167,6 +177,11 @@
     .footer-main {
       flex-direction: column;
       gap: 28px;
+    }
+
+    .footer-brand {
+      width: 25%;
+      align-items: flex-start;
     }
 
     .footer-intro {
