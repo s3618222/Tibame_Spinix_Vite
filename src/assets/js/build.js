@@ -6,6 +6,6 @@ import buildApp from "@/components/build.vue";
 
 
 
-// createApp(Header, { solid: true }).mount("#headerApp");
-// createApp(Footer).mount("#footerApp");
+createApp(Header, { solid: true }).mount("#headerApp");
+createApp(Footer).mount("#footerApp");
 createApp(buildApp).mount("#buildApp");

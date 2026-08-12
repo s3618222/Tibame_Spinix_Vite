@@ -1,14 +1,35 @@
 <template>
   <div class="category-tabs">
-    <button type="button" class="-active">戰刃</button>
+    <button :class="{active: currentTab == item.id}" type="button" v-for="item in types" :key="item.id">{{ item.name }}</button>
+    <!-- <button type="button" class="-active">戰刃</button>
     <button type="button">固鎖</button>
-    <button type="button">軸心</button>
+    <button type="button">軸心</button> -->
   </div>
 </template>
 
 <script>
   export default {
-    name: "CategoryTabs"
+    name: "CategoryTabs",
+
+    data(){
+      return {
+        currentTab: "blade",
+        types: [
+          {
+            id: "blade",
+            name: "戰刃" 
+          },
+          {
+            id: "ratchet",
+            name: "固鎖"
+          },
+          {
+            id: "bit",
+            name: "軸心"
+          }
+        ]
+      };
+    }
   }
 </script>
 
@@ -32,11 +53,11 @@
     padding-block: 4px;
     border-radius: 8px 8px 0 0;
     
-    &.-active {
+    &.active {
       background-color: map-get($color, secondary );
       color: map-get($color, white );
     }
-    &:not(.-active):hover{
+    &:not(.active):hover{
       background-color: map-get($color, tertiary );
       
     }
