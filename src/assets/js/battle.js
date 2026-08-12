@@ -330,8 +330,8 @@ locateBtn.addEventListener("click", () => {
       // 優先取得較精確的位置
       enableHighAccuracy: true,
 
-      // 最多等待 10 秒
-      timeout: 10000,
+      // 最多等待 15 秒
+      timeout: 15000,
 
       // 避免抓到之前的舊位置，每次都得重新定位
       maximumAge: 0

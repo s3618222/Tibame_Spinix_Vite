@@ -31,10 +31,10 @@
           <i class="fa-solid fa-share-nodes"></i>
           <span>分享</span>
         </button>
-        <button type="button">
+        <a :href="`${baseURL}complaint.html`" type="button">
           <i class="fa-regular fa-flag"></i>
           <span>檢舉</span>
-        </button>
+        </a>
       </footer>
     </article>
   </main>
@@ -55,6 +55,7 @@ import AuthorCard from '@/components/forum/authorCard.vue';
 
     data(){
       return{
+        baseURL: import.meta.env.BASE_URL,
         writer:[
           
         ]
@@ -170,9 +171,16 @@ import AuthorCard from '@/components/forum/authorCard.vue';
   display: flex;
   justify-content: space-between;
   
-  button {
+  button, a {
     color: map-get($color , neutral );
     cursor: pointer;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 16px;
+
+    &:hover {
+      color: lighten(map-get($color , neutral ), 10%);
+    }
   }
 
   @include rwd("desktop") {
