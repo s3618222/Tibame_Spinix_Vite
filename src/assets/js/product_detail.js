@@ -3,11 +3,14 @@ import { createApp } from "vue";
 
 import Header from "@/components/header.vue";
 import Footer from "@/components/footer.vue";
+import prodMsgList from "@/components/prodMsgList.vue";
 
 createApp(Header, {
    solid: true
 }).mount("#headerApp");
 createApp(Footer).mount("#footerApp");
+// 留言 List
+createApp(prodMsgList).mount('#msginfoApp');
 
 // == 輪播圖 =================================================
 // slick 初始化 + 箭頭 / 縮圖 邏輯
@@ -212,3 +215,12 @@ backToTopBtn.addEventListener("click", function () {
    });
 });
 
+
+// == 留言排序 =====================================================
+document.querySelectorAll('.icon-sort [data-sort]').forEach(btn => {
+   btn.addEventListener('click', () => {
+      window.dispatchEvent(new CustomEvent('msg-sort-change', {
+         detail: { sortOrder: btn.dataset.sort }
+      }));
+   });
+});

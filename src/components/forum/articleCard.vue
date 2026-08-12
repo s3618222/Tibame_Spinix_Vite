@@ -9,12 +9,12 @@
           <p class="title-article">{{ article.title }}</p>
           <p class="content-preview">{{article.content}}</p>
         </div>
-        <img :src="article.imgArticle" :alt="article.title" class="img-article">
+        <!-- <img :src="imgURL" :alt="article.title" class="img-article"> -->
         
       </div>
 
       <div class="post-info">
-        <img src="/spinix_member_test1.png" :alt="article.name" class="img-writer">
+        <img :src="`${baseUrl}spinix_member_test1.png`" :alt="article.name" class="img-writer">
         <div class="post-txt">
           <p class="name-post">{{ article.name }}</p>
           <p class="time-post">{{ article.time }}</p>
