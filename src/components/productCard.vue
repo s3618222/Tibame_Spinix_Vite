@@ -12,15 +12,15 @@
          </div>
 
          <div class="wrapper">
+            <i class="fa-solid fa-calendar-days"></i>
             <p class="date">
-               <i class="fa-solid fa-calendar-days"></i>
                刊登日期:
             </p>
             <span>{{ postDate }}</span>
          </div>
-
+         
          <p>
-            <i class="fa-solid fa-location-dot"></i>
+            <i class="fa-solid fa-location-dot"></i>   
             {{ city }}<span>{{ district }}</span>
          </p>
       </div>
@@ -91,6 +91,7 @@ function goToDetail() {
       height: fit-content;
 
       .wrapper {
+         display: flex;
          align-items: center;
          gap: 8px;
 
@@ -144,7 +145,6 @@ function goToDetail() {
          display: flex;
          padding-top: 12px;
          font-size: map-get($fontSize , hint);
-         // gap: 12px;
          align-items: center;
          justify-content: space-between;
 
@@ -192,7 +192,6 @@ function goToDetail() {
 
             :deep(.btnNoFill) {
                display: block;
-               // margin-left: auto;
                padding: 12px 16px;
             }
          }
