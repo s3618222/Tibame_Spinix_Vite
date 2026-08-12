@@ -1387,6 +1387,7 @@ filterElements.forEach(element => {
 
 // back to top: 回到約戰列表設定
 const battleCardArea = document.getElementById("battleCardArea"); //約戰列表區
+const tagArea = document.getElementById('tagArea'); //篩選面板區頂部
 const backToTopBtn = document.getElementById("backToTopBtn"); // 置頂按鈕
 
 //置頂函式
@@ -1404,9 +1405,9 @@ function handleBackToTop() {
 
 window.addEventListener("scroll", handleBackToTop);
 
-// 點擊按鈕後回到約戰列表頂部
+// 點擊按鈕後回到篩選面板區
 backToTopBtn.addEventListener("click", function () {
-  battleCardArea.scrollIntoView({
+  tagArea.scrollIntoView({
     behavior: "smooth",
     block: "start" //讓battleCardArea的頂端對齊畫面頂端
   });
