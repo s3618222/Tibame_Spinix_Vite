@@ -16,10 +16,10 @@
         <p>X軸心確實很猛，但如果遇到防禦特化的對手，開局沒撞飛就幾乎等於輸了。我個人更傾向用 J (Jolt) 軸，稍微保留一點可控性，容錯率比較高。 Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam perferendis eligendi, reprehenderit asperiores doloremque fuga debitis iste eius rerum natus quibusdam magnam labore pariatur incidunt unde quia, adipisci, consectetur est?Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tenetur quam reiciendis voluptatibus explicabo. Quaerat ad alias delectus voluptatem omnis quo praesentium, aperiam fugiat accusantium itaque explicabo facere sit. Quos, laudantium.</p>
       </div>
       <div class="comment-footer">
-        <button type="button">
+        <a :href="`${baseURL}complaint.html`" type="button">
           <i class="fa-regular fa-flag"></i>
           <span>檢舉</span>
-        </button>
+        </a>
       </div>
     </article>
   </section>
@@ -35,6 +35,10 @@ import AuthorCard from '@/components/forum/authorCard.vue';
 
     components: {
       AuthorCard
+    },
+
+    data(){
+      baseURL: import.meta.env.BASE_URL
     }
   }
 
@@ -94,6 +98,20 @@ import AuthorCard from '@/components/forum/authorCard.vue';
     width: 100%;
   }
 
+}
 
+.comment-footer {
+
+  a {
+    color: map-get($color , neutral );
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 16px;
+
+    &:hover {
+      color: lighten(map-get($color , neutral ), 10%);
+    }
+  }
 }
 </style>

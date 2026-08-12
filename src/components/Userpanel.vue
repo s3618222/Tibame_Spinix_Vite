@@ -32,18 +32,6 @@
          </div>
       <div class="notice-content">
          <ul  v-if="filteredList.length">
-            <!-- <li class="notice-info isUnread">
-               <a href="#">
-                  <span class="notice-txt">會員A申請約戰配對</span>
-                  <span class="notice-date">2026-08-12 22:47</span>   
-               </a>
-            </li>
-            <li class="notice-info isUnread">
-               <a href="#">
-                  <span class="notice-txt">會員A申請約戰配對</span>
-                  <span class="notice-date">2026-08-12 22:47</span>   
-               </a>
-            </li> -->
             <li 
                v-for="item in filteredList" 
                :key="item.id"
