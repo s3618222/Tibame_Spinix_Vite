@@ -38,7 +38,7 @@
                 <img src="/sop01.png" alt="">
               </div>
               <div class="sop-txt">
-                <p class="title">Step.1 交換中</p>
+                <p class="title">Step.1 可交換</p>
                 <p class="info">選擇交換對象</p>
               </div>
             </div>
