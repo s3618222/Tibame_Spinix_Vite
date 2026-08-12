@@ -639,8 +639,8 @@
     background: transparent;
 
     color: rgba(20, 28, 38, 0.5);
-    font-size: 20px;
-    line-height: 1.4;
+    font-size: 18px;
+    line-height: 1.5;
 
     cursor: pointer;
 
