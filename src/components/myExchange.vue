@@ -39,13 +39,13 @@
               </div>
               <div class="sop-txt">
                 <p class="title">Step.1 可交換</p>
-                <p class="info">選擇交換對象</p>
+                <p class="info">選擇想交換對象</p>
               </div>
             </div>
-            <div class="icon-next-sop">
+          </li>
+          <div class="icon-sop-next">
               <i class="fa-solid fa-right-long"></i>
             </div>
-          </li>
           <li>
             <div class="list-item">
               <div class="sop-img">
@@ -56,10 +56,11 @@
                 <p class="info">等待對方確認交換</p>
               </div>
             </div>
-            <div class="icon-next-sop">
-              <i class="fa-solid fa-right-long"></i>
-            </div>
+            
           </li>
+          <div class="icon-sop-next">
+            <i class="fa-solid fa-right-long"></i>
+          </div>
           <li>
             <div class="list-item">
               <div class="sop-img">
@@ -70,10 +71,10 @@
                 <p class="info">討論交換細節</p>
               </div>
             </div>
-            <div class="icon-next-sop">
+          </li>
+          <div class="icon-sop-next">
               <i class="fa-solid fa-right-long"></i>
             </div>
-          </li>
           <li>
             <div class="list-item">
               <div class="sop-img">
@@ -84,15 +85,14 @@
                 <p class="info">交換已順利完成</p>
               </div>
             </div>
-          
           </li>
         </ul>
       </div>
     </div>
 
-    <div class="container" v-if="filteredList.length">
+    <div class="container" v-if="paginatedList.length">
       <ProductCard
-        v-for="item in filteredList"
+        v-for="item in paginatedList"
         :key="item.id"
         :id="item.id"
         :title="item.title"
@@ -108,22 +108,39 @@
 
     <p v-else class="empty-msg">目前沒有符合的交換紀錄</p>
 
+    
+      <!-- 分頁器 -->
+      <Pagination
+        v-model:currentPage="currentPage"
+        :pageSize="pageSize"
+        :total="filteredList.length"
+        class="pagination"
+      />
+  
+  
   </section>
 </template>
 
 <script>
 import StatusTabs from "./controlTabs.vue";
 import ProductCard from "./productCard.vue";
-// 分頁器
-import Pagination from "./pagination.vue";
 import { exchangeList, statusLabelMap } from "../assets/js/mockExchangeData.js";  
+// 分頁器
+import Pagination from "@/components/pagination.vue";
+import ElementPlus from "element-plus";
+// import "element-plus/dist/index.css";
+
+
 
 export default {
   name: "MyExchange",
 
+  
+
   components: {
     StatusTabs,
-    ProductCard
+    ProductCard,
+    Pagination
   },
 
   data() {
@@ -132,8 +149,19 @@ export default {
       currentUserId: 101,     
       exchangeList,
       statusLabelMap,
-      activeTab: 'myexchange'
+      activeTab: 'myexchange',
+      currentPage: 1,
+      pageSize: 9,
     };
+  },
+
+    watch: {
+      currentStatus() {
+        this.currentPage = 1;
+      },
+      activeTab() {
+        this.currentPage = 1;
+      }
   },
 
   computed: {
@@ -161,19 +189,27 @@ export default {
       ];
     },
 
-    changeState(){
-      // console.log(this);
-      // this.
-    }
+    paginatedList() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const end = start + this.pageSize;
+      return this.filteredList.slice(start, end);
+    },
   }
+
+
 };
 </script>
 
 <style lang="scss" scoped>
   @use '@/assets/scss/_var' as *;
 
+  .pagination{
+    margin: 0 auto;
+    width: fit-content;
+  }
+
   .sop{
-    // padding-inline: 24px;
+
 
     .sop-title{
       padding-bottom:12px ;
@@ -183,25 +219,35 @@ export default {
 
     .sop-list{
       ul{
-        display: grid;
-        grid-template-columns: repeat(4,1fr);
-        flex-wrap: nowrap;
-        
+        width: 100%;
+        display: grid;  
+        grid-template-columns: repeat(2,1fr);
+        gap: 12px;
+
         li{
-          display: flex;
+          
+
           .list-item{
             display: flex;
-            padding: 12px;
-            border: 1px solid #4F8A5B;
-            background-color: #E4EEE7;
+            flex-direction: column;
+            justify-content: center;
+            
+            padding: 12px 8px;
+            border: 1px solid #fec96b;
+            background-color: #FFF2D6;
             border-radius: 10px;
             align-items: center;
             gap: 8px;
-          .sop-img{
-            width: 50px;
-            img{
-              width: 100%;
-            }
+
+            max-width: 200px;
+            margin: 0 auto;
+
+            box-shadow: 2px 2px 12px rgba(20, 28, 38, 0.1);
+              .sop-img{
+                width: 80px;
+                img{
+                  width: 100%;
+                }
           }
 
           .sop-txt{
@@ -210,26 +256,24 @@ export default {
             .title{
               font-size: 16px;
               font-weight:bolder;
-              color: #4F8A5B;
+              color: #F29B00;
               padding-bottom: 12px;
+              text-align: center;
             }
+
             .info{
               font-size: 14px;
+              text-align: center;
             }
           }
-          }
-          
+        }
+        
+      }
 
         
-          
-          
-        }
-        .icon-next-sop{
-          font-size: 24px;
-          color: map-get($color, secondary );
-          display: flex;
-          align-items: center;
-          padding-inline: 4px;
+
+        .icon-sop-next{
+          display: none;
         }
       }
     }
@@ -276,14 +320,65 @@ export default {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 20px;
-      padding: 20px 16px;
+      
     }
   
 
-  // 平板
+  // 會員中心電腦版
   @media screen and (width >= 768px) {
       .container {
         grid-template-columns: repeat(3, 1fr);
+        padding-block: 20px;
       }
+        .sop{
+
+          .sop-title{
+            padding-bottom:24px ;
+            font-size: 26px;
+          }
+
+    .sop-list{
+      ul{
+        display: flex;
+        gap: 8px;
+        
+        li{
+          display: flex;
+          flex: 1;
+          cursor: pointer;
+          transition: transform .3s ease;
+
+          .list-item{
+            flex: 1;
+
+            .sop-txt{
+
+              .title{
+                font-size: 18px;
+              }
+              .info{
+                font-size: 16px;
+                
+              }
+            }
+          }
+          
+          &:hover{
+            transform: translateY(-3px);
+          }
+        
+          
+          
+        }
+        .icon-sop-next{
+          font-size: 32px;
+          color: map-get($color, secondary2 );
+          display: flex;
+          align-items: center;
+          
+        }
+      }
+    }
+  }
   }
 </style>

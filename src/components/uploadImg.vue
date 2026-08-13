@@ -93,27 +93,6 @@ onBeforeUnmount(() => {
   photos.value.forEach((p) => URL.revokeObjectURL(p.url))
 })
 
-// ---- 表單欄位 ----
-// const initialForm = {
-//   category: '',
-//   name: '',
-//   condition: '',
-//   city: '',
-//   district: '',
-//   contact: '',
-//   wantItem: '',
-//   description: '',
-// }
-// const form = reactive({ ...initialForm })
 
-// function resetAll() {
-//   Object.assign(form, initialForm)
-//   photos.value.forEach((p) => URL.revokeObjectURL(p.url))
-//   photos.value = []
-// }
-
-// function handleSubmit() {
-//   emit('submit', { photos: photos.value, form: { ...form } })
-// }
 </script>
 

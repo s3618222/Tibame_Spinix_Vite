@@ -58,6 +58,7 @@ btnReset.addEventListener('click', (e) => {
 });
 
 function isFormInvalid() {
+
    // 1. 檢查一般輸入框 (text, select, textarea)
    // 排除 radio 與 checkbox，因為它們需要靠 checked 判斷
    const standardFields = document.querySelectorAll(
@@ -80,8 +81,14 @@ function isFormInvalid() {
       return !isChecked;
    });
 
+   // 3. 檢查檔案上傳欄位（如果該欄位是必填，沒選檔案就算空）
+   const fileFields = document.querySelectorAll('input[type="file"]');
+   const hasEmptyFile = Array.from(fileFields).some(
+      field => !field.files || field.files.length === 0
+   );
+
    // 只要一般欄位有空，或 Radio 有空，就代表表單無效 (Has Empty)
-   return hasEmptyStandard || hasEmptyRadioGroup;
+   return hasEmptyStandard || hasEmptyRadioGroup || hasEmptyFile;
 }
 
 

@@ -45,6 +45,39 @@ export default {
 @use '@/assets/scss/_var' as *;
 .status-tabs {
   display: flex;
+  gap: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid map-get($color, hint );
+
+
+  .status-tab {
+    font-size: 16px;
+    color: map-get($color , hint );
+    transition: color 0.28s ease;
+    
+    span {
+      color: #bbb;
+      font-size: 16px;
+    }
+
+    &.active {
+      color: map-get($color, secondary );
+
+      span {
+        color: map-get($color, secondary );
+      }
+    }
+
+    &:hover:not(.active) {
+      color: #666;
+    }
+  }
+}
+
+  // 會員中心 電腦
+  @media screen and (width >= 768px) {
+    .status-tabs {
+  display: flex;
   gap: 40px;
   padding-bottom: 12px;
   border-bottom: 1px solid map-get($color, hint );
@@ -73,4 +106,5 @@ export default {
     }
   }
 }
+  }
 </style>

@@ -76,6 +76,11 @@ $breakpoints: (
     color: #e63946;
   }
 
+  &--completed{
+    background-color: #dddddd; // 灰底
+    color: #aaaaaa;
+  }
+
 }
 
 // 後台共用膠囊狀態標籤

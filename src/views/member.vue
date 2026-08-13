@@ -76,7 +76,6 @@
 <style lang="scss" scoped>
   @use "sass:map";
   @use "@/assets/scss/var" as *;
-
   .member-page {
     padding-top: 88px;
   }

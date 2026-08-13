@@ -12,7 +12,7 @@
          </div>
 
          <div class="wrapper">
-            <i class="fa-solid fa-calendar-days"></i>
+            <i class="fa-solid fa-calendar-days icon-color"></i>
             <p class="date">
                刊登日期:
             </p>
@@ -20,19 +20,24 @@
          </div>
          
          <p>
-            <i class="fa-solid fa-location-dot"></i>   
+            <i class="fa-solid fa-location-dot icon-color"></i>   
             {{ city }}<span>{{ district }}</span>
          </p>
       </div>
 
       <div class="card-footer">
-         <p class="chip chip--exchangeable ">{{ state }}</p>
+         <p class="chip" :class="chipModifier">{{ state }}</p>
          <a :href="'product_detail.html'" class="btnNoFill" @click.stop>查看詳情</a>
+      </div>
+      <div class="show-detail">
+         <a :href="'product_detail.html'" class="detail_link" @click.stop>查看詳情</a>
       </div>
    </div>
 </template>
 
 <script setup>
+import { computed } from 'vue';
+
 const props = defineProps({
    id: {
       type: [String, Number],
@@ -70,7 +75,17 @@ const props = defineProps({
       type: String,
       default: '可交換'
    }
-})
+});
+
+// 狀態 → chip modifier 對照
+const stateChipMap = {
+   '可交換': 'chip--exchangeable',
+   '交換中': 'chip--category',
+   '待確認': 'chip--state',
+   '交換完成': 'chip--completed'
+};
+
+const chipModifier = computed(() => stateChipMap[props.state] || '');
 
 function goToDetail() {
    window.location.href = `product_detail.html`;
@@ -81,6 +96,23 @@ function goToDetail() {
 <style lang="scss">
    @use '@/assets/scss/_var' as *;
 
+   .icon-color{
+      color: map-get($color , neutral);
+   }
+
+   .show-detail{
+      padding-top: 12px;
+      .detail_link{
+         display: block;
+         padding: 8px 12px;
+         // background-color: orange;
+         margin: 0 -12px -12px;
+         color: map-get($color, neutral );
+         text-align: center;
+         border-top: 1px solid #dddddd;
+      }
+   }
+
    .card {
       width: 100%;
       background-color: white;
@@ -89,6 +121,7 @@ function goToDetail() {
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(20, 28, 38, 0.06);
       height: fit-content;
+      overflow: hidden;
 
       .wrapper {
          display: flex;
@@ -148,7 +181,7 @@ function goToDetail() {
          align-items: center;
          justify-content: space-between;
 
-         :deep(.btnNoFill) {
+         .btnNoFill {
             display: none;
          }
       }
@@ -163,7 +196,10 @@ function goToDetail() {
 
 // == 桌機 =====================================
    @media screen  and (width >= 992px ){
-
+      .show-detail{
+         display: none;
+         visibility: hidden;
+      }
       .card {
          cursor: pointer;
          transition: transform .5s ease, border .25s ease;
@@ -190,7 +226,7 @@ function goToDetail() {
          .card-footer {
             align-items: center;
 
-            :deep(.btnNoFill) {
+            .btnNoFill {
                display: block;
                padding: 12px 16px;
             }
