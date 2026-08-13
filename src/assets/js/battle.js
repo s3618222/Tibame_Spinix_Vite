@@ -330,8 +330,8 @@ locateBtn.addEventListener("click", () => {
       // 優先取得較精確的位置
       enableHighAccuracy: true,
 
-      // 最多等待 10 秒
-      timeout: 10000,
+      // 最多等待 15 秒
+      timeout: 15000,
 
       // 避免抓到之前的舊位置，每次都得重新定位
       maximumAge: 0
@@ -589,7 +589,7 @@ const battleData = [
     district: "中壢區",
     mode: "休閒模式",
     battleDate: "2026-08-15T14:00:00",
-    deadline: "2026-08-21T22:00:00",
+    deadline: "2026-08-14T22:00:00",
     level: "新手玩家",
     description: "假日放鬆場，輕鬆交流，我帶戰鬥盤，你帶陀螺就好！",
     hostId: 101,

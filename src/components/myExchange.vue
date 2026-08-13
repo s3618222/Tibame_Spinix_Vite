@@ -27,6 +27,69 @@
       v-model="currentStatus" 
     />
 
+    <!-- 交換流程說明 -->
+    <div class="sop">
+      <p class="sop-title">交換流程說明</p>
+      <div class="sop-list">
+        <ul>
+          <li>
+            <div class="list-item">
+              <div class="sop-img">
+                <img src="/sop01.png" alt="">
+              </div>
+              <div class="sop-txt">
+                <p class="title">Step.1 可交換</p>
+                <p class="info">選擇交換對象</p>
+              </div>
+            </div>
+            <div class="icon-next-sop">
+              <i class="fa-solid fa-right-long"></i>
+            </div>
+          </li>
+          <li>
+            <div class="list-item">
+              <div class="sop-img">
+                <img src="/sop02.png" alt="">
+              </div>
+              <div class="sop-txt">
+                <p class="title">Step.2 待確認</p>
+                <p class="info">等待對方確認交換</p>
+              </div>
+            </div>
+            <div class="icon-next-sop">
+              <i class="fa-solid fa-right-long"></i>
+            </div>
+          </li>
+          <li>
+            <div class="list-item">
+              <div class="sop-img">
+                <img src="/sop03.png" alt="">
+              </div>
+              <div class="sop-txt">
+                <p class="title">Step.3 交換中</p>
+                <p class="info">討論交換細節</p>
+              </div>
+            </div>
+            <div class="icon-next-sop">
+              <i class="fa-solid fa-right-long"></i>
+            </div>
+          </li>
+          <li>
+            <div class="list-item">
+              <div class="sop-img">
+                <img src="/sop04.png" alt="">
+              </div>
+              <div class="sop-txt">
+                <p class="title">Step.4 交換完成</p>
+                <p class="info">交換已順利完成</p>
+              </div>
+            </div>
+          
+          </li>
+        </ul>
+      </div>
+    </div>
+
     <div class="container" v-if="filteredList.length">
       <ProductCard
         v-for="item in filteredList"
@@ -108,6 +171,69 @@ export default {
 
 <style lang="scss" scoped>
   @use '@/assets/scss/_var' as *;
+
+  .sop{
+    // padding-inline: 24px;
+
+    .sop-title{
+      padding-bottom:12px ;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .sop-list{
+      ul{
+        display: grid;
+        grid-template-columns: repeat(4,1fr);
+        flex-wrap: nowrap;
+        
+        li{
+          display: flex;
+          .list-item{
+            display: flex;
+            padding: 12px;
+            border: 1px solid #4F8A5B;
+            background-color: #E4EEE7;
+            border-radius: 10px;
+            align-items: center;
+            gap: 8px;
+          .sop-img{
+            width: 50px;
+            img{
+              width: 100%;
+            }
+          }
+
+          .sop-txt{
+            flex: 1;
+            color: map-get($color, secondary );
+            .title{
+              font-size: 16px;
+              font-weight:bolder;
+              color: #4F8A5B;
+              padding-bottom: 12px;
+            }
+            .info{
+              font-size: 14px;
+            }
+          }
+          }
+          
+
+        
+          
+          
+        }
+        .icon-next-sop{
+          font-size: 24px;
+          color: map-get($color, secondary );
+          display: flex;
+          align-items: center;
+          padding-inline: 4px;
+        }
+      }
+    }
+  }
 
   #page-myexchange{
     display: flex;
