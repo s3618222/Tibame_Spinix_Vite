@@ -24,6 +24,8 @@ export default defineConfig({
         createBattle: path.resolve(__dirname, "createBattle.html"),
         build: path.resolve(__dirname, "build.html"),
         forum: path.resolve(__dirname, "forum.html"),
+        forumArticle: path.resolve(__dirname, "forumArticle.html"),
+        forumForm: path.resolve(__dirname, "forumForm.html"),
         market: path.resolve(__dirname, "market.html"),
         product_detail: path.resolve(__dirname, "product_detail.html"),
         addChange: path.resolve(__dirname, "addChange.html"),
