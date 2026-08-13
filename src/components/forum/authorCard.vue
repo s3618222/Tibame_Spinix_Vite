@@ -1,8 +1,10 @@
 <template>
   <div class="author-card">
     <img src="/spinix_member_test2.jpg" alt="writername" class="img-writer">
-    <p class="name-writer">Blader_X</p>
-    <p class="score-writer">勝場數：100</p>
+    <div class="txt-box">
+      <p class="name-writer">Blader_X</p>
+      <p class="score-writer chip chip--state">勝場數：100</p>
+    </div>
     <!-- <img :src="writer.img" :alt="writer.name" class="img-writer">
     <p class="name-writer">{{ writer.name }}</p>
     <p class="score-writer">{{ writer.score }}</p> -->
@@ -31,9 +33,26 @@
 .author-card {
   background-color: white;
   display: flex;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid map-get($color, tertiary );
   
-  
-  @include rwd("desktop"){
+  .img-writer{
+    display: block;
+    width: 50px;
+    // height: auto;
+    aspect-ratio: 1/1 ;
+    border-radius: 50%;
+  }
+
+  .txt-box {
+    display: flex;
+    align-items: center; gap: 8px;
+  }
+}
+
+@include rwd("desktop"){
+  .author-card {
     box-shadow: 3px 3px 8px 3px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     width: 200px;
@@ -41,18 +60,20 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-  }
 
-  .img-writer{
-    width: 10%;
-    // height: auto;
-    aspect-ratio: 1/1 ;
-    border-radius: 50%;
+    padding: 0;
+    border-bottom: 0px;
 
-    @include rwd("desktop") {
+    .img-writer {
       width: 50%;
+      // max-width: 50%;
+    }
+
+    .txt-box {
+      flex-direction: column;
     }
   }
-}
 
+  
+}
 </style>

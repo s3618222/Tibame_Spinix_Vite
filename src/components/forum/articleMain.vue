@@ -7,7 +7,7 @@
     <article class="article-content">
       <header class="header-article">
         <div class="title-label">
-          <p class="type-article">配裝開箱</p>
+          <p class="type-article chip">配裝開箱</p>
           <div class="time-post">
             <i class="fa-regular fa-clock"></i>
             <span>2026-05-12 14:30</span>
@@ -71,12 +71,14 @@ import AuthorCard from '@/components/forum/authorCard.vue';
 @use '@/assets/scss/mixin' as *;
 
 .article-main{
+  padding: 16px;
   display: flex;
   flex-direction: column;
   // padding: 20px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 3px 3px 8px 3px rgba(0, 0, 0, 0.1);
+  gap: 16px;
   
   @include rwd("desktop"){
     // margin-top: 24px;
@@ -120,6 +122,7 @@ import AuthorCard from '@/components/forum/authorCard.vue';
 
 .header-article {
   order: 1;
+  padding-bottom: 8px;
 
   @include rwd("desktop") {
     order: initial;
@@ -131,7 +134,9 @@ import AuthorCard from '@/components/forum/authorCard.vue';
   .title-label {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 8px;
+    align-items: center;
+    // margin-bottom: 8px;
+    padding-block: 12px;
     font-size: 14px;
 
     .type-article {
