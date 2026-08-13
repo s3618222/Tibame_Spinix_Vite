@@ -174,41 +174,44 @@ button {
   }
 
   /* ------------------------------------------------------------------------
-     5. 桌機版「欄位寬度」與「字體統一」集中管理
+     5. 桌機與平板版「欄位寬度」與「字體統一」集中管理
      （這段會同時作用在 .th 與 .article-card 底下的欄位）
      ------------------------------------------------------------------------ */
-  .col-type,
-  .col-title,
-  .col-date,
-  .col-comments,
-  .col-action {
-    font-size: 16px; // 💡 強制重置桌機版所有欄位字體為 16px
-  }
+  .th,
+  .article-card {
+    .col-type,
+    .col-title,
+    .col-date,
+    .col-comments,
+    .col-action {
+      font-size: 16px; // 💡 強制重置平板/桌機版所有欄位字體為 16px
+    }
 
-  .col-type {
-    min-width: 80px;
-    flex-shrink: 0;
-  }
+    .col-type {
+      min-width: 80px;
+      flex-shrink: 0;
+    }
 
-  .col-title {
-    flex: 1;
-    min-width: 0;
-    text-align: left;
-  }
+    .col-title {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+    }
 
-  .col-date {
-    width: 110px;
-    flex-shrink: 0;
-  }
+    .col-date {
+      width: 110px;
+      flex-shrink: 0;
+    }
 
-  .col-comments {
-    min-width: 50px;
-    flex-shrink: 0;
-  }
+    .col-comments {
+      min-width: 50px;
+      flex-shrink: 0;
+    }
 
-  .col-action {
-    min-width: 120px;
-    flex-shrink: 0;
+    .col-action {
+      min-width: 120px;
+      flex-shrink: 0;
+    }
   }
 }
 </style>
