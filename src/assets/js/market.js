@@ -13,7 +13,7 @@ createApp(Footer).mount("#footerApp");
 createApp(Pagination, {
    currentPage: 1,
    pageSize: 20,
-   total: 24
+   total: 20
 }).use(ElementPlus).mount("#paginationApp");
 
 createApp(ProductList).mount("#exchangeApp");
