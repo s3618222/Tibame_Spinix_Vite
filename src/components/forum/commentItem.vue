@@ -6,7 +6,7 @@
 
     <article class="comment-content">
       <div class="comment-header">
-        <div class="floor-num">樓層：2</div>
+        <div class="floor-num chip">樓層：2</div>
         <div class="time-post">
           <i class="fa-regular fa-clock"></i>
           <span>2026-05-12 15:38</span>
@@ -51,14 +51,18 @@ import AuthorCard from '@/components/forum/authorCard.vue';
 .comment-item{
   display: flex;
   flex-direction: column;
+  gap: 16px;
   // padding: 20px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 3px 3px 8px 3px rgba(0, 0, 0, 0.1);
 
+  padding: 16px;
+
   @include rwd("desktop"){
     flex-direction: row;
     gap: 8px;
+    padding: 0;
     
     background-color: transparent;
     border-radius: 0;
@@ -66,12 +70,11 @@ import AuthorCard from '@/components/forum/authorCard.vue';
   }
 
   i {
-    // color: red;
     margin-right: 4px;
   }
 }
 .author-card {
-  // order: 2;
+  order: 2;
 
   @include rwd("desktop") {
     order: initial;
@@ -82,6 +85,7 @@ import AuthorCard from '@/components/forum/authorCard.vue';
 .comment-content {
   width: 100%;
   display: contents;  // 消失外殼容器的特性 
+  
 
   @include rwd("desktop"){
     display: flex;
@@ -99,8 +103,36 @@ import AuthorCard from '@/components/forum/authorCard.vue';
   }
 
 }
+.comment-header {
+  order: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: 12px;
+  font-size: 14px;
+  
+  @include rwd("desktop") {
+    border-bottom: 1px solid map-get($color, tertiary );
 
+  }
+
+  .floor-num {
+    background-color: map-get($color, warmGray );
+  }
+
+  .time-post {
+    color: map-get($color , neutral );
+  }
+}
+.comment-body {
+  order: 3;
+}
 .comment-footer {
+  order: 4;
+  display: inline-flex;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid #F7F5F3;
 
   a {
     color: map-get($color , neutral );
