@@ -113,7 +113,6 @@
           <!-- 表頭 -->
           <thead>
             <tr>
-              <th scope="col">邀約 ID</th>
               <th scope="col">標題</th>
               <th scope="col">發起人</th>
               <th scope="col">地區</th>
@@ -128,14 +127,13 @@
             <!-- 當平台目前完全沒有約戰資料時，顯示的空狀態 -->
             <template v-if="battles.length === 0">
               <tr>
-                <td colspan="7" class="battle-table-empty">目前尚無任何約戰資料</td>
+                <td colspan="6" class="battle-table-empty">目前尚無任何約戰資料</td>
               </tr>
             </template>
 
             <!-- 平台有資料時 -->
             <template v-else>
               <tr v-for="battle in paginatedBattles" :key="battle.battleId">
-                <td>{{ battle.battleId }}</td>
                 <td>{{ battle.title }}</td>
                 <td>{{ battle.hostName }}</td>
                 <td>{{ battle.cityLabel }}・{{ battle.district }}</td>
@@ -153,7 +151,7 @@
 
               <!-- 當有約戰資料，但篩選後沒有結果時的空狀態 -->
               <tr v-if="filteredBattles.length === 0">
-                <td colspan="7" class="battle-table-empty">
+                <td colspan="6" class="battle-table-empty">
                   目前沒有符合條件的約戰資料
                 </td>
               </tr>
@@ -883,7 +881,7 @@ export default {
     }
 
     //約戰日期欄
-    td:nth-child(5) {
+    td:nth-child(4) {
       color: #808080;
       white-space: nowrap;
     }
@@ -918,44 +916,39 @@ export default {
     }
 
     //  調整特定欄位寬度
-    // 邀約 ID
+    //標題
     th:nth-child(1),
     td:nth-child(1) {
-      width: 64px;
-    }
-
-    th:nth-child(2),
-    td:nth-child(2) {
       width: 160px;
     }
 
     //發起人
-    th:nth-child(3),
-    td:nth-child(3) {
+    th:nth-child(2),
+    td:nth-child(2) {
       width: 96px;
     }
 
     //地區
-    th:nth-child(4),
-    td:nth-child(4) {
+    th:nth-child(3),
+    td:nth-child(3) {
       width: 180px;
     }
 
     // 日期
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 100px;
+    }
+
+    // 狀態
     th:nth-child(5),
     td:nth-child(5) {
       width: 100px;
     }
 
-    // 狀態
+    // 操作
     th:nth-child(6),
     td:nth-child(6) {
-      width: 100px;
-    }
-
-    // 操作
-    th:nth-child(7),
-    td:nth-child(7) {
       width: 80px;
     }
 
@@ -1578,7 +1571,7 @@ export default {
       min-width: 560px;
     }
 
-    //將標題欄位隱藏
+    //將發起人欄位隱藏
     .battle-table {
       th:nth-child(2),
       td:nth-child(2) {
@@ -1586,13 +1579,6 @@ export default {
       }
     }
 
-    //將發起人欄位隱藏
-    .battle-table {
-      th:nth-child(3),
-      td:nth-child(3) {
-        display: none;
-      }
-    }
   }
 
   @media screen and (max-width: 576px) {
