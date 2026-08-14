@@ -60,12 +60,15 @@ html {
 
 .battle-sec-hero .container {
   width: min(1360px, 86vw);
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  margin-inline: auto;
+  // display: flex;
+  // align-items: center;
+  // gap: 16px;
 
   position: absolute;
-  bottom: 80px;
+  left: 50%;
+  bottom: 10%;
+  transform: translateX(-50%);
 }
 
 //hero區按鈕
@@ -105,8 +108,8 @@ a.empty-createBattleBtn {
 .hero-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  align-items: flex-start;
+  gap: 16px;
 }
 
 .battle-sec-hero .container .hero-content p {
@@ -1409,6 +1412,17 @@ a.empty-createBattleBtn {
   }
 }
 
+@media screen and (max-width: 1100px) {
+  .battle-hero-scroll {
+    height: auto;
+  }
+
+  .battle-sec-hero {
+    position: relative;
+    top: auto;
+  }
+}
+
 @media screen and (max-width: 1024px) {
   .page-battle {
     .card-list .battleCard {
@@ -1532,24 +1546,16 @@ a.empty-createBattleBtn {
     // Hero區內容改垂直column排列
     .battle-sec-hero .container {
       width: 90vw;
-
-      left: 50%;
-      bottom: 72px;
-      transform: translateX(-50%);
-
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 16px;
+      bottom: 10%;
     }
 
-    .hero-spintop {
-      width: 88px;
-      flex-shrink: 0;
-    }
+    // .hero-spintop {
+    //   width: 88px;
+    //   flex-shrink: 0;
+    // }
 
     .hero-content {
-      align-items: center;
+      align-items: flex-start;
       gap: 12px;
     }
 
@@ -1562,7 +1568,7 @@ a.empty-createBattleBtn {
     .battle-sec-hero .container .hero-content p {
       font-size: 18px;
       line-height: 1.5;
-      white-space: nowrap;
+      white-space: normal;
     }
 
     // CTA

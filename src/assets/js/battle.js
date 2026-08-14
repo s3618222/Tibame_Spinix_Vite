@@ -13,7 +13,6 @@ createApp(Footer).mount("#footerApp");
 //Hero區視差設定
 const battleHeroScroll = document.querySelector(".battle-hero-scroll");
 const battleHero = document.querySelector(".battle-sec-hero");
-const heroSpintop = document.querySelector(".hero-spintop img");
 
 // 讓這個頁面可以使用GSAP的ScrollTrigger外掛
 gsap.registerPlugin(ScrollTrigger);
@@ -37,6 +36,11 @@ let heroTimeline;
 
 // 建立Hero區的ScrollTrigger動畫
 function createHeroAnimation() {
+
+  // 當畫面寬度是1100px以下時，就不建立Hero視差動畫；因為這時的hero高度已經跟圖片差不多了
+  if (window.innerWidth <= 1100) {
+    return;
+  }
 
   //如果先前已經建立過動畫，重新建立前要先清除舊動畫
   if (heroTimeline) {
@@ -76,20 +80,20 @@ function createHeroAnimation() {
     0
   );
 
-  //第二段動畫，陀螺圖同步跟著漸入，並順時針旋轉一圈
-  heroTimeline.fromTo(
-    heroSpintop,
-    {
-      opacity: 0.1,
-      rotation: 0
-    },
-    {
-      opacity: 1,
-      rotation: 360,
-      ease: "none"
-    },
-    0
-  );
+  //先刪除---第二段動畫，陀螺圖同步跟著漸入，並順時針旋轉一圈
+  // heroTimeline.fromTo(
+  //   heroSpintop,
+  //   {
+  //     opacity: 0.1,
+  //     rotation: 0
+  //   },
+  //   {
+  //     opacity: 1,
+  //     rotation: 360,
+  //     ease: "none"
+  //   },
+  //   0
+  // );
 }
 
 //頁面剛進入時，先建立一次Hero動畫
@@ -104,6 +108,20 @@ window.addEventListener("load", () => {
 // 瀏覽器上一頁、下一頁或快取恢復頁面時
 window.addEventListener("pageshow", () => {
   refreshHeroScroll();
+});
+
+// 當瀏覽器尺寸改變時，重新判斷是否還需要 Hero 視差
+window.addEventListener("resize", () => {
+
+  // 如果先前已有建立過動畫，就先清掉
+  if (heroTimeline) {
+    heroTimeline.scrollTrigger?.kill();
+    heroTimeline.kill();
+    heroTimeline = null;
+  }
+
+  // 再依照目前瀏覽器寬度重新判斷是否要建立視差動畫
+  createHeroAnimation();
 });
 
 //篩選列表上方的介紹文字動畫設定
