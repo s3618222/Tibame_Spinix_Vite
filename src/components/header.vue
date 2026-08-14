@@ -15,23 +15,26 @@
       <nav :class="{active: isMenuOpen}">
         <ul>
           <li>
-            <a :href="`${baseUrl}homepage.html`">首頁</a>
+            <a :href="`${baseUrl}battle.html`" :class="{active: currentPath.toLowerCase().includes('battle')}">對戰配對</a>
           </li>
 
           <li>
-            <a :href="`${baseUrl}battle.html`">對戰配對</a>
+            <a :href="`${baseUrl}build.html`" :class="{active: currentPath.toLowerCase().includes('build')}">陀螺配置</a>
           </li>
 
           <li>
-            <a :href="`${baseUrl}build.html`">陀螺配置</a>
+            <a :href="`${baseUrl}forum.html`" :class="{active: currentPath.toLowerCase().includes('forum')}">Spinix論壇</a>
           </li>
 
           <li>
-            <a :href="`${baseUrl}forum.html`">Spinix論壇</a>
-          </li>
-
-          <li>
-            <a :href="`${baseUrl}market.html`">交換專區</a>
+            <a :href="`${baseUrl}market.html`" 
+            :class="{active: 
+              currentPath.toLowerCase().includes('market') ||
+              currentPath.toLowerCase().includes('product') ||
+              currentPath.toLowerCase().includes('addchange')
+            }"
+          >
+            交換專區</a>
           </li>
         </ul>
         <div class="header-btns" v-if="!isLogin">
@@ -138,7 +141,9 @@ export default {
       isUserPanelOpen: false,
       isLogin:true, // 檢查是否登入
       currentPanel: "menu",   // menu | notice
-      transitionName: "slide-left"  // 控制滑動方向
+      transitionName: "slide-left",  // 控制滑動方向
+
+      currentPath: window.location.pathname, //用來判斷當下所在位置在哪個分頁
     };
   },
 
