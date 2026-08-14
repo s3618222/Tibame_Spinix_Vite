@@ -326,7 +326,11 @@
           </section>
 
           <!-- 管理員操作處置 -->
-          <section class="battle-detail-handle">
+          <!-- 僅有狀態為正在配對中的約戰 才可做下假處置動作 -->
+          <section
+            v-if="selectedBattle.status == 'matching'"
+            class="battle-detail-handle"
+          >
             <div class="battle-detail-handle-title">
               <span class="battle-detail-handle-accent"></span>
               <i class="fa-solid fa-shield-halved"></i>
