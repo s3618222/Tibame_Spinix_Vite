@@ -1,4 +1,4 @@
-import { createApp } from "vue";
+import { createApp, useCssVars } from "vue";
 import Header from "@/components/header.vue";
 import Footer from "@/components/footer.vue";
 
@@ -449,10 +449,12 @@ returnEditBtn.addEventListener("click", function () {
 
 
 //表單區左側進度瀏覽效果設定
+const formProgressSticky = document.querySelector(".form-progress-sticky"); //表單左側的整個進度條
 const progressSpinnerImage = document.querySelector(".progress-spinner img"); //進度轉動陀螺圖
 const progressValue = document.querySelector(".progress-value"); //進度文字
+const requiredFields = document.querySelectorAll('[required]'); //表單所有必填欄位
 
-// 根據目前捲動位置，更新陀螺的旋轉角度與百分比顯示
+// 根據目前捲動位置，更新陀螺旋轉角度
 function updateFormScrollProgress() {
 
     // 取得表單於整個網頁中的起始位置
@@ -475,19 +477,13 @@ function updateFormScrollProgress() {
     // 限制進度最低不能小於0，最大不能超過1
     progress = Math.min(Math.max(progress, 0), 1);
 
-    // 將 0～1 再轉換成 0～100，視為進度百分比
-    const progressPercent = Math.round(progress * 100);
-
-    // 更新百分比文字
-    progressValue.textContent = `${progressPercent}%`;
-
     // 設定進度從 0～100% 時，陀螺總共會旋轉兩圈
     const rotation = progress * 720;
 
     progressSpinnerImage.style.transform = `rotate(${rotation}deg)`;
 }
 
-// 當使用者每次捲動畫面時，都重新計算表單瀏覽進度
+// 當使用者每次捲動畫面時，都重新計算表單瀏覽捲動進度
 window.addEventListener("scroll", updateFormScrollProgress);
 
 // 瀏覽器尺寸改變時，也重新計算
@@ -495,6 +491,39 @@ window.addEventListener("resize", updateFormScrollProgress);
 
 // 頁面剛載入時，先設定一次初始狀態
 updateFormScrollProgress();
+
+// 根據使用者表單填寫狀況，更新右側的進度數字顯示
+function updateFormProgress() {
+    let completedCount = 0; //紀錄已填寫的必填欄位數
+
+    requiredFields.forEach(field => {
+        //去除文字輸入欄位的前後空白，避免誤觸空白時也被視為已填寫
+        const value = field.value.trim();
+
+        //當該欄位非空值時，已填寫欄位數 + 1
+        if (value != "") {
+            completedCount++;
+        }
+    });
+
+    //計算填寫進度的百分比 → 已填寫欄數 除以 總必填欄數
+    const progressPercent = Math.round(completedCount / requiredFields.length * 100);
+
+    //更新顯示數字
+    progressValue.textContent = `${progressPercent}%`;
+
+    // 當必填欄位都填寫完時 (進度100%)，加入 class 樣式 is-complete
+    if (progressPercent === 100) {
+        formProgressSticky.classList.add("is-complete");
+    } else {
+        formProgressSticky.classList.remove('is-complete')
+    }
+}
+
+// 監聽change事件，欄位選項輸入完畢時，更新進度
+battleForm.addEventListener("change", updateFormProgress);
+// 載入頁面時，更新初始文字進度
+updateFormProgress();
 
 
 
