@@ -103,6 +103,10 @@
 
     border-radius: 50%;
     background-color: #141C26;
+
+    transition:
+        transform 0.32s ease,
+        box-shadow 0.32s ease;
 }
 
 .progress-spinner img {
@@ -123,6 +127,33 @@
     line-height: 1;
     white-space: nowrap;
     color: #141C26;
+
+    transition:
+        color 0.32s ease,
+        font-size 0.32s ease,
+        text-shadow 0.32s ease;
+}
+
+//當表單全填寫完時，進度條區塊的樣式設定
+.form-progress-sticky.is-complete {
+
+    //陀螺圖
+    .progress-spinner {
+        transform: translateX(-50%) scale(1.12);
+
+        box-shadow:
+            0 0 0 4px rgba(254, 201, 107, 0.28),
+            0 0 14px rgba(242, 155, 0, 0.22);
+    }
+
+    //進度文字
+    .progress-value {
+        font-size: 18px;
+        color: #F29B00;
+
+        text-shadow:
+            0 0 8px rgba(242, 155, 0, 0.15);
+    }
 }
 
 //==== 右側邀約表單區 ====
