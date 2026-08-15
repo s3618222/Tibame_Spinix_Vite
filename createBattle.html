@@ -170,20 +170,20 @@
                     <input type="time" id="battleTime" name="battleTime" required>
                   </div>
 
-                </div>
+                  <div class="form-group deadline-group">
+                    <label for="battleDeadline">
+                      <i class="fa-solid fa-hourglass-half"></i>
+                      報名截止時間
+                      <span class="required-mark">*</span>
+                    </label>
 
-                <div class="form-group deadline-group">
-                  <label for="battleDeadline">
-                    <i class="fa-solid fa-hourglass-half"></i>
-                    報名截止時間
-                    <span class="required-mark">*</span>
-                  </label>
+                    <input type="datetime-local" id="battleDeadline" name="deadline" required>
 
-                  <input type="datetime-local" id="battleDeadline" name="deadline" required>
+                    <p class="field-hint">
+                      *截止時間需至少晚於當前時間1小時。
+                    </p>
+                  </div>
 
-                  <p class="field-hint">
-                    *報名截止時間需至少晚於目前時間 1 小時。
-                  </p>
                 </div>
 
                 <div class="form-grid form-grid-two location-row">
@@ -225,52 +225,55 @@
                 </div>
               </section>
 
-              <!-- 4. 聯絡方式 -->
-              <section class="form-section">
-                <div class="form-section-title with-hint">
-                  <span class="section-accent"></span>
+              <!-- 聯絡方式、邀約備註列 -->
+              <div class="form-section-row">
+                <!-- 4. 聯絡方式 -->
+                <section class="form-section">
+                  <div class="form-section-title with-hint">
+                    <span class="section-accent"></span>
 
-                  <div>
-                    <h3>4. 聯絡方式</h3>
-                    <p class="section-hint">
-                      *配對成功後，才會顯示雙方聯絡資訊
+                    <div>
+                      <h3>4. 聯絡方式</h3>
+                      <p class="section-hint">
+                        *配對成功後，才會顯示雙方聯絡資訊
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="battleContact">
+                      <i class="fa-solid fa-envelope"></i>
+                      聯絡資訊
+                      <span class="required-mark">*</span>
+                    </label>
+
+                    <input type="text" id="battleContact" name="contact" maxlength="100"
+                      placeholder="例如，LINE、Discord、手機或 Email" required>
+                  </div>
+                </section>
+
+                <!-- 5. 備註 -->
+                <section class="form-section">
+                  <div class="form-section-title">
+                    <span class="section-accent"></span>
+                    <h3>5. 備註</h3>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="battleDescription">
+                      邀約說明
+                      <span class="required-mark">*</span>
+                    </label>
+
+                    <textarea id="battleDescription" name="description" maxlength="250" rows="5"
+                      placeholder="補充對戰方式、攜帶物品或其他注意事項..." required></textarea>
+
+                    <p class="input-hint">
+                      最多 250 字
                     </p>
                   </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="battleContact">
-                    <i class="fa-solid fa-envelope"></i>
-                    聯絡資訊
-                    <span class="required-mark">*</span>
-                  </label>
-
-                  <input type="text" id="battleContact" name="contact" maxlength="100"
-                    placeholder="例如，LINE ID、Discord 帳號、Email 或電話" required>
-                </div>
-              </section>
-
-              <!-- 5. 備註 -->
-              <section class="form-section">
-                <div class="form-section-title">
-                  <span class="section-accent"></span>
-                  <h3>5. 備註</h3>
-                </div>
-
-                <div class="form-group">
-                  <label for="battleDescription">
-                    邀約說明
-                    <span class="required-mark">*</span>
-                  </label>
-
-                  <textarea id="battleDescription" name="description" maxlength="250" rows="5"
-                    placeholder="補充對戰方式、攜帶物品或其他注意事項..." required></textarea>
-
-                  <p class="input-hint">
-                    最多 250 字
-                  </p>
-                </div>
-              </section>
+                </section>
+              </div>
 
               <!-- 表單操作按鈕 -->
               <div class="form-actions">
