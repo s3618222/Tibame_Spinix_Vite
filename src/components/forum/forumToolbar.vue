@@ -9,7 +9,12 @@
     <div class="search-box">
       <!-- 放大鏡 -->
       <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" placeholder="搜尋討論串...">
+      <input
+        type="text"
+        placeholder="搜尋討論串..."
+        :value="searchKeyword"
+        @input="$emit('search', $event.target.value)"
+      >
     </div>
     <a :href="`${baseUrl}forumForm.html`" type="button" class="btnFill btn-post">
       <i class="fa-regular fa-pen-to-square"></i>
@@ -24,6 +29,15 @@
 <script>
   export default {
     name: "ForumToolbar",
+
+    props: {
+      searchKeyword: {
+        type: String,
+        default: ""
+      }
+    },
+
+    emits: ["search"],
 
     data(){
       return {

@@ -6,7 +6,7 @@
         <p>與全台陀螺好手交流戰術、分享零件配置與最新賽事心得。</p>
       </div>
 
-      <ForumToolbar/>
+      <ForumToolbar :search-keyword="searchKeyword" @search="updateSearch"/>
       <CategoryTabs :current-tab="currentTab" @change-tab="switchTab"/>
       <ArticleList :article-list="filteredArticles"/>
 
@@ -26,6 +26,7 @@
     data(){
       return {
         currentTab: "all",  // 預設值
+        searchKeyword: "",
         allArticles: [
           {
             id: 1,
@@ -86,17 +87,30 @@
     },
 
     computed: {
-      filteredArticles(){
-        if(this.currentTab === "all"){
-          return this.allArticles;
+      filteredArticles() {
+        let result = this.allArticles;
+
+        if (this.currentTab !== "all") {
+          result = result.filter(article => article.categoryId === this.currentTab);
         }
-        return this.allArticles.filter(article => article.categoryId === this.currentTab);
+
+        const keyword = this.searchKeyword.trim().toLowerCase();
+        if (keyword) {
+          result = result.filter(article =>
+            article.title.toLowerCase().includes(keyword)
+          );
+        }
+
+        return result;
       }
     },
 
     methods: {
       switchTab(tabId){
         this.currentTab = tabId;
+      },
+      updateSearch(keyword) {
+        this.searchKeyword = keyword;
       }
     }
   }
