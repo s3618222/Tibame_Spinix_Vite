@@ -1,5 +1,5 @@
 <template>
-  <div class="part-card" @click="copyInfo">
+  <div class="part-card" :class="{ active: isSelected }" @click="selectCard">
     <button type="button" class="btn-info" @click.stop="toggleInfo">
       <i class="fa-solid fa-circle-info "></i>
     </button>
@@ -54,13 +54,19 @@
       }
     },
 
-    props: ["part"],
+    props: {
+      part: { type: Object, required: true },
+      selectedId: { type: Number, default: null }
+    },
 
     computed: {
       imgUrl() {
         const baseUrl = import.meta.env.BASE_URL;
         // 確保 path 組合時不會多斜線或少斜線
         return `${baseUrl}${this.part.image.replace(/^\//, '')}`;
+      },
+      isSelected() {
+        return this.part.id === this.selectedId;
       }
     },
 
@@ -69,9 +75,8 @@
         // alert("132");
         this.isInfoOpen = !this.isInfoOpen;
       },
-      copyInfo(){
-        // alert("哈哈");
-        console.log("123");
+      selectCard(){
+        this.$emit('select', this.part);
       },
       closeInfo(){
         this.isInfoOpen = false;

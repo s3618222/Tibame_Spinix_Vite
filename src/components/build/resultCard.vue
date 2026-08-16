@@ -5,71 +5,55 @@
     <div class="pic-logo">spinix</div>
 
     <div class="pics-container">
-      <div class="part-item">
+      <div class="part-item" v-for="slot in partSlots" :key="slot.category">
         <div class="part-img-box">
           <img src="/build/background-circle.png" alt="" class="bg-ring">
-          <img src="/build/blade/BX-49 蒼龍突擊.png" alt="" class="preview-pic">
+          <img
+            v-if="selectedParts[slot.category]"
+            :src="imgUrl(selectedParts[slot.category])"
+            alt=""
+            class="preview-pic"
+          >
+          <span v-else class="preview-placeholder">{{ slot.label }}</span>
         </div>
         <div class="part-txt">
-          <p class="part-title">戰刃</p>
-          <p class="part-name">蒼龍突擊</p>
+          <p class="part-title">{{ slot.label }}</p>
+          <p class="part-name">{{ selectedParts[slot.category] ? selectedParts[slot.category].name : '尚未選擇' }}</p>
         </div>
-        
+
       </div>
-      <div class="part-item">
-        <div class="part-img-box">
-          <img src="/build/background-circle.png" alt="" class="bg-ring">
-          <img src="/build/bit/UX-21-03 B.png" alt="" class="preview-pic">
-        </div>
-        <div class="part-txt">
-          <p class="part-title">軸心</p>
-          <p class="part-name">UX-21-03</p>
-        </div>
-      </div>
-      <div class="part-item">
-        <div class="part-img-box">
-          <img src="/build/background-circle.png" alt="" class="bg-ring">
-          <img src="/build/ratchet/CX-18-03.png" alt="" class="preview-pic">
-        </div>
-        <div class="part-txt">
-          <p class="part-title">固鎖</p>
-          <p class="part-name">CX-18-03</p>
-        </div>
-      </div>
-      
-      
     </div>
 
-    
+
 
     <ul class="stat-list">
       <li class="stat-item">
         <span class="stat-label">攻擊</span>
         <div class="stat-bar">
-          <span class="stat-bar-fill" style="width: 55%;"></span>
+          <span class="stat-bar-fill" :style="{ width: statBarWidth(totalStats.atk) }"></span>
         </div>
-        <span class="stat-value">55</span>
+        <span class="stat-value">{{ totalStats.atk }}</span>
       </li>
       <li class="stat-item">
         <span class="stat-label">防守</span>
         <div class="stat-bar">
-          <span class="stat-bar-fill" style="width: 45%;"></span>
+          <span class="stat-bar-fill" :style="{ width: statBarWidth(totalStats.def) }"></span>
         </div>
-        <span class="stat-value">45</span>
+        <span class="stat-value">{{ totalStats.def }}</span>
       </li>
       <li class="stat-item">
         <span class="stat-label">持久</span>
         <div class="stat-bar">
-          <span class="stat-bar-fill" style="width: 85%;"></span>
+          <span class="stat-bar-fill" :style="{ width: statBarWidth(totalStats.sta) }"></span>
         </div>
-        <span class="stat-value">90</span>
+        <span class="stat-value">{{ totalStats.sta }}</span>
       </li>
       <li class="stat-item">
         <span class="stat-label">重量(g)</span>
         <div class="stat-bar">
-          <span class="stat-bar-fill" style="width: 38%;"></span>
+          <span class="stat-bar-fill" :style="{ width: statBarWidth(totalStats.wei) }"></span>
         </div>
-        <span class="stat-value">38</span>
+        <span class="stat-value">{{ totalStats.wei }}</span>
       </li>
     </ul>
 
@@ -78,7 +62,43 @@
 
 <script>
 export default {
-  name: "ResultCard"
+  name: "ResultCard",
+
+  props: {
+    selectedParts: { type: Object, default: () => ({}) }
+  },
+
+  data() {
+    return {
+      partSlots: [
+        { category: 'blade', label: '戰刃' },
+        { category: 'ratchet', label: '固鎖' },
+        { category: 'bit', label: '軸心' }
+      ]
+    }
+  },
+
+  computed: {
+    totalStats() {
+      return ['atk', 'def', 'sta', 'wei'].reduce((totals, key) => {
+        totals[key] = this.partSlots.reduce((sum, slot) => {
+          const part = this.selectedParts[slot.category];
+          return sum + (part?.[key] ?? 0);
+        }, 0);
+        return totals;
+      }, {});
+    }
+  },
+
+  methods: {
+    imgUrl(part) {
+      const baseUrl = import.meta.env.BASE_URL;
+      return `${baseUrl}${part.image.replace(/^\//, '')}`;
+    },
+    statBarWidth(value) {
+      return `${Math.min(value, 100)}%`;
+    }
+  }
 }
 </script>
 
@@ -93,7 +113,7 @@ img {
   background-color: map-get($color, secondary );
   border-radius: 12px;
   overflow: hidden;
-  
+
 }
 
 .card-tag {
@@ -131,16 +151,18 @@ img {
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    flex: 1 1 0;
+    min-width: 0;
 
     .part-img-box {
       position: relative;
       width: 100%;
-      max-width: 240px; 
+      max-width: 240px;
       aspect-ratio: 1 / 1;
 
       display: flex;
       align-items: center;
-      justify-content: center;  
+      justify-content: center;
 
       .bg-ring {
         position: absolute;
@@ -148,8 +170,8 @@ img {
         left: 0;
         width: 100%;
         height: 100%;
-        z-index: 1; 
-        animation: rotate 20s linear infinite; 
+        z-index: 1;
+        animation: rotate 20s linear infinite;
       }
 
       @keyframes rotate {
@@ -164,9 +186,17 @@ img {
 
       .preview-pic {
         position: relative;
-        z-index: 2; 
-        width: 60%; 
-        height: 60%; 
+        z-index: 2;
+        width: 60%;
+        height: 60%;
+      }
+
+      .preview-placeholder {
+        position: relative;
+        z-index: 2;
+        font-size: 20px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.5);
       }
 
     }
@@ -179,7 +209,7 @@ img {
     }
 
   }
-  
+
 
   .preview-pic {
     flex: 1;
@@ -189,12 +219,12 @@ img {
     aspect-ratio: 1 / 1;
     display: block;
     object-fit: contain;
-    
+
   }
 }
 
 
-  
+
 
 .stat-list {
   color: map-get($color , white );
@@ -217,14 +247,14 @@ img {
     border-radius: 5px;
     position: relative;
     overflow: hidden;
-    
+
     .stat-bar-fill {
       display: inline-block;
       position: absolute;
       top: 0;left: 0;
       height: 100%;
       background-color: map-get($color, primary );
-      
+
     }
   }
 }
