@@ -13,7 +13,7 @@
         <!-- 左欄：結果卡片與按鈕組 -->
         <section class="left-col">
           <ResultCard :selected-parts="selectedParts" />
-          <ActionGroup />
+          <ActionGroup @clear-all="handleClearAll" />
         </section>
 
         <!-- 右欄：頁籤與零件列表  -->
@@ -124,6 +124,12 @@
       */
       handleSelectPart(part) {
         this.selectedParts = { ...this.selectedParts, [part.category]: part };
+      },
+      /*
+        接收來自 ActionGroup 的 clear-all 事件，清空所有已選零件。
+      */
+      handleClearAll() {
+        this.selectedParts = {};
       }
     }
   }
