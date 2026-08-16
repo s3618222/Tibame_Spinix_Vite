@@ -34,7 +34,7 @@
             title: "2026 年度 SPINIX 全國大賽規章與獎金細節發佈",
             content: "請所有參賽選手務必在 12/20 前完成設備檢核...",
             imgArticle: "",
-            imgWriter: "",
+            imgWriter: "spinix_member_test1.png",
             name: "官方管理員",
             time: "2 小時前",
             comment: "1258"
