@@ -9,12 +9,17 @@
     <div class="search-box">
       <!-- 放大鏡 -->
       <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" placeholder="搜尋討論串...">
+      <input
+        type="text"
+        placeholder="搜尋討論串..."
+        :value="searchKeyword"
+        @input="$emit('search', $event.target.value)"
+      >
     </div>
-    <button type="button" class="btnFill btn-post">
+    <a :href="`${baseUrl}forumForm.html`" type="button" class="btnFill btn-post">
       <i class="fa-regular fa-pen-to-square"></i>
-      <a :href="`${baseUrl}forumForm.html`">我要發文</a>
-    </button>
+      <span>我要發文</span>
+    </a>
 
 
 
@@ -24,6 +29,15 @@
 <script>
   export default {
     name: "ForumToolbar",
+
+    props: {
+      searchKeyword: {
+        type: String,
+        default: ""
+      }
+    },
+
+    emits: ["search"],
 
     data(){
       return {
@@ -130,7 +144,7 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 
   // 關鍵：手機版隱藏文字，只留 Icon
-  a {
+  span {
     display: none;
   }
 
@@ -147,7 +161,7 @@
     box-shadow: none;
 
     // 顯示文字，並與左邊 icon 保持間距
-    a {
+    span {
       display: inline;
       margin-left: 6px;
     }

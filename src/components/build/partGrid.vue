@@ -1,7 +1,13 @@
 <template>
   <div class="part-grid">
     <!-- <PartCard/> -->
-    <PartCard v-for="item in partList" :key="item.id" :part="item"></PartCard>
+    <PartCard
+      v-for="item in parts"
+      :key="item.id"
+      :part="item"
+      :selected-id="selectedId"
+      @select="forwardSelect"
+    ></PartCard>
   </div>
 </template>
 
@@ -15,40 +21,14 @@ export default {
     PartCard
   },
 
-  data(){
-    return {
-      
-      partList: [
-        {
-          id: 1,
-          name: "蒼龍突擊",
-          image: `build/blade/BX-49 蒼龍突擊.png`,
-          type: "戰刃",
+  props: {
+    parts: { type: Array, required: true },
+    selectedId: { type: Number, default: null }
+  },
 
-        },
-        {
-          id: 2,
-          name: "衝擊龍神",
-          image: `build/blade/BX-50-03 衝擊龍神.png`,
-          type: "戰刃"
-        },
-        {
-          id: 1,
-          name: "暴風天馬",
-          image: `build/blade/BXG-47 暴風天馬.png`,
-          type: "戰刃"
-        },
-        {
-          id: 1,
-          name: "蒼龍神劍",
-          image: `build/blade/BXG-49 蒼龍神劍.png`,
-          type: "戰刃",
-          atk: 60,
-          def: 27,
-          sta: 23,
-          wei: 37.4
-        }
-      ]
+  methods: {
+    forwardSelect(part) {
+      this.$emit('select-part', part);
     }
   }
 }

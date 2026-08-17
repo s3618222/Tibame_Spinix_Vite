@@ -5,7 +5,7 @@
       <i class="fa-solid fa-download"></i> 
       <span>下載配方圖片</span>
     </button>
-    <button class="btn-reset">
+    <button class="btn-reset" @click="handleClick">
       <i class="fa-solid fa-rotate-right"></i>
       <span class="btn-text">再做一顆</span>
     </button>
@@ -14,7 +14,13 @@
 
 <script>
 export default {
-  name: "ActionGroup"
+  name: "ActionGroup",
+
+  methods: {
+    handleClick() {
+      this.$emit('clear-all');
+    }
+  }
 }
 </script>
 

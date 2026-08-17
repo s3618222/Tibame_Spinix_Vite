@@ -14,7 +14,7 @@
       </div>
 
       <div class="post-info">
-        <img :src="`${baseUrl}spinix_member_test1.png`" :alt="article.name" class="img-writer">
+        <img :src="avatarUrl" :alt="article.name" class="img-writer">
         <div class="post-txt">
           <p class="name-post">{{ article.name }}</p>
           <p class="time-post">{{ article.time }}</p>
@@ -50,6 +50,11 @@
       imgURL() {
         const baseUrl = import.meta.env.BASE_URL;
         return `${baseUrl}${this.article.image.replace(/^\//, '')}`;
+      },
+      avatarUrl() {
+        return this.article.imgWriter
+          ? `${this.baseUrl}${this.article.imgWriter}`
+          : `${this.baseUrl}spinix_member_default.png`;
       }
     }
   }
