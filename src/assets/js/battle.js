@@ -177,49 +177,50 @@ gsap.timeline({
   0.45
 );
 
-
-//建立縣市與行政區資料
-const cityDistricts = {
-  "臺北市": [
-    "中正區",
-    "大同區",
-    "中山區",
-    "松山區",
-    "大安區",
-    "信義區"
-  ],
-
-  "新北市": [
-    "板橋區",
-    "中和區",
-    "永和區",
-    "新莊區"
-  ],
-
-  "桃園市": [
-    "桃園區",
-    "中壢區",
-    "平鎮區",
-    "八德區"
-  ]
-};
-
 const citySelect = document.querySelector("#citySelect"); //城市選擇欄位
 const districtSelect = document.querySelector("#districtSelect"); //行政區選擇欄位
+let citiesData = []; // 儲存從後端取得的縣市資料
 
-//帶入各個城市與行政區至option中
-function initSelect() {
-  // Object.keys(...) → 將目標物件中的key值(即城市名)提出，單獨拉出，建立一個陣列
-  Object.keys(cityDistricts).forEach(city => {
-    const option = document.createElement("option"); //動態建立html的option標籤
-    option.value = city; //帶入陣列中的每個城市做為option的值
-    option.textContent = city; //設定各option的顯示字樣為城市名稱
-    citySelect.append(option); //將新生成的option加入至select內
+//向後端取得所有縣市資料
+function fetchCities() {
+  //fetch()的method預設就是get，所以不用特別寫 {method: get}
+  fetch("http://localhost:8888/Spinix/php/location/cities_get.php").then(res => res.json()).then(data => {
+    // 將後端取得的縣市資料保存起來，方面後續自動定位功能也能使用
+    citiesData = data;
+
+    //抓到縣市資料後，將每筆縣市跑迴圈，放進select中
+    data.forEach(city => {
+      const option = document.createElement('option');
+      option.value = city.CITY_ID;
+      option.textContent = city.CITY_NAME;
+
+      citySelect.append(option);
+    });
   });
 }
 
-initSelect(); //一進頁面時，就先將select的城市選項準備好
+citySelect.addEventListener("change", function () {
+  console.log(this.value);
+});
 
+// 一載入分頁時，立即取得縣市資料
+fetchCities();
+
+// 依據傳入的CITY_ID，向後端索取對應城市底下的行政區資料
+function fetchDistricts(cityId) {
+  return fetch(`http://localhost:8888/Spinix/php/location/districts_get.php?city_id=${cityId}`).then(res => res.json()).then(data => {
+    //透過CITY_ID抓到對應行政區資料後，跑迴圈，放進select
+    data.forEach(district => {
+      const option = document.createElement('option');
+      option.value = district.DISTRICT_ID;
+      option.textContent = district.DISTRICT_NAME;
+
+      districtSelect.append(option);
+    });
+
+    return data;
+  });
+}
 
 //行政區顯示設定
 citySelect.addEventListener("change", function () {
@@ -234,14 +235,8 @@ citySelect.addEventListener("change", function () {
 
   districtSelect.disabled = false;
 
-  //將被選中城市的行政區跑forEach，放進行政區欄位中
-  cityDistricts[this.value].forEach(district => {
-    const option = document.createElement("option");
-    option.value = district;
-    option.textContent = district;
-    districtSelect.append(option);
-  });
-
+  //將目前選到的 CITY_ID 傳給行政區 API
+  fetchDistricts(this.value);
 });
 
 //篩選重置
@@ -413,44 +408,45 @@ async function locationSuccess(position) {
     detectedDistrict =
       detectedDistrict.replace("台", "臺");
 
-    //定位出的縣市如果不在目前網站設定的資料中時，顯示對應系統提示文
-    if (!cityDistricts[detectedCity]) {
+    // 從後端取得的縣市資料中，找出定位到的縣市；e.g.{CITY_ID: 3, CITY_NAME: "桃園市"}
+    const matchedCity = citiesData.find(city => {
+      return city.CITY_NAME === detectedCity;
+    });
+
+    // 如果資料庫中找不到這個縣市，就顯示對應系統提示文
+    if (!matchedCity) {
       locationStatus.textContent = "無法判斷目前所在位置，請手動選擇";
 
       return;
     }
 
     // 自動將縣市 select 切換到定位結果
-    citySelect.value = detectedCity;
+    citySelect.value = matchedCity.CITY_ID;
 
-    //因應縣市選擇設定後，行政區的選項也要先重新更新
-    districtSelect.innerHTML =
-      `<option value="">全部行政區</option>`;
+    // 先清空前一次殘留的行政區資料
+    districtSelect.innerHTML = `<option value="">全部行政區</option>`;
 
-    //重新將縣市對應的行政區選項render出
-    cityDistricts[detectedCity].forEach(district => {
-      const option = document.createElement("option");
-      option.value = district;
-      option.textContent = district;
-      districtSelect.append(option);
-    });
+    // 再使用新定位到的 CITY_ID 向後端取得行政區
+    const districtsData = await fetchDistricts(matchedCity.CITY_ID);
 
-    // 有設定縣市後，行政區欄位要關閉disabled設定
+    // 有縣市後，開放行政區選單
     districtSelect.disabled = false;
 
-    //確認定位到的行政區是否有存在目前網頁資料中
-    const hasDistrict = cityDistricts[detectedCity].includes(detectedDistrict);
+    // 再從該縣市的行政區資料中，找出定位得到的行政區
+    const matchedDistrict = districtsData.find(district => {
+      return district.DISTRICT_NAME === detectedDistrict;
+    });
 
-    if (hasDistrict) {
-      // 找到對應行政區時，自動選取
-      districtSelect.value = detectedDistrict;
+    // 如果有找到，就自動選取對應的 DISTRICT_ID
+    if (matchedDistrict) {
+      districtSelect.value = matchedDistrict.DISTRICT_ID;
     } else {
-      //否則顯示「全部行政區」
       districtSelect.value = "";
     }
 
+
     // 顯示定位成功結果
-    locationStatus.textContent = hasDistrict
+    locationStatus.textContent = matchedDistrict
       ? `已定位至 ${detectedCity}${detectedDistrict}`
       : `已定位至 ${detectedCity}`;
 
@@ -604,10 +600,12 @@ const battleData = [
     coverImage: "/battle_card_default.jpg",
     target: "不限對象",
     city: "桃園市",
+    cityId: 3,
     district: "中壢區",
+    districtId: 43,
     mode: "休閒模式",
-    battleDate: "2026-08-15T14:00:00",
-    deadline: "2026-08-14T22:00:00",
+    battleDate: "2026-08-31T14:00:00",
+    deadline: "2026-08-28T22:00:00",
     level: "新手玩家",
     description: "假日放鬆場，輕鬆交流，我帶戰鬥盤，你帶陀螺就好！",
     hostId: 101,
@@ -619,10 +617,12 @@ const battleData = [
     coverImage: "/battle_card_test1.jpg",
     target: "不限對象",
     city: "桃園市",
+    cityId: 3,
     district: "中壢區",
+    districtId: 43,
     mode: "休閒模式",
-    battleDate: "2026-08-16T15:00:00",
-    deadline: "2026-08-15T20:00:00",
+    battleDate: "2026-08-29T15:00:00",
+    deadline: "2026-08-26T20:00:00",
     level: "不限程度",
     description: "歡迎各種程度的玩家參加，現場會準備戰鬥盤。",
     hostId: 102,
@@ -634,7 +634,9 @@ const battleData = [
     coverImage: "/battle_card_default.jpg",
     target: "成人限定",
     city: "臺北市",
+    cityId: 1,
     district: "大安區",
+    districtId: 3,
     mode: "競技模式",
     battleDate: "2026-08-17T19:00:00",
     deadline: "2026-08-16T18:00:00",
@@ -649,7 +651,9 @@ const battleData = [
     coverImage: "/battle_card_default.jpg",
     target: "親子友善",
     city: "新北市",
+    cityId: 2,
     district: "板橋區",
+    districtId: 13,
     mode: "休閒模式",
     battleDate: "2026-08-22T10:30:00",
     deadline: "2026-08-21T18:00:00",
@@ -664,7 +668,9 @@ const battleData = [
     coverImage: "/battle_card_default.jpg",
     target: "成人限定",
     city: "臺北市",
+    cityId: 1,
     district: "信義區",
+    districtId: 2,
     mode: "休閒模式",
     battleDate: "2026-08-20T19:30:00",
     deadline: "2026-08-20T12:00:00",
@@ -679,7 +685,9 @@ const battleData = [
     coverImage: "/battle_card_test2.jpg",
     target: "不限對象",
     city: "新北市",
+    cityId: 2,
     district: "新莊區",
+    districtId: 17,
     mode: "競技模式",
     battleDate: "2026-08-23T14:00:00",
     deadline: "2026-08-22T22:00:00",
@@ -694,7 +702,9 @@ const battleData = [
     coverImage: "/battle_card_default.jpg",
     target: "不限對象",
     city: "桃園市",
+    cityId: 3,
     district: "八德區",
+    districtId: 45,
     mode: "休閒模式",
     battleDate: "2026-08-29T13:00:00",
     deadline: "2026-08-28T20:00:00",
@@ -709,7 +719,9 @@ const battleData = [
     coverImage: "/battle_card_default.jpg",
     target: "成人限定",
     city: "桃園市",
+    cityId: 3,
     district: "平鎮區",
+    districtId: 44,
     mode: "競技模式",
     battleDate: "2026-08-30T15:00:00",
     deadline: "2026-08-29T23:00:00",
@@ -724,7 +736,9 @@ const battleData = [
     coverImage: "battle_card_default.jpg",
     target: "親子友善",
     city: "桃園市",
+    cityId: 3,
     district: "桃園區",
+    districtId: 42,
     mode: "休閒模式",
     battleDate: "2026-09-05T14:30:00",
     deadline: "2026-09-04T21:00:00",
@@ -900,8 +914,6 @@ function getAvailableBattles() {
 
 //render出每張邀約卡片
 function renderBattleCards(battles) {
-  console.log("tt2");
-
   // 保存目前要顯示的邀約資料
   currentBattleList = battles;
 
@@ -1319,8 +1331,8 @@ function battleFilter() {
   const selectedMode = battleType.value; //選定對戰模式
   const selectedTarget = battleTarget.value; //選定對象
   const selectedLevel = playerLevel.value; // 選定玩家程度
-  const selectedCity = citySelect.value;
-  const selectedDistrict = districtSelect.value;
+  const selectedCityId = Number(citySelect.value);
+  const selectedDistrictId = Number(districtSelect.value);
   const selectedStartDate = startDate.value; //篩選起始日期
   const selectedEndDate = endDate.value; //篩選截止日期
 
@@ -1343,11 +1355,10 @@ function battleFilter() {
       !selectedLevel || battle.level === selectedLevel;
 
     const matchesCity =
-      !selectedCity || battle.city === selectedCity;
+      !selectedCityId || battle.cityId === selectedCityId;
 
     const matchesDistrict =
-      !selectedDistrict ||
-      battle.district === selectedDistrict;
+      !selectedDistrictId || battle.districtId === selectedDistrictId;
 
     const battleDate =
       new Date(battle.battleDate).getTime();
