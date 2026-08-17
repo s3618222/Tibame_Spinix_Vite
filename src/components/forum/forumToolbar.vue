@@ -1,7 +1,7 @@
 <template>
   <div class="forum-toolbar">
     <div class="sort-dropdown">
-      <select name="" id="">
+      <select :value="sortBy" @change="$emit('sort', $event.target.value)">
         <option value="latestPost">依最新發文時間</option>
         <option value="latestComment">依最新留言時間</option>
       </select>
@@ -34,10 +34,14 @@
       searchKeyword: {
         type: String,
         default: ""
+      },
+      sortBy: {
+        type: String,
+        default: "latestPost"
       }
     },
 
-    emits: ["search"],
+    emits: ["search", "sort"],
 
     data(){
       return {
