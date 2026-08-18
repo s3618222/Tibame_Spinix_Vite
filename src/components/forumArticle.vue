@@ -5,8 +5,8 @@
       <span>返回論壇列表</span>
     </a>
     <div class="article-content">
-      <ArticleMain/>
-      <CommentList/>
+      <ArticleMain :article-author="articleAuthor"/>
+      <CommentList :comments="comments"/>
       <CommentForm/>
     </div>
     
@@ -32,7 +32,35 @@ export default {
 
   data(){
     return {
-      baseUrl: import.meta.env.BASE_URL
+      baseUrl: import.meta.env.BASE_URL,
+      articleAuthor: {
+        name: "Blader_X",
+        score: "勝場數：100",
+        img: ""
+      },
+      comments: [
+        {
+          id: 1,
+          floor: 2,
+          time: "2026-05-12 15:38",
+          content: "X軸心確實很猛，但如果遇到防禦特化的對手，開局沒撞飛就幾乎等於輸了。我個人更傾向用 J (Jolt) 軸，稍微保留一點可控性，容錯率比較高。",
+          commenter: { name: "打野戰神", score: "勝場數：76", img: "" }
+        },
+        {
+          id: 2,
+          floor: 3,
+          time: "2026-05-12 16:05",
+          content: "同意樓上，不過如果對手也是攻擊型，X軸心開局互撞反而很吃機運，我自己實測過幾場都是先手優勢比較重要。",
+          commenter: { name: "陀螺新手阿翔", score: "勝場數：12", img: "" }
+        },
+        {
+          id: 3,
+          floor: 4,
+          time: "2026-05-12 17:20",
+          content: "請問這套配裝在防禦組合上有推薦嗎？想搭配鐵盤試試看穩定度。",
+          commenter: { name: "配裝控", score: "勝場數：203", img: "" }
+        }
+      ]
     }
   }
 }

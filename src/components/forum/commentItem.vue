@@ -1,19 +1,19 @@
 <template>
   <section class="comment-item">
     <aside class="author-card">
-      <AuthorCard />
+      <AuthorCard :writer="comment.commenter" />
     </aside>
 
     <article class="comment-content">
       <div class="comment-header">
-        <div class="floor-num chip">樓層：2</div>
+        <div class="floor-num chip">樓層：{{ comment.floor }}</div>
         <div class="time-post">
           <i class="fa-regular fa-clock"></i>
-          <span>2026-05-12 15:38</span>
+          <span>{{ comment.time }}</span>
         </div>
       </div>
       <div class="comment-body">
-        <p>X軸心確實很猛，但如果遇到防禦特化的對手，開局沒撞飛就幾乎等於輸了。我個人更傾向用 J (Jolt) 軸，稍微保留一點可控性，容錯率比較高。 Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam perferendis eligendi, reprehenderit asperiores doloremque fuga debitis iste eius rerum natus quibusdam magnam labore pariatur incidunt unde quia, adipisci, consectetur est?Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tenetur quam reiciendis voluptatibus explicabo. Quaerat ad alias delectus voluptatem omnis quo praesentium, aperiam fugiat accusantium itaque explicabo facere sit. Quos, laudantium.</p>
+        <p>{{ comment.content }}</p>
       </div>
       <div class="comment-footer">
         <a :href="`${baseURL}complaint.html`" type="button">
@@ -37,8 +37,17 @@ import AuthorCard from '@/components/forum/authorCard.vue';
       AuthorCard
     },
 
+    props: {
+      comment: {
+        type: Object,
+        default: () => ({})
+      }
+    },
+
     data(){
-      baseURL: import.meta.env.BASE_URL
+      return {
+        baseURL: import.meta.env.BASE_URL
+      }
     }
   }
 
