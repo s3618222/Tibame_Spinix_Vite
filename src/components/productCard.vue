@@ -18,23 +18,33 @@
             </p>
             <span>{{ postDate }}</span>
          </div>
-         
+
          <p>
-            <i class="fa-solid fa-location-dot icon-color"></i>   
+            <i class="fa-solid fa-location-dot icon-color"></i>
             {{ city }}<span>{{ district }}</span>
          </p>
       </div>
 
       <div class="card-footer">
          <p class="chip" :class="chipModifier">{{ state }}</p>
-         <a :href="'product_detail.html'" class="btnNoFill" @click.stop>查看詳情</a>
+
+         <div class="card-buttons" @click.stop>
+            <button
+               v-for="btn in buttons"
+               :key="btn.action"
+               type="button"
+               class="btnNoFill"
+               :class="getBtnClass(btn)"
+               @click="handleBtnClick(btn)"
+            >{{ btn.label }}</button>
+         </div>
       </div>
+
       <div class="show-detail">
-         <a :href="'product_detail.html'" class="detail_link" @click.stop>查看詳情</a>
+         <a :href="'product_detail.html?id={{ id }}'" class="detail_link" @click.stop>查看詳情</a>
       </div>
    </div>
 </template>
-
 <script setup>
 import { computed } from 'vue';
 
@@ -74,21 +84,63 @@ const props = defineProps({
    state: {
       type: String,
       default: '可交換'
+   },
+   // 這張卡片目前是在哪個情境下顯示：
+   // 'browse'（一般瀏覽，預設）／'myPosts'（我刊登的交換）／'myApplications'（我提出的申請）
+   context: {
+      type: String,
+      default: 'browse'
    }
 });
 
-// 狀態 → chip modifier 對照
+const emit = defineEmits(['complete-exchange', 'reply-exchange']);
+
+// 狀態文字 → chip modifier 對照，涵蓋文章狀態 & 申請狀態
 const stateChipMap = {
    '可交換': 'chip--exchangeable',
    '交換中': 'chip--category',
    '待確認': 'chip--state',
-   '交換完成': 'chip--completed'
+   '交換完成': 'chip--completed',
+   '等待回復': 'chip--state',
+   '已回復': 'chip--exchangeable'
 };
 
 const chipModifier = computed(() => stateChipMap[props.state] || '');
 
+const buttons = computed(() => {
+   const viewMore = { label: '查看詳情', action: 'view-more', type: 'default' };
+
+   if (props.context === 'myApplications' && props.state === '已回復') {
+      return [{ label: '回覆交換', action: 'reply-exchange', type: 'primary' }];
+   }
+
+   if (props.context === 'myPosts' && props.state === '交換中') {
+      return [{ label: '完成交換', action: 'complete-exchange', type: 'primary' }];
+   }
+
+   return [viewMore];
+});
+function getBtnClass(btn) {
+   return [`btn-${btn.type}`, { 'btn-disabled': btn.disabled }];
+}
+
+function handleBtnClick(btn) {
+   if (btn.disabled) return;
+
+   if (btn.action === 'view-more') {
+      goToDetail();
+      return;
+   }
+
+   emit(btn.action, { id: props.id, title: props.title });
+}
+
 function goToDetail() {
-   window.location.href = `product_detail.html`;
+   const params = new URLSearchParams({
+      id: props.id,
+      from: props.context
+   });
+   window.location.href = `product_detail.html?${params.toString()}`;
 }
 </script>
 
@@ -105,7 +157,6 @@ function goToDetail() {
       .detail_link{
          display: block;
          padding: 8px 12px;
-         // background-color: orange;
          margin: 0 -12px -12px;
          color: map-get($color, neutral );
          text-align: center;
@@ -181,6 +232,11 @@ function goToDetail() {
          align-items: center;
          justify-content: space-between;
 
+         .card-buttons {
+            display: none;
+            gap: 8px;
+         }
+
          .btnNoFill {
             display: none;
          }
@@ -225,6 +281,10 @@ function goToDetail() {
 
          .card-footer {
             align-items: center;
+
+            .card-buttons {
+               display: flex;
+            }
 
             .btnNoFill {
                display: block;

@@ -7,8 +7,6 @@
    <title>spninix | 商品詳情</title>
    <link rel="stylesheet" href="./src/assets/scss/_reset.scss">
    <link rel="stylesheet" href="./src/assets/scss/style.scss">
-   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
    <link rel="icon" type="image/png" href="spinix_favicon.jpg">
 
    <script src="https://kit.fontawesome.com/865a269d64.js" crossorigin="anonymous"></script>
@@ -19,112 +17,12 @@
    <!-- header -------------------------------------------->
    <div id="headerApp"></div>
 
+   <!-- 商品詳情內容區 -->
    <section id="prodDetail" class="sec">
-      <h1>商品詳情</h1>
-      <a href="./market.html">返回</a>
-      <div class="container">
-         <div class="panel">
-
-            <div class="gallery-wrap">
-               <div class="slider-for">
-                  <div class="img-big"><img src="./public/CX02_01.webp" alt=""></div>
-                  <div class="img-big"><img src="./public/BX23_01.webp" alt=""></div>
-                  <div class="img-big"><img src="./public/BX_02.webp" alt=""></div>
-                  <div class="img-big"><img src="./public/CX13_01.webp" alt=""></div>
-                  <div class="img-big"><img src="./public/BX-28.webp" alt=""></div>
-               </div>
-            </div>
-
-            <div class="slider-nav">
-               <div class="thumb is-active" data-index="0"><img src="./public/CX02_01.webp" alt=""></div>
-               <div class="thumb" data-index="1"><img src="./public/BX23_01.webp" alt=""></div>
-               <div class="thumb" data-index="2"><img src="./public/BX_02.webp" alt=""></div>
-               <div class="thumb" data-index="3"><img src="./public/CX13_01.webp" alt=""></div>
-               <div class="thumb" data-index="4"><img src="./public/BX-28.webp" alt=""></div>
-            </div>
-
-         </div>
-         <div class="prod-info">
-            <p class="title">CX 系列 對戰陀螺 改裝版</p>
-            <div class="tags">
-               <span class="chip chip--exchangeable">可交換</span>
-               <span class="chip chip--state">全新</span>
-               <span class="chip chip--category">陀螺本體</span>
-            </div>
-            <div class="user box-style">
-               <div class="img-user">
-                  <img src="./public/spinix_member_test1.png" alt="">
-               </div>
-               <p>Lone軍團長</p>
-               <a href="./complaint.html" target="_blank">
-                  <i class="fa-solid fa-triangle-exclamation"></i>
-               </a>
-            </div>
-            <div class="prod-txt box-style">
-               <p class="title">商品描述</p>
-               <p class="prod-content">關於交換戰鬥陀螺這件事，我們都可能想錯了，交換戰鬥陀螺，是很多人每天都在做的事，但真正把它做出意義的人，寥寥可數。
-                  當我們認真審視交換戰鬥陀螺這件事，會發現它所牽涉的，遠比表面看來複雜得多。
-               </p>
-            </div>
-            <button type="button" id="Btn-addMsg" class="btnFill">我想交換</button>
-            <div class="message-board box-style">
-               <h1>交換留言區</h1>
-               <div class="icon-sort">
-                  <button type="button" data-sort="newest">
-                     最新
-                  </button>
-                  <button type="button" data-sort="oldest">
-                     最舊
-                  </button>
-               </div>
-
-               <!-- 掛載留言列表 -->
-               <div id="msginfoApp"></div>
-            </div>
-         </div>
-      </div>
-
-
-
-
-      <div class="example-modal">
-         <!-- 遮罩 -->
-         <div class="modal-mask"></div>
-         <!-- 交換留言燈箱 -->
-         <div id="addMsg">
-            <div class="btn-close">
-               <button type="button" id="icon-closeBox">
-                  <i class="fa-solid fa-xmark"></i>
-               </button>
-            </div>
-            <form action="" id="msgForm" method="post">
-               <p class="form-title">留下您的交換提議與聯絡方式</p>
-               <div class="name form-label-style">
-                  <label for="name" class="label-title">您的暱稱</label>
-                  <input type="text" name="name" required>
-               </div>
-               <div class="change-item form-label-style">
-                  <label for="change-item" class="label-title">想交換物品</label>
-                  <input type="text" name="change-item" required>
-
-               </div>
-               <div class="phone form-label-style">
-                  <label for="phone" class="label-title">聯絡方式</label>
-                  <input type="tel" name="phone" required>
-               </div>
-               <div class="remark form-label-style">
-                  <label for="Remark" class="label-title">備註</label>
-                  <textarea name="Remark"></textarea>
-               </div>
-               <p class="form-hint ">當雙方皆確認交換後，聯絡資訊將提供給對方作為聯繫用途。</p>
-               <div class="form-btn">
-                  <button type="reset" class="btnNoFill">清除</button>
-                  <button type="submit" class="btnFill">送出</button>
-               </div>
-            </form>
-         </div>
-      </div>
+      <div id="proddetailApp"></div>
    </section>
+
+
 
    <!-- 至頂按鈕 -->
    <button type="button" class="battle-backToTopBtn" id="backToTopBtn">
@@ -134,8 +32,6 @@
    <!-- footer -------------------------------------------->
    <div id="footerApp"></div>
 
-   <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
    <!-- <script src="./src/assets/js/public.js"></script> -->
    <script src="./src/assets/js/sort.js" type="module"></script>
    <script src="./src/assets/js/product_detail.js" type="module"></script>
