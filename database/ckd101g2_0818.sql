@@ -75,7 +75,69 @@ INSERT INTO `appeal_exchange` (`ae_id`, `post_id`, `comm_id`, `complainant_mem_i
 -- --------------------------------------------------------
 
 --
--- Table structure for table `battle_appeal`
+-- 資料表結構 `appeal_forum`
+--
+
+CREATE TABLE `appeal_forum` (
+  `af_id` int(10) UNSIGNED NOT NULL COMMENT '貼文申訴ID',
+  `art_id` int(10) UNSIGNED DEFAULT NULL COMMENT '被舉報貼文ID',
+  `msg_id` int(10) UNSIGNED DEFAULT NULL COMMENT '被舉報留言ID',
+  `complainant_mem_id` int(10) UNSIGNED NOT NULL COMMENT '申訴人ID',
+  `respondent_mem_id` int(10) UNSIGNED NOT NULL COMMENT '被申訴人ID',
+  `admin_id` int(10) UNSIGNED DEFAULT NULL COMMENT '審核員ID',
+  `af_content` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '申訴案件內容',
+  `af_status` enum('PENDING','CONFIRMED','REJECTED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING' COMMENT '申訴案件狀態',
+  `create_time` datetime NOT NULL COMMENT '申訴時間',
+  `af_evidence` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '證據截圖',
+  `responded_at` datetime DEFAULT NULL COMMENT '管理員回覆時間',
+  `responded_text` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '管理員回復內容'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='申訴案件-論壇';
+
+--
+-- 傾印資料表的資料 `appeal_forum`
+--
+
+INSERT INTO `appeal_forum` (`af_id`, `art_id`, `msg_id`, `complainant_mem_id`, `respondent_mem_id`, `admin_id`, `af_content`, `af_status`, `create_time`, `af_evidence`, `responded_at`, `responded_text`) VALUES
+(1, NULL, 5, 4, 9, 1, '這則留言內容不實，指控我的文章亂寫，但我文章來源都有附上，希望管理員協助處理。', 'PENDING', '2026-08-13 09:00:00', NULL, NULL, NULL),
+(2, 6, NULL, 2, 4, 1, '這篇被下架的文章其實沒有廣告連結，是誤判，申請重新審核。', 'REJECTED', '2026-08-14 10:15:00', 'evidence_appeal_02.jpg', '2026-08-15 09:30:00', '經複查確認文章內確實含有導購連結，維持下架決定。'),
+(3, NULL, 2, 5, 3, NULL, '這則留言散布不實資訊，內容誤導其他玩家購買管道，請協助查核。', 'PENDING', '2026-08-15 16:40:00', NULL, NULL, NULL),
+(4, 4, NULL, 6, 8, 1, '這篇貼文的保養建議根本是錯的，會損壞軸心，已誤導不少新手。', 'CONFIRMED', '2026-08-16 13:20:00', NULL, '2026-08-17 10:00:00', '經審核該建議確實有誤，已請作者更正並加註警語。'),
+(5, NULL, 3, 1, 2, NULL, '這則留言重複洗版，疑似機器人帳號行為。', 'PENDING', '2026-08-17 18:05:00', 'evidence_appeal_05.jpg', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `article`
+--
+
+CREATE TABLE `article` (
+  `art_id` int(10) UNSIGNED NOT NULL COMMENT '貼文編號',
+  `title` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '標題',
+  `category` enum('announcement','unboxing','event','chat','strategy','faq') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '文章類別',
+  `content` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '內文',
+  `mem_id` int(10) UNSIGNED NOT NULL COMMENT '會員ID',
+  `is_show` tinyint(1) NOT NULL DEFAULT '1' COMMENT '顯示狀態',
+  `create_time` datetime NOT NULL COMMENT '發文時間',
+  `pic` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '圖片',
+  `remove_reason` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '下架原因'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='論壇貼文表';
+
+--
+-- 傾印資料表的資料 `article`
+--
+
+INSERT INTO `article` (`art_id`, `title`, `category`, `content`, `mem_id`, `is_show`, `create_time`, `pic`, `remove_reason`) VALUES
+(1, '2026年度大賽規章公告', 'announcement', '請所有參賽選手務必於期限內完成設備檢核...', 1, 1, '2026-08-01 09:00:00', NULL, NULL),
+(2, '【開箱】黃金版天翼戰神實拍', 'unboxing', '等了三個月終於從日本寄過來了...', 3, 1, '2026-08-05 14:20:00', 'article_pic_02.jpg', NULL),
+(3, '台北站賽程與交通資訊', 'event', '本次報到地點位於二樓多功能大廳...', 5, 1, '2026-08-08 10:00:00', 'article_pic_03.jpg', NULL),
+(4, '大家平常都怎麼保養軸心的？', 'chat', '最近發現我的軸心轉起來聲音怪怪的...', 6, 1, '2026-08-10 20:15:00', NULL, NULL),
+(5, '進階配裝：攻擊型 vs 平衡型分析', 'strategy', '這篇整理近期幾場對戰中的配裝心得...', 7, 1, '2026-08-12 22:40:00', NULL, NULL),
+(6, '新手發問：固鎖環要怎麼挑？', 'faq', '剛入坑想請教大家固鎖環選擇的原則...', 4, 0, '2026-08-13 11:05:00', NULL, '內容含廣告連結，經檢舉下架');
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `battle_appeal`
 --
 
 CREATE TABLE `battle_appeal` (
@@ -155,7 +217,37 @@ INSERT INTO `battle_record` (`BATTLE_ID`, `INITIATOR_ID`, `PARTICIPANT_ID`, `BAT
 -- --------------------------------------------------------
 
 --
--- Table structure for table `city`
+-- 資料表結構 `beyblade`
+--
+
+CREATE TABLE `beyblade` (
+  `beyblade_id` int(10) UNSIGNED NOT NULL COMMENT '編號',
+  `category` enum('Blade','Ratchet','Bit') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '類別',
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名稱',
+  `attack` int(11) NOT NULL COMMENT '攻擊',
+  `defense` int(11) NOT NULL COMMENT '防禦',
+  `stamina` int(11) NOT NULL COMMENT '持久',
+  `weight` int(11) NOT NULL COMMENT '重量',
+  `pic` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '圖片',
+  `is_show` tinyint(1) NOT NULL DEFAULT '0' COMMENT '上架狀態'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='陀螺零件表';
+
+--
+-- 傾印資料表的資料 `beyblade`
+--
+
+INSERT INTO `beyblade` (`beyblade_id`, `category`, `name`, `attack`, `defense`, `stamina`, `weight`, `pic`, `is_show`) VALUES
+(1, 'Blade', '暴風天馬', 85, 40, 55, 32, 'build/blade/暴風天馬.png', 1),
+(2, 'Blade', '蒼龍神劍', 78, 50, 60, 30, 'build/blade/蒼龍神劍.png', 1),
+(3, 'Ratchet', 'BX-50-01', 45, 90, 65, 18, 'build/ratchet/BX-50-01.png', 1),
+(4, 'Ratchet', 'CX-17-01', 40, 75, 95, 20, 'build/ratchet/CX-17-01.png', 0),
+(5, 'Bit', 'UX-20', 30, 25, 50, 8, 'build/bit/UX-20.png', 1),
+(6, 'Bit', 'CX-17-02', 20, 60, 80, 9, 'build/bit/CX-17-02.png', 0);
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `city`
 --
 
 CREATE TABLE `city` (
@@ -690,6 +782,33 @@ INSERT INTO `member` (`MEM_ID`, `MEM_ACCOUNT`, `MEM_PASSWORD`, `MEM_NAME`, `MEM_
 (10, 'storm10@spinix.test', '$2y$10$jF5gOcAZh7Xzj1/sIRyT6uz4RMiUDzaVoj7F6sxNEEbHHx0wjtUwi', 'StormLeo', 'MALE', '1994-06-30', NULL, NULL, NULL, 'spinix_member_default.png', 61, 13, 25, 17, 'ACTIVE', NULL, 'TEMP-RESTRICT', '2026-08-31 23:59:59', 'ACTIVE', NULL, 0, 0, 2),
 (11, 'testmember11@spinix.test', '$2y$10$2VtHjYLe/BuWFYXfXHWTSunFZaqzu/WiQKbKzRK1T22/Z2nSQcTLa', '測試員大大', 'MALE', '2000-01-01', NULL, NULL, NULL, 'spinix_member_default.png', 0, 0, 0, 0, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 0);
 
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `message`
+--
+
+CREATE TABLE `message` (
+  `msg_id` int(10) UNSIGNED NOT NULL COMMENT '留言編號',
+  `mem_id` int(10) UNSIGNED NOT NULL COMMENT '會員ID',
+  `art_id` int(10) UNSIGNED NOT NULL COMMENT '貼文編號',
+  `content` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '留言內容',
+  `create_time` datetime NOT NULL COMMENT '留言時間',
+  `is_show` tinyint(1) NOT NULL DEFAULT '1' COMMENT '顯示狀態',
+  `pic` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '圖片'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='論壇留言表';
+
+--
+-- 傾印資料表的資料 `message`
+--
+
+INSERT INTO `message` (`msg_id`, `mem_id`, `art_id`, `content`, `create_time`, `is_show`, `pic`) VALUES
+(1, 2, 1, '推！這個規章講解得很清楚', '2026-08-01 10:30:00', 1, NULL),
+(2, 5, 2, '這顆真的稀有，羨慕！請問哪裡買的到類似的嗎', '2026-08-05 15:00:00', 1, 'message_pic_02.jpg'),
+(3, 1, 3, '請問交通接駁車幾點發車呢？', '2026-08-08 11:20:00', 1, NULL),
+(4, 8, 4, '我都用軟布沾一點潤滑油輕輕擦拭', '2026-08-10 21:00:00', 1, NULL),
+(5, 9, 5, '這種說法太片面了吧，內容根本亂寫', '2026-08-13 08:10:00', 0, NULL);
+
 --
 -- Indexes for dumped tables
 --
@@ -714,7 +833,25 @@ ALTER TABLE `appeal_exchange`
   ADD KEY `fk_appeal_exchange_admin` (`admin_id`);
 
 --
--- Indexes for table `battle_appeal`
+-- 資料表索引 `appeal_forum`
+--
+ALTER TABLE `appeal_forum`
+  ADD PRIMARY KEY (`af_id`),
+  ADD KEY `fk_appeal_forum_article` (`art_id`),
+  ADD KEY `fk_appeal_forum_message` (`msg_id`),
+  ADD KEY `fk_appeal_forum_complainant` (`complainant_mem_id`),
+  ADD KEY `fk_appeal_forum_respondent` (`respondent_mem_id`),
+  ADD KEY `fk_appeal_forum_admin` (`admin_id`);
+
+--
+-- 資料表索引 `article`
+--
+ALTER TABLE `article`
+  ADD PRIMARY KEY (`art_id`),
+  ADD KEY `fk_article_member` (`mem_id`);
+
+--
+-- 資料表索引 `battle_appeal`
 --
 ALTER TABLE `battle_appeal`
   ADD PRIMARY KEY (`BATTLE_APPEAL_ID`),
@@ -735,7 +872,13 @@ ALTER TABLE `battle_record`
   ADD KEY `IDX_BATTLE_STATUS_DATE` (`BATTLE_STATUS`,`BATTLE_DATE`);
 
 --
--- Indexes for table `city`
+-- 資料表索引 `beyblade`
+--
+ALTER TABLE `beyblade`
+  ADD PRIMARY KEY (`beyblade_id`);
+
+--
+-- 資料表索引 `city`
 --
 ALTER TABLE `city`
   ADD PRIMARY KEY (`CITY_ID`),
@@ -774,7 +917,15 @@ ALTER TABLE `member`
   ADD UNIQUE KEY `UQ_MEMBER_ACCOUNT` (`MEM_ACCOUNT`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- 資料表索引 `message`
+--
+ALTER TABLE `message`
+  ADD PRIMARY KEY (`msg_id`),
+  ADD KEY `fk_message_member` (`mem_id`),
+  ADD KEY `fk_message_article` (`art_id`);
+
+--
+-- 在傾印的資料表使用自動遞增(AUTO_INCREMENT)
 --
 
 --
@@ -790,7 +941,19 @@ ALTER TABLE `appeal_exchange`
   MODIFY `ae_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '交換申訴ID', AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `battle_appeal`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `appeal_forum`
+--
+ALTER TABLE `appeal_forum`
+  MODIFY `af_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '貼文申訴ID', AUTO_INCREMENT=6;
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `article`
+--
+ALTER TABLE `article`
+  MODIFY `art_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '貼文編號', AUTO_INCREMENT=7;
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `battle_appeal`
 --
 ALTER TABLE `battle_appeal`
   MODIFY `BATTLE_APPEAL_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '對戰申訴編號';
@@ -802,7 +965,13 @@ ALTER TABLE `battle_record`
   MODIFY `BATTLE_ID` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '對戰邀約編號', AUTO_INCREMENT=19;
 
 --
--- AUTO_INCREMENT for table `city`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `beyblade`
+--
+ALTER TABLE `beyblade`
+  MODIFY `beyblade_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '編號', AUTO_INCREMENT=7;
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `city`
 --
 ALTER TABLE `city`
   MODIFY `CITY_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '縣市編號', AUTO_INCREMENT=23;
@@ -832,7 +1001,13 @@ ALTER TABLE `member`
   MODIFY `MEM_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '會員編號', AUTO_INCREMENT=12;
 
 --
--- Constraints for dumped tables
+-- 使用資料表自動遞增(AUTO_INCREMENT) `message`
+--
+ALTER TABLE `message`
+  MODIFY `msg_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '留言編號', AUTO_INCREMENT=6;
+
+--
+-- 已傾印資料表的限制式
 --
 
 --
@@ -846,7 +1021,23 @@ ALTER TABLE `appeal_exchange`
   ADD CONSTRAINT `fk_appeal_exchange_respondent` FOREIGN KEY (`respondent_mem_id`) REFERENCES `member` (`MEM_ID`);
 
 --
--- Constraints for table `battle_appeal`
+-- 資料表的限制式 `appeal_forum`
+--
+ALTER TABLE `appeal_forum`
+  ADD CONSTRAINT `fk_appeal_forum_article` FOREIGN KEY (`art_id`) REFERENCES `article` (`art_id`),
+  ADD CONSTRAINT `fk_appeal_forum_message` FOREIGN KEY (`msg_id`) REFERENCES `message` (`msg_id`),
+  ADD CONSTRAINT `fk_appeal_forum_complainant` FOREIGN KEY (`complainant_mem_id`) REFERENCES `member` (`MEM_ID`),
+  ADD CONSTRAINT `fk_appeal_forum_respondent` FOREIGN KEY (`respondent_mem_id`) REFERENCES `member` (`MEM_ID`),
+  ADD CONSTRAINT `fk_appeal_forum_admin` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`admin_id`);
+
+--
+-- 資料表的限制式 `article`
+--
+ALTER TABLE `article`
+  ADD CONSTRAINT `fk_article_member` FOREIGN KEY (`mem_id`) REFERENCES `member` (`MEM_ID`);
+
+--
+-- 資料表的限制式 `battle_appeal`
 --
 ALTER TABLE `battle_appeal`
   ADD CONSTRAINT `FK_BATTLE_APPEAL_ADMIN` FOREIGN KEY (`ADMIN_ID`) REFERENCES `admin` (`admin_id`) ON DELETE SET NULL ON UPDATE CASCADE,
@@ -884,6 +1075,13 @@ ALTER TABLE `exchange_post`
   ADD CONSTRAINT `exchange_post_ibfk_2` FOREIGN KEY (`DISTRICT_ID`) REFERENCES `district` (`DISTRICT_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `exchange_post_ibfk_3` FOREIGN KEY (`comm_mem_id`) REFERENCES `member` (`MEM_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `exchange_post_ibfk_4` FOREIGN KEY (`mem_id`) REFERENCES `member` (`MEM_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- 資料表的限制式 `message`
+--
+ALTER TABLE `message`
+  ADD CONSTRAINT `fk_message_member` FOREIGN KEY (`mem_id`) REFERENCES `member` (`MEM_ID`),
+  ADD CONSTRAINT `fk_message_article` FOREIGN KEY (`art_id`) REFERENCES `article` (`art_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

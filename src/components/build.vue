@@ -56,7 +56,7 @@
         {
           id: 1,
           name: "蒼龍突擊",
-          image: `build/blade/BX-49 蒼龍突擊.png`,
+          image: `build/blade/蒼龍突擊.png`,
           type: "戰刃",
           category: "blade",
 
@@ -64,21 +64,21 @@
         {
           id: 2,
           name: "衝擊龍神",
-          image: `build/blade/BX-50-03 衝擊龍神.png`,
+          image: `build/blade/衝擊龍神.png`,
           type: "戰刃",
           category: "blade"
         },
         {
           id: 3,
           name: "暴風天馬",
-          image: `build/blade/BXG-47 暴風天馬.png`,
+          image: `build/blade/暴風天馬.png`,
           type: "戰刃",
           category: "blade"
         },
         {
           id: 4,
           name: "蒼龍神劍",
-          image: `build/blade/BXG-49 蒼龍神劍.png`,
+          image: `build/blade/蒼龍神劍.png`,
           type: "戰刃",
           category: "blade",
           atk: 60,
