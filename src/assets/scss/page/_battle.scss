@@ -919,20 +919,21 @@ a.empty-createBattleBtn {
   color: #64748b;
 }
 
-// 約戰總場次與平均評價
+// 約戰總場次、平均評價、競技勝率
 .host-statList {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 28px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
 }
 
 .host-stat {
   min-height: 88px;
-  padding: 12px 16px;
+  padding: 12px;
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  align-items: center;
   gap: 8px;
 
   background-color: #ffffff;
@@ -946,9 +947,16 @@ a.empty-createBattleBtn {
 }
 
 .host-stat strong {
-  font-size: 26px;
+  font-size: 24px;
   line-height: 1.2;
   color: #141c26;
+}
+
+//競技場次資訊
+.competitive-record {
+  font-size: 14px;
+  color: #64748b;
+  white-space: nowrap;
 }
 
 .rating-star {
@@ -1653,6 +1661,15 @@ a.empty-createBattleBtn {
       margin-bottom: 4px;
     }
 
+  }
+}
+
+@media screen and (max-width: 460px) {
+
+  //歷史燈箱上半部數據列改單欄排列
+  .host-statList {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
 
