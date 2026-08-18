@@ -109,7 +109,7 @@
       />
     </div>
 
-    <p v-else class="empty-msg">目前沒有符合的交換紀錄</p>
+    <p v-else class="empty-msg">目前沒有符合的紀錄</p>
 
     
       <!-- 分頁器 -->
@@ -132,7 +132,7 @@ import {
   fakeComments,
   statusLabelMap,
   applyStatusLabelMap
-} from "../assets/js/mockExchangeData.js";
+} from "../data/mockExchangeData.js";
 // 分頁器
 import Pagination from "@/components/pagination.vue";
 
@@ -215,7 +215,7 @@ export default {
     },
 
     // 狀態篩選 tab：兩個分頁使用不同的狀態選項
-   statusTabs() {
+  statusTabs() {
     const list = this.currentList;
 
     if (this.activeTab === 'myexchange') {
@@ -260,6 +260,11 @@ export default {
 
 <style lang="scss" scoped>
   @use '@/assets/scss/_var' as *;
+
+  .empty-msg{
+    text-align: center;
+    color: map-get($color, hint );
+  }
 
   .pagination{
     margin: 0 auto;
