@@ -35,72 +35,53 @@ battleCoverInput.addEventListener("change", function () {
     reader.readAsDataURL(selectedFile);
 });
 
-//縣市與行政區select假資料
-// 與對戰配對頁相同的縣市與行政區資料
-const cityDistricts = {
-    "臺北市": [
-        "中正區",
-        "大同區",
-        "中山區",
-        "松山區",
-        "大安區",
-        "信義區"
-    ],
-
-    "新北市": [
-        "板橋區",
-        "中和區",
-        "永和區",
-        "新莊區"
-    ],
-
-    "桃園市": [
-        "桃園區",
-        "中壢區",
-        "平鎮區",
-        "八德區"
-    ]
-};
-
 const battleCitySelect = document.querySelector("#battleCity"); //縣市select
 const battleDistrictSelect = document.querySelector("#battleDistrict"); //行政區select
 
-//render 縣市的select選項
-function initBattleLocationSelect() {
-    Object.keys(cityDistricts).forEach(city => {
-        const option = document.createElement("option");
+//向後端資料庫取得縣市資料
+function fetchCities() {
+    fetch("http://localhost:8888/Spinix/php/location/cities_get.php").then(res => res.json()).then(data => {
+        data.forEach(city => {
+            const option = document.createElement('option');
 
-        option.value = city;
-        option.textContent = city;
-
-        battleCitySelect.append(option);//將各個縣市選項放入頁面上的縣市select中
+            option.value = city.CITY_ID;
+            option.textContent = city.CITY_NAME;
+            battleCitySelect.append(option);
+        });
     });
 }
 
-initBattleLocationSelect();
+fetchCities();
 
-battleCitySelect.addEventListener("change", function () {
-    battleDistrictSelect.innerHTML =
-        `<option value="">選擇行政區</option>`;
+//根據使用者所選縣市，再向後端取得對應的行政區資料
+function fetchDistricts(cityId) {
+    fetch(`http://localhost:8888/Spinix/php/location/districts_get.php?city_id=${cityId}`).then(res => res.json()).then(data => {
+        data.forEach(district => {
+            const option = document.createElement('option');
 
-    //若未選擇縣市，行政區選項保持disabled
+            option.value = district.DISTRICT_ID;
+            option.textContent = district.DISTRICT_NAME;
+
+            battleDistrictSelect.append(option);
+        });
+    });
+}
+
+//監聽縣市select，當縣市選項切換時，重新render行政區選項
+battleCitySelect.addEventListener('change', function () {
+    //先清除舊的行政區選項
+    battleDistrictSelect.innerHTML = `<option value="">選擇行政區</option>`;
+
+    //使用者如果沒選擇縣市時，行政區欄位要維持disabled
     if (!this.value) {
         battleDistrictSelect.disabled = true;
         return;
     }
 
-    //使用者選擇縣市後，將對應縣市底下的行政區再render進選項內
-    cityDistricts[this.value].forEach(district => {
-        const option = document.createElement("option");
-
-        option.value = district;
-        option.textContent = district;
-
-        battleDistrictSelect.append(option);
-    });
-
+    //有選擇縣市時，行政區欄位恢復可選狀態，且呼叫行政區api
     battleDistrictSelect.disabled = false;
-});
+    fetchDistricts(this.value);
+})
 
 const formView = document.querySelector(".create-view--form"); //填寫表單區塊(含進度瀏覽)
 const battleForm = document.querySelector("#battleForm"); //邀約建立表單
@@ -214,8 +195,15 @@ function getBattleFormData() {
         mode: battleModeSelect.value,
         level: battleLevelSelect.value,
         target: battleTargetSelect.value,
-        city: battleCitySelect.value,
-        district: battleDistrictSelect.value,
+
+        //提供後續傳回資料庫建立約戰資料時的縣市與行政區id
+        cityId: Number(battleCitySelect.value),
+        districtId: Number(battleDistrictSelect.value),
+
+        // 供預覽卡畫面顯示上需要的縣市和行政區文字；selectedOption[0]可以用來抓取當前選單被選中的option
+        city: battleCitySelect.selectedOptions[0].textContent,
+        district: battleDistrictSelect.selectedOptions[0].textContent,
+
         battleDate: battleDateTime,
         deadline: battleDeadlineInput.value,
         address: battleAddressInput.value.trim(),
