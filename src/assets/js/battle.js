@@ -497,258 +497,6 @@ function locationError(error) {
   hideLoading();
 }
 
-//針對發起人的評價假資料
-const hostReviewData = {
-  //發起人約戰歷史評分紀錄
-  101: {
-    hostId: 101,
-    name: "WeiChen",
-    avatar: "spinix_member_default.png",
-    totalBattles: 18,
-    averageRating: 4.7,
-    //過往評論紀錄
-    reviews: [
-      {
-        reviewId: 1001,
-        reviewerName: "小宇",
-        rating: 5,
-        content: "發起人很準時，也很親切，現場交流氣氛很好！",
-        createdAt: "2026-07-15"
-      },
-      {
-        reviewId: 1002,
-        reviewerName: "BladeKen",
-        rating: 5,
-        content: "場地資訊說明得很清楚，對新手也很有耐心。",
-        createdAt: "2026-07-08"
-      },
-      {
-        reviewId: 1003,
-        reviewerName: "阿哲",
-        rating: 4,
-        content: "整體約戰體驗很好，下次有機會還會再參加。",
-        createdAt: "2026-06-29"
-      },
-      {
-        reviewId: 1004,
-        reviewerName: "Ray",
-        rating: 5,
-        content: "準備了戰鬥盤，時間安排也很順利。",
-        createdAt: "2026-06-17"
-      },
-      {
-        reviewId: 1005,
-        reviewerName: "陀螺新手",
-        rating: 4,
-        content: "交流過程很友善，適合剛接觸戰鬥陀螺的玩家。",
-        createdAt: "2026-06-03"
-      }
-    ]
-  },
-
-  102: {
-    hostId: 102,
-    name: "SpinRay",
-    avatar: "spinix_member_default.png",
-    totalBattles: 18,
-    averageRating: 4.7,
-    reviews: [
-      {
-        reviewId: 2001,
-        reviewerName: "小宇",
-        rating: 5,
-        content: "發起人很準時，也很親切，現場交流氣氛很好！",
-        createdAt: "2026-07-15"
-      },
-      {
-        reviewId: 2002,
-        reviewerName: "BladeKen",
-        rating: 5,
-        content: "場地資訊說明得很清楚，對新手也很有耐心。",
-        createdAt: "2026-07-08"
-      },
-      {
-        reviewId: 2003,
-        reviewerName: "阿哲",
-        rating: 4,
-        content: "整體約戰體驗很好，下次有機會還會再參加。",
-        createdAt: "2026-06-29"
-      },
-      {
-        reviewId: 2004,
-        reviewerName: "Ray",
-        rating: 5,
-        content: "準備了戰鬥盤，時間安排也很順利。",
-        createdAt: "2026-06-17"
-      },
-      {
-        reviewId: 2005,
-        reviewerName: "陀螺新手",
-        rating: 4,
-        content: "交流過程很友善，適合剛接觸戰鬥陀螺的玩家。",
-        createdAt: "2026-06-03"
-      }
-    ]
-  }
-};
-
-// 約戰邀約卡片假資料
-// const battleData = [
-//   {
-//     battleId: 1,
-//     title: "新手友善！開心打陀螺",
-//     coverImage: "/battle_card_default.jpg",
-//     target: "不限對象",
-//     city: "桃園市",
-//     cityId: 3,
-//     district: "中壢區",
-//     districtId: 43,
-//     mode: "休閒模式",
-//     battleDate: "2026-08-31T14:00:00",
-//     deadline: "2026-08-28T22:00:00",
-//     level: "新手玩家",
-//     description: "假日放鬆場，輕鬆交流，我帶戰鬥盤，你帶陀螺就好！",
-//     hostId: 101,
-//     status: "matching"
-//   },
-//   {
-//     battleId: 2,
-//     title: "中壢車站週末交流場",
-//     coverImage: "/battle_card_test1.jpg",
-//     target: "不限對象",
-//     city: "桃園市",
-//     cityId: 3,
-//     district: "中壢區",
-//     districtId: 43,
-//     mode: "休閒模式",
-//     battleDate: "2026-08-29T15:00:00",
-//     deadline: "2026-08-26T20:00:00",
-//     level: "不限程度",
-//     description: "歡迎各種程度的玩家參加，現場會準備戰鬥盤。",
-//     hostId: 102,
-//     status: "matching"
-//   },
-//   {
-//     battleId: 3,
-//     title: "競技模式實戰練習",
-//     coverImage: "/battle_card_default.jpg",
-//     target: "成人限定",
-//     city: "臺北市",
-//     cityId: 1,
-//     district: "大安區",
-//     districtId: 3,
-//     mode: "競技模式",
-//     battleDate: "2026-08-17T19:00:00",
-//     deadline: "2026-08-16T18:00:00",
-//     level: "進階玩家",
-//     description: "以競技規則進行實戰交流，適合已有對戰經驗的玩家。",
-//     hostId: 101,
-//     status: "matching"
-//   },
-//   {
-//     battleId: 4,
-//     title: "親子陀螺交流體驗",
-//     coverImage: "/battle_card_default.jpg",
-//     target: "親子友善",
-//     city: "新北市",
-//     cityId: 2,
-//     district: "板橋區",
-//     districtId: 13,
-//     mode: "休閒模式",
-//     battleDate: "2026-08-22T10:30:00",
-//     deadline: "2026-08-21T18:00:00",
-//     level: "新手玩家",
-//     description: "適合親子一起參加的輕鬆交流場，歡迎第一次接觸的玩家。",
-//     hostId: 102,
-//     status: "matching"
-//   },
-//   {
-//     battleId: 5,
-//     title: "下班後來一場吧！",
-//     coverImage: "/battle_card_default.jpg",
-//     target: "成人限定",
-//     city: "臺北市",
-//     cityId: 1,
-//     district: "信義區",
-//     districtId: 2,
-//     mode: "休閒模式",
-//     battleDate: "2026-08-20T19:30:00",
-//     deadline: "2026-08-20T12:00:00",
-//     level: "中階玩家",
-//     description: "下班後簡單玩幾場，地點鄰近捷運站，交通方便。",
-//     hostId: 101,
-//     status: "matching"
-//   },
-//   {
-//     battleId: 6,
-//     title: "進階玩家配置測試場",
-//     coverImage: "/battle_card_test2.jpg",
-//     target: "不限對象",
-//     city: "新北市",
-//     cityId: 2,
-//     district: "新莊區",
-//     districtId: 17,
-//     mode: "競技模式",
-//     battleDate: "2026-08-23T14:00:00",
-//     deadline: "2026-08-22T22:00:00",
-//     level: "進階玩家",
-//     description: "帶上最近調整的配置，一起測試不同零件搭配的實戰效果。",
-//     hostId: 102,
-//     status: "matching"
-//   },
-//   {
-//     battleId: 7,
-//     title: "初次約戰也不用緊張",
-//     coverImage: "/battle_card_default.jpg",
-//     target: "不限對象",
-//     city: "桃園市",
-//     cityId: 3,
-//     district: "八德區",
-//     districtId: 45,
-//     mode: "休閒模式",
-//     battleDate: "2026-08-29T13:00:00",
-//     deadline: "2026-08-28T20:00:00",
-//     level: "新手玩家",
-//     description: "以交流和認識同好為主，不熟悉規則也可以放心參加。",
-//     hostId: 101,
-//     status: "matching"
-//   },
-//   {
-//     battleId: 8,
-//     title: "週日下午競技交流",
-//     coverImage: "/battle_card_default.jpg",
-//     target: "成人限定",
-//     city: "桃園市",
-//     cityId: 3,
-//     district: "平鎮區",
-//     districtId: 44,
-//     mode: "競技模式",
-//     battleDate: "2026-08-30T15:00:00",
-//     deadline: "2026-08-29T23:00:00",
-//     level: "中階玩家",
-//     description: "依照競技規則進行多場對戰，歡迎想累積實戰經驗的玩家。",
-//     hostId: 102,
-//     status: "matching"
-//   },
-//   {
-//     battleId: 9,
-//     title: "桃園陀螺玩家輕鬆聚",
-//     coverImage: "battle_card_default.jpg",
-//     target: "親子友善",
-//     city: "桃園市",
-//     cityId: 3,
-//     district: "桃園區",
-//     districtId: 42,
-//     mode: "休閒模式",
-//     battleDate: "2026-09-05T14:30:00",
-//     deadline: "2026-09-04T21:00:00",
-//     level: "不限程度",
-//     description: "不論是收藏、配置分享或實際對戰都歡迎，一起認識附近同好。",
-//     hostId: 101,
-//     status: "matching"
-//   }
-// ];
-
 //存取從後端抓取、要放進對戰配對卡池中的約戰紀錄
 let battleData = [];
 
@@ -1123,8 +871,15 @@ const historyAvatar = document.querySelector("#historyAvatar");
 //燈箱發起人姓名slot
 const historyHostName = document.querySelector("#history-hostName");
 const totalBattles = document.querySelector("#totalBattles"); //總約戰場次slot
-const averageRating = document.querySelector("#averageRating");//平均評分slot
-const reviewList = document.querySelector("#reviewList");//評論列表
+const averageRating = document.querySelector("#averageRating"); //平均評分slot
+const competitiveWinRate = document.querySelector("#competitiveWinRate"); //競技勝率slot
+const competitiveRecord = document.querySelector("#competitiveRecord"); //競技場數slot
+const reviewList = document.querySelector("#reviewList"); //評論列表
+
+//向後端取得指定約戰發起人的歷史資料
+function fetchHostHistory(hostId) {
+  return fetch(`http://localhost:8888/Spinix/php/battle/host_history_get.php?host_id=${hostId}`).then(res => res.json());
+}
 
 // render出個別評論函式
 function createReviewItem(review) {
@@ -1145,42 +900,116 @@ function createReviewItem(review) {
                 ${review.content}
             </p>
 
-            <time class="review-date">
-                ${review.createdAt}
+            <time class="review-date" datetime="${review.createdAt}">
+                ${formatReviewDate(review.createdAt)}
             </time>
         </article>
     `;
 }
 
+//燈箱內評論日期顯示格式化
+function formatReviewDate(dateString) {
+  const date = new Date(dateString);
+
+  const year = date.getFullYear();
+
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, "0");
+
+  const day = String(
+    date.getDate()
+  ).padStart(2, "0");
+
+  return `${year}/${month}/${day}`;
+}
+
 // 將發起人資料放入燈箱中
 function renderHostHistory(host) {
-  historyAvatar.src = host.avatar;
+
+  historyAvatar.src = import.meta.env.BASE_URL + host.avatar;
   historyAvatar.alt = `${host.name}的會員頭像`;
 
   historyHostName.textContent = host.name;
+
   totalBattles.textContent = host.totalBattles;
-  averageRating.textContent = host.averageRating.toFixed(1);
 
-  //將發起人對應的約戰留言評論放入列表中
-  reviewList.innerHTML = host.reviews
-    .map(createReviewItem)
-    .join("");
-}
+  averageRating.textContent = host.averageRating === null ? "--" : host.averageRating.toFixed(1);
 
-// 開啟燈箱
-function openHistoryModal() {
-  // 暫時先固定以host 101假資料呈現
-  const host = hostReviewData[101];
+  //顯示競技模式勝率資訊
+  if (host.winRate === null) { //尚無參加過的競技約戰時
+    competitiveWinRate.textContent = "--";
+    competitiveRecord.textContent = "尚無紀錄";
+  } else { //有參加過競技約戰時
+    competitiveWinRate.textContent = `${Math.round(host.winRate)}%`;
+    competitiveRecord.textContent = `${host.competitiveWins} 勝 / ${host.competitiveTotal} 場`;
+  }
 
-  if (!host) {
+
+  // 當該會員目前沒有任何歷史評價時，顯示空狀態
+  if (host.reviews.length === 0) {
+    reviewList.innerHTML = `
+      <div class="review-empty">
+        <p>目前尚無約戰評價</p>
+      </div>
+    `;
+
     return;
   }
 
-  renderHostHistory(host);
+  // 有評價資料時，才render出評價
+  reviewList.innerHTML =
+    host.reviews
+      .map(createReviewItem)
+      .join("");
+}
 
-  historyModal.hidden = false;
-  historyModal.classList.add("is-open");
-  document.body.style.overflow = "hidden";
+// 開啟燈箱
+function openHistoryModal(hostId) {
+
+  if (!hostId) {
+    return;
+  }
+
+  fetchHostHistory(hostId)
+    .then(data => {
+
+      // 將API取得的資料格式轉為前端燈箱使用的格式
+      const hostHistory = {
+        hostId: Number(data.host.MEM_ID),
+        name: data.host.MEM_NAME,
+        avatar: data.host.MEM_PHOTO,
+
+        totalBattles: Number(data.host.TOTAL_BATTLES), //參加過的約戰總場次
+        averageRating: data.host.AVERAGE_RATING === null ? null : Number(data.host.AVERAGE_RATING), //平均約戰評價分數
+
+        competitiveTotal: Number(data.host.COMPETITIVE_TOTAL), //參加過的競技模式約戰場次
+        competitiveWins: Number(data.host.COMPETITIVE_WINS), //競技模式約戰勝場數
+
+        winRate: data.host.WIN_RATE === null ? null : Number(data.host.WIN_RATE), //競技模式勝率
+
+        //發起人的過往約戰評價
+        reviews: data.reviews.map(review => {
+          return {
+            reviewerName: review.REVIEWER_NAME,
+            rating: Number(review.RATING),
+            content: review.COMMENT,
+            createdAt: review.COMMENTED_AT
+          };
+        })
+      };
+
+      console.log("整理後的發起人資料：", hostHistory);
+
+      // 將整理完整的資料送給燈箱內容的render函式
+      renderHostHistory(hostHistory);
+
+      // 資料準好後，才開啟燈箱
+      historyModal.hidden = false;
+      historyModal.classList.add("is-open");
+      document.body.style.overflow = "hidden";
+    });
+
 }
 
 // 關閉燈箱
@@ -1197,7 +1026,9 @@ battleCardList.addEventListener("click", e => {
   const hostBtn = e.target.closest(".hostBtn");
 
   if (hostBtn) {
-    openHistoryModal();
+    //取得發起人的會員id
+    const hostId = Number(hostBtn.dataset.hostId);
+    openHistoryModal(hostId);
     return;
   }
 
@@ -1244,10 +1075,8 @@ const applyContact = document.querySelector("#applyContact"); //參加人輸入�
 
 // 將對應邀約資訊放進申請燈箱
 function renderApplyModal(battle) {
-  const host = hostReviewData[battle.hostId];
-
-  applyAvatar.src = import.meta.env.BASE_URL + host.avatar;
-  applyAvatar.alt = `${host.name}的會員頭像`;
+  applyAvatar.src = import.meta.env.BASE_URL + battle.hostAvatar;
+  applyAvatar.alt = `${battle.hostName}的會員頭像`;
 
   applyBattleTitle.textContent = battle.title;
 
