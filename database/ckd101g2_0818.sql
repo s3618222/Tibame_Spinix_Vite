@@ -2,10 +2,10 @@
 -- version 5.1.2
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:8889
--- Generation Time: Aug 18, 2026 at 05:56 AM
--- Server version: 5.7.24
--- PHP Version: 8.3.1
+-- 主機： localhost:8889
+-- 產生時間： 2026-08-18 13:04:08
+-- 伺服器版本： 5.7.24
+-- PHP 版本： 8.3.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,64 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `spinix`
+-- 資料庫: `spinix`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `battle_appeal`
+-- 資料表結構 `admin`
+--
+
+CREATE TABLE `admin` (
+  `admin_id` int(10) UNSIGNED NOT NULL COMMENT '管理員ID',
+  `account` varchar(50) NOT NULL COMMENT '登入帳號',
+  `password` varchar(50) NOT NULL COMMENT '密碼',
+  `name` varchar(50) NOT NULL COMMENT '管理員名稱',
+  `create_time` datetime NOT NULL COMMENT '建立時間',
+  `admin_type` enum('超級管理員','一般管理員') NOT NULL COMMENT '管理員類型',
+  `admin_state` enum('在職','離職') NOT NULL COMMENT '管理員狀態'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='管理員列表';
+
+--
+-- 傾印資料表的資料 `admin`
+--
+
+INSERT INTO `admin` (`admin_id`, `account`, `password`, `name`, `create_time`, `admin_type`, `admin_state`) VALUES
+(1, 'admin1', '123456', 'admin1', '2026-08-18 12:12:08', '超級管理員', '在職');
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `appeal_exchange`
+--
+
+CREATE TABLE `appeal_exchange` (
+  `ae_id` int(10) UNSIGNED NOT NULL COMMENT '交換申訴ID',
+  `post_id` int(11) DEFAULT NULL COMMENT '交換案件ID',
+  `comm_id` int(10) UNSIGNED DEFAULT NULL COMMENT '交換申請ID',
+  `complainant_mem_id` int(10) UNSIGNED NOT NULL COMMENT '申訴人ID',
+  `respondent_mem_id` int(10) UNSIGNED NOT NULL COMMENT '被申訴人ID',
+  `admin_id` int(10) UNSIGNED DEFAULT NULL COMMENT '審核員ID',
+  `ae_content` text NOT NULL COMMENT '申訴案件內容',
+  `ae_status` enum('PENDING','CONFIRMED','REJECTED') NOT NULL DEFAULT 'PENDING' COMMENT '申訴案件狀態',
+  `create_time` datetime NOT NULL COMMENT '申訴時間',
+  `ae_evidence` varchar(255) DEFAULT NULL COMMENT '證據截圖',
+  `responded_at` datetime DEFAULT NULL COMMENT '管理員回覆時間',
+  `responded_text` varchar(200) NOT NULL COMMENT '管理員回復內容'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='申訴案件-交換';
+
+--
+-- 傾印資料表的資料 `appeal_exchange`
+--
+
+INSERT INTO `appeal_exchange` (`ae_id`, `post_id`, `comm_id`, `complainant_mem_id`, `respondent_mem_id`, `admin_id`, `ae_content`, `ae_status`, `create_time`, `ae_evidence`, `responded_at`, `responded_text`) VALUES
+(2, 5, NULL, 2, 1, NULL, '言論太激動!', 'PENDING', '2026-08-18 13:01:51', NULL, NULL, '');
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `battle_appeal`
 --
 
 CREATE TABLE `battle_appeal` (
@@ -44,7 +95,7 @@ CREATE TABLE `battle_appeal` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `battle_record`
+-- 資料表結構 `battle_record`
 --
 
 CREATE TABLE `battle_record` (
@@ -78,7 +129,7 @@ CREATE TABLE `battle_record` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='對戰紀錄表';
 
 --
--- Dumping data for table `battle_record`
+-- 傾印資料表的資料 `battle_record`
 --
 
 INSERT INTO `battle_record` (`BATTLE_ID`, `INITIATOR_ID`, `PARTICIPANT_ID`, `BATTLE_TITLE`, `BATTLE_IMG`, `BATTLE_DESC`, `CITY_ID`, `DISTRICT_ID`, `BATTLE_MODE`, `BATTLE_TARGET`, `BATTLE_LEVEL`, `BATTLE_DATE`, `BATTLE_DEADLINE`, `BATTLE_LOC`, `BATTLE_STATUS`, `INI_CONTACT`, `PAR_CONTACT`, `WINNER`, `TO_INI_STARS`, `TO_PAR_STARS`, `CREATED_AT`, `TO_INI_COMMENT`, `TO_INI_COMMENTED_AT`, `TO_PAR_COMMENT`, `TO_PAR_COMMENTED_AT`, `IS_SHOW`, `REMOVE_REASON`) VALUES
@@ -104,7 +155,7 @@ INSERT INTO `battle_record` (`BATTLE_ID`, `INITIATOR_ID`, `PARTICIPANT_ID`, `BAT
 -- --------------------------------------------------------
 
 --
--- Table structure for table `city`
+-- 資料表結構 `city`
 --
 
 CREATE TABLE `city` (
@@ -113,7 +164,7 @@ CREATE TABLE `city` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='縣市資料表';
 
 --
--- Dumping data for table `city`
+-- 傾印資料表的資料 `city`
 --
 
 INSERT INTO `city` (`CITY_ID`, `CITY_NAME`) VALUES
@@ -143,7 +194,7 @@ INSERT INTO `city` (`CITY_ID`, `CITY_NAME`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `district`
+-- 資料表結構 `district`
 --
 
 CREATE TABLE `district` (
@@ -153,7 +204,7 @@ CREATE TABLE `district` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='行政區資料表';
 
 --
--- Dumping data for table `district`
+-- 傾印資料表的資料 `district`
 --
 
 INSERT INTO `district` (`DISTRICT_ID`, `CITY_ID`, `DISTRICT_NAME`) VALUES
@@ -529,7 +580,71 @@ INSERT INTO `district` (`DISTRICT_ID`, `CITY_ID`, `DISTRICT_NAME`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `member`
+-- 資料表結構 `exchange_comment`
+--
+
+CREATE TABLE `exchange_comment` (
+  `comm_id` int(10) UNSIGNED NOT NULL COMMENT '留言ID',
+  `post_id` int(11) NOT NULL COMMENT '回覆交換案件ID',
+  `mem_id` int(10) UNSIGNED NOT NULL COMMENT '留言會員編號',
+  `content` text NOT NULL COMMENT '回覆內容',
+  `create_time` datetime NOT NULL COMMENT '回復時間',
+  `is_show` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否顯示',
+  `remove_reason` varchar(255) DEFAULT NULL COMMENT '被下架時，下架原因說明',
+  `is_choose` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否被選擇',
+  `comm_contact` varchar(50) NOT NULL COMMENT '申請交換人的聯絡資訊'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='二手交換-申請';
+
+--
+-- 傾印資料表的資料 `exchange_comment`
+--
+
+INSERT INTO `exchange_comment` (`comm_id`, `post_id`, `mem_id`, `content`, `create_time`, `is_show`, `remove_reason`, `is_choose`, `comm_contact`) VALUES
+(1, 3, 3, '想用CX 系列改裝陀螺跟版主做交換！', '2026-08-18 12:48:08', 1, NULL, 0, '電話:0909123456'),
+(2, 3, 4, '想用絕版陀螺XXX做交換!!', '2026-08-26 20:48:08', 1, NULL, 0, '賴:lineline123');
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `exchange_post`
+--
+
+CREATE TABLE `exchange_post` (
+  `post_id` int(11) NOT NULL COMMENT '交換案件編號',
+  `type` enum('beyblade','blade','ratchet','bit','others') NOT NULL COMMENT '物品類別',
+  `title` varchar(20) NOT NULL COMMENT '貼文標題',
+  `description` mediumtext NOT NULL COMMENT '物品描述',
+  `want_item` varchar(100) DEFAULT NULL COMMENT '希望獲得物品',
+  `condition` enum('new','good','fair') NOT NULL COMMENT '商品狀況',
+  `is_exchanged` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否被交換',
+  `is_show` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否上架',
+  `create_time` datetime NOT NULL COMMENT '建立時間',
+  `post_pic1` varchar(255) NOT NULL COMMENT '物品圖片1',
+  `post_pic2` varchar(255) DEFAULT NULL COMMENT '物品圖片2',
+  `post_pic3` varchar(255) DEFAULT NULL COMMENT '物品圖片3',
+  `post_pic4` varchar(255) DEFAULT NULL COMMENT '物品圖片4',
+  `post_pic5` varchar(255) DEFAULT NULL COMMENT '物品圖片5',
+  `remove_reason` varchar(255) DEFAULT NULL COMMENT '如果被下架時，下架原因說明',
+  `mem_id` int(11) UNSIGNED NOT NULL COMMENT '發文會員編號',
+  `comm_mem_id` int(11) UNSIGNED DEFAULT NULL COMMENT '申請交換會員編號',
+  `CITY_ID` int(10) UNSIGNED NOT NULL COMMENT '縣市',
+  `DISTRICT_ID` int(10) UNSIGNED NOT NULL COMMENT '行政區',
+  `post_contact` varchar(50) NOT NULL COMMENT '發起交換人的聯絡資訊'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- 傾印資料表的資料 `exchange_post`
+--
+
+INSERT INTO `exchange_post` (`post_id`, `type`, `title`, `description`, `want_item`, `condition`, `is_exchanged`, `is_show`, `create_time`, `post_pic1`, `post_pic2`, `post_pic3`, `post_pic4`, `post_pic5`, `remove_reason`, `mem_id`, `comm_mem_id`, `CITY_ID`, `DISTRICT_ID`, `post_contact`) VALUES
+(3, 'beyblade', 'CX 系列對戰陀螺改裝版', '關於交換戰鬥陀螺這件事，我們都可能想錯了，交換戰鬥陀螺，是很多人每天都在做的事，但真正把它做出意義的人，寥寥可數。 當我們認真審視交換戰鬥陀螺這件事，會發現它所牽涉的，遠比表面看來複雜得多。\r\n', '想交換魔導至尊', 'new', 0, 1, '2026-08-18 12:36:59', 'CX02_01.webp', 'BX23_01.webp', 'BX_02.webp', 'CX13_01.webp', 'BX-28.webp', NULL, 1, NULL, 1, 5, 'line:test123'),
+(4, 'others', '魔導至尊', '測式用文字', NULL, 'fair', 0, 1, '2026-08-18 12:36:59', 'BX-28.webp', 'CX13_01.webp', 'BX_02.webp', NULL, NULL, NULL, 2, NULL, 3, 43, '電話:0912345678'),
+(5, 'ratchet', '我是被申訴交換案件', '真的有夠傻眼！ 說好要拿這顆陀螺跟我交換，結果我都已經準備好了，對方卻突然說不想換了！早知道會這樣，當初就不要浪費彼此的時間。明明一開始就可以好好講清楚，為什麼最後才突然反悔？真的讓人非常不爽，也希望大家交換之前可以先確認清楚，不要隨便答應之後又臨時變卦！', NULL, 'good', 0, 1, '2026-08-04 20:51:15', 'CX02_01.webp', 'BX23_01.webp', NULL, NULL, NULL, NULL, 1, NULL, 1, 5, 'line:test123');
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `member`
 --
 
 CREATE TABLE `member` (
@@ -560,7 +675,7 @@ CREATE TABLE `member` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='會員資料表';
 
 --
--- Dumping data for table `member`
+-- 傾印資料表的資料 `member`
 --
 
 INSERT INTO `member` (`MEM_ID`, `MEM_ACCOUNT`, `MEM_PASSWORD`, `MEM_EMAIL`, `MEM_NAME`, `MEM_GENDER`, `MEM_BIRTH`, `REP_NAME`, `REP_RELATION`, `REP_PHONE`, `MEM_PHOTO`, `RATING_STARS`, `RATING_COUNT`, `BATTLE_COUNT`, `BATTLE_WINS`, `BATTLE_STATUS`, `BATTLE_SUSPEND_UNTIL`, `FORUM_STATUS`, `FORUM_SUSPEND_UNTIL`, `MARKET_STATUS`, `MARKET_SUSPEND_UNTIL`, `BATTLE_VIO_COUNTS`, `EXCHANGE_VIO_COUNTS`, `FORUM_VIO_COUNTS`) VALUES
@@ -577,11 +692,30 @@ INSERT INTO `member` (`MEM_ID`, `MEM_ACCOUNT`, `MEM_PASSWORD`, `MEM_EMAIL`, `MEM
 (11, 'Billtest', 'test1234', 'testmember11@spinix.test', '測試員大大', 'MALE', '2000-01-01', NULL, NULL, NULL, 'spinix_member_default.png', 0, 0, 0, 0, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 0);
 
 --
--- Indexes for dumped tables
+-- 已傾印資料表的索引
 --
 
 --
--- Indexes for table `battle_appeal`
+-- 資料表索引 `admin`
+--
+ALTER TABLE `admin`
+  ADD PRIMARY KEY (`admin_id`),
+  ADD UNIQUE KEY `uk_admin_account` (`account`),
+  ADD UNIQUE KEY `uk_admin_name` (`name`);
+
+--
+-- 資料表索引 `appeal_exchange`
+--
+ALTER TABLE `appeal_exchange`
+  ADD PRIMARY KEY (`ae_id`),
+  ADD KEY `fk_appeal_exchange_post` (`post_id`),
+  ADD KEY `fk_appeal_exchange_comm` (`comm_id`),
+  ADD KEY `fk_appeal_exchange_complainant` (`complainant_mem_id`),
+  ADD KEY `fk_appeal_exchange_respondent` (`respondent_mem_id`),
+  ADD KEY `fk_appeal_exchange_admin` (`admin_id`);
+
+--
+-- 資料表索引 `battle_appeal`
 --
 ALTER TABLE `battle_appeal`
   ADD PRIMARY KEY (`BATTLE_APPEAL_ID`),
@@ -590,7 +724,7 @@ ALTER TABLE `battle_appeal`
   ADD KEY `FK_BATTLE_APPEAL_RESPONDENT` (`RESPONDENT_MEM_ID`);
 
 --
--- Indexes for table `battle_record`
+-- 資料表索引 `battle_record`
 --
 ALTER TABLE `battle_record`
   ADD PRIMARY KEY (`BATTLE_ID`),
@@ -601,21 +735,39 @@ ALTER TABLE `battle_record`
   ADD KEY `IDX_BATTLE_STATUS_DATE` (`BATTLE_STATUS`,`BATTLE_DATE`);
 
 --
--- Indexes for table `city`
+-- 資料表索引 `city`
 --
 ALTER TABLE `city`
   ADD PRIMARY KEY (`CITY_ID`),
   ADD UNIQUE KEY `UQ_CITY_NAME` (`CITY_NAME`);
 
 --
--- Indexes for table `district`
+-- 資料表索引 `district`
 --
 ALTER TABLE `district`
   ADD PRIMARY KEY (`DISTRICT_ID`),
   ADD KEY `IDX_DISTRICT_CITY_ID` (`CITY_ID`);
 
 --
--- Indexes for table `member`
+-- 資料表索引 `exchange_comment`
+--
+ALTER TABLE `exchange_comment`
+  ADD PRIMARY KEY (`comm_id`),
+  ADD KEY `fk_exchange_comment_post` (`post_id`),
+  ADD KEY `fk_exchange_comment_member` (`mem_id`);
+
+--
+-- 資料表索引 `exchange_post`
+--
+ALTER TABLE `exchange_post`
+  ADD PRIMARY KEY (`post_id`),
+  ADD KEY `CITY_ID` (`CITY_ID`),
+  ADD KEY `DISTRICT_ID` (`DISTRICT_ID`),
+  ADD KEY `comm_mem_id` (`comm_mem_id`),
+  ADD KEY `mem_id` (`mem_id`);
+
+--
+-- 資料表索引 `member`
 --
 ALTER TABLE `member`
   ADD PRIMARY KEY (`MEM_ID`),
@@ -623,45 +775,79 @@ ALTER TABLE `member`
   ADD UNIQUE KEY `UQ_MEMBER_EMAIL` (`MEM_EMAIL`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- 在傾印的資料表使用自動遞增(AUTO_INCREMENT)
 --
 
 --
--- AUTO_INCREMENT for table `battle_appeal`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `admin`
+--
+ALTER TABLE `admin`
+  MODIFY `admin_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '管理員ID', AUTO_INCREMENT=3;
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `appeal_exchange`
+--
+ALTER TABLE `appeal_exchange`
+  MODIFY `ae_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '交換申訴ID', AUTO_INCREMENT=3;
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `battle_appeal`
 --
 ALTER TABLE `battle_appeal`
   MODIFY `BATTLE_APPEAL_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '對戰申訴編號';
 
 --
--- AUTO_INCREMENT for table `battle_record`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `battle_record`
 --
 ALTER TABLE `battle_record`
   MODIFY `BATTLE_ID` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '對戰邀約編號', AUTO_INCREMENT=19;
 
 --
--- AUTO_INCREMENT for table `city`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `city`
 --
 ALTER TABLE `city`
   MODIFY `CITY_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '縣市編號', AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT for table `district`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `district`
 --
 ALTER TABLE `district`
   MODIFY `DISTRICT_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '行政區編號', AUTO_INCREMENT=369;
 
 --
--- AUTO_INCREMENT for table `member`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `exchange_comment`
+--
+ALTER TABLE `exchange_comment`
+  MODIFY `comm_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '留言ID', AUTO_INCREMENT=3;
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `exchange_post`
+--
+ALTER TABLE `exchange_post`
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '交換案件編號', AUTO_INCREMENT=6;
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `member`
 --
 ALTER TABLE `member`
   MODIFY `MEM_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '會員編號', AUTO_INCREMENT=12;
 
 --
--- Constraints for dumped tables
+-- 已傾印資料表的限制式
 --
 
 --
--- Constraints for table `battle_appeal`
+-- 資料表的限制式 `appeal_exchange`
+--
+ALTER TABLE `appeal_exchange`
+  ADD CONSTRAINT `fk_appeal_exchange_admin` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`admin_id`),
+  ADD CONSTRAINT `fk_appeal_exchange_comm` FOREIGN KEY (`comm_id`) REFERENCES `exchange_comment` (`comm_id`),
+  ADD CONSTRAINT `fk_appeal_exchange_complainant` FOREIGN KEY (`complainant_mem_id`) REFERENCES `member` (`MEM_ID`),
+  ADD CONSTRAINT `fk_appeal_exchange_post` FOREIGN KEY (`post_id`) REFERENCES `exchange_post` (`post_id`),
+  ADD CONSTRAINT `fk_appeal_exchange_respondent` FOREIGN KEY (`respondent_mem_id`) REFERENCES `member` (`MEM_ID`);
+
+--
+-- 資料表的限制式 `battle_appeal`
 --
 ALTER TABLE `battle_appeal`
   ADD CONSTRAINT `FK_BATTLE_APPEAL_BATTLE` FOREIGN KEY (`BATTLE_ID`) REFERENCES `battle_record` (`BATTLE_ID`) ON UPDATE CASCADE,
@@ -669,7 +855,7 @@ ALTER TABLE `battle_appeal`
   ADD CONSTRAINT `FK_BATTLE_APPEAL_RESPONDENT` FOREIGN KEY (`RESPONDENT_MEM_ID`) REFERENCES `member` (`MEM_ID`) ON UPDATE CASCADE;
 
 --
--- Constraints for table `battle_record`
+-- 資料表的限制式 `battle_record`
 --
 ALTER TABLE `battle_record`
   ADD CONSTRAINT `FK_BATTLE_CITY` FOREIGN KEY (`CITY_ID`) REFERENCES `city` (`CITY_ID`) ON UPDATE CASCADE,
@@ -678,10 +864,26 @@ ALTER TABLE `battle_record`
   ADD CONSTRAINT `FK_BATTLE_PARTICIPANT` FOREIGN KEY (`PARTICIPANT_ID`) REFERENCES `member` (`MEM_ID`) ON UPDATE CASCADE;
 
 --
--- Constraints for table `district`
+-- 資料表的限制式 `district`
 --
 ALTER TABLE `district`
   ADD CONSTRAINT `FK_DISTRICT_CITY` FOREIGN KEY (`CITY_ID`) REFERENCES `city` (`CITY_ID`) ON UPDATE CASCADE;
+
+--
+-- 資料表的限制式 `exchange_comment`
+--
+ALTER TABLE `exchange_comment`
+  ADD CONSTRAINT `fk_exchange_comment_member` FOREIGN KEY (`mem_id`) REFERENCES `member` (`MEM_ID`),
+  ADD CONSTRAINT `fk_exchange_comment_post` FOREIGN KEY (`post_id`) REFERENCES `exchange_post` (`post_id`);
+
+--
+-- 資料表的限制式 `exchange_post`
+--
+ALTER TABLE `exchange_post`
+  ADD CONSTRAINT `exchange_post_ibfk_1` FOREIGN KEY (`CITY_ID`) REFERENCES `city` (`CITY_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `exchange_post_ibfk_2` FOREIGN KEY (`DISTRICT_ID`) REFERENCES `district` (`DISTRICT_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `exchange_post_ibfk_3` FOREIGN KEY (`comm_mem_id`) REFERENCES `member` (`MEM_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `exchange_post_ibfk_4` FOREIGN KEY (`mem_id`) REFERENCES `member` (`MEM_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
