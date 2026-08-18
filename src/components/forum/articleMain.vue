@@ -1,7 +1,7 @@
 <template>
   <main class="article-main">
     <aside class="author-card">
-      <AuthorCard />
+      <AuthorCard :writer="articleAuthor" />
     </aside>
     
     <article class="article-content">
@@ -53,12 +53,16 @@ import AuthorCard from '@/components/forum/authorCard.vue';
       AuthorCard
     },
 
+    props: {
+      articleAuthor: {
+        type: Object,
+        default: () => ({})
+      }
+    },
+
     data(){
       return{
-        baseURL: import.meta.env.BASE_URL,
-        writer:[
-          
-        ]
+        baseURL: import.meta.env.BASE_URL
       }
     }
   }

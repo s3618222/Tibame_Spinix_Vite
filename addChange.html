@@ -18,9 +18,10 @@
 
    <section class="sec" id="addChange">
       <h1>刊登物品</h1>
-      <a href="./market.html">返回</a>
+      <a href="./market.html" class="back-page">返回</a>
       <div class="form-add-prod">
          <form action="" method="post">
+            <!-- 上傳圖片 -->
             <div id="uploadImgApp"></div>
             <div class="form-flex">
                <span class="form-label-style form-control">
@@ -31,7 +32,7 @@
                      <option value="blade">戰刃</option>
                      <option value="ratchet">固鎖</option>
                      <option value="bit">軸心</option>
-                     <option value="other">其他</option>
+                     <option value="others">其他</option>
                   </select>
                </span>
                <span class="form-prod-name form-label-style form-control">
@@ -43,14 +44,14 @@
                <span class="label-title">物品狀況</span>
                <span class="form-state-opts">
                   <label for="state-new">
-                     <input type="radio" name="state" value="new" id="state-new" checked required>全新
+                     <input type="radio" name="state" value="new" id="new" checked required>全新
                   </label>
 
                   <label for="state-good">
-                     <input type="radio" name="state" value="good" id="state-good">二手-狀態良好
+                     <input type="radio" name="state" value="good" id="good">二手-狀態良好
                   </label>
                   <label for="state-flaw">
-                     <input type="radio" name="state" value="flaw" id="state-flaw">二手-有瑕疵
+                     <input type="radio" name="state" value="fair" id="fair">二手-有瑕疵
                   </label>
                </span>
             </div>

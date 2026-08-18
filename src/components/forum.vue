@@ -6,9 +6,9 @@
         <p>與全台陀螺好手交流戰術、分享零件配置與最新賽事心得。</p>
       </div>
 
-      <ForumToolbar :search-keyword="searchKeyword" @search="updateSearch"/>
+      <ForumToolbar :search-keyword="searchKeyword" :sort-by="sortBy" @search="updateSearch" @sort="updateSort"/>
       <CategoryTabs :current-tab="currentTab" @change-tab="switchTab"/>
-      <ArticleList :article-list="filteredArticles"/>
+      <ArticleList :article-list="displayArticles"/>
 
     </div>
   </div>
@@ -24,9 +24,11 @@
     name: "ForumView",
 
     data(){
+      const now = Date.now();
       return {
         currentTab: "all",  // 預設值
         searchKeyword: "",
+        sortBy: "latestPost",
         allArticles: [
           {
             id: 1,
@@ -37,7 +39,8 @@
             imgArticle: "",
             imgWriter: "spinix_member_test1.png",
             name: "官方管理員",
-            time: "2 小時前",
+            createTime: new Date(now - 2 * 60 * 60 * 1000).toISOString(),
+            lastCommentTime: new Date(now - 15 * 60 * 1000).toISOString(),
             comment: "1258"
           },
           {
@@ -49,7 +52,8 @@
             imgArticle: "",
             imgWriter: "",
             name: "陀螺大師",
-            time: "10 分鐘前",
+            createTime: new Date(now - 10 * 60 * 1000).toISOString(),
+            lastCommentTime: new Date(now - 5 * 60 * 1000).toISOString(),
             comment: "11"
           },
           {
@@ -61,7 +65,8 @@
             imgArticle: "",
             imgWriter: "",
             name: "收藏家 A",
-            time: "1 小時前",
+            createTime: new Date(now - 1 * 60 * 60 * 1000).toISOString(),
+            lastCommentTime: new Date(now - 1 * 60 * 60 * 1000).toISOString(),
             comment: "0"
           },
           {
@@ -73,7 +78,8 @@
             imgArticle: `battle_empty_state.png`,
             imgWriter: "",
             name: "賽事委員555555555555555",
-            time: "3 小時前",
+            createTime: new Date(now - 3 * 60 * 60 * 1000).toISOString(),
+            lastCommentTime: new Date(now - 2.5 * 60 * 60 * 1000).toISOString(),
             comment: "5"
           },
         ]
@@ -102,6 +108,16 @@
         }
 
         return result;
+      },
+
+      displayArticles() {
+        const sorted = [...this.filteredArticles];
+        if (this.sortBy === "latestComment") {
+          sorted.sort((a, b) => new Date(b.lastCommentTime) - new Date(a.lastCommentTime));
+        } else {
+          sorted.sort((a, b) => new Date(b.createTime) - new Date(a.createTime));
+        }
+        return sorted;
       }
     },
 
@@ -111,6 +127,9 @@
       },
       updateSearch(keyword) {
         this.searchKeyword = keyword;
+      },
+      updateSort(value) {
+        this.sortBy = value;
       }
     }
   }

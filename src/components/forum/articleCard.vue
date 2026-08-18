@@ -17,7 +17,7 @@
         <img :src="avatarUrl" :alt="article.name" class="img-writer">
         <div class="post-txt">
           <p class="name-post">{{ article.name }}</p>
-          <p class="time-post">{{ article.time }}</p>
+          <p class="time-post">{{ relativeTime }}</p>
         </div>
         
       </div>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-
+  import { getRelativeTime } from "@/assets/js/utils/formatRelativeTime.js";
 
   export default {
     name: "ArticleCard",
@@ -55,6 +55,9 @@
         return this.article.imgWriter
           ? `${this.baseUrl}${this.article.imgWriter}`
           : `${this.baseUrl}spinix_member_default.png`;
+      },
+      relativeTime() {
+        return getRelativeTime(this.article.createTime);
       }
     }
   }

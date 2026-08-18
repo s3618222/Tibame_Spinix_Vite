@@ -93,7 +93,7 @@
     <div class="container" v-if="paginatedList.length">
       <ProductCard
         v-for="item in paginatedList"
-        :key="item.id"
+        :key="item.cardKey"
         :id="item.id"
         :title="item.title"
         :image="item.product_img"
@@ -102,7 +102,10 @@
         :postDate="item.date"
         :city="item.city"
         :district="item.district"
-        :state="statusLabelMap[item.status]"
+        :state="item.stateLabel"
+        :context="context"
+        @complete-exchange="handleCompleteExchange"
+        @reply-exchange="handleReplyExchange"
       />
     </div>
 
@@ -124,18 +127,17 @@
 <script>
 import StatusTabs from "./controlTabs.vue";
 import ProductCard from "./productCard.vue";
-import { exchangeList, statusLabelMap } from "../assets/js/mockExchangeData.js";  
+import {
+  exchangeList,
+  fakeComments,
+  statusLabelMap,
+  applyStatusLabelMap
+} from "../assets/js/mockExchangeData.js";
 // 分頁器
 import Pagination from "@/components/pagination.vue";
-import ElementPlus from "element-plus";
-// import "element-plus/dist/index.css";
-
-
 
 export default {
   name: "MyExchange",
-
-  
 
   components: {
     StatusTabs,
@@ -146,40 +148,77 @@ export default {
   data() {
     return {
       currentStatus: "all",
-      currentUserId: 101,     
+      currentUserId: 999,
       exchangeList,
+      fakeComments,
       statusLabelMap,
+      applyStatusLabelMap,
       activeTab: 'myexchange',
       currentPage: 1,
       pageSize: 9,
     };
   },
 
-    watch: {
-      currentStatus() {
-        this.currentPage = 1;
-      },
-      activeTab() {
-        this.currentPage = 1;
-      }
+  watch: {
+    currentStatus() {
+      this.currentPage = 1;
+    },
+    activeTab() {
+      this.currentPage = 1;
+      this.currentStatus = "all"; // 切換分頁時，篩選狀態重置，避免殘留篩選條件
+    }
   },
 
   computed: {
-    
-    myExchangeList() {
-      return this.exchangeList.filter(item => item.userId === this.currentUserId);
+    // 卡片按鈕要走哪套邏輯：myPosts（我刊登）／myApplications（我提出的申請）
+    context() {
+      return this.activeTab === 'myexchange' ? 'myPosts' : 'myApplications';
     },
 
-    
+    // 我刊登的交換：直接從 exchangeList 篩自己刊登的文章
+    myExchangeList() {
+      return this.exchangeList
+        .filter(item => item.userId === this.currentUserId)
+        .map(item => ({
+          ...item,
+          cardKey: `post-${item.id}`,
+          stateLabel: this.statusLabelMap[item.status]
+        }));
+    },
+
+    // 我提出的申請：從 fakeComments 篩「我留過言的」，再組合對應文章資訊
+    myApplyList() {
+      return this.fakeComments
+        .filter(comment => comment.userId === this.currentUserId)
+        .map(comment => {
+          const article = this.exchangeList.find(item => item.id === comment.articleId);
+          return {
+            ...article,
+            cardKey: `apply-${comment.id}`,
+            applyId: comment.id,
+            status: comment.applyStatus,               // 用「我這則申請」的狀態，取代文章原本狀態
+            stateLabel: this.applyStatusLabelMap[comment.applyStatus]
+          };
+        });
+    },
+
+    // 依目前分頁，決定要用哪份清單
+    currentList() {
+      return this.activeTab === 'myexchange' ? this.myExchangeList : this.myApplyList;
+    },
+
     filteredList() {
       if (this.currentStatus === "all") {
-        return this.myExchangeList;
+        return this.currentList;
       }
-      return this.myExchangeList.filter(item => item.status === this.currentStatus);
+      return this.currentList.filter(item => item.status === this.currentStatus);
     },
 
-    statusTabs() {
-      const list = this.myExchangeList;  
+    // 狀態篩選 tab：兩個分頁使用不同的狀態選項
+   statusTabs() {
+    const list = this.currentList;
+
+    if (this.activeTab === 'myexchange') {
       return [
         { label: "全部", value: "all", count: list.length },
         { label: "可交換", value: "available", count: list.filter(i => i.status === "available").length },
@@ -187,16 +226,35 @@ export default {
         { label: "待確認", value: "pending", count: list.filter(i => i.status === "pending").length },
         { label: "交換完成", value: "completed", count: list.filter(i => i.status === "completed").length }
       ];
-    },
+    }
 
+  // 我提出的申請：四種狀態
+    return [
+      { label: "全部", value: "all", count: list.length },
+      { label: "等待回復", value: "waitingReply", count: list.filter(i => i.status === "waitingReply").length },
+      { label: "已回復", value: "replied", count: list.filter(i => i.status === "replied").length },
+      { label: "交換中", value: "exchanging", count: list.filter(i => i.status === "exchanging").length },
+      { label: "交換完成", value: "completed", count: list.filter(i => i.status === "completed").length }
+    ];
+  },
     paginatedList() {
       const start = (this.currentPage - 1) * this.pageSize;
       const end = start + this.pageSize;
       return this.filteredList.slice(start, end);
     },
+  },
+
+  methods: {
+    handleCompleteExchange(item) {
+      console.log('完成交換：', item);
+      // 之後這裡打 API，把 exchangeList 對應文章的 status 改成 completed
+    },
+
+    handleReplyExchange(item) {
+      console.log('回覆交換，開啟談窗：', item);
+      // 之後這裡開啟談窗，用 item.applyId 對應是哪一則申請（留言）
+    }
   }
-
-
 };
 </script>
 

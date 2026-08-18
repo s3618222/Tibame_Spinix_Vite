@@ -1,13 +1,10 @@
 <template>
   <div class="author-card">
-    <img src="/spinix_member_test2.jpg" alt="writername" class="img-writer">
+    <img :src="avatarUrl" :alt="writer.name" class="img-writer">
     <div class="txt-box">
-      <p class="name-writer">Blader_X</p>
-      <p class="score-writer chip chip--state">勝場數：100</p>
+      <p class="name-writer">{{ writer.name }}</p>
+      <p class="score-writer chip chip--state">{{ writer.score }}</p>
     </div>
-    <!-- <img :src="writer.img" :alt="writer.name" class="img-writer">
-    <p class="name-writer">{{ writer.name }}</p>
-    <p class="score-writer">{{ writer.score }}</p> -->
   </div>
   
 </template>
@@ -20,6 +17,15 @@
       writer: {
         type: Object,
         default: () => ({})
+      }
+    },
+
+    computed: {
+      avatarUrl() {
+        const baseUrl = import.meta.env.BASE_URL;
+        return this.writer.img
+          ? `${baseUrl}${this.writer.img}`
+          : `${baseUrl}spinix_member_default.png`;
       }
     }
   }

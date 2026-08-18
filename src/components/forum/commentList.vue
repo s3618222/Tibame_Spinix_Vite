@@ -1,6 +1,6 @@
 <template>
-  <CommentItem/>
-  
+  <CommentItem v-for="item in comments" :key="item.id" :comment="item"/>
+
 </template>
 
 <script>
@@ -12,6 +12,13 @@ import CommentItem from '@/components/forum/commentItem.vue';
 
     components: {
       CommentItem
+    },
+
+    props: {
+      comments: {
+        type: Array,
+        default: () => []
+      }
     }
   }
 
