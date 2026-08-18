@@ -2,10 +2,10 @@
 -- version 5.1.2
 -- https://www.phpmyadmin.net/
 --
--- 主機： localhost:8889
--- 產生時間： 2026-08-18 13:04:08
--- 伺服器版本： 5.7.24
--- PHP 版本： 8.3.1
+-- Host: localhost:8889
+-- Generation Time: Aug 18, 2026 at 03:50 PM
+-- Server version: 5.7.24
+-- PHP Version: 8.3.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- 資料庫: `spinix`
+-- Database: `spinix`
 --
 
 -- --------------------------------------------------------
 
 --
--- 資料表結構 `admin`
+-- Table structure for table `admin`
 --
 
 CREATE TABLE `admin` (
@@ -38,7 +38,7 @@ CREATE TABLE `admin` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='管理員列表';
 
 --
--- 傾印資料表的資料 `admin`
+-- Dumping data for table `admin`
 --
 
 INSERT INTO `admin` (`admin_id`, `account`, `password`, `name`, `create_time`, `admin_type`, `admin_state`) VALUES
@@ -47,7 +47,7 @@ INSERT INTO `admin` (`admin_id`, `account`, `password`, `name`, `create_time`, `
 -- --------------------------------------------------------
 
 --
--- 資料表結構 `appeal_exchange`
+-- Table structure for table `appeal_exchange`
 --
 
 CREATE TABLE `appeal_exchange` (
@@ -66,7 +66,7 @@ CREATE TABLE `appeal_exchange` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='申訴案件-交換';
 
 --
--- 傾印資料表的資料 `appeal_exchange`
+-- Dumping data for table `appeal_exchange`
 --
 
 INSERT INTO `appeal_exchange` (`ae_id`, `post_id`, `comm_id`, `complainant_mem_id`, `respondent_mem_id`, `admin_id`, `ae_content`, `ae_status`, `create_time`, `ae_evidence`, `responded_at`, `responded_text`) VALUES
@@ -75,7 +75,7 @@ INSERT INTO `appeal_exchange` (`ae_id`, `post_id`, `comm_id`, `complainant_mem_i
 -- --------------------------------------------------------
 
 --
--- 資料表結構 `battle_appeal`
+-- Table structure for table `battle_appeal`
 --
 
 CREATE TABLE `battle_appeal` (
@@ -85,7 +85,7 @@ CREATE TABLE `battle_appeal` (
   `RESPONDENT_MEM_ID` int(10) UNSIGNED NOT NULL COMMENT '被申訴會員編號',
   `APPEAL_CONTENT` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '申訴內容',
   `APPEAL_STATUS` enum('PENDING','CONFIRMED','REJECTED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING' COMMENT '申訴處理狀態',
-  `ADMIN_ID` int(11) DEFAULT NULL COMMENT '處理申訴的管理員編號',
+  `ADMIN_ID` int(10) UNSIGNED DEFAULT NULL COMMENT '處理申訴的管理員編號',
   `CREATED_AT` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '申訴提交時間',
   `RESPONDED_AT` datetime DEFAULT NULL COMMENT '管理員回覆時間',
   `PHOTO_EVIDENCE` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '佐證截圖',
@@ -95,7 +95,7 @@ CREATE TABLE `battle_appeal` (
 -- --------------------------------------------------------
 
 --
--- 資料表結構 `battle_record`
+-- Table structure for table `battle_record`
 --
 
 CREATE TABLE `battle_record` (
@@ -129,7 +129,7 @@ CREATE TABLE `battle_record` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='對戰紀錄表';
 
 --
--- 傾印資料表的資料 `battle_record`
+-- Dumping data for table `battle_record`
 --
 
 INSERT INTO `battle_record` (`BATTLE_ID`, `INITIATOR_ID`, `PARTICIPANT_ID`, `BATTLE_TITLE`, `BATTLE_IMG`, `BATTLE_DESC`, `CITY_ID`, `DISTRICT_ID`, `BATTLE_MODE`, `BATTLE_TARGET`, `BATTLE_LEVEL`, `BATTLE_DATE`, `BATTLE_DEADLINE`, `BATTLE_LOC`, `BATTLE_STATUS`, `INI_CONTACT`, `PAR_CONTACT`, `WINNER`, `TO_INI_STARS`, `TO_PAR_STARS`, `CREATED_AT`, `TO_INI_COMMENT`, `TO_INI_COMMENTED_AT`, `TO_PAR_COMMENT`, `TO_PAR_COMMENTED_AT`, `IS_SHOW`, `REMOVE_REASON`) VALUES
@@ -155,7 +155,7 @@ INSERT INTO `battle_record` (`BATTLE_ID`, `INITIATOR_ID`, `PARTICIPANT_ID`, `BAT
 -- --------------------------------------------------------
 
 --
--- 資料表結構 `city`
+-- Table structure for table `city`
 --
 
 CREATE TABLE `city` (
@@ -164,7 +164,7 @@ CREATE TABLE `city` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='縣市資料表';
 
 --
--- 傾印資料表的資料 `city`
+-- Dumping data for table `city`
 --
 
 INSERT INTO `city` (`CITY_ID`, `CITY_NAME`) VALUES
@@ -194,7 +194,7 @@ INSERT INTO `city` (`CITY_ID`, `CITY_NAME`) VALUES
 -- --------------------------------------------------------
 
 --
--- 資料表結構 `district`
+-- Table structure for table `district`
 --
 
 CREATE TABLE `district` (
@@ -204,7 +204,7 @@ CREATE TABLE `district` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='行政區資料表';
 
 --
--- 傾印資料表的資料 `district`
+-- Dumping data for table `district`
 --
 
 INSERT INTO `district` (`DISTRICT_ID`, `CITY_ID`, `DISTRICT_NAME`) VALUES
@@ -580,7 +580,7 @@ INSERT INTO `district` (`DISTRICT_ID`, `CITY_ID`, `DISTRICT_NAME`) VALUES
 -- --------------------------------------------------------
 
 --
--- 資料表結構 `exchange_comment`
+-- Table structure for table `exchange_comment`
 --
 
 CREATE TABLE `exchange_comment` (
@@ -596,7 +596,7 @@ CREATE TABLE `exchange_comment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='二手交換-申請';
 
 --
--- 傾印資料表的資料 `exchange_comment`
+-- Dumping data for table `exchange_comment`
 --
 
 INSERT INTO `exchange_comment` (`comm_id`, `post_id`, `mem_id`, `content`, `create_time`, `is_show`, `remove_reason`, `is_choose`, `comm_contact`) VALUES
@@ -606,7 +606,7 @@ INSERT INTO `exchange_comment` (`comm_id`, `post_id`, `mem_id`, `content`, `crea
 -- --------------------------------------------------------
 
 --
--- 資料表結構 `exchange_post`
+-- Table structure for table `exchange_post`
 --
 
 CREATE TABLE `exchange_post` (
@@ -633,7 +633,7 @@ CREATE TABLE `exchange_post` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- 傾印資料表的資料 `exchange_post`
+-- Dumping data for table `exchange_post`
 --
 
 INSERT INTO `exchange_post` (`post_id`, `type`, `title`, `description`, `want_item`, `condition`, `is_exchanged`, `is_show`, `create_time`, `post_pic1`, `post_pic2`, `post_pic3`, `post_pic4`, `post_pic5`, `remove_reason`, `mem_id`, `comm_mem_id`, `CITY_ID`, `DISTRICT_ID`, `post_contact`) VALUES
@@ -644,14 +644,13 @@ INSERT INTO `exchange_post` (`post_id`, `type`, `title`, `description`, `want_it
 -- --------------------------------------------------------
 
 --
--- 資料表結構 `member`
+-- Table structure for table `member`
 --
 
 CREATE TABLE `member` (
   `MEM_ID` int(10) UNSIGNED NOT NULL COMMENT '會員編號',
-  `MEM_ACCOUNT` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '會員帳號',
+  `MEM_ACCOUNT` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '會員帳號（Email）',
   `MEM_PASSWORD` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '會員密碼',
-  `MEM_EMAIL` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '會員Email',
   `MEM_NAME` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '會員姓名',
   `MEM_GENDER` enum('MALE','FEMALE') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '會員性別',
   `MEM_BIRTH` date NOT NULL COMMENT '會員生日',
@@ -675,28 +674,28 @@ CREATE TABLE `member` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='會員資料表';
 
 --
--- 傾印資料表的資料 `member`
+-- Dumping data for table `member`
 --
 
-INSERT INTO `member` (`MEM_ID`, `MEM_ACCOUNT`, `MEM_PASSWORD`, `MEM_EMAIL`, `MEM_NAME`, `MEM_GENDER`, `MEM_BIRTH`, `REP_NAME`, `REP_RELATION`, `REP_PHONE`, `MEM_PHOTO`, `RATING_STARS`, `RATING_COUNT`, `BATTLE_COUNT`, `BATTLE_WINS`, `BATTLE_STATUS`, `BATTLE_SUSPEND_UNTIL`, `FORUM_STATUS`, `FORUM_SUSPEND_UNTIL`, `MARKET_STATUS`, `MARKET_SUSPEND_UNTIL`, `BATTLE_VIO_COUNTS`, `EXCHANGE_VIO_COUNTS`, `FORUM_VIO_COUNTS`) VALUES
-(1, 'weichen01', 'test1234', 'weichen01@spinix.test', 'WeiChen', 'MALE', '1998-05-16', NULL, NULL, NULL, 'spinix_member_test1.png', 47, 10, 18, 11, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 0),
-(2, 'spinray02', 'test1234', 'spinray02@spinix.test', 'SpinRay', 'MALE', '2001-11-03', NULL, NULL, NULL, 'spinix_member_test2.jpg', 42, 9, 15, 8, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 0),
-(3, 'bladegirl03', 'test1234', 'bladegirl03@spinix.test', 'Mika', 'FEMALE', '2000-03-21', NULL, NULL, NULL, 'spinix_member_test3.png', 34, 8, 12, 5, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 0),
-(4, 'beyrookie04', 'test1234', 'beyrookie04@spinix.test', '陀螺新手', 'MALE', '2005-09-12', NULL, NULL, NULL, 'spinix_member_default.png', 18, 4, 6, 2, 'ACTIVE', NULL, 'ACTIVE', NULL, 'TEMP-RESTRICT', '2026-08-31 23:59:59', 0, 0, 0),
-(5, 'sunny05', 'test1234', 'sunny05@spinix.test', 'SunnyBlader', 'MALE', '2011-02-08', '王志明', 'FATHER', '0912345678', 'spinix_member_default.png', 24, 5, 8, 4, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 0),
-(6, 'littleblade06', 'test1234', 'littleblade06@spinix.test', '小宇', 'MALE', '2012-07-19', '陳雅婷', 'MOTHER', '0922333444', 'spinix_member_default.png', 15, 3, 5, 1, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 0),
-(7, 'kenblade07', 'test1234', 'kenblade07@spinix.test', 'BladeKen', 'MALE', '1996-12-01', NULL, NULL, NULL, 'spinix_member_default.png', 55, 12, 22, 14, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 1, 0, 0),
-(8, 'rayblade08', 'test1234', 'rayblade08@spinix.test', 'Ray', 'MALE', '1999-08-27', NULL, NULL, NULL, 'spinix_member_default.png', 29, 7, 10, 6, 'TEMP-RESTRICT', '2026-08-31 23:59:59', 'ACTIVE', NULL, 'ACTIVE', NULL, 2, 0, 0),
-(9, 'beymom09', 'test1234', 'beymom09@spinix.test', '旋風媽咪', 'FEMALE', '1987-04-11', NULL, NULL, NULL, 'spinix_member_default.png', 39, 8, 14, 7, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 1),
-(10, 'storm10', 'test1234', 'storm10@spinix.test', 'StormLeo', 'MALE', '1994-06-30', NULL, NULL, NULL, 'spinix_member_default.png', 61, 13, 25, 17, 'ACTIVE', NULL, 'TEMP-RESTRICT', '2026-08-31 23:59:59', 'ACTIVE', NULL, 0, 0, 2),
-(11, 'Billtest', 'test1234', 'testmember11@spinix.test', '測試員大大', 'MALE', '2000-01-01', NULL, NULL, NULL, 'spinix_member_default.png', 0, 0, 0, 0, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 0);
+INSERT INTO `member` (`MEM_ID`, `MEM_ACCOUNT`, `MEM_PASSWORD`, `MEM_NAME`, `MEM_GENDER`, `MEM_BIRTH`, `REP_NAME`, `REP_RELATION`, `REP_PHONE`, `MEM_PHOTO`, `RATING_STARS`, `RATING_COUNT`, `BATTLE_COUNT`, `BATTLE_WINS`, `BATTLE_STATUS`, `BATTLE_SUSPEND_UNTIL`, `FORUM_STATUS`, `FORUM_SUSPEND_UNTIL`, `MARKET_STATUS`, `MARKET_SUSPEND_UNTIL`, `BATTLE_VIO_COUNTS`, `EXCHANGE_VIO_COUNTS`, `FORUM_VIO_COUNTS`) VALUES
+(1, 'weichen01@spinix.test', '$2y$10$36FXbNX9.OcF8/ZdlyZFHeoZFo.cfQ4xiY.7o0V2EAIDRZbUhPzO6', 'WeiChen', 'MALE', '1998-05-16', NULL, NULL, NULL, 'spinix_member_test1.png', 47, 10, 18, 11, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 0),
+(2, 'spinray02@spinix.test', '$2y$10$0UbuIUA1iHTGFap9TT0x8.Gu93SZ8U3NXsQigPHtHodjE/ZMqrwO.', 'SpinRay', 'MALE', '2001-11-03', NULL, NULL, NULL, 'spinix_member_test2.jpg', 42, 9, 15, 8, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 0),
+(3, 'bladegirl03@spinix.test', '$2y$10$g.BUbBvJ2nkSy3XIh1vX5.g8BysCn0Dy7CM4nfFHjoCjDMS0w5UXe', 'Mika', 'FEMALE', '2000-03-21', NULL, NULL, NULL, 'spinix_member_test3.png', 34, 8, 12, 5, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 0),
+(4, 'beyrookie04@spinix.test', '$2y$10$SloHzf2NCjlg7/zgRA3LfOM6XTtVYaSUhctZJlgRluXvxbAj0jA7W', '陀螺新手', 'MALE', '2005-09-12', NULL, NULL, NULL, 'spinix_member_default.png', 18, 4, 6, 2, 'ACTIVE', NULL, 'ACTIVE', NULL, 'TEMP-RESTRICT', '2026-08-31 23:59:59', 0, 0, 0),
+(5, 'sunny05@spinix.test', '$2y$10$2XA3G48M3PHmfRI9cha4iuDhnrVS.AsXuUl.b.S3w1er93ovuvW3K', 'SunnyBlader', 'MALE', '2011-02-08', '王志明', 'FATHER', '0912345678', 'spinix_member_default.png', 24, 5, 8, 4, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 0),
+(6, 'littleblade06@spinix.test', '$2y$10$i5SA2xDY98cjPXQh9Jv6AOZbJnii3Uz/TQ.9aMyqEiWGkdi5mOEqu', '小宇', 'MALE', '2012-07-19', '陳雅婷', 'MOTHER', '0922333444', 'spinix_member_default.png', 15, 3, 5, 1, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 0),
+(7, 'kenblade07@spinix.test', '$2y$10$TKepVBeKc810vOnkvfyWtug.sdpsQd6rrv1r/LW2IQT2LiJtopwm2', 'BladeKen', 'MALE', '1996-12-01', NULL, NULL, NULL, 'spinix_member_default.png', 55, 12, 22, 14, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 1, 0, 0),
+(8, 'rayblade08@spinix.test', '$2y$10$GaXeLSqIBz5g9juuvhBxnuzACafuQCnrof3WqLcQ52OT28HeG07Di', 'Ray', 'MALE', '1999-08-27', NULL, NULL, NULL, 'spinix_member_default.png', 29, 7, 10, 6, 'TEMP-RESTRICT', '2026-08-31 23:59:59', 'ACTIVE', NULL, 'ACTIVE', NULL, 2, 0, 0),
+(9, 'beymom09@spinix.test', '$2y$10$9AwGIs7nGtQoN6tbMTSwQuqKcD.CplJR/CvPytUovtjk1vP2rMPV2', '旋風媽咪', 'FEMALE', '1987-04-11', NULL, NULL, NULL, 'spinix_member_default.png', 39, 8, 14, 7, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 1),
+(10, 'storm10@spinix.test', '$2y$10$jF5gOcAZh7Xzj1/sIRyT6uz4RMiUDzaVoj7F6sxNEEbHHx0wjtUwi', 'StormLeo', 'MALE', '1994-06-30', NULL, NULL, NULL, 'spinix_member_default.png', 61, 13, 25, 17, 'ACTIVE', NULL, 'TEMP-RESTRICT', '2026-08-31 23:59:59', 'ACTIVE', NULL, 0, 0, 2),
+(11, 'testmember11@spinix.test', '$2y$10$2VtHjYLe/BuWFYXfXHWTSunFZaqzu/WiQKbKzRK1T22/Z2nSQcTLa', '測試員大大', 'MALE', '2000-01-01', NULL, NULL, NULL, 'spinix_member_default.png', 0, 0, 0, 0, 'ACTIVE', NULL, 'ACTIVE', NULL, 'ACTIVE', NULL, 0, 0, 0);
 
 --
--- 已傾印資料表的索引
+-- Indexes for dumped tables
 --
 
 --
--- 資料表索引 `admin`
+-- Indexes for table `admin`
 --
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`admin_id`),
@@ -704,7 +703,7 @@ ALTER TABLE `admin`
   ADD UNIQUE KEY `uk_admin_name` (`name`);
 
 --
--- 資料表索引 `appeal_exchange`
+-- Indexes for table `appeal_exchange`
 --
 ALTER TABLE `appeal_exchange`
   ADD PRIMARY KEY (`ae_id`),
@@ -715,16 +714,17 @@ ALTER TABLE `appeal_exchange`
   ADD KEY `fk_appeal_exchange_admin` (`admin_id`);
 
 --
--- 資料表索引 `battle_appeal`
+-- Indexes for table `battle_appeal`
 --
 ALTER TABLE `battle_appeal`
   ADD PRIMARY KEY (`BATTLE_APPEAL_ID`),
   ADD KEY `FK_BATTLE_APPEAL_BATTLE` (`BATTLE_ID`),
   ADD KEY `FK_BATTLE_APPEAL_COMPLAINANT` (`COMPLAINANT_MEM_ID`),
-  ADD KEY `FK_BATTLE_APPEAL_RESPONDENT` (`RESPONDENT_MEM_ID`);
+  ADD KEY `FK_BATTLE_APPEAL_RESPONDENT` (`RESPONDENT_MEM_ID`),
+  ADD KEY `FK_BATTLE_APPEAL_ADMIN` (`ADMIN_ID`);
 
 --
--- 資料表索引 `battle_record`
+-- Indexes for table `battle_record`
 --
 ALTER TABLE `battle_record`
   ADD PRIMARY KEY (`BATTLE_ID`),
@@ -735,21 +735,21 @@ ALTER TABLE `battle_record`
   ADD KEY `IDX_BATTLE_STATUS_DATE` (`BATTLE_STATUS`,`BATTLE_DATE`);
 
 --
--- 資料表索引 `city`
+-- Indexes for table `city`
 --
 ALTER TABLE `city`
   ADD PRIMARY KEY (`CITY_ID`),
   ADD UNIQUE KEY `UQ_CITY_NAME` (`CITY_NAME`);
 
 --
--- 資料表索引 `district`
+-- Indexes for table `district`
 --
 ALTER TABLE `district`
   ADD PRIMARY KEY (`DISTRICT_ID`),
   ADD KEY `IDX_DISTRICT_CITY_ID` (`CITY_ID`);
 
 --
--- 資料表索引 `exchange_comment`
+-- Indexes for table `exchange_comment`
 --
 ALTER TABLE `exchange_comment`
   ADD PRIMARY KEY (`comm_id`),
@@ -757,7 +757,7 @@ ALTER TABLE `exchange_comment`
   ADD KEY `fk_exchange_comment_member` (`mem_id`);
 
 --
--- 資料表索引 `exchange_post`
+-- Indexes for table `exchange_post`
 --
 ALTER TABLE `exchange_post`
   ADD PRIMARY KEY (`post_id`),
@@ -767,77 +767,76 @@ ALTER TABLE `exchange_post`
   ADD KEY `mem_id` (`mem_id`);
 
 --
--- 資料表索引 `member`
+-- Indexes for table `member`
 --
 ALTER TABLE `member`
   ADD PRIMARY KEY (`MEM_ID`),
-  ADD UNIQUE KEY `UQ_MEMBER_ACCOUNT` (`MEM_ACCOUNT`),
-  ADD UNIQUE KEY `UQ_MEMBER_EMAIL` (`MEM_EMAIL`);
+  ADD UNIQUE KEY `UQ_MEMBER_ACCOUNT` (`MEM_ACCOUNT`);
 
 --
--- 在傾印的資料表使用自動遞增(AUTO_INCREMENT)
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `admin`
+-- AUTO_INCREMENT for table `admin`
 --
 ALTER TABLE `admin`
   MODIFY `admin_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '管理員ID', AUTO_INCREMENT=3;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `appeal_exchange`
+-- AUTO_INCREMENT for table `appeal_exchange`
 --
 ALTER TABLE `appeal_exchange`
   MODIFY `ae_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '交換申訴ID', AUTO_INCREMENT=3;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `battle_appeal`
+-- AUTO_INCREMENT for table `battle_appeal`
 --
 ALTER TABLE `battle_appeal`
   MODIFY `BATTLE_APPEAL_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '對戰申訴編號';
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `battle_record`
+-- AUTO_INCREMENT for table `battle_record`
 --
 ALTER TABLE `battle_record`
   MODIFY `BATTLE_ID` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '對戰邀約編號', AUTO_INCREMENT=19;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `city`
+-- AUTO_INCREMENT for table `city`
 --
 ALTER TABLE `city`
   MODIFY `CITY_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '縣市編號', AUTO_INCREMENT=23;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `district`
+-- AUTO_INCREMENT for table `district`
 --
 ALTER TABLE `district`
   MODIFY `DISTRICT_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '行政區編號', AUTO_INCREMENT=369;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `exchange_comment`
+-- AUTO_INCREMENT for table `exchange_comment`
 --
 ALTER TABLE `exchange_comment`
   MODIFY `comm_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '留言ID', AUTO_INCREMENT=3;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `exchange_post`
+-- AUTO_INCREMENT for table `exchange_post`
 --
 ALTER TABLE `exchange_post`
   MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '交換案件編號', AUTO_INCREMENT=6;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `member`
+-- AUTO_INCREMENT for table `member`
 --
 ALTER TABLE `member`
   MODIFY `MEM_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '會員編號', AUTO_INCREMENT=12;
 
 --
--- 已傾印資料表的限制式
+-- Constraints for dumped tables
 --
 
 --
--- 資料表的限制式 `appeal_exchange`
+-- Constraints for table `appeal_exchange`
 --
 ALTER TABLE `appeal_exchange`
   ADD CONSTRAINT `fk_appeal_exchange_admin` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`admin_id`),
@@ -847,15 +846,16 @@ ALTER TABLE `appeal_exchange`
   ADD CONSTRAINT `fk_appeal_exchange_respondent` FOREIGN KEY (`respondent_mem_id`) REFERENCES `member` (`MEM_ID`);
 
 --
--- 資料表的限制式 `battle_appeal`
+-- Constraints for table `battle_appeal`
 --
 ALTER TABLE `battle_appeal`
+  ADD CONSTRAINT `FK_BATTLE_APPEAL_ADMIN` FOREIGN KEY (`ADMIN_ID`) REFERENCES `admin` (`admin_id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_BATTLE_APPEAL_BATTLE` FOREIGN KEY (`BATTLE_ID`) REFERENCES `battle_record` (`BATTLE_ID`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_BATTLE_APPEAL_COMPLAINANT` FOREIGN KEY (`COMPLAINANT_MEM_ID`) REFERENCES `member` (`MEM_ID`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_BATTLE_APPEAL_RESPONDENT` FOREIGN KEY (`RESPONDENT_MEM_ID`) REFERENCES `member` (`MEM_ID`) ON UPDATE CASCADE;
 
 --
--- 資料表的限制式 `battle_record`
+-- Constraints for table `battle_record`
 --
 ALTER TABLE `battle_record`
   ADD CONSTRAINT `FK_BATTLE_CITY` FOREIGN KEY (`CITY_ID`) REFERENCES `city` (`CITY_ID`) ON UPDATE CASCADE,
@@ -864,20 +864,20 @@ ALTER TABLE `battle_record`
   ADD CONSTRAINT `FK_BATTLE_PARTICIPANT` FOREIGN KEY (`PARTICIPANT_ID`) REFERENCES `member` (`MEM_ID`) ON UPDATE CASCADE;
 
 --
--- 資料表的限制式 `district`
+-- Constraints for table `district`
 --
 ALTER TABLE `district`
   ADD CONSTRAINT `FK_DISTRICT_CITY` FOREIGN KEY (`CITY_ID`) REFERENCES `city` (`CITY_ID`) ON UPDATE CASCADE;
 
 --
--- 資料表的限制式 `exchange_comment`
+-- Constraints for table `exchange_comment`
 --
 ALTER TABLE `exchange_comment`
   ADD CONSTRAINT `fk_exchange_comment_member` FOREIGN KEY (`mem_id`) REFERENCES `member` (`MEM_ID`),
   ADD CONSTRAINT `fk_exchange_comment_post` FOREIGN KEY (`post_id`) REFERENCES `exchange_post` (`post_id`);
 
 --
--- 資料表的限制式 `exchange_post`
+-- Constraints for table `exchange_post`
 --
 ALTER TABLE `exchange_post`
   ADD CONSTRAINT `exchange_post_ibfk_1` FOREIGN KEY (`CITY_ID`) REFERENCES `city` (`CITY_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
