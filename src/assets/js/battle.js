@@ -593,161 +593,226 @@ const hostReviewData = {
 };
 
 // 約戰邀約卡片假資料
-const battleData = [
-  {
-    battleId: 1,
-    title: "新手友善！開心打陀螺",
-    coverImage: "/battle_card_default.jpg",
-    target: "不限對象",
-    city: "桃園市",
-    cityId: 3,
-    district: "中壢區",
-    districtId: 43,
-    mode: "休閒模式",
-    battleDate: "2026-08-31T14:00:00",
-    deadline: "2026-08-28T22:00:00",
-    level: "新手玩家",
-    description: "假日放鬆場，輕鬆交流，我帶戰鬥盤，你帶陀螺就好！",
-    hostId: 101,
-    status: "matching"
-  },
-  {
-    battleId: 2,
-    title: "中壢車站週末交流場",
-    coverImage: "/battle_card_test1.jpg",
-    target: "不限對象",
-    city: "桃園市",
-    cityId: 3,
-    district: "中壢區",
-    districtId: 43,
-    mode: "休閒模式",
-    battleDate: "2026-08-29T15:00:00",
-    deadline: "2026-08-26T20:00:00",
-    level: "不限程度",
-    description: "歡迎各種程度的玩家參加，現場會準備戰鬥盤。",
-    hostId: 102,
-    status: "matching"
-  },
-  {
-    battleId: 3,
-    title: "競技模式實戰練習",
-    coverImage: "/battle_card_default.jpg",
-    target: "成人限定",
-    city: "臺北市",
-    cityId: 1,
-    district: "大安區",
-    districtId: 3,
-    mode: "競技模式",
-    battleDate: "2026-08-17T19:00:00",
-    deadline: "2026-08-16T18:00:00",
-    level: "進階玩家",
-    description: "以競技規則進行實戰交流，適合已有對戰經驗的玩家。",
-    hostId: 101,
-    status: "matching"
-  },
-  {
-    battleId: 4,
-    title: "親子陀螺交流體驗",
-    coverImage: "/battle_card_default.jpg",
-    target: "親子友善",
-    city: "新北市",
-    cityId: 2,
-    district: "板橋區",
-    districtId: 13,
-    mode: "休閒模式",
-    battleDate: "2026-08-22T10:30:00",
-    deadline: "2026-08-21T18:00:00",
-    level: "新手玩家",
-    description: "適合親子一起參加的輕鬆交流場，歡迎第一次接觸的玩家。",
-    hostId: 102,
-    status: "matching"
-  },
-  {
-    battleId: 5,
-    title: "下班後來一場吧！",
-    coverImage: "/battle_card_default.jpg",
-    target: "成人限定",
-    city: "臺北市",
-    cityId: 1,
-    district: "信義區",
-    districtId: 2,
-    mode: "休閒模式",
-    battleDate: "2026-08-20T19:30:00",
-    deadline: "2026-08-20T12:00:00",
-    level: "中階玩家",
-    description: "下班後簡單玩幾場，地點鄰近捷運站，交通方便。",
-    hostId: 101,
-    status: "matching"
-  },
-  {
-    battleId: 6,
-    title: "進階玩家配置測試場",
-    coverImage: "/battle_card_test2.jpg",
-    target: "不限對象",
-    city: "新北市",
-    cityId: 2,
-    district: "新莊區",
-    districtId: 17,
-    mode: "競技模式",
-    battleDate: "2026-08-23T14:00:00",
-    deadline: "2026-08-22T22:00:00",
-    level: "進階玩家",
-    description: "帶上最近調整的配置，一起測試不同零件搭配的實戰效果。",
-    hostId: 102,
-    status: "matching"
-  },
-  {
-    battleId: 7,
-    title: "初次約戰也不用緊張",
-    coverImage: "/battle_card_default.jpg",
-    target: "不限對象",
-    city: "桃園市",
-    cityId: 3,
-    district: "八德區",
-    districtId: 45,
-    mode: "休閒模式",
-    battleDate: "2026-08-29T13:00:00",
-    deadline: "2026-08-28T20:00:00",
-    level: "新手玩家",
-    description: "以交流和認識同好為主，不熟悉規則也可以放心參加。",
-    hostId: 101,
-    status: "matching"
-  },
-  {
-    battleId: 8,
-    title: "週日下午競技交流",
-    coverImage: "/battle_card_default.jpg",
-    target: "成人限定",
-    city: "桃園市",
-    cityId: 3,
-    district: "平鎮區",
-    districtId: 44,
-    mode: "競技模式",
-    battleDate: "2026-08-30T15:00:00",
-    deadline: "2026-08-29T23:00:00",
-    level: "中階玩家",
-    description: "依照競技規則進行多場對戰，歡迎想累積實戰經驗的玩家。",
-    hostId: 102,
-    status: "matching"
-  },
-  {
-    battleId: 9,
-    title: "桃園陀螺玩家輕鬆聚",
-    coverImage: "battle_card_default.jpg",
-    target: "親子友善",
-    city: "桃園市",
-    cityId: 3,
-    district: "桃園區",
-    districtId: 42,
-    mode: "休閒模式",
-    battleDate: "2026-09-05T14:30:00",
-    deadline: "2026-09-04T21:00:00",
-    level: "不限程度",
-    description: "不論是收藏、配置分享或實際對戰都歡迎，一起認識附近同好。",
-    hostId: 101,
-    status: "matching"
-  }
-];
+// const battleData = [
+//   {
+//     battleId: 1,
+//     title: "新手友善！開心打陀螺",
+//     coverImage: "/battle_card_default.jpg",
+//     target: "不限對象",
+//     city: "桃園市",
+//     cityId: 3,
+//     district: "中壢區",
+//     districtId: 43,
+//     mode: "休閒模式",
+//     battleDate: "2026-08-31T14:00:00",
+//     deadline: "2026-08-28T22:00:00",
+//     level: "新手玩家",
+//     description: "假日放鬆場，輕鬆交流，我帶戰鬥盤，你帶陀螺就好！",
+//     hostId: 101,
+//     status: "matching"
+//   },
+//   {
+//     battleId: 2,
+//     title: "中壢車站週末交流場",
+//     coverImage: "/battle_card_test1.jpg",
+//     target: "不限對象",
+//     city: "桃園市",
+//     cityId: 3,
+//     district: "中壢區",
+//     districtId: 43,
+//     mode: "休閒模式",
+//     battleDate: "2026-08-29T15:00:00",
+//     deadline: "2026-08-26T20:00:00",
+//     level: "不限程度",
+//     description: "歡迎各種程度的玩家參加，現場會準備戰鬥盤。",
+//     hostId: 102,
+//     status: "matching"
+//   },
+//   {
+//     battleId: 3,
+//     title: "競技模式實戰練習",
+//     coverImage: "/battle_card_default.jpg",
+//     target: "成人限定",
+//     city: "臺北市",
+//     cityId: 1,
+//     district: "大安區",
+//     districtId: 3,
+//     mode: "競技模式",
+//     battleDate: "2026-08-17T19:00:00",
+//     deadline: "2026-08-16T18:00:00",
+//     level: "進階玩家",
+//     description: "以競技規則進行實戰交流，適合已有對戰經驗的玩家。",
+//     hostId: 101,
+//     status: "matching"
+//   },
+//   {
+//     battleId: 4,
+//     title: "親子陀螺交流體驗",
+//     coverImage: "/battle_card_default.jpg",
+//     target: "親子友善",
+//     city: "新北市",
+//     cityId: 2,
+//     district: "板橋區",
+//     districtId: 13,
+//     mode: "休閒模式",
+//     battleDate: "2026-08-22T10:30:00",
+//     deadline: "2026-08-21T18:00:00",
+//     level: "新手玩家",
+//     description: "適合親子一起參加的輕鬆交流場，歡迎第一次接觸的玩家。",
+//     hostId: 102,
+//     status: "matching"
+//   },
+//   {
+//     battleId: 5,
+//     title: "下班後來一場吧！",
+//     coverImage: "/battle_card_default.jpg",
+//     target: "成人限定",
+//     city: "臺北市",
+//     cityId: 1,
+//     district: "信義區",
+//     districtId: 2,
+//     mode: "休閒模式",
+//     battleDate: "2026-08-20T19:30:00",
+//     deadline: "2026-08-20T12:00:00",
+//     level: "中階玩家",
+//     description: "下班後簡單玩幾場，地點鄰近捷運站，交通方便。",
+//     hostId: 101,
+//     status: "matching"
+//   },
+//   {
+//     battleId: 6,
+//     title: "進階玩家配置測試場",
+//     coverImage: "/battle_card_test2.jpg",
+//     target: "不限對象",
+//     city: "新北市",
+//     cityId: 2,
+//     district: "新莊區",
+//     districtId: 17,
+//     mode: "競技模式",
+//     battleDate: "2026-08-23T14:00:00",
+//     deadline: "2026-08-22T22:00:00",
+//     level: "進階玩家",
+//     description: "帶上最近調整的配置，一起測試不同零件搭配的實戰效果。",
+//     hostId: 102,
+//     status: "matching"
+//   },
+//   {
+//     battleId: 7,
+//     title: "初次約戰也不用緊張",
+//     coverImage: "/battle_card_default.jpg",
+//     target: "不限對象",
+//     city: "桃園市",
+//     cityId: 3,
+//     district: "八德區",
+//     districtId: 45,
+//     mode: "休閒模式",
+//     battleDate: "2026-08-29T13:00:00",
+//     deadline: "2026-08-28T20:00:00",
+//     level: "新手玩家",
+//     description: "以交流和認識同好為主，不熟悉規則也可以放心參加。",
+//     hostId: 101,
+//     status: "matching"
+//   },
+//   {
+//     battleId: 8,
+//     title: "週日下午競技交流",
+//     coverImage: "/battle_card_default.jpg",
+//     target: "成人限定",
+//     city: "桃園市",
+//     cityId: 3,
+//     district: "平鎮區",
+//     districtId: 44,
+//     mode: "競技模式",
+//     battleDate: "2026-08-30T15:00:00",
+//     deadline: "2026-08-29T23:00:00",
+//     level: "中階玩家",
+//     description: "依照競技規則進行多場對戰，歡迎想累積實戰經驗的玩家。",
+//     hostId: 102,
+//     status: "matching"
+//   },
+//   {
+//     battleId: 9,
+//     title: "桃園陀螺玩家輕鬆聚",
+//     coverImage: "battle_card_default.jpg",
+//     target: "親子友善",
+//     city: "桃園市",
+//     cityId: 3,
+//     district: "桃園區",
+//     districtId: 42,
+//     mode: "休閒模式",
+//     battleDate: "2026-09-05T14:30:00",
+//     deadline: "2026-09-04T21:00:00",
+//     level: "不限程度",
+//     description: "不論是收藏、配置分享或實際對戰都歡迎，一起認識附近同好。",
+//     hostId: 101,
+//     status: "matching"
+//   }
+// ];
+
+//存取從後端抓取、要放進對戰配對卡池中的約戰紀錄
+let battleData = [];
+
+//將後端約戰資料原先儲存的英文文字轉換為欲顯示的中文
+const battleModeText = {
+  CASUAL: "休閒模式",
+  COMPETITIVE: "競技模式"
+};
+
+const battleTargetText = {
+  ALL: "不限對象",
+  ADULT: "成人限定",
+  FAMILY: "親子友善"
+};
+
+const battleLevelText = {
+  BEGINNER: "新手玩家",
+  INTERMEDIATE: "中階玩家",
+  ADVANCED: "進階玩家"
+};
+
+//串接後端約戰資料api
+function fetchBattles() {
+  fetch("http://localhost:8888/Spinix/php/battle/battle_get.php").then(res => res.json()).then(data => {
+
+    //將後端的約戰資料先轉成待會要render約戰卡片時的呈現格式
+    battleData = data.map(item => {
+      return {
+        //後端經JSON回傳後，有時數字欄位會變成字串，因此需使用NUMBER方法轉回數字
+        battleId: Number(item.BATTLE_ID),
+        title: item.BATTLE_TITLE,
+        coverImage: item.BATTLE_IMG,
+        description: item.BATTLE_DESC,
+
+        cityId: Number(item.CITY_ID),
+        city: item.CITY_NAME,
+
+        districtId: Number(item.DISTRICT_ID),
+        district: item.DISTRICT_NAME,
+
+        mode: battleModeText[item.BATTLE_MODE],
+        target: battleTargetText[item.BATTLE_TARGET],
+        level: battleLevelText[item.BATTLE_LEVEL],
+
+        battleDate: item.BATTLE_DATE,
+        deadline: item.BATTLE_DEADLINE,
+
+        hostId: Number(item.INITIATOR_ID),
+        hostName: item.MEM_NAME,
+        hostAvatar: item.MEM_PHOTO,
+
+        status: item.BATTLE_STATUS
+      };
+    });
+
+    console.log(battleData);
+
+    // 取得目前所有可公開顯示的邀約，生成卡片
+    renderBattleCards(battleData);
+    updateAllCountdowns();
+  });
+}
+
+fetchBattles();
 
 //轉換日期時間
 function formatBattleDate(dateString) {
@@ -803,8 +868,6 @@ function createApplyButton(battle) {
 
 //生成對戰邀約卡
 function createBattleCard(battle) {
-  const host = hostReviewData[battle.hostId];
-
   //邀約卡片HTML架構生成
   return `
     <article class="battleCard" data-battle-id="${battle.battleId}">
@@ -835,14 +898,14 @@ function createBattleCard(battle) {
           <button
               type="button"
               class="hostBtn"
-              data-host-id="${host.hostId}"
+              data-host-id="${battle.hostId}"
             >
               <img
                 class="host-avatar"
-                src="${import.meta.env.BASE_URL + host.avatar}"
+                src="${import.meta.env.BASE_URL + battle.hostAvatar}"
                 alt=""
               >
-              <span class="host-name">${host.name}</span>
+              <span class="host-name">${battle.hostName}</span>
             </button>
           <h4 class="battle-title">${battle.title}</h4>
 
@@ -895,21 +958,7 @@ let currentBattleList = []; // 記錄目前經過篩選後的卡片資料
 
 // 取得平台目前所有「仍可顯示」的對戰邀約函式
 function getAvailableBattles() {
-
-  //從battleData中檢查，回傳符合條件的新陣列。
-  return battleData.filter(battle => {
-
-    //檢查邀約的報名截止時間是否還沒到
-    const isNotExpired =
-      new Date(battle.deadline).getTime() > Date.now();
-
-    //檢查該筆邀約狀態是否仍為matching
-    const isMatching =
-      battle.status === "matching";
-
-    //回傳符合條件的約戰卡片新陣列
-    return isNotExpired && isMatching;
-  });
+  return battleData;
 }
 
 //render出每張邀約卡片
@@ -1000,10 +1049,6 @@ moreBtn.addEventListener("click", () => {
   //因重新render後產生了新的倒數DOM，所以要立即更新一次倒數內容。
   updateAllCountdowns();
 });
-console.log("a3222222222222222");
-// 取得目前所有可公開顯示的邀約，並在載入網頁時，首次生成卡片
-renderBattleCards(getAvailableBattles());
-
 
 // 卡片生成後，進行倒數計時
 function updateCountdown(element) {
@@ -1338,11 +1383,6 @@ function battleFilter() {
 
   //最後render出的約戰卡，需符合所有篩選條件
   const filteredBattles = battleData.filter(battle => {
-    const isNotExpired =
-      new Date(battle.deadline).getTime() > Date.now();
-
-    const isMatching =
-      battle.status === "matching";
 
     //當使用者沒有設定對戰模式時，則所有模式的約戰都會通過檢查；有設定模式時，才會比對卡片池中，有哪些卡片符合條件
     const matchesMode =
@@ -1376,8 +1416,6 @@ function battleFilter() {
       ).getTime();
 
     return (
-      isNotExpired &&
-      isMatching &&
       matchesMode &&
       matchesTarget &&
       matchesLevel &&
