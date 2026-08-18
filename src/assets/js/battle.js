@@ -765,6 +765,7 @@ const battleTargetText = {
 };
 
 const battleLevelText = {
+  ALL: "不限程度",
   BEGINNER: "新手玩家",
   INTERMEDIATE: "中階玩家",
   ADVANCED: "進階玩家"
