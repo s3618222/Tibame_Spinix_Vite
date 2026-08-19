@@ -69,7 +69,12 @@
               </span>
             </div>
             <div class="col col-action">
-              <button type="button" class="btn-view" @click="viewArticle(article.id)">查看</button>
+              <RouterLink
+                :to="{ name: 'backend-forum-detail', params: { id: article.id } }"
+                class="btn-view"
+              >
+                查看
+              </RouterLink>
             </div>
           </div>
         </template>
@@ -222,12 +227,6 @@ export default {
         this.currentPage = 1;
       },
       deep: true
-    }
-  },
-
-  methods: {
-    viewArticle(articleId) {
-      console.log(articleId);
     }
   }
 };
@@ -411,6 +410,10 @@ export default {
 }
 
 .btn-view {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   padding: 5px 16px;
 
   border: 1px solid map-get($color, secondary);
@@ -420,6 +423,7 @@ export default {
   color: map-get($color, secondary);
 
   font-size: 14px;
+  text-decoration: none;
   cursor: pointer;
   transition: all 0.2s;
 
