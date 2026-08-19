@@ -80,8 +80,24 @@ export default {
     },
 
     handleSubmit() {
-      alert("登入成功！");
-      window.location.href = `${this.baseUrl}homepage.html`;
+      const formData = new FormData();
+      formData.append("account", this.formData.account);
+      formData.append("password", this.formData.password);
+
+      console.log([...formData.entries()]);
+
+      fetch("http://localhost:8888/Spinix/php/member/signIn_post.php", {
+        method: "POST",
+        body: formData,
+        credentials: "include"
+      }).then(res => res.json()).then(data => {
+        if(data.success) {
+          alert(data.message); //登入成功
+          window.location.href = `${this.baseUrl}homepage.html`;
+        } else {
+          alert(data.message); //帳號或密碼錯誤
+        }
+      });
     }
   }
 };
