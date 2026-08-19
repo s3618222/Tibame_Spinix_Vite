@@ -7,22 +7,24 @@
          <h4>{{ title }}</h4>
 
          <div class="wrapper">
-            <img :src="avatar" alt="">
-            <p>{{ username }}</p>
+            <div class="img-user">
+               <img :src="avatar" alt="">
+            </div>
+            <p class="username">{{ username }}</p>
          </div>
 
          <div class="wrapper">
-            <i class="fa-solid fa-calendar-days icon-color"></i>
-            <p class="date">
-               刊登日期:
+            <i class="fa-solid fa-calendar-days icon-style"></i>
+            <p>
+               刊登日期：
+               <span class="date">{{ create_time }}</span>
             </p>
-            <span>{{ postDate }}</span>
          </div>
 
-         <p>
-            <i class="fa-solid fa-location-dot icon-color"></i>
-            {{ city }}<span>{{ district }}</span>
-         </p>
+         <div class="wrapper">
+            <i class="fa-solid fa-location-dot icon-style"></i>
+            <p>{{ city }}<span>{{ district }}</span></p>
+         </div>
       </div>
 
       <div class="card-footer">
@@ -41,7 +43,7 @@
       </div>
 
       <div class="show-detail">
-         <a :href="'product_detail.html?id={{ id }}'" class="detail_link" @click.stop>查看詳情</a>
+         <a :href="`product_detail.html?id=${post_id}`" class="detail_link" @click.stop>查看詳情</a>
       </div>
    </div>
 </template>
@@ -49,7 +51,7 @@
 import { computed } from 'vue';
 
 const props = defineProps({
-   id: {
+   post_id: {
       type: [String, Number],
       required: true
    },
@@ -69,7 +71,7 @@ const props = defineProps({
       type: String,
       required: true
    },
-   postDate: {
+   create_time: {
       type: String,
       required: true
    },
@@ -132,12 +134,12 @@ function handleBtnClick(btn) {
       return;
    }
 
-   emit(btn.action, { id: props.id, title: props.title });
+   emit(btn.action, { post_id: props.post_id, title: props.title });
 }
 
 function goToDetail() {
    const params = new URLSearchParams({
-      id: props.id,
+      id: props.post_id,
       from: props.context
    });
    window.location.href = `product_detail.html?${params.toString()}`;
@@ -148,8 +150,8 @@ function goToDetail() {
 <style lang="scss">
    @use '@/assets/scss/_var' as *;
 
-   .icon-color{
-      color: map-get($color , neutral);
+   .icon-style{
+      display: none;
    }
 
    .show-detail{
@@ -178,13 +180,21 @@ function goToDetail() {
          display: flex;
          align-items: center;
          gap: 8px;
-
-         img {
+      
+         .img-user{
             width: 36px;
+         }
+
+         .username{
+            font-weight: 600;
          }
 
          p {
             height: fit-content;
+         }
+
+         .date{
+            margin-left: -4px;
          }
       }
 
@@ -219,10 +229,6 @@ function goToDetail() {
          span {
             margin-left: 4px;
          }
-
-         .date {
-            display: none;
-         }
       }
 
       .card-footer {
@@ -252,6 +258,13 @@ function goToDetail() {
 
 // == 桌機 =====================================
    @media screen  and (width >= 992px ){
+      
+
+      .icon-style {
+         display: flex;
+         color: map-get($color , neutral);
+      }
+
       .show-detail{
          display: none;
          visibility: hidden;
@@ -271,11 +284,7 @@ function goToDetail() {
             gap: 16px;
 
             .wrapper {
-               display: flex;
-
-               .date {
-                  display: block;
-               }
+               display: flex;               
             }
          }
 

@@ -91,21 +91,36 @@
     </div>
 
     <div class="container" v-if="paginatedList.length">
-      <ProductCard
+      <!-- <ProductCard
         v-for="item in paginatedList"
         :key="item.cardKey"
-        :id="item.id"
+        :id="item.post_id"
         :title="item.title"
         :image="item.product_img"
         :avatar="item.headshot"
         :username="item.name"
-        :postDate="item.date"
+        :create_time="item.create_time"
         :city="item.city"
         :district="item.district"
         :state="item.stateLabel"
         :context="context"
         @complete-exchange="handleCompleteExchange"
         @reply-exchange="handleReplyExchange"
+      /> -->
+
+        <ProductCard
+          v-for="item in paginatedList"
+          :key="item.cardKey"
+          :post_id="item.post_id"
+          :title="item.title"
+          :image="item.product_img"
+          :avatar="item.headshot"
+          :username="item.name"
+          :create_time="item.create_time"
+          :city="item.city"
+          :district="item.district"
+          :context="context"
+          :state="statusLabelMap[item.status]"
       />
     </div>
 
@@ -132,7 +147,7 @@ import {
   fakeComments,
   statusLabelMap,
   applyStatusLabelMap
-} from "../data/mockExchangeData.js";
+} from "@/data/mockExchangeData.js";
 // 分頁器
 import Pagination from "@/components/pagination.vue";
 
@@ -178,10 +193,10 @@ export default {
     // 我刊登的交換：直接從 exchangeList 篩自己刊登的文章
     myExchangeList() {
       return this.exchangeList
-        .filter(item => item.userId === this.currentUserId)
+        .filter(item => item.mem_id === this.currentUserId)
         .map(item => ({
           ...item,
-          cardKey: `post-${item.id}`,
+          cardKey: `post-${item.mem_id}`,
           stateLabel: this.statusLabelMap[item.status]
         }));
     },
@@ -189,13 +204,13 @@ export default {
     // 我提出的申請：從 fakeComments 篩「我留過言的」，再組合對應文章資訊
     myApplyList() {
       return this.fakeComments
-        .filter(comment => comment.userId === this.currentUserId)
+        .filter(comment => comment.post_id === this.post_id)
         .map(comment => {
-          const article = this.exchangeList.find(item => item.id === comment.articleId);
+          const article = this.exchangeList.find(item => item.post_id === comment.post_id);
           return {
             ...article,
-            cardKey: `apply-${comment.id}`,
-            applyId: comment.id,
+            cardKey: `apply-${comment.mem_id}`,
+            applyId: comment.mem_id,
             status: comment.applyStatus,               // 用「我這則申請」的狀態，取代文章原本狀態
             stateLabel: this.applyStatusLabelMap[comment.applyStatus]
           };

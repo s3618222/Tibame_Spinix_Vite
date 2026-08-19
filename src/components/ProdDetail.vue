@@ -50,10 +50,10 @@
         >
 
       <!-- 自己刊登的文章：顯示編輯按鈕 -->
-        <div class="owner-actions" v-if="isOwner">
+        <div class="owner-actions" v-if="isSeller">
           <template v-if="!isEditing">
             <button type="button" class="btn-edit" @click="startEdit">
-              編輯商品
+              修改資訊
               <i class="fa-regular fa-pen-to-square"></i>
             </button>
           </template>
@@ -112,6 +112,24 @@
         ></textarea>
       </div>
 
+      <div class="prod-txt box-style form-label-style">
+        <p class="title">希望換到的物品</p>
+        <p
+          class="prod-content"
+          :class="{ 'empty-state': !article.want_item?.trim() }"
+          v-if="!isEditing"
+        >
+          {{ article.want_item?.trim() ? article.want_item : `版主目前沒有特別想要的物品哦 ~ 趕快去留言想交換出的陀螺吧   !` }}
+        </p>
+        <textarea
+          v-else
+          class="prod-content-input"
+          v-model="editForm.want_item"
+          rows="3"
+          placeholder="若沒有特別想要的物品，可留空"
+        ></textarea>
+      </div>
+
       <!-- 只有「不是自己刊登的文章」，且尚未申請過，才顯示我想交換按鈕 -->
       <button
         v-if="canApply"
@@ -121,7 +139,7 @@
       >
         我想交換
       </button>
-      <p v-else-if="article.userId !== currentUserId" class="apply-hint">
+      <p v-else-if="article.mem_id !== currentUserId" class="apply-hint">
         您已經提出過交換申請
       </p>
 
@@ -148,19 +166,20 @@
           <ul>
             <prodMsgInfo
               v-for="comment in sortedComments"
-              :key="comment.id"
-              :id="comment.id"
+              :key="comment.comm_id"
+              :id="comment.comm_id"
               :image="`./${comment.headshot}`"
               :username="comment.name"
-              :postDate="comment.date"
+              :postDate="comment.create_time"
               :msgtxt="comment.content"
-              :mode="commentMode"
-              :isMine="comment.userId === currentUserId"
-              :applyStatus="comment.applyStatus"
+              :isMyComment="comment.mem_id === currentUserId"
+              :isSeller="isSeller"
+              :isChoose="comment.is_choose"
+              :articleStatus="article.status"
               @select-applicant="handleSelectApplicant"
             />
           </ul>
-          <p v-if="!sortedComments.length" class="empty-state">目前沒有留言</p>
+          <p v-if="!sortedComments.length" class="empty-state">這裡還很安靜，成為第一個提出交換的人吧！</p>
         </div>
       </div>
     </div>
@@ -228,7 +247,7 @@
 <script setup>
 import { ref, computed, reactive } from 'vue';
 import prodMsgInfo from '@/components/prodMsgInfo.vue';
-import { exchangeList, fakeComments, statusLabelMap, typeLabelMap, conditionLabelMap } from '@/assets/js/mockExchangeData.js';
+import { exchangeList, fakeComments, statusLabelMap, typeLabelMap, conditionLabelMap } from '@/data/mockExchangeData';
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import 'vue3-carousel/dist/carousel.css';
 import PhotoUploader from '@/components/uploadImg.vue';
@@ -265,6 +284,7 @@ const isEditing = ref(false);
 const editForm = reactive({
   title: '',
   description: '',
+  want_item:'',
   images: []   // 存編輯中的圖片網址（新上傳的會是 blob 網址）
 });
 
@@ -274,6 +294,7 @@ function startEdit() {
   editForm.condition = article.value.condition;
   editForm.type = article.value.type;
   editForm.description = article.value.description;
+  editForm.want_item = article.value.want_item ?? '';
   editForm.images = [...galleryImages.value];
   isEditing.value = true;
 }
@@ -305,6 +326,7 @@ function saveEdit() {
   article.value.type = editForm.type;
   article.value.condition = editForm.condition;
   article.value.description = editForm.description;
+  article.value.want_item = editForm.want_item;
 
   galleryImages.value = [...editForm.images];
   activeImageIndex.value = 0;
@@ -337,13 +359,16 @@ const currentUserId = 999;
 
 // 讀取網址參數：product_detail.html?id=5&from=myPosts
 const urlParams = new URLSearchParams(window.location.search);
-// const articleId = Number(urlParams.get('id'));
-const articleId = urlParams.get('id');   // 拿掉 Number()，直接是字串 'exc1'
+
+const articleId = urlParams.get('id'); 
+// const articleId = urlParams.get('post_id'); 
 const context = urlParams.get('from') || 'browse';
 
-const article = computed(() => exchangeList.find(item => item.id === articleId));
 
-console.log(article);
+// 從 exchangeList 陣列中，找出 id 相符的那一筆資料
+const article = computed(() =>
+  exchangeList.find(item => item.post_id === articleId)
+);
 
 const commentMode = computed(() => {
   if (context === 'myPosts') return 'seller';
@@ -351,15 +376,23 @@ const commentMode = computed(() => {
   return 'browse';
 });
 
+
+// 該文章留言列表
 const articleComments = computed(() =>
-  fakeComments.filter(comment => comment.articleId === articleId)
+  fakeComments.filter(comment => comment.post_id === articleId)
 );
 
 const sortOrder = ref('newest');
 const sortedComments = computed(() => {
   const list = [...articleComments.value];
   list.sort((a, b) => {
-    const diff = new Date(a.date) - new Date(b.date);
+
+    // 被選中留言至頂
+    if (a.is_choose !== b.is_choose) {
+      return a.is_choose ? -1 : 1;
+    }
+
+    const diff = new Date(a.create_time) - new Date(b.create_time);
     return sortOrder.value === 'newest' ? -diff : diff;
   });
   return list;
@@ -369,16 +402,16 @@ const sortedComments = computed(() => {
 const activeImageIndex = ref(0);
 
 // 是否為自己刊登的文章
-const isOwner = computed(() => {
+const isSeller = computed(() => {
   if (!article.value) return false;
-  return article.value.userId === currentUserId;
+  return article.value.mem_id === currentUserId;
 });
 
 // 是否可以按「我想交換」：不是自己刊登的文章、且自己還沒申請過
 const canApply = computed(() => {
   if (!article.value) return false;
-  if (isOwner.value) return false;
-  const alreadyApplied = articleComments.value.some(c => c.userId === currentUserId);
+  if (isSeller.value) return false;
+  const alreadyApplied = articleComments.value.some(c => c.mem_id === currentUserId);
   return !alreadyApplied;
 });
 
@@ -445,10 +478,21 @@ function handleSubmit() {
 
 // 賣家選擇交換對象
 function handleSelectApplicant({ commentId }) {
-  console.log('賣家選擇了這則留言作為交換對象：', commentId);
-  // 之後這裡打 API：
-  // 1. article 的 status 改成 exchanging
-  // 2. 該則留言 applyStatus 改成 exchanging，其他留言改成 rejected
+  const isConfirm = window.confirm('確定要選擇這位會員進行交換嗎？');
+  if (!isConfirm) return;
+
+  article.value.status = 'exchanging';
+  // article.value.is_choose = true;
+  
+
+  articleComments.value.forEach(comment => {
+    comment.is_choose = comment.comm_id === commentId;
+  });
+console.log('修改後：', JSON.parse(JSON.stringify(articleComments.value)));   // 加這行
+  window.alert('已選擇交換對象，等待對方回覆!');
+
+  // 之後接後端：
+  // await axios.patch(`/api/exchange/${article.value.post_id}/select`, { commentId });
 }
 </script>
 
@@ -499,6 +543,8 @@ function handleSelectApplicant({ commentId }) {
 .empty-state{
   text-align: center;
   color: map-get($color, hint );
+  padding-block: 8px;
+  letter-spacing: 2px;
 }
 
 
