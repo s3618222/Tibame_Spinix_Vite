@@ -37,16 +37,19 @@
             交換專區</a>
           </li>
         </ul>
-        <div class="header-btns" v-if="!isLogin">
+        <div class="header-btns" v-if="isChecked && !isLogin">
           <a class="signUp-btn" :href=" `${baseUrl}signUp.html`">註冊</a>
           <a class="signIn-btn" :href="`${baseUrl}signIn.html`">登入</a>
         </div>
 
       </nav>
       <!-- 登入後會員頭貼 -->
-        <div class="member-center" ref="userMenuWrapper" v-if="isLogin">
+        <div class="member-center" ref="userMenuWrapper" v-if="isChecked && isLogin">
           <div class="header-user-headshot" @click="openUserPanel">
-            <img src="/spinix_member_test1.png" alt="">
+            <img 
+              :src="`${baseUrl}${currentMember.photo}`"
+              :alt="`${currentMember.name}的會員頭像`"
+            >
           </div>
           
           <div class="user-panel"  :class="{ open: isUserPanelOpen }">
@@ -55,9 +58,12 @@
               <div class="user-menu" v-if="currentPanel === 'menu'" key="menu">
                 <div class="menu-user-info">
                   <div class="user-headshot">
-                    <img src="/spinix_member_test1.png" alt="">
+                    <img 
+                      :src="`${baseUrl}${currentMember.photo}`"
+                      :alt="`${currentMember.name}的會員頭像`"
+                    >
                   </div>
-                  <p class="user-name">Lone軍團長</p>
+                  <p class="user-name">{{ currentMember.name }}</p>
                 </div>
               <div class="menu-list">
                 <ul>
@@ -76,7 +82,7 @@
                     </a>
                   </li>
                   <li class="btn-login">
-                    <a href="#" class="menu-item " @click="isLogin = false">
+                    <a href="#" class="menu-item " @click.prevent="signOut">
                         <i class="fa-solid fa-arrow-right-from-bracket"></i>
                         <p class="item-label">登出</p>
                     </a>
@@ -139,10 +145,11 @@ export default {
       isMenuOpen: false,
       isMenuClosing: false,
       isUserPanelOpen: false,
-      isLogin:true, // 檢查是否登入
+      isLogin:false, // 檢查是否登入
+      isChecked: false, //用來記錄是否已確認登入狀態
+      currentMember: null, //紀錄當下登入會員資料
       currentPanel: "menu",   // menu | notice
       transitionName: "slide-left",  // 控制滑動方向
-
       currentPath: window.location.pathname, //用來判斷當下所在位置在哪個分頁
     };
   },
@@ -195,13 +202,38 @@ export default {
       // 返回選單面板 → 從左往右滑入 (退回去的感覺)
       this.transitionName = panelName === "notice" ? "slide-left" : "slide-right";
       this.currentPanel = panelName;
+    },
+    fetchCurrentMember() { //取得當前是否有登入、登入者資訊
+      fetch("http://localhost:8888/Spinix/php/member/currentMember_get.php", {
+        method: "GET",
+        credentials: "include"
+      }).then(res => res.json()).then(data => {
+          this.isLogin = data.isLoggedIn;
+          
+          if (data.isLoggedIn) { //已登入狀態時，將登入會員的基本資訊存在currentMember變數中
+            this.currentMember = data.member;
+          } else {
+            this.currentMember = null;
+          }
+
+          this.isChecked = true; //登入狀態檢查完畢後，將此變數更改為true，避免每次重新載入header時，都會在已登入/未登入UI間快速變動
+        });
+    },
+    signOut() { //串接登出api
+      fetch("http://localhost:8888/Spinix/php/member/signOut_post.php", {
+        method: "POST",
+        credentials: "include"
+      }).then(res => res.json()).then(data => {
+          if (data.success) { //登出成功後，跳轉回首頁
+            window.location.href = `${this.baseUrl}homepage.html`;
+          }
+        });
     }
-    
   },
 
   mounted() {
+    this.fetchCurrentMember(); //一載入header時，即優先判斷是否有登入
     this.changeHeader();
-
     if (!this.solid) {
       window.addEventListener("scroll", this.changeHeader);
     }
