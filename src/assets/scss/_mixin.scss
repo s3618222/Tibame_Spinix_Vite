@@ -81,6 +81,13 @@ $breakpoints: (
     color: #aaaaaa;
   }
 
+  // 中性灰底標籤：用於「分類」這類單純資訊標示（非狀態），
+  // 與 --completed 語意上代表「已完成」不同，故獨立一個 modifier，避免混用造成語意混淆
+  &--neutral {
+    background-color: #eeeeee;
+    color: #64748b;
+  }
+
 }
 
 // 後台共用膠囊狀態標籤
