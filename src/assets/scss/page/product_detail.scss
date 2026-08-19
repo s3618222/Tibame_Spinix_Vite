@@ -54,12 +54,31 @@ h1 {
    display: inline-block;
    color: map-get($color, neutral);
    font-weight: 600;
-   padding-block: 12px;
+   padding-top: 12px;
+   padding-bottom: 8px;
    position: relative;
+
 }
 
 p {
    font-size: 16px;
+}
+
+@media screen and (width >=1024px) {
+   .back-page::after{
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 1.5px;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: map-get($color, neutral);
+      transition: all .3s ease;
+   }
+   .back-page:hover::after{
+      width: 100%;
+   }
 }
 
 // == 表單欄位 ================================================

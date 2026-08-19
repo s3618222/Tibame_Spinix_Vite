@@ -343,6 +343,8 @@ const context = urlParams.get('from') || 'browse';
 
 const article = computed(() => exchangeList.find(item => item.id === articleId));
 
+console.log(article);
+
 const commentMode = computed(() => {
   if (context === 'myPosts') return 'seller';
   if (context === 'myApplications') return 'applicant';
@@ -587,7 +589,6 @@ function handleSelectApplicant({ commentId }) {
     .prod-txt {
       .title {
         font-size: map-get($fontSize, default);
-        padding-bottom: 12px;
         font-weight: 600;
       }
 

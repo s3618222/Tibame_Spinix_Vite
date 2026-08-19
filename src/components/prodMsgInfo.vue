@@ -8,11 +8,11 @@
       <div class="msg-content">
          <div class="user-info">
             <p class="user-name">{{username}}</p>
+            <p class="msg-date">{{postDate}}</p>
             <a href="./complaint.html" target="_blank">
                <i class="fa-solid fa-triangle-exclamation"></i>
             </a>
          </div>
-         <p class="msg-date">{{postDate}}</p>
          <p class="msg-txt">{{msgtxt}}</p>
       </div>
    </li>         
@@ -50,6 +50,7 @@
       padding: 12px;
       display: flex;
       border-bottom: 1px solid map-get($color, gray);
+      gap: 12px;
 
       &:last-of-type {
          border: none;
@@ -60,22 +61,25 @@
          border-top: 1px solid map-get($color, gray);
       }
 
-      .img-msg-user {
-         padding-right: 12px;
-      }
 
       .msg-content {
+         display: flex;
+         flex-direction: column;
+         gap: 12px;
          .user-info {
             display: flex;
             gap: 12px;
+            align-items: end;
 
             .user-name {
                font-weight: 600;
+               font-size: 18px;
             }
          }
 
          .msg-date {
-            padding-block: 12px;
+            color: map-get($color, neutral );
+            font-size: 14px;
          }
       }
    }

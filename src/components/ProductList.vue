@@ -22,7 +22,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import ProductCard from './productCard.vue';
-import { exchangeList, statusLabelMap } from '../assets/js/mockExchangeData.js';   //  改用共用資料
+import { exchangeList, statusLabelMap } from '../data/mockExchangeData.js';   //  改用共用資料
 
 const ExChangeInfo = ref(exchangeList);   // 不用自己重複寫一份
 
@@ -61,7 +61,7 @@ const filteredCards = computed(() => {
    let result = ExChangeInfo.value.filter(item => {
       const f = currentFilters.value;
 
-      // ✅ 新增：只顯示「可交換」狀態的商品，這是公開頁面的規則
+      // 只顯示「可交換」狀態的商品，這是公開頁面的規則
       const matchStatus = item.status === 'available';
 
       const matchType = f.type === 'all' || item.type === f.type;
