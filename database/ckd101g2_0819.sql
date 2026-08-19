@@ -2,10 +2,10 @@
 -- version 5.1.2
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:8889
--- Generation Time: Aug 18, 2026 at 03:50 PM
--- Server version: 5.7.24
--- PHP Version: 8.3.1
+-- 主機： localhost:8889
+-- 產生時間： 2026-08-19 05:43:14
+-- 伺服器版本： 5.7.24
+-- PHP 版本： 8.3.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `spinix`
+-- 資料庫: `spinix`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `admin`
+-- 資料表結構 `admin`
 --
 
 CREATE TABLE `admin` (
@@ -38,7 +38,7 @@ CREATE TABLE `admin` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='管理員列表';
 
 --
--- Dumping data for table `admin`
+-- 傾印資料表的資料 `admin`
 --
 
 INSERT INTO `admin` (`admin_id`, `account`, `password`, `name`, `create_time`, `admin_type`, `admin_state`) VALUES
@@ -47,7 +47,7 @@ INSERT INTO `admin` (`admin_id`, `account`, `password`, `name`, `create_time`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `appeal_exchange`
+-- 資料表結構 `appeal_exchange`
 --
 
 CREATE TABLE `appeal_exchange` (
@@ -66,7 +66,7 @@ CREATE TABLE `appeal_exchange` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='申訴案件-交換';
 
 --
--- Dumping data for table `appeal_exchange`
+-- 傾印資料表的資料 `appeal_exchange`
 --
 
 INSERT INTO `appeal_exchange` (`ae_id`, `post_id`, `comm_id`, `complainant_mem_id`, `respondent_mem_id`, `admin_id`, `ae_content`, `ae_status`, `create_time`, `ae_evidence`, `responded_at`, `responded_text`) VALUES
@@ -157,7 +157,7 @@ CREATE TABLE `battle_appeal` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `battle_record`
+-- 資料表結構 `battle_record`
 --
 
 CREATE TABLE `battle_record` (
@@ -191,7 +191,7 @@ CREATE TABLE `battle_record` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='對戰紀錄表';
 
 --
--- Dumping data for table `battle_record`
+-- 傾印資料表的資料 `battle_record`
 --
 
 INSERT INTO `battle_record` (`BATTLE_ID`, `INITIATOR_ID`, `PARTICIPANT_ID`, `BATTLE_TITLE`, `BATTLE_IMG`, `BATTLE_DESC`, `CITY_ID`, `DISTRICT_ID`, `BATTLE_MODE`, `BATTLE_TARGET`, `BATTLE_LEVEL`, `BATTLE_DATE`, `BATTLE_DEADLINE`, `BATTLE_LOC`, `BATTLE_STATUS`, `INI_CONTACT`, `PAR_CONTACT`, `WINNER`, `TO_INI_STARS`, `TO_PAR_STARS`, `CREATED_AT`, `TO_INI_COMMENT`, `TO_INI_COMMENTED_AT`, `TO_PAR_COMMENT`, `TO_PAR_COMMENTED_AT`, `IS_SHOW`, `REMOVE_REASON`) VALUES
@@ -256,7 +256,7 @@ CREATE TABLE `city` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='縣市資料表';
 
 --
--- Dumping data for table `city`
+-- 傾印資料表的資料 `city`
 --
 
 INSERT INTO `city` (`CITY_ID`, `CITY_NAME`) VALUES
@@ -286,7 +286,7 @@ INSERT INTO `city` (`CITY_ID`, `CITY_NAME`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `district`
+-- 資料表結構 `district`
 --
 
 CREATE TABLE `district` (
@@ -296,7 +296,7 @@ CREATE TABLE `district` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='行政區資料表';
 
 --
--- Dumping data for table `district`
+-- 傾印資料表的資料 `district`
 --
 
 INSERT INTO `district` (`DISTRICT_ID`, `CITY_ID`, `DISTRICT_NAME`) VALUES
@@ -672,7 +672,7 @@ INSERT INTO `district` (`DISTRICT_ID`, `CITY_ID`, `DISTRICT_NAME`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `exchange_comment`
+-- 資料表結構 `exchange_comment`
 --
 
 CREATE TABLE `exchange_comment` (
@@ -688,7 +688,7 @@ CREATE TABLE `exchange_comment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='二手交換-申請';
 
 --
--- Dumping data for table `exchange_comment`
+-- 傾印資料表的資料 `exchange_comment`
 --
 
 INSERT INTO `exchange_comment` (`comm_id`, `post_id`, `mem_id`, `content`, `create_time`, `is_show`, `remove_reason`, `is_choose`, `comm_contact`) VALUES
@@ -698,7 +698,7 @@ INSERT INTO `exchange_comment` (`comm_id`, `post_id`, `mem_id`, `content`, `crea
 -- --------------------------------------------------------
 
 --
--- Table structure for table `exchange_post`
+-- 資料表結構 `exchange_post`
 --
 
 CREATE TABLE `exchange_post` (
@@ -725,7 +725,7 @@ CREATE TABLE `exchange_post` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `exchange_post`
+-- 傾印資料表的資料 `exchange_post`
 --
 
 INSERT INTO `exchange_post` (`post_id`, `type`, `title`, `description`, `want_item`, `condition`, `is_exchanged`, `is_show`, `create_time`, `post_pic1`, `post_pic2`, `post_pic3`, `post_pic4`, `post_pic5`, `remove_reason`, `mem_id`, `comm_mem_id`, `CITY_ID`, `DISTRICT_ID`, `post_contact`) VALUES
@@ -736,7 +736,7 @@ INSERT INTO `exchange_post` (`post_id`, `type`, `title`, `description`, `want_it
 -- --------------------------------------------------------
 
 --
--- Table structure for table `member`
+-- 資料表結構 `member`
 --
 
 CREATE TABLE `member` (
@@ -766,7 +766,7 @@ CREATE TABLE `member` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='會員資料表';
 
 --
--- Dumping data for table `member`
+-- 傾印資料表的資料 `member`
 --
 
 INSERT INTO `member` (`MEM_ID`, `MEM_ACCOUNT`, `MEM_PASSWORD`, `MEM_NAME`, `MEM_GENDER`, `MEM_BIRTH`, `REP_NAME`, `REP_RELATION`, `REP_PHONE`, `MEM_PHOTO`, `RATING_STARS`, `RATING_COUNT`, `BATTLE_COUNT`, `BATTLE_WINS`, `BATTLE_STATUS`, `BATTLE_SUSPEND_UNTIL`, `FORUM_STATUS`, `FORUM_SUSPEND_UNTIL`, `MARKET_STATUS`, `MARKET_SUSPEND_UNTIL`, `BATTLE_VIO_COUNTS`, `EXCHANGE_VIO_COUNTS`, `FORUM_VIO_COUNTS`) VALUES
@@ -809,12 +809,26 @@ INSERT INTO `message` (`msg_id`, `mem_id`, `art_id`, `content`, `create_time`, `
 (4, 8, 4, '我都用軟布沾一點潤滑油輕輕擦拭', '2026-08-10 21:00:00', 1, NULL),
 (5, 9, 5, '這種說法太片面了吧，內容根本亂寫', '2026-08-13 08:10:00', 0, NULL);
 
+-- --------------------------------------------------------
+
 --
--- Indexes for dumped tables
+-- 資料表結構 `notification`
+--
+
+CREATE TABLE `notification` (
+  `ntfn_id` int(10) UNSIGNED NOT NULL COMMENT '通知ID',
+  `mem_id` int(10) UNSIGNED NOT NULL COMMENT '會員編號',
+  `content` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '通知內容',
+  `is_read` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否已讀',
+  `create_time` datetime NOT NULL COMMENT '通知時間'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='會員通知';
+
+--
+-- 已傾印資料表的索引
 --
 
 --
--- Indexes for table `admin`
+-- 資料表索引 `admin`
 --
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`admin_id`),
@@ -822,7 +836,7 @@ ALTER TABLE `admin`
   ADD UNIQUE KEY `uk_admin_name` (`name`);
 
 --
--- Indexes for table `appeal_exchange`
+-- 資料表索引 `appeal_exchange`
 --
 ALTER TABLE `appeal_exchange`
   ADD PRIMARY KEY (`ae_id`),
@@ -861,7 +875,7 @@ ALTER TABLE `battle_appeal`
   ADD KEY `FK_BATTLE_APPEAL_ADMIN` (`ADMIN_ID`);
 
 --
--- Indexes for table `battle_record`
+-- 資料表索引 `battle_record`
 --
 ALTER TABLE `battle_record`
   ADD PRIMARY KEY (`BATTLE_ID`),
@@ -885,14 +899,14 @@ ALTER TABLE `city`
   ADD UNIQUE KEY `UQ_CITY_NAME` (`CITY_NAME`);
 
 --
--- Indexes for table `district`
+-- 資料表索引 `district`
 --
 ALTER TABLE `district`
   ADD PRIMARY KEY (`DISTRICT_ID`),
   ADD KEY `IDX_DISTRICT_CITY_ID` (`CITY_ID`);
 
 --
--- Indexes for table `exchange_comment`
+-- 資料表索引 `exchange_comment`
 --
 ALTER TABLE `exchange_comment`
   ADD PRIMARY KEY (`comm_id`),
@@ -900,7 +914,7 @@ ALTER TABLE `exchange_comment`
   ADD KEY `fk_exchange_comment_member` (`mem_id`);
 
 --
--- Indexes for table `exchange_post`
+-- 資料表索引 `exchange_post`
 --
 ALTER TABLE `exchange_post`
   ADD PRIMARY KEY (`post_id`),
@@ -910,7 +924,7 @@ ALTER TABLE `exchange_post`
   ADD KEY `mem_id` (`mem_id`);
 
 --
--- Indexes for table `member`
+-- 資料表索引 `member`
 --
 ALTER TABLE `member`
   ADD PRIMARY KEY (`MEM_ID`),
@@ -925,17 +939,24 @@ ALTER TABLE `message`
   ADD KEY `fk_message_article` (`art_id`);
 
 --
+-- 資料表索引 `notification`
+--
+ALTER TABLE `notification`
+  ADD PRIMARY KEY (`ntfn_id`),
+  ADD KEY `fk_notification_member` (`mem_id`);
+
+--
 -- 在傾印的資料表使用自動遞增(AUTO_INCREMENT)
 --
 
 --
--- AUTO_INCREMENT for table `admin`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `admin`
 --
 ALTER TABLE `admin`
-  MODIFY `admin_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '管理員ID', AUTO_INCREMENT=3;
+  MODIFY `admin_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '管理員ID', AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `appeal_exchange`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `appeal_exchange`
 --
 ALTER TABLE `appeal_exchange`
   MODIFY `ae_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '交換申訴ID', AUTO_INCREMENT=3;
@@ -959,7 +980,7 @@ ALTER TABLE `battle_appeal`
   MODIFY `BATTLE_APPEAL_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '對戰申訴編號';
 
 --
--- AUTO_INCREMENT for table `battle_record`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `battle_record`
 --
 ALTER TABLE `battle_record`
   MODIFY `BATTLE_ID` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '對戰邀約編號', AUTO_INCREMENT=19;
@@ -977,25 +998,25 @@ ALTER TABLE `city`
   MODIFY `CITY_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '縣市編號', AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT for table `district`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `district`
 --
 ALTER TABLE `district`
   MODIFY `DISTRICT_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '行政區編號', AUTO_INCREMENT=369;
 
 --
--- AUTO_INCREMENT for table `exchange_comment`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `exchange_comment`
 --
 ALTER TABLE `exchange_comment`
   MODIFY `comm_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '留言ID', AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `exchange_post`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `exchange_post`
 --
 ALTER TABLE `exchange_post`
   MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '交換案件編號', AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `member`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `member`
 --
 ALTER TABLE `member`
   MODIFY `MEM_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '會員編號', AUTO_INCREMENT=12;
@@ -1007,11 +1028,17 @@ ALTER TABLE `message`
   MODIFY `msg_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '留言編號', AUTO_INCREMENT=6;
 
 --
+-- 使用資料表自動遞增(AUTO_INCREMENT) `notification`
+--
+ALTER TABLE `notification`
+  MODIFY `ntfn_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '通知ID';
+
+--
 -- 已傾印資料表的限制式
 --
 
 --
--- Constraints for table `appeal_exchange`
+-- 資料表的限制式 `appeal_exchange`
 --
 ALTER TABLE `appeal_exchange`
   ADD CONSTRAINT `fk_appeal_exchange_admin` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`admin_id`),
@@ -1024,11 +1051,11 @@ ALTER TABLE `appeal_exchange`
 -- 資料表的限制式 `appeal_forum`
 --
 ALTER TABLE `appeal_forum`
+  ADD CONSTRAINT `fk_appeal_forum_admin` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`admin_id`),
   ADD CONSTRAINT `fk_appeal_forum_article` FOREIGN KEY (`art_id`) REFERENCES `article` (`art_id`),
-  ADD CONSTRAINT `fk_appeal_forum_message` FOREIGN KEY (`msg_id`) REFERENCES `message` (`msg_id`),
   ADD CONSTRAINT `fk_appeal_forum_complainant` FOREIGN KEY (`complainant_mem_id`) REFERENCES `member` (`MEM_ID`),
-  ADD CONSTRAINT `fk_appeal_forum_respondent` FOREIGN KEY (`respondent_mem_id`) REFERENCES `member` (`MEM_ID`),
-  ADD CONSTRAINT `fk_appeal_forum_admin` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`admin_id`);
+  ADD CONSTRAINT `fk_appeal_forum_message` FOREIGN KEY (`msg_id`) REFERENCES `message` (`msg_id`),
+  ADD CONSTRAINT `fk_appeal_forum_respondent` FOREIGN KEY (`respondent_mem_id`) REFERENCES `member` (`MEM_ID`);
 
 --
 -- 資料表的限制式 `article`
@@ -1046,7 +1073,7 @@ ALTER TABLE `battle_appeal`
   ADD CONSTRAINT `FK_BATTLE_APPEAL_RESPONDENT` FOREIGN KEY (`RESPONDENT_MEM_ID`) REFERENCES `member` (`MEM_ID`) ON UPDATE CASCADE;
 
 --
--- Constraints for table `battle_record`
+-- 資料表的限制式 `battle_record`
 --
 ALTER TABLE `battle_record`
   ADD CONSTRAINT `FK_BATTLE_CITY` FOREIGN KEY (`CITY_ID`) REFERENCES `city` (`CITY_ID`) ON UPDATE CASCADE,
@@ -1055,20 +1082,20 @@ ALTER TABLE `battle_record`
   ADD CONSTRAINT `FK_BATTLE_PARTICIPANT` FOREIGN KEY (`PARTICIPANT_ID`) REFERENCES `member` (`MEM_ID`) ON UPDATE CASCADE;
 
 --
--- Constraints for table `district`
+-- 資料表的限制式 `district`
 --
 ALTER TABLE `district`
   ADD CONSTRAINT `FK_DISTRICT_CITY` FOREIGN KEY (`CITY_ID`) REFERENCES `city` (`CITY_ID`) ON UPDATE CASCADE;
 
 --
--- Constraints for table `exchange_comment`
+-- 資料表的限制式 `exchange_comment`
 --
 ALTER TABLE `exchange_comment`
   ADD CONSTRAINT `fk_exchange_comment_member` FOREIGN KEY (`mem_id`) REFERENCES `member` (`MEM_ID`),
   ADD CONSTRAINT `fk_exchange_comment_post` FOREIGN KEY (`post_id`) REFERENCES `exchange_post` (`post_id`);
 
 --
--- Constraints for table `exchange_post`
+-- 資料表的限制式 `exchange_post`
 --
 ALTER TABLE `exchange_post`
   ADD CONSTRAINT `exchange_post_ibfk_1` FOREIGN KEY (`CITY_ID`) REFERENCES `city` (`CITY_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -1080,8 +1107,14 @@ ALTER TABLE `exchange_post`
 -- 資料表的限制式 `message`
 --
 ALTER TABLE `message`
-  ADD CONSTRAINT `fk_message_member` FOREIGN KEY (`mem_id`) REFERENCES `member` (`MEM_ID`),
-  ADD CONSTRAINT `fk_message_article` FOREIGN KEY (`art_id`) REFERENCES `article` (`art_id`);
+  ADD CONSTRAINT `fk_message_article` FOREIGN KEY (`art_id`) REFERENCES `article` (`art_id`),
+  ADD CONSTRAINT `fk_message_member` FOREIGN KEY (`mem_id`) REFERENCES `member` (`MEM_ID`);
+
+--
+-- 資料表的限制式 `notification`
+--
+ALTER TABLE `notification`
+  ADD CONSTRAINT `fk_notification_member` FOREIGN KEY (`mem_id`) REFERENCES `member` (`MEM_ID`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
