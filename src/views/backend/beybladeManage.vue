@@ -74,9 +74,12 @@
               </span>
             </div>
             <div class="col col-action">
-              <button type="button" class="btn-view" @click="viewPart(part)">
+              <RouterLink
+                :to="{ name: 'backend-beyblade-edit', params: { id: part.id } }"
+                class="btn-view"
+              >
                 查看
-              </button>
+              </RouterLink>
             </div>
           </div>
         </template>
@@ -290,11 +293,7 @@ export default {
     },
 
     handleAddPart() {
-      console.log("新增零件");
-    },
-
-    viewPart(part) {
-      console.log("查看", part);
+      this.$router.push({ name: "backend-beyblade-new" });
     }
   }
 };
