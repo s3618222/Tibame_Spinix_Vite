@@ -241,8 +241,8 @@ export default {
 
 .forum-manage-title {
   color: map-get($color, secondary2);
-  font-weight: 700;
-  font-size: map-get($fontSize, h2);
+  font-weight: 600;
+  font-size: map-get($fontSize, h1);
   margin-bottom: 28px;
 }
 

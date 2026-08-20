@@ -308,7 +308,7 @@ export default {
 
 .beyblade-manage-title {
   color: map-get($color, secondary2);
-  font-weight: 500;
+  font-weight: 600;
   font-size: map-get($fontSize, h1);
   margin-bottom: 28px;
 }
