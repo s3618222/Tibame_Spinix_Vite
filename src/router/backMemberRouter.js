@@ -8,6 +8,7 @@ import MemberManage from "@/views/backend/memberManage.vue";
 import BattleManage from "@/views/backend/battleManage.vue";
 import BeybladeManage from "@/views/backend/beybladeManage.vue";
 import ForumManage from "@/views/backend/forumManage.vue";
+import ForumManageDetail from "@/views/backend/forumManageDetail.vue";
 import ExchangeManage from "@/views/backend/exchangeManage.vue";
 import ComplaintManage from "@/views/backend/complaintManage.vue";
 import AdminAccountManage from "@/views/backend/adminAccountManage.vue";
@@ -41,6 +42,11 @@ const backMemberRouter = createRouter({
       path: "/forum",
       name: "backend-forum",
       component: ForumManage
+    },
+    {
+      path: "/forum/:id",
+      name: "backend-forum-detail",
+      component: ForumManageDetail
     },
     {
       path: "/exchange",

@@ -2,13 +2,13 @@
    <div class="container">
       <ProductCard
          v-for="item in filteredCards"
-         :key="item.id"
-         :id="item.id"
+         :key="item.post_id"
+         :post_id="item.post_id"
          :title="item.title"
          :image="item.product_img"
          :avatar="item.headshot"
          :username="item.name"
-         :postDate="item.date"
+         :create_time="item.create_time"
          :city="item.city"
          :district="item.district"
          :state="statusLabelMap[item.status]"
@@ -22,7 +22,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import ProductCard from './productCard.vue';
-import { exchangeList, statusLabelMap } from '../data/mockExchangeData.js';   //  改用共用資料
+import { exchangeList, statusLabelMap } from '@/data/mockExchangeData.js';   //  改用共用資料
 
 const ExChangeInfo = ref(exchangeList);   // 不用自己重複寫一份
 
