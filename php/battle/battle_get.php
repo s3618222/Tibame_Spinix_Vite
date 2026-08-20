@@ -43,6 +43,10 @@
     WHERE battle_record.IS_SHOW = 1
     AND battle_record.BATTLE_STATUS = 'MATCHING'
     AND battle_record.BATTLE_DEADLINE > NOW()
+
+    ORDER BY
+        battle_record.CREATED_AT DESC,
+        battle_record.BATTLE_ID DESC
   ";
 
   $stmt = $pdo->prepare($sql);
