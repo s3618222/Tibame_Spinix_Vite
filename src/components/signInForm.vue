@@ -71,6 +71,16 @@ export default {
   computed: {
     baseUrl() {
       return import.meta.env.BASE_URL;
+    },
+
+    // PHP API 路徑
+    phpBaseUrl() {
+      return (
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1"
+      )
+        ? "http://localhost:8888/Spinix/php"
+        : "/ckd101/g2/php";
     }
   },
 
@@ -86,7 +96,7 @@ export default {
 
       console.log([...formData.entries()]);
 
-      fetch("http://localhost:8888/Spinix/php/member/signIn_post.php", {
+      fetch(`${this.phpBaseUrl}/member/signIn_post.php`, {
         method: "POST",
         body: formData,
         credentials: "include"

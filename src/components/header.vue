@@ -123,6 +123,14 @@
 
 <script>
 import noticePanel from "./Userpanel.vue";
+
+//判斷當前環境!
+const phpBaseUrl =
+  location.hostname === "localhost" ||
+  location.hostname === "127.0.0.1"
+    ? "http://localhost:8888/Spinix/php"
+    : "/ckd101/g2/php";
+
 export default {
   name: "Header",
 
@@ -204,7 +212,7 @@ export default {
       this.currentPanel = panelName;
     },
     fetchCurrentMember() { //取得當前是否有登入、登入者資訊
-      fetch("http://localhost:8888/Spinix/php/member/currentMember_get.php", {
+      fetch(`${phpBaseUrl}/member/currentMember_get.php`, {
         method: "GET",
         credentials: "include"
       }).then(res => res.json()).then(data => {
@@ -220,7 +228,7 @@ export default {
         });
     },
     signOut() { //串接登出api
-      fetch("http://localhost:8888/Spinix/php/member/signOut_post.php", {
+      fetch(`${phpBaseUrl}/member/signOut_post.php`, {
         method: "POST",
         credentials: "include"
       }).then(res => res.json()).then(data => {
