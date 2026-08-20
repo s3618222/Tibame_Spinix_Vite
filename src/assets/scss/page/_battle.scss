@@ -993,6 +993,22 @@ a.empty-createBattleBtn {
   border-radius: 10px;
 }
 
+//當沒有評論時的空狀態
+.review-empty {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-battle .review-empty p {
+  font-size: 16px;
+  color: #aaaaaa;
+  text-align: center;
+}
+
 .review-item {
   padding-block: 12px;
   border-bottom: 1px solid #dddddd;
@@ -1869,7 +1885,6 @@ a.empty-createBattleBtn {
     .review-content {
       font-size: 14px;
     }
-
 
     //申請加入燈箱
     .apply-main {
