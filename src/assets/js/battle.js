@@ -3,12 +3,44 @@ import { createApp } from "vue";
 import Header from "@/components/header.vue";
 import Footer from "@/components/footer.vue";
 
+//重要!!! 判斷當前環境
+const phpBaseUrl =
+  location.hostname === "localhost" ||
+    location.hostname === "127.0.0.1"
+    ? "http://localhost:8888/Spinix/php/"
+    : `${location.origin}/ckd101/g2/php/`;
+
 //import TestPic from "/public/battle_bottom_spintop.png";
 
 //document.querySelector("img.bottom-spintop").src = new URL("/ckd101/g2/front/battle_bottom_spintop.png").href;
 
 createApp(Header).mount("#headerApp");
 createApp(Footer).mount("#footerApp");
+
+let currentMember = null; //存取當前登入者資訊
+
+//串接currentMember API 取得登入者資訊
+// ***Session 是後端 PHP 的資料；前端 JS 需透過 API 才能取得!!!
+function fetchCurrentMember() {
+  return fetch(`${phpBaseUrl}/member/currentMember_get.php`, {
+    credentials: "include"
+  }).then(res => res.json()).then(data => {
+
+    if (data.success && data.isLoggedIn) { //已有登入會員時
+      currentMember = data.member;
+    } else { //未登入時
+      currentMember = null;
+    }
+
+    console.log("目前登入會員：", currentMember);
+  });
+}
+
+//一進入頁面時，先抓取當前是否有登入與登入者資訊，再接著render卡片 (方便讓系統判斷，卡池中是否有登入會員自己發起的約戰)
+fetchCurrentMember()
+  .then(() => {
+    fetchBattles();
+  });
 
 //Hero區視差設定
 const battleHeroScroll = document.querySelector(".battle-hero-scroll");
@@ -184,7 +216,7 @@ let citiesData = []; // 儲存從後端取得的縣市資料
 //向後端取得所有縣市資料
 function fetchCities() {
   //fetch()的method預設就是get，所以不用特別寫 {method: get}
-  fetch("http://localhost:8888/Spinix/php/location/cities_get.php").then(res => res.json()).then(data => {
+  fetch(`${phpBaseUrl}/location/cities_get.php`).then(res => res.json()).then(data => {
     // 將後端取得的縣市資料保存起來，方面後續自動定位功能也能使用
     citiesData = data;
 
@@ -208,7 +240,7 @@ fetchCities();
 
 // 依據傳入的CITY_ID，向後端索取對應城市底下的行政區資料
 function fetchDistricts(cityId) {
-  return fetch(`http://localhost:8888/Spinix/php/location/districts_get.php?city_id=${cityId}`).then(res => res.json()).then(data => {
+  return fetch(`${phpBaseUrl}/location/districts_get.php?city_id=${cityId}`).then(res => res.json()).then(data => {
     //透過CITY_ID抓到對應行政區資料後，跑迴圈，放進select
     data.forEach(district => {
       const option = document.createElement('option');
@@ -519,9 +551,20 @@ const battleLevelText = {
   ADVANCED: "進階玩家"
 };
 
+function getBattleImageUrl(imagePath) {
+
+  // 會員動態上傳的約戰封面
+  if (imagePath.startsWith("uploads/battle/")) {
+    return `${phpBaseUrl}/${imagePath}`;
+  }
+
+  // 平台原本的預設封面
+  return import.meta.env.BASE_URL + imagePath;
+}
+
 //串接後端約戰資料api
 function fetchBattles() {
-  fetch("http://localhost:8888/Spinix/php/battle/battle_get.php").then(res => res.json()).then(data => {
+  fetch(`${phpBaseUrl}/battle/battle_get.php`).then(res => res.json()).then(data => {
 
     //將後端的約戰資料先轉成待會要render約戰卡片時的呈現格式
     battleData = data.map(item => {
@@ -561,8 +604,6 @@ function fetchBattles() {
   });
 }
 
-fetchBattles();
-
 //轉換日期時間
 function formatBattleDate(dateString) {
   const date = new Date(dateString);
@@ -589,8 +630,8 @@ function formatBattleDate(dateString) {
 
 //根據邀約卡目前的狀態，生成對應的申請按鈕架構
 function createApplyButton(battle) {
-  // 當已經提出申請時，卡片按鈕顯示「等待確認」
-  if (battle.status === "pending") {
+  // 如果該筆約戰是目前登入會員自己發起的，按鈕文字改為「等待加入」，且不可操作
+  if (currentMember && battle.hostId === Number(currentMember.id)) {
     return `
       <button
         type="button"
@@ -598,12 +639,12 @@ function createApplyButton(battle) {
         data-battle-id="${battle.battleId}"
         disabled
       >
-        等待確認
+        等待加入
       </button>
     `;
   }
 
-  // 邀約仍在配對中時，顯示「申請加入」
+  // 其他人發起的約戰，按鈕正常顯示「申請加入」
   return `
     <button
       type="button"
@@ -623,7 +664,7 @@ function createBattleCard(battle) {
       <div class="pic">
         <img
           class="battle-cover"
-          src="${import.meta.env.BASE_URL + battle.coverImage}"
+          src="${getBattleImageUrl(battle.coverImage)}"
           alt="${battle.title}的邀約封面"
         >
         <span class="target-tag">${battle.target}</span>
@@ -734,7 +775,7 @@ function renderBattleCards(battles) {
           成為第一位發起挑戰的玩家，找到附近的陀螺同好吧！
         </p>
 
-        <a href="createBattle.html" class="btnFill empty-createBattleBtn">
+        <a href="createBattle.html" class="btnFill empty-createBattleBtn toCreateLink">
           建立邀約
           <i class="fa-solid fa-plus"></i>
         </a>
@@ -878,7 +919,7 @@ const reviewList = document.querySelector("#reviewList"); //評論列表
 
 //向後端取得指定約戰發起人的歷史資料
 function fetchHostHistory(hostId) {
-  return fetch(`http://localhost:8888/Spinix/php/battle/host_history_get.php?host_id=${hostId}`).then(res => res.json());
+  return fetch(`${phpBaseUrl}/battle/host_history_get.php?host_id=${hostId}`).then(res => res.json());
 }
 
 // render出個別評論函式
@@ -1035,11 +1076,19 @@ battleCardList.addEventListener("click", e => {
   // 點擊申請加入按鈕，開啟對應加入燈箱
   const applyBtn = e.target.closest(".applyBtn");
 
-  if (applyBtn) {
-    const battleId = Number(applyBtn.dataset.battleId);
-
-    openApplyModal(battleId);
+  // 沒有點到「申請加入」按鈕時，不執行後續動作；避免點卡片其他地方也會往下執行
+  if (!applyBtn) {
+    return;
   }
+
+  if (!currentMember) { //使用者還未登入帳號時
+    alert("請先登入會員，再申請加入約戰");
+    window.location.href = `${import.meta.env.BASE_URL}signIn.html`;
+    return;
+  }
+
+  const battleId = Number(applyBtn.dataset.battleId);
+  openApplyModal(battleId);
 
 });
 
@@ -1162,16 +1211,28 @@ applyForm.addEventListener("submit", e => {
     return;
   }
 
-  // demo時，先模擬資料狀態改變
-  battle.status = "pending";
-  battle.applicantContact = contact;
-  battle.appliedAt = new Date().toISOString();
+  //將欲申請加入的約戰id、申請者id、聯絡資訊送回串端API
+  const formData = new FormData();
+  formData.append("battle_id", currentApplyBattleId);
+  formData.append("contact", contact);
 
-  updateAppliedCard(battle.battleId);
+  fetch(`${phpBaseUrl}/battle/battle_apply_post.php`, {
+    method: "POST",
+    body: formData,
+    credentials: "include"
+  }).then(res => res.json()).then(data => {
+    if (data.success) { //成功串聯API時
 
-  closeApplyModal();
+      //重新整理一次畫面中的卡片，不讓PENDING狀態的卡片還暫時留在畫面中
+      closeApplyModal();
+      alert(data.message);
+      fetchBattles();
+    } else {
+      alert(data.message);
+    }
+  });
 
-  alert("申請已送出，請等待發起人確認。");
+
 });
 
 // 當確認送出申請時，需更新邀約卡狀態
@@ -1454,4 +1515,25 @@ bottomSpintopBtn.addEventListener("click", () => {
       visibility: "hidden"
     });
 
+});
+
+// 要前往建立約戰分頁前，需先確認會員是否已登入
+document.addEventListener("click", e => {
+
+  // 判斷此次點擊是否來自頁面上的「建立邀約」連結
+  const createBattleLink = e.target.closest(".toCreateLink");
+
+  // 若不是建立邀約連結，就不往下處理
+  if (!createBattleLink) {
+    return;
+  }
+
+  // 未登入會員時，無法進入對戰配對頁
+  if (!currentMember) {
+    e.preventDefault();
+    alert("請先登入會員，再建立對戰邀約");
+
+    // 跳轉登入頁
+    window.location.href = `${import.meta.env.BASE_URL}signIn.html`;
+  }
 });
