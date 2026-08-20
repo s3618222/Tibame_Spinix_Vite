@@ -102,8 +102,8 @@
 
                     <select id="battleMode" name="mode" required>
                       <option value="">選擇對戰模式</option>
-                      <option value="競技模式">競技模式</option>
-                      <option value="休閒模式">休閒模式</option>
+                      <option value="COMPETITIVE">競技模式</option>
+                      <option value="CASUAL">休閒模式</option>
                     </select>
                   </div>
 
@@ -116,10 +116,10 @@
 
                     <select id="battleLevel" name="level" required>
                       <option value="">選擇玩家程度</option>
-                      <option value="不限程度">不限程度</option>
-                      <option value="新手玩家">新手玩家</option>
-                      <option value="中階玩家">中階玩家</option>
-                      <option value="進階玩家">進階玩家</option>
+                      <option value="ALL">不限程度</option>
+                      <option value="BEGINNER">新手玩家</option>
+                      <option value="INTERMEDIATE">中階玩家</option>
+                      <option value="ADVANCED">進階玩家</option>
                     </select>
                   </div>
 
@@ -132,9 +132,9 @@
 
                     <select id="battleTarget" name="target" required>
                       <option value="">選擇適合對象</option>
-                      <option value="不限對象">不限對象</option>
-                      <option value="成人限定">18歲以上</option>
-                      <option value="親子友善">親子友善</option>
+                      <option value="ALL">不限對象</option>
+                      <option value="ADULT">18歲以上</option>
+                      <option value="FAMILY">親子友善</option>
                     </select>
                   </div>
 
@@ -409,7 +409,7 @@
               <!-- 聯絡資訊提醒 -->
               <div class="preview-reminder">
 
-                <div class="preview-reminder-icon">
+                <div class="preview-reminder-icon" id="previewReminderIcon">
                   <i class="fa-solid fa-lock"></i>
                 </div>
 
