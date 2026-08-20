@@ -31,7 +31,7 @@
     <div class="sop">
       <p class="sop-title">交換流程說明</p>
       <div class="sop-list">
-        <ul>
+        <ul v-if="activeTab === 'myexchange'">
           <li>
             <div class="list-item">
               <div class="sop-img">
@@ -82,7 +82,63 @@
               </div>
               <div class="sop-txt">
                 <p class="title">Step.4 交換完成</p>
-                <p class="info">交換已順利完成</p>
+                <p class="info">已順利交換完成</p>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <ul v-if="activeTab === 'myapply'">
+          <li>
+            <div class="list-item">
+              <div class="sop-img">
+                <img src="/sop-apply.png" alt="">
+              </div>
+              <div class="sop-txt">
+                <p class="title">Step.1 申請中</p>
+                <p class="info">等待對方選擇交換</p>
+              </div>
+            </div>
+          </li>
+          <div class="icon-sop-next">
+              <i class="fa-solid fa-right-long"></i>
+            </div>
+          <li>
+            <div class="list-item">
+              <div class="sop-img">
+                <img src="/sop-checked.png" alt="">
+              </div>
+              <div class="sop-txt">
+                <p class="title">Step.2 已回覆</p>
+                <p class="info">請確認是否交換</p>
+              </div>
+            </div>
+            
+          </li>
+          <div class="icon-sop-next">
+            <i class="fa-solid fa-right-long"></i>
+          </div>
+          <li>
+            <div class="list-item">
+              <div class="sop-img">
+                <img src="/sop03.png" alt="">
+              </div>
+              <div class="sop-txt">
+                <p class="title">Step.3 交換中</p>
+                <p class="info">討論交換細節</p>
+              </div>
+            </div>
+          </li>
+          <div class="icon-sop-next">
+              <i class="fa-solid fa-right-long"></i>
+            </div>
+          <li>
+            <div class="list-item">
+              <div class="sop-img">
+                <img src="/sop04.png" alt="">
+              </div>
+              <div class="sop-txt">
+                <p class="title">Step.4 交換完成</p>
+                <p class="info">已順利交換完成</p>
               </div>
             </div>
           </li>
@@ -91,23 +147,6 @@
     </div>
 
     <div class="container" v-if="paginatedList.length">
-      <!-- <ProductCard
-        v-for="item in paginatedList"
-        :key="item.cardKey"
-        :id="item.post_id"
-        :title="item.title"
-        :image="item.product_img"
-        :avatar="item.headshot"
-        :username="item.name"
-        :create_time="item.create_time"
-        :city="item.city"
-        :district="item.district"
-        :state="item.stateLabel"
-        :context="context"
-        @complete-exchange="handleCompleteExchange"
-        @reply-exchange="handleReplyExchange"
-      /> -->
-
         <ProductCard
           v-for="item in paginatedList"
           :key="item.cardKey"
@@ -120,7 +159,8 @@
           :city="item.city"
           :district="item.district"
           :context="context"
-          :state="statusLabelMap[item.status]"
+          :state="item.stateLabel"
+          @reply-exchange="handleReplyExchange"
       />
     </div>
 
@@ -196,25 +236,32 @@ export default {
         .filter(item => item.mem_id === this.currentUserId)
         .map(item => ({
           ...item,
-          cardKey: `post-${item.mem_id}`,
-          stateLabel: this.statusLabelMap[item.status]
+          cardKey: `post-${item.post_id}`,
+          stateLabel: this.statusLabelMap[item.status] || ''
         }));
     },
 
     // 我提出的申請：從 fakeComments 篩「我留過言的」，再組合對應文章資訊
     myApplyList() {
       return this.fakeComments
-        .filter(comment => comment.post_id === this.post_id)
+        .filter(comment => comment.mem_id === this.currentUserId)
         .map(comment => {
           const article = this.exchangeList.find(item => item.post_id === comment.post_id);
+          if(!article) return;
+  
+          const isChosen = comment.is_choose === true;
+
+          const stateLabel = (article.status === 'available' || !isChosen) ? this.applyStatusLabelMap['available'] : this.applyStatusLabelMap[article.status];
+
           return {
             ...article,
-            cardKey: `apply-${comment.mem_id}`,
-            applyId: comment.mem_id,
-            status: comment.applyStatus,               // 用「我這則申請」的狀態，取代文章原本狀態
-            stateLabel: this.applyStatusLabelMap[comment.applyStatus]
+            cardKey: `apply-${comment.comm_id}`,
+            applyId: comment.comm_id,
+            status: article.status, // 用「我這則申請」的狀態，取代文章原本狀態
+            isChosen,
+            stateLabel
           };
-        });
+        }).filter(Boolean);
     },
 
     // 依目前分頁，決定要用哪份清單
@@ -226,7 +273,13 @@ export default {
       if (this.currentStatus === "all") {
         return this.currentList;
       }
-      return this.currentList.filter(item => item.status === this.currentStatus);
+
+      if (this.activeTab === 'myexchange') {
+        return this.currentList.filter(item => item.status === this.currentStatus);
+      }
+
+      // 我提出的申請：用 stateLabel 比對
+      return this.currentList.filter(item => item.stateLabel === this.currentStatus);
     },
 
     // 狀態篩選 tab：兩個分頁使用不同的狀態選項
@@ -237,37 +290,45 @@ export default {
       return [
         { label: "全部", value: "all", count: list.length },
         { label: "可交換", value: "available", count: list.filter(i => i.status === "available").length },
-        { label: "交換中", value: "exchanging", count: list.filter(i => i.status === "exchanging").length },
         { label: "待確認", value: "pending", count: list.filter(i => i.status === "pending").length },
+        { label: "交換中", value: "exchanging", count: list.filter(i => i.status === "exchanging").length },
         { label: "交換完成", value: "completed", count: list.filter(i => i.status === "completed").length }
       ];
     }
 
   // 我提出的申請：四種狀態
-    return [
-      { label: "全部", value: "all", count: list.length },
-      { label: "等待回復", value: "waitingReply", count: list.filter(i => i.status === "waitingReply").length },
-      { label: "已回復", value: "replied", count: list.filter(i => i.status === "replied").length },
-      { label: "交換中", value: "exchanging", count: list.filter(i => i.status === "exchanging").length },
-      { label: "交換完成", value: "completed", count: list.filter(i => i.status === "completed").length }
-    ];
+      return [
+        { label: "全部", value: "all", count: list.length },
+        { label: "申請中", value: "申請中", count: list.filter(i => i.stateLabel === "申請中").length },
+        { label: "已回覆", value: "已回覆", count: list.filter(i => i.stateLabel === "已回覆").length },
+        { label: "交換中", value: "交換中", count: list.filter(i => i.stateLabel === "交換中").length },
+        { label: "交換完成", value: "交換完成", count: list.filter(i => i.stateLabel === "交換完成").length }
+      ];
   },
     paginatedList() {
       const start = (this.currentPage - 1) * this.pageSize;
       const end = start + this.pageSize;
       return this.filteredList.slice(start, end);
     },
+
+    
   },
 
   methods: {
-    handleCompleteExchange(item) {
-      console.log('完成交換：', item);
-      // 之後這裡打 API，把 exchangeList 對應文章的 status 改成 completed
-    },
-
     handleReplyExchange(item) {
-      console.log('回覆交換，開啟談窗：', item);
       // 之後這裡開啟談窗，用 item.applyId 對應是哪一則申請（留言）
+      const isConfirm = window.confirm(`${item.username}對你的交換提議有興趣!\n是否確認交換?按下確認後將可以查看雙方的聯絡資訊`);
+
+      if(isConfirm){
+        const targetArticle = this.exchangeList.find(article => article.post_id === item.id );
+        
+        if(targetArticle){
+          targetArticle.exchange_comm_id = item.applyId;;
+          targetArticle.state = 'exchanging';
+          console.log(targetArticle.state);
+        }
+        window.alert('確認成功!現在可以查看對方的聯絡資訊了');
+      }
     }
   }
 };
@@ -312,7 +373,7 @@ export default {
             
             padding: 12px 8px;
             border: 1px solid #fec96b;
-            background-color: #FFF2D6;
+            background: linear-gradient(145deg,#ffffff 0%,#fff7e8 100%);;
             border-radius: 10px;
             align-items: center;
             gap: 8px;
@@ -320,7 +381,7 @@ export default {
             max-width: 200px;
             margin: 0 auto;
 
-            box-shadow: 2px 2px 12px rgba(20, 28, 38, 0.1);
+            box-shadow: 0 6px 16px rgba(20, 28, 38, 0.06);
               .sop-img{
                 width: 80px;
                 img{

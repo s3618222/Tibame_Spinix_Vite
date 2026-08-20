@@ -129,19 +129,32 @@
           placeholder="若沒有特別想要的物品，可留空"
         ></textarea>
       </div>
-
-      <!-- 只有「不是自己刊登的文章」，且尚未申請過，才顯示我想交換按鈕 -->
+      
+      <!-- 情況 ①：賣家，還沒選定對象 -->
+      <p v-if="isSeller && article.status === 'available'" class="apply-hint">
+        <i class="fa-regular fa-hand-point-down"></i>
+        您可於下方查看其他會員的交換提議
+        <i class="fa-regular fa-hand-point-down"></i>
+      </p>
+      <!-- 情況 ②：買家，還沒申請過 -->
       <button
-        v-if="canApply"
+        v-else-if="!isSeller && !alreadyApplied"
         type="button"
         class="btnFill"
         @click="isModalOpen = true"
       >
         我想交換
       </button>
-      <p v-else-if="article.mem_id !== currentUserId" class="apply-hint">
-        您已經提出過交換申請
+      <!-- 情況 ③：買家，已經申請過 -->
+      <p v-else-if="!isSeller && alreadyApplied" class="apply-hint">
+        你已提出過申請，等待版主的選擇
       </p>
+      <!-- 情況 ④：賣家，已選定且對方同意，顯示完成交換按鈕 -->
+      <div class="owner-actions" v-if="isSeller && article.status === 'exchanging'">
+        <button type="button" class="btnFill" @click="handleCompleteExchange">
+          完成交換
+        </button>
+      </div>
 
       <div class="message-board box-style">
         <h1>交換留言區</h1>
@@ -252,6 +265,56 @@ import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import 'vue3-carousel/dist/carousel.css';
 import PhotoUploader from '@/components/uploadImg.vue';
 
+// 目前登入的測試會員（之後接後端時，改成從登入狀態拿）
+const currentUserId = 999;
+
+// 讀取網址參數：product_detail.html?id=5&from=myPosts
+const urlParams = new URLSearchParams(window.location.search);
+
+const articleId = urlParams.get('id'); 
+// const articleId = urlParams.get('post_id'); 
+const context = urlParams.get('from') || 'browse';
+
+
+// 從 exchangeList 陣列中，找出 id 相符的那一筆資料
+const article = computed(() =>
+  exchangeList.find(item => item.post_id === articleId)
+);
+
+
+// 完成交換按鈕
+const exchangePartnerComment = computed(() => {
+  if (!article.value?.exchange_comm_id) return null;
+  return fakeComments.find(c => c.comm_id === article.value.exchange_comm_id);
+});
+
+// 是否已經申請過（排除賣家自己）
+const alreadyApplied = computed(() => {
+  if (!article.value || isSeller.value) return false;
+  return articleComments.value.some(c => c.mem_id === currentUserId);
+});
+
+// 我是不是被賣家最終選中的那位
+const isChosenByArticle = computed(() => {
+  if (!article.value) return false;
+  const myComment = articleComments.value.find(c => c.mem_id === currentUserId);
+  return myComment && article.value.exchange_comm_id === myComment.comm_id;
+});
+
+function handleCompleteExchange(item) {
+
+  const partnerName = exchangePartnerComment.value?.name || '這位會員';
+  const changeItem = exchangePartnerComment.value.content;
+
+  const isConfirm = window.confirm(`確定要完成與「${partnerName}」的交換嗎？\n交換物品：「${changeItem}」\n確定後無法復原。`);
+
+  if(isConfirm) {
+    article.value.status = 'completed';
+    window.alert('交換已完成！');
+  }
+      // 之後這裡打 API，把 exchangeList 對應文章的 status 改成 completed
+}
+
 // 依 context 決定標題文字
 const pageTitleMap = {
   browse: '物品詳情',
@@ -265,7 +328,7 @@ const pageTitle = computed(() => pageTitleMap[context] || '物品詳情');
 const backLinkMap = {
   browse: 'market.html',
   myPosts: 'member.html#/exchange',
-  myApplications: 'my_exchange.html?tab=myapply'
+  myApplications: 'member.html#/exchange'
 };
 const backLink = computed(() => backLinkMap[context] || 'market.html');
 
@@ -354,21 +417,7 @@ function handleImageUpload(event) {
   galleryImages.value = editForm.images;
 }
 
-// 目前登入的測試會員（之後接後端時，改成從登入狀態拿）
-const currentUserId = 999;
 
-// 讀取網址參數：product_detail.html?id=5&from=myPosts
-const urlParams = new URLSearchParams(window.location.search);
-
-const articleId = urlParams.get('id'); 
-// const articleId = urlParams.get('post_id'); 
-const context = urlParams.get('from') || 'browse';
-
-
-// 從 exchangeList 陣列中，找出 id 相符的那一筆資料
-const article = computed(() =>
-  exchangeList.find(item => item.post_id === articleId)
-);
 
 const commentMode = computed(() => {
   if (context === 'myPosts') return 'seller';
@@ -406,15 +455,6 @@ const isSeller = computed(() => {
   if (!article.value) return false;
   return article.value.mem_id === currentUserId;
 });
-
-// 是否可以按「我想交換」：不是自己刊登的文章、且自己還沒申請過
-const canApply = computed(() => {
-  if (!article.value) return false;
-  if (isSeller.value) return false;
-  const alreadyApplied = articleComments.value.some(c => c.mem_id === currentUserId);
-  return !alreadyApplied;
-});
-
 
 
 // 留言表單燈箱
@@ -564,10 +604,13 @@ console.log('修改後：', JSON.parse(JSON.stringify(articleComments.value))); 
   border-radius: 8px;
   border: 1px solid map-get($color, gray);
   box-shadow: 2px 2px 12px rgba(20, 28, 38, 0.1);
+  overflow: hidden;
 }
 
 .apply-hint {
-  color: map-get($color, hint);
+  color: map-get($color, neutral);
+  font-weight: 550;
+  text-align: center;
 }
 
 // == 留言燈箱 ================================================
