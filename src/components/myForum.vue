@@ -21,22 +21,20 @@
       </div>
     </div>
     <div class="control-tab">
-      <button type="button" 
-          class="tab-btn active"
-          @click="changeRole('initiator')">
+      <button type="button"
+          :class="['tab-btn', { active: currentTab === 'posts' }]"
+          @click="switchTab('posts')">
           我的貼文
         </button>
         <button type="button"
-        class="tab-btn"
-        @click="changeRole('participant')">
+        :class="['tab-btn', { active: currentTab === 'comments' }]"
+        @click="switchTab('comments')">
           我的留言
         </button>
-        <!-- :class="['tab-btn', { active: currentTab == 'comments' }]" -->
     </div>
     <div class="table-content">
-      <MyArticles/>
-      <!-- <myComments/> -->
-
+      <MyArticles v-if="currentTab === 'posts'" />
+      <myComments v-if="currentTab === 'comments'" />
     </div>
   </section>
 </template>
@@ -54,16 +52,15 @@ export default {
 
   data() {
     return {
-      currentTab: "posts",
-      myPosts: [
-        { id: 1, category: "配裝開箱", title: "WX-01 爆裂天龍分析", date: "2026-05-12", commentCount: 34 },
-        { id: 2, category: "新手發問", title: "新手求推薦平民配置", date: "2026-05-10", commentCount: 12 }
-      ],
-      myComments: [
-        { id: 101, articleTitle: "WX-01 爆裂天龍分析", content: "這套配置真的很強！", date: "2026-05-12" }
-      ]
+      currentTab: "posts"
     };
   },
+
+  methods: {
+    switchTab(tab) {
+      this.currentTab = tab;
+    }
+  }
 };
 </script>
 
