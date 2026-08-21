@@ -7,25 +7,15 @@
     <article class="article-content">
       <header class="header-article">
         <div class="title-label">
-          <p class="type-article chip">配裝開箱</p>
+          <p class="type-article chip">{{ article.category }}</p>
           <div class="time-post">
             <i class="fa-regular fa-clock"></i>
-            <span>2026-05-12 14:30</span>
+            <span>{{ article.createTime }}</span>
           </div>
         </div>
-        <h1>WX-01 爆裂天龍 最佳攻擊配裝分析</h1>
+        <h1>{{ article.title }}</h1>
       </header>
-      <section class="body-article">
-        <p>各位戰鬥陀螺好手們，今天來分享一下近期在競技場勝率極高的 <b>WX-01 爆裂天龍</b> 攻擊特化配裝。這套配置主打開局高爆發，適合喜歡速戰速決的玩家。</p>
-        <h2>核心配置 (Core Setup)</h2>
-        <ul>
-          <li>結晶輪盤 (Layer): WX-01 爆裂天龍 - 自帶偏重心設計，攻擊力頂尖。</li>
-          <li>鐵盤 (Disk): 0 (Zero) - 提供極致的重量與穩定性。</li>
-          <li>軸心 (Driver): X (Xtreme) - 橡膠平底，爆發力最強，但續航極差。</li>
-        </ul>
-        <img src="/forum/Overlay+Border+Shadow.png" alt="">
-
-      </section>
+      <section class="body-article" v-html="article.content"></section>
       <footer class="footer-article">
         <button type="button">
           <i class="fa-solid fa-share-nodes"></i>
@@ -55,6 +45,10 @@ import AuthorCard from '@/components/forum/authorCard.vue';
 
     props: {
       articleAuthor: {
+        type: Object,
+        default: () => ({})
+      },
+      article: {
         type: Object,
         default: () => ({})
       }
@@ -175,46 +169,46 @@ import AuthorCard from '@/components/forum/authorCard.vue';
     order: initial;
   }
 
-  p {
+  :deep(p) {
     font-size: map-get($fontSize, default);
     line-height: 1.6;
     color: map-get($color, secondary);
     margin: 0 0 16px;
   }
 
-  h2 {
+  :deep(h2) {
     font-size: map-get($fontSize, h2);
     font-weight: 700;
     color: map-get($color, secondary);
     margin: 24px 0 12px;
   }
 
-  h3 {
+  :deep(h3) {
     font-size: map-get($fontSize, h3);
     font-weight: 700;
     color: map-get($color, secondary);
     margin: 20px 0 10px;
   }
 
-  h4 {
+  :deep(h4) {
     font-size: map-get($fontSize, h4);
     font-weight: 700;
     color: map-get($color, secondary);
     margin: 16px 0 8px;
   }
 
-  ul, ol {
+  :deep(ul), :deep(ol) {
     padding-left: 24px;
     margin: 8px 0;
   }
 
-  li {
+  :deep(li) {
     margin-bottom: 4px;
     font-size: map-get($fontSize, default);
     line-height: 1.6;
   }
 
-  a {
+  :deep(a) {
     color: map-get($color, primary);
     text-decoration: underline;
   }

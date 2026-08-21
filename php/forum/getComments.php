@@ -11,7 +11,8 @@
       SELECT 
         message.*, 
         member.MEM_NAME AS commenter_name,
-        member.MEM_PHOTO AS commenter_photo
+        member.MEM_PHOTO AS commenter_photo,
+        member.BATTLE_WINS AS commenter_battle_wins
       FROM message 
       JOIN member ON message.mem_id = member.MEM_ID
       WHERE art_id = ?";

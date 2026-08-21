@@ -1,5 +1,5 @@
 <template>
-  <a :href="`${baseUrl}forumArticle.html`" class="article-card-link">
+  <a :href="`${baseUrl}forumArticle.html?id=${article.id}`" class="article-card-link">
     <article class="article-card">
       <p class="type-article">{{article.type}}</p>
       
