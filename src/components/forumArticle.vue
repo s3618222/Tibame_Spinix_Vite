@@ -78,8 +78,9 @@ export default {
         const res = await fetch(`http://localhost:8888/tibame-spinix/php/forum/getComments.php?id=${articleId}`);
         const result = await res.json();
         if (result.success) {
-          this.comments = result.data.map(c => ({
+          this.comments = result.data.map((c, index) => ({
             id: c.msg_id,
+            floor: index + 2,
             content: c.content,
             time: c.create_time,
             commenter: {
