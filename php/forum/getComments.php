@@ -7,7 +7,14 @@
   $id = $_GET["id"] ?? null;
 
   try{
-    $sql = "SELECT * FROM message WHERE art_id = ?";
+    $sql = "
+      SELECT 
+        message.*, 
+        member.MEM_NAME AS commenter_name,
+        member.MEM_PHOTO AS commenter_photo
+      FROM message 
+      JOIN member ON message.mem_id = member.MEM_ID
+      WHERE art_id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id]);  // 記得加中括號
     $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);

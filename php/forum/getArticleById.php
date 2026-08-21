@@ -7,7 +7,15 @@
   $id = $_GET["id"] ?? null; //沒有抓到id的話，就帶入空值，才不會報錯整個程式碼死掉
 
   try{
-    $sql = "SELECT * FROM article WHERE art_id = ?";
+    $sql = "
+      SELECT 
+        article.*, 
+        member.MEM_NAME AS author_name,
+        member.MEM_PHOTO AS author_photo
+      FROM article 
+      JOIN member ON article.mem_id = member.MEM_ID
+      WHERE article.art_id = ?
+    ";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id]);
     $article = $stmt->fetch(PDO::FETCH_ASSOC);
