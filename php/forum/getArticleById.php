@@ -11,7 +11,8 @@
       SELECT 
         article.*, 
         member.MEM_NAME AS author_name,
-        member.MEM_PHOTO AS author_photo
+        member.MEM_PHOTO AS author_photo,
+        member.BATTLE_WINS AS author_battle_wins
       FROM article 
       JOIN member ON article.mem_id = member.MEM_ID
       WHERE article.art_id = ?
