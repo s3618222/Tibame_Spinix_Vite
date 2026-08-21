@@ -5,7 +5,7 @@ export const exchangeList = [
       post_id: 'exc1',
       mem_id: 999,
       // comm_mem_id: '', // 申請會員編號，預設空值
-       exchange_comm_id: null,   // 改成存留言ID，尚未定案時是 null
+      exchange_comm_id: null,   // 改成存留言ID，尚未定案時是 null
       type: 'ratchet',
       product_img: 'BX-28.webp',
       title: '魔導致尊',

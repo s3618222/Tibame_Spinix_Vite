@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： localhost:8889
--- 產生時間： 2026-08-19 05:43:14
+-- 產生時間： 2026-08-21 08:09:33
 -- 伺服器版本： 5.7.24
 -- PHP 版本： 8.3.1
 
@@ -718,7 +718,7 @@ CREATE TABLE `exchange_post` (
   `post_pic5` varchar(255) DEFAULT NULL COMMENT '物品圖片5',
   `remove_reason` varchar(255) DEFAULT NULL COMMENT '如果被下架時，下架原因說明',
   `mem_id` int(11) UNSIGNED NOT NULL COMMENT '發文會員編號',
-  `comm_mem_id` int(11) UNSIGNED DEFAULT NULL COMMENT '申請交換會員編號',
+  `comm_id` int(11) UNSIGNED DEFAULT NULL COMMENT '選中的申請交換留言ID',
   `CITY_ID` int(10) UNSIGNED NOT NULL COMMENT '縣市',
   `DISTRICT_ID` int(10) UNSIGNED NOT NULL COMMENT '行政區',
   `post_contact` varchar(50) NOT NULL COMMENT '發起交換人的聯絡資訊'
@@ -728,7 +728,7 @@ CREATE TABLE `exchange_post` (
 -- 傾印資料表的資料 `exchange_post`
 --
 
-INSERT INTO `exchange_post` (`post_id`, `type`, `title`, `description`, `want_item`, `condition`, `is_exchanged`, `is_show`, `create_time`, `post_pic1`, `post_pic2`, `post_pic3`, `post_pic4`, `post_pic5`, `remove_reason`, `mem_id`, `comm_mem_id`, `CITY_ID`, `DISTRICT_ID`, `post_contact`) VALUES
+INSERT INTO `exchange_post` (`post_id`, `type`, `title`, `description`, `want_item`, `condition`, `is_exchanged`, `is_show`, `create_time`, `post_pic1`, `post_pic2`, `post_pic3`, `post_pic4`, `post_pic5`, `remove_reason`, `mem_id`, `comm_id`, `CITY_ID`, `DISTRICT_ID`, `post_contact`) VALUES
 (3, 'beyblade', 'CX 系列對戰陀螺改裝版', '關於交換戰鬥陀螺這件事，我們都可能想錯了，交換戰鬥陀螺，是很多人每天都在做的事，但真正把它做出意義的人，寥寥可數。 當我們認真審視交換戰鬥陀螺這件事，會發現它所牽涉的，遠比表面看來複雜得多。\r\n', '想交換魔導至尊', 'new', 0, 1, '2026-08-18 12:36:59', 'CX02_01.webp', 'BX23_01.webp', 'BX_02.webp', 'CX13_01.webp', 'BX-28.webp', NULL, 1, NULL, 1, 5, 'line:test123'),
 (4, 'others', '魔導至尊', '測式用文字', NULL, 'fair', 0, 1, '2026-08-18 12:36:59', 'BX-28.webp', 'CX13_01.webp', 'BX_02.webp', NULL, NULL, NULL, 2, NULL, 3, 43, '電話:0912345678'),
 (5, 'ratchet', '我是被申訴交換案件', '真的有夠傻眼！ 說好要拿這顆陀螺跟我交換，結果我都已經準備好了，對方卻突然說不想換了！早知道會這樣，當初就不要浪費彼此的時間。明明一開始就可以好好講清楚，為什麼最後才突然反悔？真的讓人非常不爽，也希望大家交換之前可以先確認清楚，不要隨便答應之後又臨時變卦！', NULL, 'good', 0, 1, '2026-08-04 20:51:15', 'CX02_01.webp', 'BX23_01.webp', NULL, NULL, NULL, NULL, 1, NULL, 1, 5, 'line:test123');
@@ -920,8 +920,8 @@ ALTER TABLE `exchange_post`
   ADD PRIMARY KEY (`post_id`),
   ADD KEY `CITY_ID` (`CITY_ID`),
   ADD KEY `DISTRICT_ID` (`DISTRICT_ID`),
-  ADD KEY `comm_mem_id` (`comm_mem_id`),
-  ADD KEY `mem_id` (`mem_id`);
+  ADD KEY `mem_id` (`mem_id`),
+  ADD KEY `comm_id` (`comm_id`) USING BTREE;
 
 --
 -- 資料表索引 `member`
@@ -1100,7 +1100,7 @@ ALTER TABLE `exchange_comment`
 ALTER TABLE `exchange_post`
   ADD CONSTRAINT `exchange_post_ibfk_1` FOREIGN KEY (`CITY_ID`) REFERENCES `city` (`CITY_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `exchange_post_ibfk_2` FOREIGN KEY (`DISTRICT_ID`) REFERENCES `district` (`DISTRICT_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `exchange_post_ibfk_3` FOREIGN KEY (`comm_mem_id`) REFERENCES `member` (`MEM_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `exchange_post_ibfk_3` FOREIGN KEY (`comm_id`) REFERENCES `exchange_comment` (`comm_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `exchange_post_ibfk_4` FOREIGN KEY (`mem_id`) REFERENCES `member` (`MEM_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
