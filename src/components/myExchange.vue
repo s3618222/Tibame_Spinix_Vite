@@ -31,9 +31,9 @@
     <div class="sop">
       <p class="sop-title">交換流程說明</p>
       <div class="sop-list">
-        <ul v-if="activeTab === 'myexchange'">
+        <ul>
           <li>
-            <div class="list-item">
+            <div class="list-item" v-if="activeTab === 'myexchange'">
               <div class="sop-img">
                 <img src="/sop01.png" alt="">
               </div>
@@ -42,54 +42,7 @@
                 <p class="info">選擇想交換對象</p>
               </div>
             </div>
-          </li>
-          <div class="icon-sop-next">
-              <i class="fa-solid fa-right-long"></i>
-            </div>
-          <li>
-            <div class="list-item">
-              <div class="sop-img">
-                <img src="/sop02.png" alt="">
-              </div>
-              <div class="sop-txt">
-                <p class="title">Step.2 待確認</p>
-                <p class="info">等待對方確認交換</p>
-              </div>
-            </div>
-            
-          </li>
-          <div class="icon-sop-next">
-            <i class="fa-solid fa-right-long"></i>
-          </div>
-          <li>
-            <div class="list-item">
-              <div class="sop-img">
-                <img src="/sop03.png" alt="">
-              </div>
-              <div class="sop-txt">
-                <p class="title">Step.3 交換中</p>
-                <p class="info">討論交換細節</p>
-              </div>
-            </div>
-          </li>
-          <div class="icon-sop-next">
-              <i class="fa-solid fa-right-long"></i>
-            </div>
-          <li>
-            <div class="list-item">
-              <div class="sop-img">
-                <img src="/sop04.png" alt="">
-              </div>
-              <div class="sop-txt">
-                <p class="title">Step.4 交換完成</p>
-                <p class="info">已順利交換完成</p>
-              </div>
-            </div>
-          </li>
-        </ul>
-        <ul v-if="activeTab === 'myapply'">
-          <li>
-            <div class="list-item">
+            <div class="list-item" v-if="activeTab === 'myapply'">
               <div class="sop-img">
                 <img src="/sop-apply.png" alt="">
               </div>
@@ -103,7 +56,16 @@
               <i class="fa-solid fa-right-long"></i>
             </div>
           <li>
-            <div class="list-item">
+            <div class="list-item"  v-if="activeTab === 'myexchange'">
+              <div class="sop-img">
+                <img src="/sop02.png" alt="">
+              </div>
+              <div class="sop-txt">
+                <p class="title">Step.2 待確認</p>
+                <p class="info">等待對方確認交換</p>
+              </div>
+            </div>
+            <div class="list-item" v-if="activeTab === 'myapply'">
               <div class="sop-img">
                 <img src="/sop-checked.png" alt="">
               </div>
@@ -112,7 +74,6 @@
                 <p class="info">請確認是否交換</p>
               </div>
             </div>
-            
           </li>
           <div class="icon-sop-next">
             <i class="fa-solid fa-right-long"></i>
@@ -143,6 +104,7 @@
             </div>
           </li>
         </ul>
+
       </div>
     </div>
 
@@ -186,7 +148,8 @@ import {
   exchangeList,
   fakeComments,
   statusLabelMap,
-  applyStatusLabelMap
+  applyStatusLabelMap,
+  replyExchange
 } from "@/data/mockExchangeData.js";
 // 分頁器
 import Pagination from "@/components/pagination.vue";
@@ -316,26 +279,19 @@ export default {
 
   methods: {
     handleReplyExchange(item) {
-      // 之後這裡開啟談窗，用 item.applyId 對應是哪一則申請（留言）
-      const isConfirm = window.confirm(`${item.username}對你的交換提議有興趣!\n是否確認交換?按下確認後將可以查看雙方的聯絡資訊`);
-
-      if(isConfirm){
-        const targetArticle = this.exchangeList.find(article => article.post_id === item.id );
-        
-        if(targetArticle){
-          targetArticle.exchange_comm_id = item.applyId;;
-          targetArticle.state = 'exchanging';
-          console.log(targetArticle.state);
-        }
-        window.alert('確認成功!現在可以查看對方的聯絡資訊了');
-      }
-    }
+      replyExchange(this.exchangeList, {
+        postId: item.post_id,
+        applyId: item.applyId,
+        posterName: item.username   // 這裡的 item.username 本來就是發文者
+  });
+}
   }
 };
 </script>
 
 <style lang="scss" scoped>
   @use '@/assets/scss/_var' as *;
+
 
   .empty-msg{
     text-align: center;
