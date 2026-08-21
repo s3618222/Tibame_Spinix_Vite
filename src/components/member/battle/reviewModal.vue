@@ -83,10 +83,6 @@ export default {
         return;
       }
 
-      const isConfirmed = confirm("確定要送出這則評價嗎？");
-
-      if (!isConfirmed) return;
-
       this.$emit("submit-review", { 
         //提交評價時，往父元件送出評分跟評論內容資料
         rating: this.rating,
