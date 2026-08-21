@@ -154,6 +154,7 @@ import AuthorCard from '@/components/forum/authorCard.vue';
 
   h1 {
     font-size: map-get($fontSize , h1 );
+    color: map-get($color, secondary);
   }
 }
 
@@ -172,6 +173,50 @@ import AuthorCard from '@/components/forum/authorCard.vue';
 
   @include rwd("desktop") {
     order: initial;
+  }
+
+  p {
+    font-size: map-get($fontSize, default);
+    line-height: 1.6;
+    color: map-get($color, secondary);
+    margin: 0 0 16px;
+  }
+
+  h2 {
+    font-size: map-get($fontSize, h2);
+    font-weight: 700;
+    color: map-get($color, secondary);
+    margin: 24px 0 12px;
+  }
+
+  h3 {
+    font-size: map-get($fontSize, h3);
+    font-weight: 700;
+    color: map-get($color, secondary);
+    margin: 20px 0 10px;
+  }
+
+  h4 {
+    font-size: map-get($fontSize, h4);
+    font-weight: 700;
+    color: map-get($color, secondary);
+    margin: 16px 0 8px;
+  }
+
+  ul, ol {
+    padding-left: 24px;
+    margin: 8px 0;
+  }
+
+  li {
+    margin-bottom: 4px;
+    font-size: map-get($fontSize, default);
+    line-height: 1.6;
+  }
+
+  a {
+    color: map-get($color, primary);
+    text-decoration: underline;
   }
 }
 

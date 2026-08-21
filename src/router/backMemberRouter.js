@@ -7,6 +7,7 @@ import {
 import MemberManage from "@/views/backend/memberManage.vue";
 import BattleManage from "@/views/backend/battleManage.vue";
 import BeybladeManage from "@/views/backend/beybladeManage.vue";
+import BeybladeForm from "@/views/backend/beybladeForm.vue";
 import ForumManage from "@/views/backend/forumManage.vue";
 import ForumManageDetail from "@/views/backend/forumManageDetail.vue";
 import ExchangeManage from "@/views/backend/exchangeManage.vue";
@@ -37,6 +38,16 @@ const backMemberRouter = createRouter({
       path: "/beyblade",
       name: "backend-beyblade",
       component: BeybladeManage
+    },
+    {
+      path: "/beyblade/new",
+      name: "backend-beyblade-new",
+      component: BeybladeForm
+    },
+    {
+      path: "/beyblade/:id/edit",
+      name: "backend-beyblade-edit",
+      component: BeybladeForm
     },
     {
       path: "/forum",

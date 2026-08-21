@@ -35,15 +35,11 @@
                v-for="btn in buttons"
                :key="btn.action"
                type="button"
-               class="btnNoFill"
+               
                :class="getBtnClass(btn)"
                @click="handleBtnClick(btn)"
             >{{ btn.label }}</button>
          </div>
-      </div>
-
-      <div class="show-detail">
-         <a :href="`product_detail.html?id=${post_id}`" class="detail_link" @click.stop>查看詳情</a>
       </div>
    </div>
 </template>
@@ -95,7 +91,7 @@ const props = defineProps({
    }
 });
 
-const emit = defineEmits(['complete-exchange', 'reply-exchange']);
+const emit = defineEmits(['reply-exchange']);
 
 // 狀態文字 → chip modifier 對照，涵蓋文章狀態 & 申請狀態
 const stateChipMap = {
@@ -103,27 +99,23 @@ const stateChipMap = {
    '交換中': 'chip--category',
    '待確認': 'chip--state',
    '交換完成': 'chip--completed',
-   '等待回復': 'chip--state',
-   '已回復': 'chip--exchangeable'
+   '申請中': 'chip--exchangeable',
+   '已回覆': 'chip--state'
 };
 
 const chipModifier = computed(() => stateChipMap[props.state] || '');
 
 const buttons = computed(() => {
-   const viewMore = { label: '查看詳情', action: 'view-more', type: 'default' };
+   const viewMore = { label: '查看詳情', action: 'view-more', type: 'btnNoFill' };
 
-   if (props.context === 'myApplications' && props.state === '已回復') {
-      return [{ label: '回覆交換', action: 'reply-exchange', type: 'primary' }];
-   }
-
-   if (props.context === 'myPosts' && props.state === '交換中') {
-      return [{ label: '完成交換', action: 'complete-exchange', type: 'primary' }];
+   if (props.context === 'myApplications' && props.state === '已回覆') {
+      return [{ label: '回覆交換', action: 'reply-exchange', type: 'btnFill' }];
    }
 
    return [viewMore];
 });
 function getBtnClass(btn) {
-   return [`btn-${btn.type}`, { 'btn-disabled': btn.disabled }];
+   return [`${btn.type}`, { 'btn-disabled': btn.disabled }];
 }
 
 function handleBtnClick(btn) {
@@ -134,7 +126,7 @@ function handleBtnClick(btn) {
       return;
    }
 
-   emit(btn.action, { post_id: props.post_id, title: props.title });
+   emit(btn.action, { id: props.post_id, title: props.title,username:props.username });
 }
 
 function goToDetail() {
@@ -152,18 +144,6 @@ function goToDetail() {
 
    .icon-style{
       display: none;
-   }
-
-   .show-detail{
-      padding-top: 12px;
-      .detail_link{
-         display: block;
-         padding: 8px 12px;
-         margin: 0 -12px -12px;
-         color: map-get($color, neutral );
-         text-align: center;
-         border-top: 1px solid #dddddd;
-      }
    }
 
    .card {
@@ -215,6 +195,7 @@ function goToDetail() {
          display: flex;
          flex-direction: column;
          gap: 12px;
+         
 
          h4 {
             font-weight: 600;
@@ -231,29 +212,60 @@ function goToDetail() {
          }
       }
 
-      .card-footer {
-         display: flex;
-         padding-top: 12px;
-         font-size: map-get($fontSize , hint);
-         align-items: center;
-         justify-content: space-between;
-
-         .card-buttons {
-            display: none;
-            gap: 8px;
-         }
-
-         .btnNoFill {
-            display: none;
-         }
-      }
+      
    }
    
+   @media screen and ( 768px > width) {
+      .card-footer {
+         padding-top: 12px;
+         font-size: map-get($fontSize , hint);
+
+         .chip{
+            width: fit-content;
+         }
+
+         .card-buttons {
+            display: flex;
+            justify-content: center;
+            margin: 12px -12px -12px;
+            border-top: 1px solid #dddddd;
+
+            .btnNoFill,
+            .btnFill{
+               border: none;
+               background-color: transparent;
+            }
+
+            .btnFill{
+               color: map-get($color, secondary2 );
+            }
+         }
+
+      }
+   }
 
 
 // == 平板 ========================================
    @media screen and (width >=768px) {
-      
+      .card-footer {
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         margin-top: 12px;
+
+            .card-buttons {
+               display: flex;
+            }
+
+            .btnNoFill {
+
+               &:hover{
+                  border-color: map-get( $color, neutral);
+                  background-color:  map-get( $color, neutral);;
+                  color: white;
+               }
+            }
+         }
    }
 
 // == 桌機 =====================================
@@ -263,11 +275,6 @@ function goToDetail() {
       .icon-style {
          display: flex;
          color: map-get($color , neutral);
-      }
-
-      .show-detail{
-         display: none;
-         visibility: hidden;
       }
       .card {
          cursor: pointer;
@@ -288,18 +295,6 @@ function goToDetail() {
             }
          }
 
-         .card-footer {
-            align-items: center;
-
-            .card-buttons {
-               display: flex;
-            }
-
-            .btnNoFill {
-               display: block;
-               padding: 12px 16px;
-            }
-         }
       }
    }
 </style>

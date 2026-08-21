@@ -124,11 +124,32 @@ export default {
     }
 
     tinymce.init({
-      selector: 'textarea#default',    // 綁定到id上面
+      selector: 'textarea#default',
       license_key: 'gpl',
-      plugins: 'link image',
-      toolbar: 'undo redo | link image'
-      // images_upload_url: 'https://notes.webmix.cc/tinymce/upload.php'
+      plugins: 'link image lists',
+      toolbar: 'undo redo | blocks | bold italic underline | bullist numlist | link image',
+      height: 400,
+      menubar: false,
+      branding: false,
+
+      block_formats: '內文=p; 標題一=h2; 標題二=h3; 標題三=h4',
+
+      content_style: `
+        body {
+          background-color: #F7F5F3;
+          font-family: "Segoe UI", "Microsoft JhengHei", "PingFang TC", sans-serif;
+          font-size: 18px;
+          line-height: 1.6;              /* 同一段落內，換行後的行距，數字越大行距越鬆 */
+          color: #141C26;
+        }
+        h2 { font-size: 30px; font-weight: 700; margin: 24px 0 12px; color: #141C26; }
+        h3 { font-size: 26px; font-weight: 700; margin: 20px 0 10px; color: #141C26; }
+        h4 { font-size: 22px; font-weight: 700; margin: 16px 0 8px; color: #141C26; }
+        p { margin: 0 0 16px; }          /* 段落與段落之間的距離 */
+        ul, ol { padding-left: 24px; margin: 8px 0; }
+        li { margin-bottom: 4px; }
+        a { color: #fec96b; text-decoration: underline; }
+      `
     });
   },
 
