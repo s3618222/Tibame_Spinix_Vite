@@ -1,6 +1,9 @@
 <?php
   require_once("../common/cors.php");
   require_once("../common/connect_ckd101g2.php");
+  
+  // 先同步已截止的 MATCHING 約戰狀態
+  require_once("./battle_status_sync.php");
 
   //取得要放入約戰配對分頁上的對戰紀錄；條件： 狀態必須為MATCHING、IS_SHOW = true (非下架)、還未截止
   $sql = "
