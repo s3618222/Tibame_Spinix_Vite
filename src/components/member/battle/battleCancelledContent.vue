@@ -4,9 +4,9 @@
 
     <div class="cancelled-row">
       <!-- 會員是發起人，顯示參加人資訊 -->
-      <button v-if="battle.role === 'initiator'" type="button" class="cancelled-user" @click="$emit('open-history', battle.participantId)">
+      <button v-if="battle.role === 'initiator' && battle.participantId" type="button" class="cancelled-user" @click="$emit('open-history', battle.participantId)">
         <img 
-          :src="`${baseUrl}${battle.participantAvatar}`" 
+          :src="battle.participantAvatar" 
           :alt="battle.participantName"
         >
         <span>
@@ -17,7 +17,7 @@
       <!-- 會員是參加人，顯示發起人資訊 -->
       <button v-else-if="battle.role === 'participant'" type="button" class="cancelled-user" @click="$emit('open-history', battle.initiatorId)">
         <img 
-          :src="`${baseUrl}${battle.initiatorAvatar}`" 
+          :src="battle.initiatorAvatar" 
           :alt="battle.initiatorName"
         >
         <span>
@@ -25,9 +25,16 @@
         </span>
       </button>
 
-      <div class="cancelled-message">
+      <div 
+        class="cancelled-message"
+        :class="{ 'failed-message': battle.rawStatus === 'FAILED' }"
+      >
         <i class="fa-solid fa-circle-xmark"></i>
-        <p>此次約戰已取消。</p>
+        <!-- 報名截止時間到，沒人加入時顯示 -->
+        <p v-if="battle.rawStatus === 'FAILED'">本次配對未成立，邀約已結束。</p>
+
+        <!-- 有人加入，但最後取消時顯示 -->
+        <p v-else>此次約戰已取消。</p>
       </div>
     </div>
 
@@ -37,12 +44,6 @@
 <script>
   export default {
     name: "BattleCancelledContent",
-
-    data() {
-      return {
-        baseUrl: import.meta.env.BASE_URL
-      };
-    },
 
     props: {
       battle: {
@@ -100,19 +101,6 @@
     }
   }
 
-  // .cancelled-message {
-  //   display: flex;
-  //   align-items: center;
-  //   gap: 8px;
-  //   color: #64748b;
-  //   font-size: 16px;
-
-  //   i {
-  //     color: #e63946;
-  //     font-size: 18px;
-  //   }
-  // }
-
   .cancelled-message {
     width: fit-content;
     max-width: 100%;
@@ -139,6 +127,10 @@
       color: #e63946;
       font-size: 18px;
     }
+  }
+
+  .failed-message {
+    margin-inline: auto;
   }
 
   // ========================= RWD調整 =============================

@@ -29,6 +29,12 @@
           全部 <span>({{ statusCounts.all }})</span>
         </button>
         <button type="button" class="status-tab"
+          v-if="currentRole == 'initiator'"
+          :class="{ active: currentStatus == 'matching' }"
+          @click="changeStatus('matching')">
+          待加入 <span>({{ statusCounts.matching }})</span>
+        </button>
+        <button type="button" class="status-tab"
           :class="{ active: currentStatus == 'pending' }"
           @click="changeStatus('pending')">
           待確認 <span>({{ statusCounts.pending }})</span>
@@ -41,7 +47,7 @@
         <button type="button" class="status-tab"
           :class="{ active: currentStatus == 'cancelled' }"
           @click="changeStatus('cancelled')">
-          已取消 <span>({{ statusCounts.cancelled }})</span>
+          已失效 <span>({{ statusCounts.cancelled }})</span>
         </button>
       </div>
     </div>
@@ -120,258 +126,8 @@
         reviewModalOpen: false, // 評價燈箱是否開啟，預設關閉
         selectedMember: null, //燈箱要顯示的會員
 
-        //對戰紀錄假資料
-        battleRecords: [
-          //發起的約戰
-          {
-            id: 1,
-            role: "initiator",
-
-            initiatorId: 100,
-            participantId: 101,
-
-            initiatorName: "Bill0714",
-            participantName: "陀螺小宇",
-
-            initiatorAvatar: "spinix_member_default.png",
-            participantAvatar: "spinix_member_default.png",
-
-            status: "pending",
-            mode: "casual",
-            title: "新手友善！一起開心打陀螺",
-            battleDate: "2026/08/15",
-            weekday: "六",
-            battleTime: "14:00",
-            city: "桃園市",
-            district: "中壢區",
-            coverImage: "battle_card_default.jpg",
-            target: "不限對象",
-
-            meetingPlace: "桃園市中壢區中央西路一段",
-            initiatorContact: "LINE：bill0714",
-            participantContact: "LINE：spin_yu101"
-          },
-          {
-            id: 2,
-            role: "initiator",
-
-            initiatorId: 100,
-            participantId: 101,
-
-            initiatorName: "Bill0714",
-            participantName: "陀螺殺手",
-
-            initiatorAvatar: "spinix_member_default.png",
-            participantAvatar: "spinix_member_test1.png",
-
-            status: "confirmed",
-            mode: "competitive",
-            title: "週末競技交流場",
-            battleDate: "2026/08/20",
-            weekday: "四",
-            battleTime: "10:00",
-            city: "新北市",
-            district: "板橋區",
-            coverImage: "battle_card_test1.jpg",
-            target: "不限對象",
-
-            meetingPlace: "新北板橋火車站一樓北3門外",
-            initiatorContact: "LINE：bill0714",
-            participantContact: "LINE：Liao_1701"
-          },
-          {
-            id: 7,
-            role: "initiator",
-
-            initiatorId: 100,
-            participantId: 102,
-
-            initiatorName: "Bill0714",
-            participantName: "旋風阿凱",
-
-            initiatorAvatar: "spinix_member_default.png",
-            participantAvatar: "spinix_member_default.png",
-
-            status: "confirmed",
-            mode: "casual",
-            title: "輕鬆交流！下班後玩陀螺",
-            battleDate: "2026/08/22",
-            weekday: "六",
-            battleTime: "18:30",
-            city: "桃園市",
-            district: "桃園區",
-            coverImage: "battle_card_default.jpg",
-            target: "不限對象",
-
-            meetingPlace: "桃園市桃園區統領廣場一樓入口",
-            initiatorContact: "LINE：bill0714",
-            participantContact: "Discord：spin_kai",
-
-            hasReviewed: false
-          },
-          {
-            id: 3,
-            role: "initiator",
-
-            initiatorName: "Bill0714",
-            participantName: "打到你怕",
-
-            initiatorId: 100,
-            participantId: 101,
-
-            initiatorAvatar: "spinix_member_default.png",
-            participantAvatar: "spinix_member_default.png",
-
-            status: "cancelled",
-            mode: "casual",
-            title: "下班後來場陀螺對戰吧",
-            battleDate: "2026/08/25",
-            weekday: "二",
-            battleTime: "19:00",
-            city: "桃園市",
-            district: "八德區",
-            coverImage: "battle_card_default.jpg",
-            target: "成人限定"
-          },
-          //參加的約戰紀錄
-          {
-            id: 4,
-            role: "participant",
-
-            initiatorName: "飛天粉紅豬",
-            participantName: "Bill0714",
-
-            initiatorId: 101,
-            participantId: 100,
-
-            initiatorAvatar: "spinix_member_test2.jpg",
-            participantAvatar: "spinix_member_default.png",
-
-            status: "pending",
-            mode: "casual",
-            title: "桃園玩家友誼交流戰",
-            battleDate: "2026/08/17",
-            weekday: "一",
-            battleTime: "20:00",
-            city: "桃園市",
-            district: "中壢區",
-            coverImage: "battle_card_test2.jpg",
-            target: "親子友善",
-
-            meetingPlace: "桃園市中壢區中央西路一段",
-            initiatorContact: "Discord：pink_flying_pig",
-            participantContact: "LINE：bill0714"
-          },
-          {
-            id: 5,
-            role: "participant",
-
-            initiatorId: 101,
-            participantId: 100,
-
-            initiatorName: "陀螺著火啦",
-            participantName: "Bill0714",
-
-            initiatorAvatar: "spinix_member_default.png",
-            participantAvatar: "spinix_member_default.png",
-
-            status: "confirmed",
-            mode: "competitive",
-            title: "中壢車站陀螺挑戰",
-            battleDate: "2026/08/13",
-            weekday: "六",
-            battleTime: "21:00",
-            city: "桃園市",
-            district: "中壢區",
-            coverImage: "battle_card_default.jpg",
-            target: "不限對象",
-
-            meetingPlace: "桃園市中壢區中壢火車站大廳",
-            initiatorContact: "手機：0979455781",
-            participantContact: "LINE：bill0714"
-          },
-          {
-            id: 6,
-            role: "participant",
-
-            initiatorId: 101,
-            participantId: 100,
-
-            initiatorName: "擱共",
-            participantName: "Bill0714",
-
-            initiatorAvatar: "spinix_member_test3.png",
-            participantAvatar: "spinix_member_default.png",
-            
-            status: "cancelled",
-            mode: "casual",
-            title: "成人限定競技對戰",
-            battleDate: "2026/08/23",
-            weekday: "日",
-            battleTime: "15:00",
-            city: "台北市",
-            district: "中山區",
-            coverImage: "battle_card_default.jpg",
-            target: "成人限定"
-          }
-        ],
-
-        //約戰歷史燈箱假資料
-        memberHistoryData: { 
-          101: {
-            memberId: 101,
-            name: "陀螺小宇",
-            avatar: "spinix_member_default.png",
-            totalBattles: 18,
-            averageRating: 4.7,
-            reviews: [
-              {
-                reviewId: 1001,
-                reviewerName: "BladeKen",
-                rating: 5,
-                content: "約戰很準時，現場交流氣氛很好！",
-                createdAt: "2026-07-15"
-              },
-              {
-                reviewId: 1002,
-                reviewerName: "阿哲",
-                rating: 4,
-                content: "場地資訊說明清楚，下次還會想再約。",
-                createdAt: "2026-07-08"
-              },
-              {
-                reviewId: 1003,
-                reviewerName: "Ray",
-                rating: 5,
-                content: "交流過程很友善，整體體驗很好。",
-                createdAt: "2026-06-29"
-              }
-            ]
-          },
-          102: {
-            memberId: 102,
-            name: "旋風阿凱",
-            avatar: "spinix_member_default.png",
-            totalBattles: 12,
-            averageRating: 4.5,
-            reviews: [
-              {
-                reviewId: 2001,
-                reviewerName: "SpinKing",
-                rating: 5,
-                content: "對戰很投入，也很準時。",
-                createdAt: "2026-07-20"
-              },
-              {
-                reviewId: 2002,
-                reviewerName: "阿宇",
-                rating: 4,
-                content: "交流過程很順利，是不錯的對戰玩家。",
-                createdAt: "2026-07-02"
-              }
-            ]
-          }
-        },
+        //儲存後端傳回的當前會員相關約戰紀錄
+        battleRecords: [],
 
         //填入評價燈箱的資料
         reviewTarget: {
@@ -390,6 +146,10 @@
       ReviewModal
     },
 
+    mounted() { //一載入元件時，就先抓取當前會員的相關約戰資料
+      this.fetchMyBattles();
+    },
+
     computed: {
       roleBattles() { //計算不同角色時的卡片數量
         return this.battleRecords.filter((battle) => {
@@ -400,6 +160,10 @@
       statusCounts() { //計算不同狀態下的卡片數量
         return {
           all: this.roleBattles.length,
+
+          matching: this.roleBattles.filter((battle) => {
+            return battle.status == "matching";
+          }).length,
 
           pending: this.roleBattles.filter((battle) => {
             return battle.status == "pending";
@@ -423,10 +187,145 @@
         return this.roleBattles.filter((battle) => {
           return battle.status == this.currentStatus;
         });
+      },
+
+      // PHP API 路徑
+      phpBaseUrl() {
+        return (
+          location.hostname === "localhost" ||
+          location.hostname === "127.0.0.1"
+        )
+          ? "http://localhost:8888/Spinix/php"
+          : "/ckd101/g2/php";
       }
     },
 
     methods: {
+        async fetchMyBattles() { //串接取得當前會員相關約戰API
+          try {
+            const response = await fetch(`${this.phpBaseUrl}/battle/my_battle_get.php`, {
+              credentials: "include"
+            });
+
+            const data = await response.json();
+            const targetMap = {
+              ALL: "不限對象",
+              ADULT: "成人限定",
+              FAMILY: "親子友善"
+            };
+
+            const statusMap = {
+              MATCHING: "matching",
+              PENDING: "pending",
+              CONFIRMED: "confirmed",
+              FAILED: "cancelled",
+              CANCELLED: "cancelled"
+            };
+
+            console.log("API原始資料：", data);
+
+            //將後端取回資料進行格式轉換，存進battleRecords中
+            this.battleRecords = data.map((battle) => {
+              //將約戰日期資料先提前轉換為前端需要顯的格式
+              const dateObj = new Date(battle.BATTLE_DATE);
+
+              const year = dateObj.getFullYear();
+              const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+              const day = String(dateObj.getDate()).padStart(2, "0");
+
+              const hour = String(dateObj.getHours()).padStart(2, "0");
+              const minute = String(dateObj.getMinutes()).padStart(2, "0");
+
+              const weekdayMap = ["日", "一", "二", "三", "四", "五", "六"];
+              const weekday = weekdayMap[dateObj.getDay()];
+
+              return {
+                id: Number(battle.BATTLE_ID),
+
+                role: battle.MY_ROLE === "INITIATOR"
+                  ? "initiator"
+                  : "participant",
+
+                initiatorId: Number(battle.INITIATOR_ID),
+
+                participantId: battle.PARTICIPANT_ID
+                  ? Number(battle.PARTICIPANT_ID)
+                  : null,
+
+                initiatorName: battle.INITIATOR_NAME,
+                participantName: battle.PARTICIPANT_NAME,
+
+                initiatorAvatar: this.getMemberPhotoUrl(battle.INITIATOR_PHOTO),
+                participantAvatar: battle.PARTICIPANT_PHOTO ? this.getMemberPhotoUrl(battle.PARTICIPANT_PHOTO) : null,
+
+                status: statusMap[battle.BATTLE_STATUS], //前端UI分類
+                rawStatus: battle.BATTLE_STATUS, //保留資料庫原始狀態
+
+                mode: battle.BATTLE_MODE.toLowerCase(),
+
+                title: battle.BATTLE_TITLE,
+
+                city: battle.CITY_NAME,
+                district: battle.DISTRICT_NAME,
+
+                target: targetMap[battle.BATTLE_TARGET] || battle.BATTLE_TARGET,
+
+
+                meetingPlace: battle.BATTLE_LOC,
+
+                initiatorContact: battle.INI_CONTACT,
+                participantContact: battle.PAR_CONTACT,
+
+                winner: 
+                  battle.WINNER === null 
+                  ? null 
+                  : Number(battle.WINNER) === 0 
+                    ? "initiator" 
+                    : "participant",
+
+                hasReviewed: Number(battle.HAS_REVIEWED) === 1,
+                reviewedAt: battle.MY_REVIEWED_AT,
+
+                coverImage: this.getBattleImageUrl(battle.BATTLE_IMG),
+
+                battleDate: `${year}/${month}/${day}`,
+                weekday: weekday,
+                battleTime: `${hour}:${minute}`,
+
+                // 保留原始約戰日期格式，供後續邏輯判斷使用
+                battleDateTime: battle.BATTLE_DATE
+              };
+            });
+
+            console.log("轉換後 battleRecords：", this.battleRecords);
+
+          } catch (error) {
+            console.error("取得我的約戰失敗", error);
+          }
+        },
+
+        getBattleImageUrl(imagePath) { //處理約戰封面圖路徑
+          if (!imagePath) {
+            return "";
+          }
+
+          // 動態上傳的圖片位置 PHP/uploads/battle
+          if (imagePath.startsWith("uploads/")) {
+            return `${this.phpBaseUrl}/${imagePath}`;
+          }
+
+          // 其他圖片則維持原本路徑
+          return `${import.meta.env.BASE_URL}${imagePath}`;
+        },
+
+        getMemberPhotoUrl(photoPath) { //處理約戰紀錄中的會員頭像路徑
+          if (!photoPath) {
+            return "";
+          }
+
+          return `${import.meta.env.BASE_URL}${photoPath}`;
+        },
+
         changeRole(role) {
           this.currentRole = role;
           this.currentStatus = "all"; //切換腳色的同時，卡片狀態預設顯示全部
@@ -457,36 +356,105 @@
           this.isHistoryModalOpen = false;
           this.selectedMember = null; //關閉燈箱時，同時清空資料
         },
-        openHistoryModal(memberId) { //打開約戰歷史燈箱
-          this.selectedMember = this.memberHistoryData[memberId]; //抓取指定會員的約戰歷史紀錄
-
-          if (!this.selectedMember) {
+        async openHistoryModal(memberId) { //打開約戰歷史燈箱
+          if(!memberId) {
             return;
           }
 
-          this.isHistoryModalOpen = true;
+          try {
+            const response = await fetch(`${this.phpBaseUrl}/battle/host_history_get.php?host_id=${memberId}`, {
+              credentials: "include"
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              alert(data.message || "會員歷史資料取得失敗");
+              return;
+            }
+
+            //取得API資料後，先將其整理為歷史燈箱中需要的格式
+            this.selectedMember = {
+              memberId: Number(data.host.MEM_ID),
+              name: data.host.MEM_NAME,
+              avatar: data.host.MEM_PHOTO,
+
+              // 約戰統計
+              totalBattles: Number(data.host.TOTAL_BATTLES),
+
+              averageRating:
+                data.host.AVERAGE_RATING === null ? null : Number(data.host.AVERAGE_RATING),
+
+              // 競技模式統計
+              competitiveTotal: Number(data.host.COMPETITIVE_TOTAL),
+              competitiveWins: Number(data.host.COMPETITIVE_WINS),
+              winRate: data.host.WIN_RATE === null ? null : Number(data.host.WIN_RATE),
+
+              // 最新評價
+              reviews: data.reviews.map(review => {
+                return {
+                  reviewerName: review.REVIEWER_NAME,
+                  rating: Number(review.RATING),
+                  content: review.COMMENT,
+                  createdAt: review.COMMENTED_AT
+                };
+              })
+            };
+
+            console.log("整理後的會員歷史資料：", this.selectedMember);
+
+            //資料準備完成後，再打開燈箱
+            this.isHistoryModalOpen = true;
+
+          } catch (error) {
+            console.error("取得會員歷史資料失敗：", error);
+            alert("系統發生錯誤，請稍後再試");
+          }
+          
         },
-        acceptBattle(battleId) { //接受申請對戰函式
+        async acceptBattle(battleId) { //接受申請對戰函式
           const isConfirmed = confirm(
               "確定要接受這位會員的約戰申請嗎？"
             );
 
-            if (!isConfirmed) {
-              return;
-            };
-
-          const battle = this.battleRecords.find((item) => { //利用對戰id找到該筆對戰資料
-            return item.id === battleId;
-          });
-
-          if (!battle) {
+          if (!isConfirmed) {
             return;
-          }
+          };
 
-          battle.status = "confirmed"; //將對戰狀態更改為已確認
+          try {
+            //建立要傳給後端API的此筆約戰ID資料
+            const formData = new FormData();
+            formData.append("battle_id", battleId);
+
+            //呼叫接受申請約戰API
+            const response = await fetch(`${this.phpBaseUrl}/battle/battle_accept_post.php`,{
+              method: "POST",
+              credentials: "include",
+              body: formData
+            });
+
+            //將PHP回傳的JSON 再轉成JS物件
+            const data = await response.json();
+
+            // API 回傳失敗時
+            if (!response.ok || !data.success) {
+              alert(data.message || "接受約戰申請失敗");
+              return;
+            }
+
+            // 成功文字提示
+            alert(data.message);
+
+            // 重新取得當前會員的約戰紀錄，更新畫面上的約戰紀錄狀態
+            await this.fetchMyBattles();
+
+          } catch (error) {
+            console.error("接受約戰申請失敗：", error);
+            alert("系統發生錯誤，請稍後再試");
+          }
         },
 
-        rejectBattle(battleId) { //拒絕申請函式
+        async rejectBattle(battleId) { //拒絕申請函式
           const isConfirmed = confirm(
             "確定無法參加此次約戰嗎？確認後，此次約戰將會取消。"
           );
@@ -495,26 +463,96 @@
             return;
           };
 
-          const battle = this.battleRecords.find((item) => {
-            return item.id === battleId;
-          });
+          try {
+            const formData = new FormData();
+            formData.append("battle_id", battleId);
 
-          if (!battle) {
-            return;
+            const response = await fetch(`${this.phpBaseUrl}/battle/battle_reject_post.php`, {
+              method: "POST",
+              credentials: "include",
+              body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+              alert(data.message || "拒絕約戰申請失敗");
+              return;
+            }
+
+            //拒絕約戰-操作成功文字提示
+            alert(data.message);
+
+            // 拒絕申請後，再重新抓取一次目前會員的相關約戰紀錄，更新狀態
+            await this.fetchMyBattles();
+
+          } catch (error) {
+            console.error("拒絕約戰申請失敗：", error);
+            alert("系統發生錯誤，請稍後再試");
           }
-
-          battle.status = "cancelled"; //將對戰狀態更改為已取消
         },
 
-        submitBattleResult(resultData) { 
-          //resultData 為子元件傳過來的資料
+        async submitBattleResult(resultData) { 
+          //resultData 為子元件(battleConfirmedContent)傳過來的約戰id與winner資料
           const battle = this.battleRecords.find(
             item => item.id === resultData.battleId
           );
 
           if (!battle) return;
 
-          battle.winner = resultData.winner;
+          //當原訂的約戰時間還未到時，先提醒會員
+          const battleDateTime = new Date(battle.battleDateTime);
+          const now = new Date();
+
+          //初始確認提交文字
+          let confirmMessage = "確定提交此次對戰結果嗎？";
+
+          //當約戰時間還沒到時的提醒文字
+          if (now < battleDateTime) {
+            confirmMessage = "目前尚未到原訂約戰時間，請確認雙方已實際完成對戰後再回填結果。\n確定要繼續送出嗎？";
+          }
+
+          const isConfirmed = confirm(confirmMessage);
+
+          if(!isConfirmed) {
+            return;
+          }
+
+          //確定要送出winner時，先將前端目前前端顯示用的initiator、participant，轉成後端資料庫要存的0、1
+          const winnerValue = resultData.winner === "initiator" ? 0 : 1;
+
+          //接著準備串接後端API，將勝者資料回傳
+          const formData = new FormData();
+          formData.append("battle_id", resultData.battleId);
+          formData.append("winner", winnerValue);
+
+          try {
+            const response = await fetch(`${this.phpBaseUrl}/battle/battle_result_post.php`, {
+              method: "POST",
+              credentials: "include",
+              body: formData
+            });
+
+            const data = await response.json();
+
+            //API回傳失敗時
+            if (!response.ok || !data.success) {
+              alert(data.message || "回填對戰結果失敗");
+              return;
+            }
+
+            //回傳成功
+            alert(data.message);
+
+            //頁面重新取得最新狀態的約戰資料
+            await this.fetchMyBattles();
+
+          } catch (error) {
+
+            console.error("回填對戰結果失敗：", error);
+            alert("系統發生錯誤，請稍後再試");
+          }
+          
         },
 
         goToAppeal(appealData) {
@@ -539,28 +577,67 @@
           this.reviewModalOpen = false;
         },
 
-        submitReview(reviewData) { //提交申訴函式
-          //抓取來自評價燈箱子元件的申訴資料
-          const finalReviewData = {
-            battleId: this.reviewTarget.battleId,
-            opponentId: this.reviewTarget.opponentId,
-            rating: reviewData.rating,
-            comment: reviewData.comment
-          };
-
-          console.log(finalReviewData);
-
-          //找出資料中目前被評價的約戰紀錄
+        async submitReview(reviewData) { //提交評價函式
+          //抓取來自評價燈箱子元件的評論資料(星等、評論內容)
+          
+          //找出目前要進行評價的約戰
           const battle = this.battleRecords.find(
             item => item.id === this.reviewTarget.battleId
           );
 
-          if (!battle) return;
-          //註記該筆約戰已評分過，避免重複評分
-          battle.hasReviewed = true;
+          if(!battle) {
+            return;
+          }
 
-          //送出申訴後，同時執行關閉燈箱函式
-          this.closeReviewModal();
+          //根據是否已達約戰時間，決定確認訊息
+          const now = new Date();
+          const battleDate = new Date(battle.battleDateTime);
+
+          let confirmMessage = "確定要送出這則評價嗎？";
+
+          // 尚未到原訂約戰時間時
+          if (now < battleDate) {
+            confirmMessage =
+              "目前尚未到原訂約戰時間，請確認雙方已實際完成約戰後再留下評價。\n確定要繼續送出嗎？";
+          }
+
+          const isConfirmed = confirm(confirmMessage);
+
+          if (!isConfirmed) {
+            return;
+          }
+
+          //將要傳回後端API的資料打包進formData
+          const formData = new FormData();
+          formData.append("battle_id", this.reviewTarget.battleId);
+          formData.append("stars", reviewData.rating);
+          formData.append("comment", reviewData.comment);
+
+          try {
+            const response = await fetch(`${this.phpBaseUrl}/battle/battle_review_post.php`, {
+              method: "POST",
+              credentials: "include",
+              body: formData
+            });
+
+            const data = await response.json();
+
+            //當API回傳失敗時
+            if (!response.ok || !data.success) {
+              alert(data.message || "評價送出失敗");
+              return;
+            }
+
+            //寫入評價成功，顯示成功提示文字、關閉燈箱，並再次更新最新約戰紀錄
+            alert(data.message);
+            this.closeReviewModal();
+            await this.fetchMyBattles();
+
+
+          } catch (error) {
+            console.error("送出評價失敗：", error);
+            alert("系統發生錯誤，請稍後再試");
+          }
         }
     }
   };

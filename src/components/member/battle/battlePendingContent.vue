@@ -7,7 +7,7 @@
         <button type="button" class="pending-user" @click="$emit('open-history', battle.participantId)">
           <!-- 顯示申請人頭像 -->
           <img 
-            :src="`${baseUrl}${battle.participantAvatar}`" 
+            :src="battle.participantAvatar" 
             :alt="battle.participantName"
           >
           <span>
@@ -40,7 +40,7 @@
         <button type="button" class="pending-user" @click="$emit('open-history', battle.initiatorId)">
           <!-- 顯示發起人頭像 -->
           <img 
-            :src="`${baseUrl}${battle.initiatorAvatar}`" 
+            :src="battle.initiatorAvatar" 
             :alt="battle.initiatorName"
           >
           <span>
@@ -59,12 +59,6 @@
 <script>
   export default {
     name: "BattlePendingContent",
-
-    data() {
-      return {
-        baseUrl: import.meta.env.BASE_URL
-      };
-    },
 
     props: {
       battle: {

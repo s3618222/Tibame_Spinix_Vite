@@ -13,7 +13,7 @@
           @click="$emit('open-history', opponentId)"
         >
           <img 
-            :src="`${baseUrl}${opponentAvatar}`" 
+            :src="opponentAvatar" 
             :alt="opponentName"
           >
           <span>{{ opponentName }}</span>
@@ -103,7 +103,6 @@
 
     data() {
       return {
-        baseUrl: import.meta.env.BASE_URL,
         selectedWinner: ""
       };
     },
@@ -153,10 +152,6 @@
           alert("請先選擇本次對戰勝者");
           return;
         }
-
-        const isConfirmed = confirm("確定提交此次對戰結果嗎？");
-
-        if (!isConfirmed) return;
 
         this.$emit("submit-result", {
           battleId: this.battle.id, //傳出此筆約戰紀錄id
