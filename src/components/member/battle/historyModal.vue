@@ -20,17 +20,47 @@
         </div>
       </div>
 
-      <!-- 總場次與評分 -->
+      <!-- 約戰統計資訊 -->
       <div class="member-stat-list">
+
+        <!-- 約戰總場次 -->
         <div class="member-stat">
           <p>約戰總場次</p>
-          <strong>{{ member.totalBattles }}<span>場</span></strong>
+
+          <strong>
+            {{ member.totalBattles }}
+            <span>場</span>
+          </strong>
         </div>
 
+        <!-- 平均約戰評價 -->
         <div class="member-stat">
           <p>平均約戰評價</p>
-          <strong>{{ member.averageRating.toFixed(1) }}<span class="rating-star">★</span></strong>
+
+          <strong>
+            {{ formattedAverageRating }}
+            <span
+              v-if="member.averageRating !== null"
+              class="rating-star"
+            >
+              ★
+            </span>
+          </strong>
         </div>
+
+        <!-- 競技勝率 -->
+        <div class="member-stat">
+          <p>競技勝率</p>
+
+          <strong>
+            {{ formattedWinRate }}
+          </strong>
+
+          <span class="competitive-record">
+            {{ competitiveRecord }}
+          </span>
+        </div>
+
       </div>
 
       <!-- 過往評價列表 -->
@@ -72,6 +102,37 @@
         type: Object,
         required: true
       }
+    },
+
+    computed: {
+
+      // 平均評價顯示格式
+      formattedAverageRating() {
+        if (this.member.averageRating === null) {
+        return "--";
+        }
+
+        return Number(this.member.averageRating).toFixed(1);
+      },
+
+      // 競技勝率顯示格式
+      formattedWinRate() {
+        if (this.member.winRate === null) {
+          return "--";
+        }
+
+        return `${Math.round(this.member.winRate)}%`;
+      },
+
+        // 競技戰績顯示格式
+      competitiveRecord() {
+        if (this.member.winRate === null) {
+          return "尚無紀錄";
+        }
+
+        return `${this.member.competitiveWins} 勝 / ${this.member.competitiveTotal} 場`;
+      }
+
     },
 
     emits: ["close"],
@@ -132,8 +193,8 @@
 
   .member-stat-list {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 28px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
   }
 
   .member-stat {
@@ -159,6 +220,11 @@
       font-size: 26px;
       line-height: 1.2;
     }
+  }
+
+  .competitive-record {
+    color: #64748b;
+    font-size: 12px;
   }
 
   .rating-star {
@@ -209,6 +275,14 @@
     flex-shrink: 0;
     border-radius: 50%;
     object-fit: cover;
+  }
+
+  @media screen and (max-width: 460px) {
+
+    .member-stat-list {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
   }
 
 </style>
