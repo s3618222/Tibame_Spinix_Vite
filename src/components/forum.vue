@@ -16,123 +16,100 @@
 </template>
 
 <script>
-  import ForumToolbar from "@/components/forum/forumToolbar.vue";
-  import CategoryTabs from "@/components/forum/categoryTabs.vue";
-  import ArticleList from "@/components/forum/articleList.vue";
+import ForumToolbar from "@/components/forum/forumToolbar.vue";
+import CategoryTabs from "@/components/forum/categoryTabs.vue";
+import ArticleList from "@/components/forum/articleList.vue";
+import { CATEGORY_LABELS } from '@/assets/js/utils/articleCategory.js';
 
-  export default {
-    name: "ForumView",
+export default {
+  name: "ForumView",
 
-    data(){
-      const now = Date.now();
-      return {
-        currentTab: "all",  // 預設值
-        searchKeyword: "",
-        sortBy: "latestPost",
-        allArticles: [
-          {
-            id: 1,
-            type: "公告",
-            categoryId: "announcement",
-            title: "2026 年度 SPINIX 全國大賽規章與獎金細節發佈",
-            content: "請所有參賽選手務必在 12/20 前完成設備檢核...",
-            imgArticle: "",
-            imgWriter: "spinix_member_test1.png",
-            name: "官方管理員",
-            createTime: new Date(now - 2 * 60 * 60 * 1000).toISOString(),
-            lastCommentTime: new Date(now - 15 * 60 * 1000).toISOString(),
-            comment: "1258"
-          },
-          {
-            id: 2,
-            type: "配裝開箱",
-            categoryId: "unboxing",
-            title: "【心得】關於 B-201 的配重塊最佳化方案",
-            content: "實測了 50 次對戰，發現使用特定軸心可以大幅增加穩定度...",
-            imgArticle: "",
-            imgWriter: "",
-            name: "陀螺大師",
-            createTime: new Date(now - 10 * 60 * 1000).toISOString(),
-            lastCommentTime: new Date(now - 5 * 60 * 1000).toISOString(),
-            comment: "11"
-          },
-          {
-            id: 3,
-            type: "配裝開箱",
-            categoryId: "unboxing",
-            title: "極稀有！黃金版天翼戰神開箱實拍分享",
-            content: "等了三個月終於從日本寄過來了，這電鍍的質感真的沒話說...",
-            imgArticle: "",
-            imgWriter: "",
-            name: "收藏家 A",
-            createTime: new Date(now - 1 * 60 * 60 * 1000).toISOString(),
-            lastCommentTime: new Date(now - 1 * 60 * 60 * 1000).toISOString(),
-            comment: "0"
-          },
-          {
-            id: 4,
-            type: "賽事情報",
-            categoryId: "event",
-            title: "台北大賽各組別賽程表公佈（附導航地圖）",
-            content: "請各位家長與選手注意，本次報到地點位於二樓多功能大廳...",
-            imgArticle: `battle_empty_state.png`,
-            imgWriter: "",
-            name: "賽事委員555555555555555",
-            createTime: new Date(now - 3 * 60 * 60 * 1000).toISOString(),
-            lastCommentTime: new Date(now - 2.5 * 60 * 60 * 1000).toISOString(),
-            comment: "5"
-          },
-        ]
+  data(){
+    const now = Date.now();
+    return {
+      currentTab: "all",  // 預設值
+      searchKeyword: "",
+      sortBy: "latestPost",
+      allArticles: []
+    }
+  },
+
+  created(){
+    this.fetchArticles();
+  },
+
+  components: {
+    ForumToolbar,
+    CategoryTabs,
+    ArticleList
+  },
+
+  computed: {
+    filteredArticles() {
+      let result = this.allArticles;
+
+      if (this.currentTab !== "all") {
+        result = result.filter(article => article.categoryId === this.currentTab);
       }
+
+      const keyword = this.searchKeyword.trim().toLowerCase();
+      if (keyword) {
+        result = result.filter(article =>
+          article.title.toLowerCase().includes(keyword)
+        );
+      }
+
+      return result;
     },
 
-    components: {
-      ForumToolbar,
-      CategoryTabs,
-      ArticleList
-    },
+    displayArticles() {
+      const sorted = [...this.filteredArticles];
+      if (this.sortBy === "latestComment") {
+        sorted.sort((a, b) => new Date(b.lastCommentTime) - new Date(a.lastCommentTime));
+      } else {
+        sorted.sort((a, b) => new Date(b.createTime) - new Date(a.createTime));
+      }
+      return sorted;
+    }
+  },
 
-    computed: {
-      filteredArticles() {
-        let result = this.allArticles;
+  methods: {
+    async fetchArticles(){
+      try{
+        const res = await fetch("http://localhost:8888/tibame-spinix/php/forum/getArticles.php");
+        const result = await res.json();
 
-        if (this.currentTab !== "all") {
-          result = result.filter(article => article.categoryId === this.currentTab);
+        if(result.success){
+          this.allArticles = result.data.map(article => ({
+            id: article.art_id,
+            type: CATEGORY_LABELS[article.category] ?? article.category,
+            categoryId: article.category,
+            title: article.title,
+            content: article.content,
+            imgArticle: article.pic ?? "",
+            imgWriter: article.author_photo,
+            name: article.author_name,
+            createTime: article.create_time,
+            lastCommentTime: article.last_comment_time ?? article.create_time,
+            comment: article.comment_count
+          }));
         }
 
-        const keyword = this.searchKeyword.trim().toLowerCase();
-        if (keyword) {
-          result = result.filter(article =>
-            article.title.toLowerCase().includes(keyword)
-          );
-        }
-
-        return result;
-      },
-
-      displayArticles() {
-        const sorted = [...this.filteredArticles];
-        if (this.sortBy === "latestComment") {
-          sorted.sort((a, b) => new Date(b.lastCommentTime) - new Date(a.lastCommentTime));
-        } else {
-          sorted.sort((a, b) => new Date(b.createTime) - new Date(a.createTime));
-        }
-        return sorted;
+      }catch(error){
+        console.error("文章列表載入失敗", error);
       }
     },
-
-    methods: {
-      switchTab(tabId){
-        this.currentTab = tabId;
-      },
-      updateSearch(keyword) {
-        this.searchKeyword = keyword;
-      },
-      updateSort(value) {
-        this.sortBy = value;
-      }
+    switchTab(tabId){
+      this.currentTab = tabId;
+    },
+    updateSearch(keyword) {
+      this.searchKeyword = keyword;
+    },
+    updateSort(value) {
+      this.sortBy = value;
     }
   }
+}
 
 
 </script>
@@ -141,30 +118,30 @@
 @use '@/assets/scss/var' as *;
 @use '@/assets/scss/reset' as *;
 
-  .forum-page {
-    // background-color: map-get($color, secondary);
-    min-height: 100vh;
-    padding: 32px 20px 100px;
-    background-color: map-get($color, tertiary);
+.forum-page {
+  // background-color: map-get($color, secondary);
+  min-height: 100vh;
+  padding: 32px 20px 100px;
+  background-color: map-get($color, tertiary);
 
-    .forum-container {
-      max-width: 1280px;
-      margin: 0 auto;
-    }
-
-    .title {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 20px;
-      h1 {
-        font-size: map-get($fontSize, h1 );
-        color: map-get($color , secondary2 );
-        font-weight: 600;
-      }
-    }
-    
+  .forum-container {
+    max-width: 1280px;
+    margin: 0 auto;
   }
+
+  .title {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+    h1 {
+      font-size: map-get($fontSize, h1 );
+      color: map-get($color , secondary2 );
+      font-weight: 600;
+    }
+  }
+  
+}
 
 
 </style>
