@@ -15,11 +15,11 @@
         </div> -->
         <div class="meta-item">
           <p class="meta-label">申訴人</p>
-          <p class="meta-value">{{ appeal.reporter }}</p>
+          <p class="meta-value">{{ appeal.reporterName }}</p>
         </div>
         <div class="meta-item">
           <p class="meta-label">被申訴對象</p>
-          <p class="meta-value">{{ appeal.target }}</p>
+          <p class="meta-value">{{ appeal.targetName }}</p>
         </div>
         <div class="meta-item">
           <p class="meta-label">申訴類型</p>
@@ -29,6 +29,12 @@
           <p class="meta-label">建立時間</p>
           <p class="meta-value">{{ appeal.createdAt }}</p>
         </div>
+        <div class="meta-item">
+          <p class="meta-label">案件狀態</p>
+          <p class="meta-value">
+            {{ statusLabel(appeal.status) }}
+          </p>
+        </div>
       </div>
 
       <section class="detail-card">
@@ -36,15 +42,25 @@
         <p class="detail-text">{{ appeal.content }}</p>
 
         <h2>證據截圖</h2>
-        <div class="evidence-grid">
-          <div class="evidence-item" v-for="n in appeal.images" :key="n">IMG</div>
+        <div class="evidence-grid" v-if="appeal.images && appeal.images.length">
+          <div class="evidence-item" v-for="image in appeal.images" :key="image">
+            <img 
+              :src="getEvidenceImageUrl(image)" 
+              alt="申訴佐證圖片"
+              @click="openImagePreview(image)"
+            >
+          </div>
         </div>
+
+        <p v-else class="evidence-empty">
+          此申訴未提供佐證圖片
+        </p>
       </section>
 
       <section class="detail-card result-card" v-if="appeal.result">
         <h2>處份結果</h2>
         <p class="detail-text">{{ appeal.result }}</p>
-        <p class="result-date">回復時間：{{ appeal.resultDate }}</p>
+        <p class="result-date">回覆時間：{{ appeal.resultDate }}</p>
         <p class="result-hint">如果對處置有疑問請聯絡我們，或撥打客服電話：0900-000-000</p>
       </section>
     </template>
@@ -53,6 +69,28 @@
       <p>找不到這筆申訴紀錄</p>
       <RouterLink :to="{ name: 'member-appeal' }" class="btnFill">返回列表</RouterLink>
     </div>
+
+    <!-- 申訴佐證圖片放大預覽燈箱 -->
+    <div
+      v-if="previewImage"
+      class="image-preview image-preview-battle"
+      @click="closeImagePreview"
+    >
+      <button
+        type="button"
+        class="image-preview-close"
+        @click.stop="closeImagePreview"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <img
+        :src="previewImage"
+        alt="申訴佐證圖片預覽"
+        @click.stop
+      >
+    </div>
+
   </section>
 </template>
 
@@ -64,11 +102,21 @@ export default {
 
   data() {
     return {
-      appeal: null
+      appeal: null,
+      previewImage: null //佐證圖片預覽
     };
   },
 
   computed: {
+    phpBaseUrl() {
+      return (
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1"
+          ? "http://localhost:8888/Spinix/php"
+          : "/ckd101/g2/php"
+      );
+    },
+
     //透過網址路由，取得申訴類型與對應申訴編號資訊
     appealType() {
       return this.$route.params.type;
@@ -88,7 +136,29 @@ export default {
     async fetchAppealDetail() {
 
       if (this.appealType === "battle") { 
-        //串聯約戰申訴詳情API
+        try {
+          const response = await fetch(`${this.phpBaseUrl}/battle/battle_appeal_detail_get.php?appeal_id=${this.appealId}`,
+            {
+              credentials: "include"
+            }
+          );
+
+          const data = await response.json();
+
+          if (!response.ok || !data.success) {
+            throw new Error(data.message || "取得約戰申訴詳情失敗");
+          }
+
+          console.log("約戰申訴詳情：", data.appeal);
+
+          this.appeal = data.appeal;
+
+        } catch (error) {
+
+          console.error("取得約戰申訴詳情失敗：", error);
+        }
+
+        return;
       }
 
       if (this.appealType === "forum") {
@@ -99,7 +169,26 @@ export default {
         //串聯交換申訴詳情API
       }
 
+    },
+
+    getEvidenceImageUrl(imagePath) {
+      return `${this.phpBaseUrl}/${imagePath}`;
+    },
+
+    openImagePreview(imagePath) { //開啟佐證圖的放大預覽燈箱
+      this.previewImage = this.getEvidenceImageUrl(imagePath);
+    },
+
+    closeImagePreview() {
+      this.previewImage = null;
+    },
+
+    statusLabel(status) {
+      return status === "PENDING"
+        ? "待處理"
+        : "已結案";
     }
+
   }
 
 };
@@ -204,6 +293,72 @@ export default {
     background-color: map.get($color, secondary);
     color: map.get($color, neutral);
     font-size: 12px;
+  }
+
+  .evidence-item img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+
+    transition: transform 0.24s ease;
+  }
+
+  .evidence-item:hover img {
+    transform: scale(1.05);
+  }
+
+  // 圖片預覽燈箱
+  .image-preview {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 32px;
+
+    background-color: rgba(0, 0, 0, 0.82);
+  }
+
+  .image-preview img {
+    max-width: 90vw;
+    max-height: 85vh;
+
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
+  .image-preview-close {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+
+    padding: 8px;
+
+    border: none;
+    background: transparent;
+
+    color: #ffffff;
+    font-size: 30px;
+
+    cursor: pointer;
+  }
+
+  .evidence-empty {
+    padding: 16px;
+
+    border: 1px dashed map.get($color, gray);
+    border-radius: 6px;
+
+    font-size: map.get($fontSize, hint);
+    color: map.get($color, neutral);
+
+    text-align: center;
   }
 
   .result-date {
