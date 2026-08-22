@@ -5,7 +5,7 @@ export const exchangeList = [
       post_id: 'exc1',
       mem_id: 999,
       // comm_mem_id: '', // 申請會員編號，預設空值
-       exchange_comm_id: null,   // 改成存留言ID，尚未定案時是 null
+      exchange_comm_id: null,   // 改成存留言ID，尚未定案時是 null
       type: 'ratchet',
       product_img: 'BX-28.webp',
       title: '魔導致尊',
@@ -163,6 +163,30 @@ export const exchangeList = [
       is_exchanged: true, // 是否被交換
       post_pic: [],
       remove_reason: '' // 下架原因
+   },
+   // 以選擇等待對方回覆
+   {
+      post_id: 'exc8',
+      mem_id: 999,
+      // comm_mem_id: '', // 申請會員編號，預設空值
+      exchange_comm_id: null,   // 改成存留言ID，尚未定案時是 null
+      type: 'ratchet',
+      product_img: 'BX_02.webp',
+      title: '交換商品7',
+      description: '測試文字。',
+      want_item: '絕版XXX',
+      headshot: 'public/spinix_member_test1.png',
+      name: '風火輪',
+      post_contact: '0909123456',
+      create_time: '2026-07-26',
+      city: '基隆市',
+      district: '信義區',
+      status: 'pending',
+      condition: 'new',
+      is_show: true, // true = 上架中，false = 已下架
+      is_exchanged: false, // 是否被交換
+      post_pic: [],
+      remove_reason: '' // 下架原因
    }
 ];
 
@@ -202,7 +226,7 @@ export const fakeComments = [
       mem_id: 103, // 留言會員ID
       headshot: 'spinix_member_test2.jpg',
       name: '我是申請交換會員',
-      comm_cantact: 'LINE:lineline1234',
+      comm_contact: 'LINE:lineline1234',
       content: '我有一隻限量款可以交換喔',
       create_time: '2026-08-11',
       is_show: true, // true = 上架中，false = 已下架
@@ -215,7 +239,7 @@ export const fakeComments = [
       mem_id: 104, // 留言會員ID
       headshot: 'spinix_member_default.png',
       name: '我是申請交換會員2',
-      comm_cantact: 'LINE:lineline1234',
+      comm_contact: 'LINE:lineline1234',
       content: '我拿XXX跟你交換',
       create_time: '2026-08-19',
       is_show: true, // true = 上架中，false = 已下架
@@ -228,7 +252,7 @@ export const fakeComments = [
       mem_id: 999, // 留言會員ID
       headshot: 'spinix_member_test3.png',
       name: '我是999申請交換會員3',
-      comm_cantact: 'LINE:lineline1234',
+      comm_contact: 'LINE:lineline1234',
       content: '我拿AAA跟你交換',
       create_time: '2026-08-16',
       is_show: true, // true = 上架中，false = 已下架
@@ -241,7 +265,7 @@ export const fakeComments = [
       mem_id: 101, // 留言會員ID
       headshot: 'sop02.png',
       name: '我是申請交換會員4',
-      comm_cantact: 'LINE:lineline1234',
+      comm_contact: 'LINE:lineline1234',
       content: '我拿YYY跟你交換',
       create_time: '2026-07-21',
       is_show: true, // true = 上架中，false = 已下架
@@ -254,7 +278,7 @@ export const fakeComments = [
       mem_id: 101, // 留言會員ID
       headshot: 'sop02.png',
       name: '我是申請交換會員5',
-      comm_cantact: 'LINE:lineline1234',
+      comm_contact: 'LINE:lineline1234',
       content: '我拿ZZZ跟你交換',
       create_time: '2026-08-19',
       is_show: true, // true = 上架中，false = 已下架
@@ -267,7 +291,7 @@ export const fakeComments = [
       mem_id: 104, // 留言會員ID
       headshot: 'sop02.png',
       name: '我是申請交換會員6',
-      comm_cantact: 'LINE:lineline1234',
+      comm_contact: 'LINE:lineline1234',
       content: '我已被版主做選擇',
       create_time: '2026-08-19',
       is_show: true, // true = 上架中，false = 已下架
@@ -280,7 +304,7 @@ export const fakeComments = [
       mem_id: 999, // 留言會員ID
       headshot: 'sop02.png',
       name: '我是999申請交換會員6',
-      comm_cantact: 'LINE:lineline1234',
+      comm_contact: 'LINE:lineline1234',
       content: '6666666666666666',
       create_time: '2026-08-19',
       is_show: true, // true = 上架中，false = 已下架
@@ -294,7 +318,7 @@ export const fakeComments = [
       mem_id: 999, // 留言會員ID
       headshot: 'sop02.png',
       name: '我是999申請交換會員6',
-      comm_cantact: 'LINE:lineline1234',
+      comm_contact: 'LINE:lineline1234',
       content: '6666666666666666',
       create_time: '2026-08-19',
       is_show: true, // true = 上架中，false = 已下架
@@ -308,7 +332,21 @@ export const fakeComments = [
       mem_id: 999, // 留言會員ID
       headshot: 'sop02.png',
       name: '我是999申請交換會員6',
-      comm_cantact: 'LINE:lineline1234',
+      comm_contact: 'LINE:lineline1234',
+      content: '6666666666666666',
+      create_time: '2026-08-19',
+      is_show: true, // true = 上架中，false = 已下架
+      remove_reason: '', // 下架原因
+      is_choose: true  // 是否被選擇，預設false
+   },
+   // 以選擇，等待回覆
+   {
+      comm_id: 10, // 留言ID
+      post_id: 'exc8', // 回復交換案件文章ID
+      mem_id: 111, // 留言會員ID
+      headshot: 'sop02.png',
+      name: '我是111申請交換會員',
+      comm_contact: 'LINE:lineline1234',
       content: '6666666666666666',
       create_time: '2026-08-19',
       is_show: true, // true = 上架中，false = 已下架
@@ -323,3 +361,39 @@ export const applyStatusLabelMap = {
    exchanging: '交換中',
    completed: '交換完成'
 };
+
+
+export function replyExchange(exchangeList, { postId, applyId, posterName }) {
+   const isConfirm = window.confirm(
+      `${posterName}對你的交換提議有興趣!\n是否確認交換?按下確認後將可以查看雙方的聯絡資訊`
+   );
+
+   if (isConfirm) {
+      const targetArticle = exchangeList.find(article => article.post_id === postId);
+
+      if (targetArticle) {
+         targetArticle.exchange_comm_id = applyId;
+         targetArticle.status = 'exchanging';
+      }
+
+      window.alert('確認成功!現在可以查看對方的聯絡資訊了');
+      return true;
+   }
+
+   return false;
+}
+
+export function completeExchange(exchangeList, { postId }) {
+   const targetArticle = exchangeList.find(article => article.post_id === postId);
+   if (targetArticle) {
+      targetArticle.status = 'completed';
+   }
+}
+
+export function cancelExchange(exchangeList, { postId }) {
+   const targetArticle = exchangeList.find(article => article.post_id === postId);
+   if (targetArticle) {
+      targetArticle.status = 'available';
+      targetArticle.exchange_comm_id = null;
+   }
+}

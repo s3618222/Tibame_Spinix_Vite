@@ -155,6 +155,7 @@ function goToDetail() {
       box-shadow: 0 4px 10px rgba(20, 28, 38, 0.06);
       height: fit-content;
       overflow: hidden;
+      color: #141C26;
 
       .wrapper {
          display: flex;

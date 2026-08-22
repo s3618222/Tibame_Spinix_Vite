@@ -20,12 +20,7 @@
           </label>
           <select v-model="formData.category" required>
             <option value="" disabled selected>請選擇文章類別...</option>
-            <option value="announcement">公告</option>
-            <option value="unboxing">配裝開箱</option>
-            <option value="event">賽事情報</option>
-            <option value="chat">玩家閒聊</option>
-            <option value="chat">戰術討論</option>
-            <option value="chat">新手發問</option>
+            <option v-for="opt in categoryOptions" :key="opt.id"  :value="opt.id">{{ opt.name }}</option>
           </select>
         </div>
 
@@ -92,6 +87,7 @@
 </template>
 
 <script>
+import {CATEGORY_LABELS} from '@/assets/js/utils/articleCategory.js';
 export default {
   name: "forumForm",
 
@@ -110,6 +106,10 @@ export default {
   },
 
   computed: {
+    categoryOptions(){
+      const order = ["unboxing", "event", "chat", "strategy", "faq", "announcement"];
+      return order.map(id => ({ id, name: CATEGORY_LABELS[id] }));
+    },
     isEdit() {
       return Boolean(this.articleId);
     }

@@ -8,13 +8,14 @@
       <p class="col-action">操作</p>
     </div>
     <div class="t-body">
-      <div class="article-card">
-        <p class="col-type">配裝開箱</p>
-        <p class="col-title">WX-01 爆裂天龍 最佳攻擊配裝分析</p>
-        <p class="col-date">2026-05-12</p>
+      <div class="article-card" v-for="article in articles" :key="article.id">
+        <p class="col-type">{{ article.category }}</p>
+        <p class="col-title">{{ article.title }}</p>
+        <p class="col-date">{{ article.date }}</p>
         <p class="col-comments">
           <i class="fa-regular fa-message"></i>
-          <span>6</span></p>
+          <span>{{ article.commentCount }}</span>
+        </p>
         <div class="col-action">
           <button type="button" class="btn-edit">編輯</button>
           <button type="button" class="btn-del">刪除</button>
@@ -30,7 +31,16 @@
 
 <script>
   export default {
-    name: "myArticles"
+    name: "myArticles",
+
+    data() {
+      return {
+        articles: [
+          { id: 1, category: "配裝開箱", title: "WX-01 爆裂天龍 最佳攻擊配裝分析", date: "2026-05-12", commentCount: 6 },
+          { id: 2, category: "新手發問", title: "新手求推薦平民配置", date: "2026-05-10", commentCount: 12 }
+        ]
+      };
+    }
   }
 </script>
 
@@ -58,6 +68,12 @@ button {
   display: none;
 }
 
+.t-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 // 卡片主體 (Grid 布局)
 .article-card {
   background-color: #fff;
@@ -68,7 +84,7 @@ button {
     "date comments"
     "action action";
   gap: 12px;
-  padding: 12px;
+  padding: 20px;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 

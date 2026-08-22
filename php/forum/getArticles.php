@@ -5,7 +5,20 @@
   header('Content-Type: application/json');
 
   try {
-    $sql = "SELECT * FROM article WHERE is_show = 1";
+    $sql = "
+    SELECT 
+      article.*,
+      member.MEM_NAME AS author_name,
+      member.MEM_PHOTO AS author_photo,
+      COUNT(message.msg_id) AS comment_count,
+      MAX(message.create_time) AS last_comment_time 
+    FROM article 
+    JOIN member ON article.mem_id = member.MEM_ID
+    LEFT JOIN message ON message.art_id = article.art_id
+    WHERE article.is_show = 1
+    GROUP BY article.art_id, member.MEM_NAME, member.MEM_PHOTO
+    ORDER BY article.create_time DESC
+    ";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);

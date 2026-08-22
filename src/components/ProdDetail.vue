@@ -50,7 +50,7 @@
         >
 
       <!-- 自己刊登的文章：顯示編輯按鈕 -->
-        <div class="owner-actions" v-if="isSeller">
+        <div class="owner-actions" v-if="isOwner">
           <template v-if="!isEditing">
             <button type="button" class="btn-edit" @click="startEdit">
               修改資訊
@@ -93,12 +93,20 @@
 
       <div class="user box-style">
         <div class="img-user">
-          <img :src="`./${article.headshot}`" alt="">
+            <img :src="`./${article.headshot}`" alt="">
+          </div>
+        <div class="user-info">
+          <div class="info-header">
+            <p class="user-name">{{ article.name }}</p>
+            <a href="complaint.html" target="_blank">
+              <i class="fa-solid fa-triangle-exclamation" v-if="!isOwner"></i>
+            </a>
+          </div>
+          <ContactDrawer
+            :contact="article.post_contact"
+            :show="article.status === 'exchanging'"
+          />
         </div>
-        <p>{{ article.name }}</p>
-        <a href="complaint.html" target="_blank">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-        </a>
       </div>
 
       <div class="prod-txt box-style form-label-style">
@@ -131,14 +139,14 @@
       </div>
       
       <!-- 情況 ①：賣家，還沒選定對象 -->
-      <p v-if="isSeller && article.status === 'available'" class="apply-hint">
+      <p v-if="isOwner && article.status === 'available'" class="apply-hint">
         <i class="fa-regular fa-hand-point-down"></i>
         您可於下方查看其他會員的交換提議
         <i class="fa-regular fa-hand-point-down"></i>
       </p>
       <!-- 情況 ②：買家，還沒申請過 -->
       <button
-        v-else-if="!isSeller && !alreadyApplied"
+        v-else-if="!isOwner && !alreadyApplied"
         type="button"
         class="btnFill"
         @click="isModalOpen = true"
@@ -146,15 +154,9 @@
         我想交換
       </button>
       <!-- 情況 ③：買家，已經申請過 -->
-      <p v-else-if="!isSeller && alreadyApplied" class="apply-hint">
+      <p v-else-if="!isOwner && alreadyApplied" class="apply-hint">
         你已提出過申請，等待版主的選擇
       </p>
-      <!-- 情況 ④：賣家，已選定且對方同意，顯示完成交換按鈕 -->
-      <div class="owner-actions" v-if="isSeller && article.status === 'exchanging'">
-        <button type="button" class="btnFill" @click="handleCompleteExchange">
-          完成交換
-        </button>
-      </div>
 
       <div class="message-board box-style">
         <h1>交換留言區</h1>
@@ -186,9 +188,12 @@
               :postDate="comment.create_time"
               :msgtxt="comment.content"
               :isMyComment="comment.mem_id === currentUserId"
-              :isSeller="isSeller"
+              :isOwner="isOwner"
               :isChoose="comment.is_choose"
               :articleStatus="article.status"
+              :postId="article.post_id"
+              :posterName="article.name"
+              :contact="comment.comm_contact"
               @select-applicant="handleSelectApplicant"
             />
           </ul>
@@ -264,6 +269,7 @@ import { exchangeList, fakeComments, statusLabelMap, typeLabelMap, conditionLabe
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import 'vue3-carousel/dist/carousel.css';
 import PhotoUploader from '@/components/uploadImg.vue';
+import ContactDrawer from '@/components/ContactDrawer.vue';
 
 // 目前登入的測試會員（之後接後端時，改成從登入狀態拿）
 const currentUserId = 999;
@@ -282,38 +288,13 @@ const article = computed(() =>
 );
 
 
-// 完成交換按鈕
-const exchangePartnerComment = computed(() => {
-  if (!article.value?.exchange_comm_id) return null;
-  return fakeComments.find(c => c.comm_id === article.value.exchange_comm_id);
-});
-
 // 是否已經申請過（排除賣家自己）
 const alreadyApplied = computed(() => {
-  if (!article.value || isSeller.value) return false;
+  if (!article.value || isOwner.value) return false;
   return articleComments.value.some(c => c.mem_id === currentUserId);
 });
 
-// 我是不是被賣家最終選中的那位
-const isChosenByArticle = computed(() => {
-  if (!article.value) return false;
-  const myComment = articleComments.value.find(c => c.mem_id === currentUserId);
-  return myComment && article.value.exchange_comm_id === myComment.comm_id;
-});
 
-function handleCompleteExchange(item) {
-
-  const partnerName = exchangePartnerComment.value?.name || '這位會員';
-  const changeItem = exchangePartnerComment.value.content;
-
-  const isConfirm = window.confirm(`確定要完成與「${partnerName}」的交換嗎？\n交換物品：「${changeItem}」\n確定後無法復原。`);
-
-  if(isConfirm) {
-    article.value.status = 'completed';
-    window.alert('交換已完成！');
-  }
-      // 之後這裡打 API，把 exchangeList 對應文章的 status 改成 completed
-}
 
 // 依 context 決定標題文字
 const pageTitleMap = {
@@ -405,17 +386,17 @@ function saveEdit() {
   window.alert('商品資訊已更新！');
 }
 
-// 圖片上傳（假資料階段用本機預覽，之後接後端改成真正上傳）
-function handleImageUpload(event) {
-  const files = Array.from(event.target.files);
-  const newImageUrls = files.map(file => URL.createObjectURL(file));
+// // 圖片上傳（假資料階段用本機預覽，之後接後端改成真正上傳）
+// function handleImageUpload(event) {
+//   const files = Array.from(event.target.files);
+//   const newImageUrls = files.map(file => URL.createObjectURL(file));
 
-  editForm.images = [...editForm.images, ...newImageUrls];
+//   editForm.images = [...editForm.images, ...newImageUrls];
 
-  // 讓輪播圖也同步顯示新上傳的圖片（因為 galleryImages 目前是寫死的 computed，
-  // 這裡需要把它改成可變動的 ref，詳見下方調整）
-  galleryImages.value = editForm.images;
-}
+//   // 讓輪播圖也同步顯示新上傳的圖片（因為 galleryImages 目前是寫死的 computed，
+//   // 這裡需要把它改成可變動的 ref，詳見下方調整）
+//   galleryImages.value = editForm.images;
+// }
 
 
 
@@ -451,7 +432,7 @@ const sortedComments = computed(() => {
 const activeImageIndex = ref(0);
 
 // 是否為自己刊登的文章
-const isSeller = computed(() => {
+const isOwner = computed(() => {
   if (!article.value) return false;
   return article.value.mem_id === currentUserId;
 });
@@ -534,11 +515,17 @@ console.log('修改後：', JSON.parse(JSON.stringify(articleComments.value))); 
   // 之後接後端：
   // await axios.patch(`/api/exchange/${article.value.post_id}/select`, { commentId });
 }
+
+
 </script>
 
 <style lang="scss" scoped>
 @use '@/assets/scss/_var' as *;
 
+
+p{
+  color: #141C26;
+}
 .owner-actions{
   display: flex;
   gap: 12px;
@@ -656,8 +643,6 @@ console.log('修改後：', JSON.parse(JSON.stringify(articleComments.value))); 
     gap: 16px;
     flex: 1;
 
-    
-
     .tags {
       flex-direction: row;
       .chip--state {
@@ -665,15 +650,33 @@ console.log('修改後：', JSON.parse(JSON.stringify(articleComments.value))); 
       }
     }
 
-    .user {
+    .user{
       display: flex;
       align-items: center;
       gap: 12px;
+      align-items: start;
+    }
 
-      > p {
-        font-size: map-get($fontSize, default);
+    .user-info{
+      width: 100%;
+
+
+      .info-header{
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 4px;
       }
     }
+    
+    .user-name{
+      font-size: 18px;
+      font-weight: 550;
+      padding-block: 12px;
+    }
+
+    
 
     .prod-txt {
       .title {

@@ -72,3 +72,21 @@
     background-color: #e63946;
   }
 }
+
+// 下架按鈕(空心紅色)
+.btnRemoveNoFill {
+  padding: 8px 24px;
+  border: 1px solid  map-get(var.$color , error );
+  border-radius: 12px;
+
+  color: map-get(var.$color , error );
+  transition: all .3s;
+
+
+  cursor: pointer;
+
+  &:hover {
+    background-color: #e63946;
+    color: map-get(var.$color , tertiary );
+  }
+}

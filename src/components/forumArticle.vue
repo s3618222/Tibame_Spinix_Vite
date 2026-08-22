@@ -5,7 +5,7 @@
       <span>返回論壇列表</span>
     </a>
     <div class="article-content">
-      <ArticleMain :article-author="articleAuthor"/>
+      <ArticleMain :article-author="articleAuthor" :article="article"/>
       <CommentList :comments="comments"/>
       <CommentForm/>
     </div>
@@ -18,7 +18,7 @@
 import ArticleMain from '@/components/forum/articleMain.vue';
 import CommentForm from '@/components/forum/commentForm.vue';
 import CommentList from '@/components/forum/commentList.vue';
-
+import { CATEGORY_LABELS } from '@/assets/js/utils/articleCategory.js';
 
 
 export default {
@@ -33,34 +33,66 @@ export default {
   data(){
     return {
       baseUrl: import.meta.env.BASE_URL,
-      articleAuthor: {
-        name: "Blader_X",
-        score: "勝場數：100",
-        img: ""
-      },
-      comments: [
-        {
-          id: 1,
-          floor: 2,
-          time: "2026-05-12 15:38",
-          content: "X軸心確實很猛，但如果遇到防禦特化的對手，開局沒撞飛就幾乎等於輸了。我個人更傾向用 J (Jolt) 軸，稍微保留一點可控性，容錯率比較高。",
-          commenter: { name: "打野戰神", score: "勝場數：76", img: "" }
-        },
-        {
-          id: 2,
-          floor: 3,
-          time: "2026-05-12 16:05",
-          content: "同意樓上，不過如果對手也是攻擊型，X軸心開局互撞反而很吃機運，我自己實測過幾場都是先手優勢比較重要。",
-          commenter: { name: "陀螺新手阿翔", score: "勝場數：12", img: "" }
-        },
-        {
-          id: 3,
-          floor: 4,
-          time: "2026-05-12 17:20",
-          content: "請問這套配裝在防禦組合上有推薦嗎？想搭配鐵盤試試看穩定度。",
-          commenter: { name: "配裝控", score: "勝場數：203", img: "" }
+      articleAuthor: {},
+      comments: [],
+      article: {}
+    }
+  },
+  created(){
+    this.fetchArticle();
+    this.fetchComments();
+  },
+  methods: {
+    async fetchArticle(){
+      const params = new URLSearchParams(window.location.search);
+      const articleId = params.get('id');
+      
+      try{
+        const res = await fetch(`http://localhost:8888/tibame-spinix/php/forum/getArticleById.php?id=${articleId}`);
+        const result = await res.json();
+
+        if(result.success){
+          const articleData = result.data;
+          this.articleAuthor = {
+            name: articleData.author_name,
+            score: `勝場數：${articleData.author_battle_wins}`,
+            img: articleData.author_photo
+          };
+          this.article = {
+            title: articleData.title,
+            content: articleData.content,
+            category: CATEGORY_LABELS[articleData.category] ?? articleData.category,
+            createTime: articleData.create_time
+          }
         }
-      ]
+      }catch(error){
+        console.error("文章資料載入失敗", error);
+      }
+    },
+
+    async fetchComments(){
+      const params = new URLSearchParams(window.location.search);
+      const articleId = params.get('id');
+
+      try{
+        const res = await fetch(`http://localhost:8888/tibame-spinix/php/forum/getComments.php?id=${articleId}`);
+        const result = await res.json();
+        if (result.success) {
+          this.comments = result.data.map((c, index) => ({
+            id: c.msg_id,
+            floor: index + 2,
+            content: c.content,
+            time: c.create_time,
+            commenter: {
+              name: c.commenter_name,
+              score: `勝場數：${c.commenter_battle_wins}`,
+              img: c.commenter_photo
+            }
+          }));
+        }
+      }catch(error){
+        console.error("留言資料載入失敗", error);
+      }
     }
   }
 }
