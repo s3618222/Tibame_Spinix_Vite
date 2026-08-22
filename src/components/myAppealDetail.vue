@@ -9,10 +9,10 @@
       <h1>申訴表單詳情</h1>
 
       <div class="meta-bar">
-        <div class="meta-item">
+        <!-- <div class="meta-item">
           <p class="meta-label">申訴編號</p>
           <p class="meta-value">#{{ appeal.id }}</p>
-        </div>
+        </div> -->
         <div class="meta-item">
           <p class="meta-label">申訴人</p>
           <p class="meta-value">{{ appeal.reporter }}</p>
@@ -57,16 +57,51 @@
 </template>
 
 <script>
-import myAppealData from "@/data/myAppealData.js";
+// import myAppealData from "@/data/myAppealData.js";
 
 export default {
   name: "MyAppealDetail",
 
+  data() {
+    return {
+      appeal: null
+    };
+  },
+
   computed: {
-    appeal() {
-      return myAppealData.find((item) => item.id === this.$route.params.id) || null;
+    //透過網址路由，取得申訴類型與對應申訴編號資訊
+    appealType() {
+      return this.$route.params.type;
+    },
+
+    appealId() {
+      return Number(this.$route.params.id);
+    }
+  },
+
+  mounted() {
+    this.fetchAppealDetail();
+  },
+
+  methods: {
+    //串接約戰申訴、論壇申訴或交換申訴
+    async fetchAppealDetail() {
+
+      if (this.appealType === "battle") { 
+        //串聯約戰申訴詳情API
+      }
+
+      if (this.appealType === "forum") {
+        //串聯論壇申訴詳情API
+      }
+
+      if (this.appealType === "exchange") {
+        //串聯交換申訴詳情API
+      }
+
     }
   }
+
 };
 </script>
 
