@@ -51,7 +51,7 @@
     <div class="appeal-table-wrap" v-if="filteredAppeals.length">
       <div class="appeal-table">
         <div class="table-row table-head">
-          <p>申訴編號</p>
+          <!-- <p>申訴編號</p> -->
           <p>類型</p>
           <p>狀態</p>
           <p>提交時間</p>
@@ -59,7 +59,7 @@
         </div>
 
         <div class="table-row" v-for="appeal in filteredAppeals" :key="appeal.id">
-          <p>#{{ appeal.id }}</p>
+          <!-- <p>#{{ appeal.id }}</p> -->
           <p>{{ appeal.type }}</p>
           <p>
             <span class="status-badge" :class="appeal.status">
@@ -68,7 +68,7 @@
           </p>
           <p>{{ appeal.createdAt }}</p>
           <RouterLink
-            :to="{ name: 'member-appeal-detail', params: { id: appeal.id } }"
+            :to="{ name: 'member-appeal-detail', params: { type: appeal.sourceType, id: appeal.id } }"
             class="detail-btn"
           >
             查看詳情
@@ -85,14 +85,14 @@
 </template>
 
 <script>
-import myAppealData from "@/data/myAppealData.js";
+// import myAppealData from "@/data/myAppealData.js";
 
 export default {
   name: "MyAppeal",
 
   data() {
     return {
-      appealRecords: myAppealData, //申訴紀錄假資料
+      appealRecords: [], //接收後端傳回當前會員提出的相關申訴
 
       sortOrder: "desc", //預設由新到舊
       statusFilter: "all", //預設顯示全部狀態
@@ -111,6 +111,15 @@ export default {
   },
 
   computed: {
+    phpBaseUrl() { //判斷目前php的執行環境，調整網址前綴
+      return (
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1"
+          ? "http://localhost:8888/Spinix/php"
+          : "/ckd101/g2/php"
+      );
+    },
+
     typeOptions() {
       //從假資料中動態整理出出現過的申訴類型，供類型篩選下拉使用
       return [...new Set(this.appealRecords.map((item) => item.type))];
@@ -135,7 +144,49 @@ export default {
   methods: {
     statusLabel(status) {
       return status === "pending" ? "待處理" : "已結案";
+    },
+
+    async fetchMyAppeals() { //串接API，取得會員提出的申訴
+      try {
+        const response = await fetch(`${this.phpBaseUrl}/member/my_appeal_get.php`, {
+          credentials: "include"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(
+            data.message || "取得申訴紀錄失敗"
+          );
+        }
+
+        //將後端取得資料存入appealRecords中
+        this.appealRecords = data.appeals.map((appeal) => {
+          return {
+            id: appeal.APPEAL_ID, //申訴編號
+            sourceType: appeal.SOURCE_TYPE, //申訴資料來源
+            type: appeal.APPEAL_TYPE, //申訴類型
+
+            status: //申訴狀態 (待處理/已結案)
+              appeal.APPEAL_STATUS === "PENDING"
+                ? "pending"
+                : "closed",
+
+            createdAt: appeal.CREATED_AT, //建立時間
+            target: appeal.TARGET_NAME, //申訴對象
+            content: appeal.APPEAL_CONTENT //申訴內容
+          }
+        });
+
+      } catch (error) {
+        console.error("取得申訴紀錄失敗：", error);
+      }
+
     }
+  },
+
+  mounted() { //載入我的申訴後，先取得當前會員提出的申訴紀錄
+    this.fetchMyAppeals();
   }
 };
 </script>
