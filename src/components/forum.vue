@@ -76,7 +76,7 @@ export default {
   methods: {
     async fetchArticles(){
       try{
-        const res = await fetch("http://localhost:8888/tibame-spinix/php/forum/getArticles.php");
+        const res = await fetch("http://localhost:8888/Spinix/php/forum/getArticles.php");
         const result = await res.json();
 
         if(result.success){

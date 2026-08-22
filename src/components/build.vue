@@ -91,7 +91,7 @@
 
       async fetchParts() {
         try {
-          const res = await fetch("http://localhost:8888/tibame-spinix/php/build/getParts.php");
+          const res = await fetch("http://localhost:8888/Spinix/php/build/getParts.php");
           const result = await res.json();
 
           if (result.success) {

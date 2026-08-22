@@ -48,7 +48,7 @@ export default {
       const articleId = params.get('id');
       
       try{
-        const res = await fetch(`http://localhost:8888/tibame-spinix/php/forum/getArticleById.php?id=${articleId}`);
+        const res = await fetch(`http://localhost:8888/Spinix/php/forum/getArticleById.php?id=${articleId}`);
         const result = await res.json();
 
         if(result.success){
@@ -75,7 +75,7 @@ export default {
       const articleId = params.get('id');
 
       try{
-        const res = await fetch(`http://localhost:8888/tibame-spinix/php/forum/getComments.php?id=${articleId}`);
+        const res = await fetch(`http://localhost:8888/Spinix/php/forum/getComments.php?id=${articleId}`);
         const result = await res.json();
         if (result.success) {
           this.comments = result.data.map((c, index) => ({
