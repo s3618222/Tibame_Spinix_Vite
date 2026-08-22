@@ -2,8 +2,8 @@
   require_once("../common/connect_ckd101g2.php");
   require_once("../common/cors.php");
 
-  header('Content-Type: application/json');
-
+  header("Content-Type: application/json; charset=utf-8");
+  
   $id = $_GET["id"] ?? null; //沒有抓到id的話，就帶入空值，才不會報錯整個程式碼死掉
 
   try{
