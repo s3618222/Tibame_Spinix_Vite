@@ -58,7 +58,7 @@
           <p></p>
         </div>
 
-        <div class="table-row" v-for="appeal in filteredAppeals" :key="appeal.id">
+        <div class="table-row" v-for="appeal in filteredAppeals" :key="`${appeal.sourceType}-${appeal.id}`">
           <!-- <p>#{{ appeal.id }}</p> -->
           <p>{{ appeal.type }}</p>
           <p>
