@@ -61,13 +61,14 @@ const filteredCards = computed(() => {
    let result = ExChangeInfo.value.filter(item => {
       const f = currentFilters.value;
 
-      // 只顯示「可交換」狀態的商品，這是公開頁面的規則
+      // 只顯示「可交換」跟 「上架中」的商品
       const matchStatus = item.status === 'available';
+      const isVisible = item.is_show === true;
 
       const matchType = f.type === 'all' || item.type === f.type;
       const matchCity = !f.city || item.city === f.city;
       const matchDistrict = !f.district || item.district === f.district;
-      return matchStatus && matchType && matchCity && matchDistrict;
+      return matchStatus && matchType && matchCity && matchDistrict && isVisible;
    });
 
    result = [...result].sort((a, b) => {

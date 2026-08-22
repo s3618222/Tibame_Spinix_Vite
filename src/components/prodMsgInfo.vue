@@ -1,45 +1,49 @@
 <template> 
    <li :class="statusClass">
-      <div class="img-msg-user">
-         <div class="img-user">
-            <img :src="image" alt="">
-         </div>
-      </div>
-      <div class="msg-content">
-         <div class="user-info">
-            <div class="user-info-title">
-               <div class="user-info-txt">
-                  <p class="user-name">{{username}}</p>
-                  <p class="msg-date">{{postDate}}</p>
-               </div>
-               <a href="./complaint.html" target="_blank" v-if="!isMyComment">
-                  <i class="fa-solid fa-triangle-exclamation"></i>
-               </a>
+      <div class="msg-wrapper">
+         <div class="img-msg-user">
+            <div class="img-user">
+               <img :src="image" alt="">
             </div>
-            <p class="msg-txt">{{msgtxt}}</p>
-            <div class="applyer-contact">
-               <div class="drawer-item">
-                  <ContactDrawer
-                  :contact="contact"
-                  :show="articleStatus === 'exchanging'"
-                  
-               />
-               </div>
-               <div v-if="isOwner && isChoose && articleStatus === 'exchanging'" class="exchange-actions">
-                  <button 
-                     class="btnFill"
-                     @click="handleCompleteExchange">
-                     完成交換
-                  </button>
-                  <button 
-                     class="btnRemoveNoFill"
-                     @click="handleCancelExchange">
-                     取消交換
-                  </button>
-               </div>
-            </div>
-            
          </div>
+         <div class="msg-content">
+            <div class="user-info">
+               <div class="user-info-title">
+                  <div class="user-info-txt">
+                     <p class="user-name">{{username}}</p>
+                     <p class="msg-date">{{postDate}}</p>
+                  </div>
+                  <a href="./complaint.html" target="_blank" v-if="!isMyComment">
+                     <i class="fa-solid fa-triangle-exclamation"></i>
+                  </a>
+               </div>
+               <p class="msg-txt">{{msgtxt}}</p>
+               <div 
+                  class="applyer-contact"
+                  :class="{'topLine':props.isChoose && props.articleStatus === 'exchanging'}"
+                  >
+                  <div class="drawer-item">
+                     <ContactDrawer
+                     :contact="contact"
+                     :show="articleStatus === 'exchanging'"
+                     
+                  />
+                  </div>
+                  <div v-if="props.isOwner && props.isChoose && props.articleStatus === 'exchanging'" class="exchange-actions">
+                     <button 
+                        class="btnFill"
+                        @click="handleCompleteExchange">
+                        完成交換
+                     </button>
+                     <button 
+                        class="btnRemoveNoFill"
+                        @click="handleCancelExchange">
+                        取消交換
+                     </button>
+                  </div>
+               </div>
+               
+            </div>
          
          <!-- 交換按鈕 -->
          <div class="btn-choose">
@@ -63,6 +67,17 @@
             </div>
          </div>
       </div>
+      </div>
+      <!-- 被申訴時警告訊息 -->
+      <div>
+         <WarningBanner
+            v-if="isMyComment"
+            title= "留言"
+            :remove_reason = "remove_reason"
+            :show_contact="isOwner"
+            class="warning-banner"
+         />
+      </div>
       
    </li>         
 </template>
@@ -70,6 +85,7 @@
    import { computed } from 'vue';
    import { exchangeList, replyExchange, completeExchange } from '@/data/mockExchangeData.js';
    import ContactDrawer from '@/components/ContactDrawer.vue';
+   import WarningBanner from '@/components/WarningBanner.vue';
 
    const props = defineProps({
       id: { type: [String, Number], required: true },
@@ -83,7 +99,9 @@
       articleStatus: { type: String, default: 'available' },
       postId: { type: [String, Number], required: true },   // 商品的 post_id
       posterName: { type: String, required: true },         // 發文者名字
-      contact: { type: String, required: true }   // 新增：留言者自己的聯絡方式
+      contact: { type: String, required: true },   // 新增：留言者自己的聯絡方式
+      isShow:{ type: Boolean , default: true },
+      remove_reason:{ type: String, default:''}
    });
 
    const statusClass = computed(() => (props.isChoose ? 'li--selected' : ''));
@@ -96,7 +114,7 @@
       })
    }
 
-function handleCompleteExchange() {
+   function handleCompleteExchange() {
    // props.username 就是這則留言的申請人，不用反查
    const isConfirm = window.confirm(
       `確定要完成與「${props.username}」的交換嗎？\n交換物品：「${props.msgtxt}」\n確定後無法復原。`
@@ -106,35 +124,45 @@ function handleCompleteExchange() {
       completeExchange(exchangeList, { postId: props.postId });
       window.alert('交換已完成！');
    }
-}
+   }
 
-function handleCancelExchange() {
+   function handleCancelExchange() {
    const isConfirm = window.confirm(`確定要取消與「${props.username}」的交換嗎？\n取消後無法復原。`);
 
    if (isConfirm) {
       cancelExchange(exchangeList, { postId: props.postId });
       window.alert('已取消交換');
    }
-}
+   }
+
 </script>
 
 <style lang="scss" scoped>
    @use '@/assets/scss/_var' as *;
 
+   .warning-banner{
+      margin-top: 12px;
+   }
+
    .applyer-contact{
-      padding-top: 8px;
       display: flex;
-      border-top:1px solid  map-get($color ,primary ) ;
+      gap: 12px;
 
       .drawer-item{
          flex: 1;
+         // padding-bottom: 12px;
       }
    }
 
+   .topLine{
+      border-top:1px solid  map-get($color ,primary );
+   }
+   
    .exchange-actions{
       display: flex;
       gap: 12px;
       height: fit-content;
+      margin-top: 12px;
    }
 
    p{
@@ -158,12 +186,15 @@ function handleCancelExchange() {
       padding-bottom: 8px;
    }
 
+   .msg-wrapper{
+      display: flex;
+      gap: 12px;
+   }
+
 
    li {
-      padding: 12px;
-      display: flex;
+      padding: 12px 16px;
       border-bottom: 1px solid map-get($color, gray);
-      gap: 12px;
 
       &.li--selected {
          background-color: #FFF2D6;   // 例如淺黃色，代表「已選中」
@@ -219,8 +250,7 @@ function handleCancelExchange() {
 
    @media screen and (width >= 992px) {
       li {
-         padding-block: 20px;
-
+         
          .msg-content{
             flex-direction: row;
             align-items: start;

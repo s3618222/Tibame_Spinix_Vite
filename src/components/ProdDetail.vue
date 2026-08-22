@@ -102,10 +102,13 @@
               <i class="fa-solid fa-triangle-exclamation" v-if="!isOwner"></i>
             </a>
           </div>
-          <ContactDrawer
-            :contact="article.post_contact"
-            :show="article.status === 'exchanging'"
-          />
+          <!-- 顯示會員資訊 -->
+          <div :class="{'topLine':article.status === 'exchanging'}">
+            <ContactDrawer
+              :contact="article.post_contact"
+              :show="article.status === 'exchanging'"
+            />
+          </div>
         </div>
       </div>
 
@@ -119,7 +122,7 @@
           rows="5"
         ></textarea>
       </div>
-
+      <!-- 希望換到物品 -->
       <div class="prod-txt box-style form-label-style">
         <p class="title">希望換到的物品</p>
         <p
@@ -138,13 +141,23 @@
         ></textarea>
       </div>
       
-      <!-- 情況 ①：賣家，還沒選定對象 -->
+      <!-- 被申訴時警告訊息 -->
+      <WarningBanner
+        v-if="article.remove_reason !== ''"
+        title= "文章"
+        :remove_reason = "article.remove_reason"
+        :show_contact="isSeller"
+      />
+      
+
+
+      <!-- 情況一：賣家，還沒選定對象 -->
       <p v-if="isOwner && article.status === 'available'" class="apply-hint">
         <i class="fa-regular fa-hand-point-down"></i>
         您可於下方查看其他會員的交換提議
         <i class="fa-regular fa-hand-point-down"></i>
       </p>
-      <!-- 情況 ②：買家，還沒申請過 -->
+      <!-- 情況二：買家，還沒申請過 -->
       <button
         v-else-if="!isOwner && !alreadyApplied"
         type="button"
@@ -153,7 +166,7 @@
       >
         我想交換
       </button>
-      <!-- 情況 ③：買家，已經申請過 -->
+      <!-- 情況三：買家，已經申請過 -->
       <p v-else-if="!isOwner && alreadyApplied" class="apply-hint">
         你已提出過申請，等待版主的選擇
       </p>
@@ -194,6 +207,8 @@
               :postId="article.post_id"
               :posterName="article.name"
               :contact="comment.comm_contact"
+              :remove_reason="comment.remove_reason"
+              :isShow="comment.is_show"
               @select-applicant="handleSelectApplicant"
             />
           </ul>
@@ -270,6 +285,7 @@ import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import 'vue3-carousel/dist/carousel.css';
 import PhotoUploader from '@/components/uploadImg.vue';
 import ContactDrawer from '@/components/ContactDrawer.vue';
+import WarningBanner from '@/components/WarningBanner.vue';
 
 // 目前登入的測試會員（之後接後端時，改成從登入狀態拿）
 const currentUserId = 999;
@@ -503,13 +519,12 @@ function handleSelectApplicant({ commentId }) {
   if (!isConfirm) return;
 
   article.value.status = 'exchanging';
-  // article.value.is_choose = true;
   
 
   articleComments.value.forEach(comment => {
     comment.is_choose = comment.comm_id === commentId;
   });
-console.log('修改後：', JSON.parse(JSON.stringify(articleComments.value)));   // 加這行
+
   window.alert('已選擇交換對象，等待對方回覆!');
 
   // 之後接後端：
@@ -587,7 +602,7 @@ p{
 
 .box-style {
   background-color: white;
-  padding: 12px;
+  padding: 12px 16px;
   border-radius: 8px;
   border: 1px solid map-get($color, gray);
   box-shadow: 2px 2px 12px rgba(20, 28, 38, 0.1);
@@ -665,9 +680,13 @@ p{
         display: flex;
         align-items: center;
         gap: 8px;
-        border-bottom: 1px solid #ddd;
-        margin-bottom: 4px;
+        
       }
+    }
+
+    .topLine{
+      border-top: 1px solid #ddd;
+      // padding-top: 8px;
     }
     
     .user-name{
@@ -702,7 +721,7 @@ p{
 
     .msg-list {
       ul {
-        margin-inline: -12px;
+        margin-inline: -16px;
         list-style: none;
       }
     }

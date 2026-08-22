@@ -187,6 +187,30 @@ export const exchangeList = [
       is_exchanged: false, // 是否被交換
       post_pic: [],
       remove_reason: '' // 下架原因
+   },
+   // 被下架文章
+   {
+      post_id: 'exc9',
+      mem_id: 999,
+      // comm_mem_id: '', // 申請會員編號，預設空值
+      exchange_comm_id: null,   // 改成存留言ID，尚未定案時是 null
+      type: 'ratchet',
+      product_img: 'BX_02.webp',
+      title: '我是被下架文章',
+      description: '測試文字。',
+      want_item: '絕版XXX',
+      headshot: 'public/spinix_member_test1.png',
+      name: '風火輪',
+      post_contact: '0909123456',
+      create_time: '2026-07-26',
+      city: '基隆市',
+      district: '信義區',
+      status: 'available',
+      condition: 'new',
+      is_show: false, // true = 上架中，false = 已下架
+      is_exchanged: false, // 是否被交換
+      post_pic: [],
+      remove_reason: '文章因包含不適當言論或違規資訊，已依平台規範停止公開顯示。' // 下架原因
    }
 ];
 
@@ -352,6 +376,20 @@ export const fakeComments = [
       is_show: true, // true = 上架中，false = 已下架
       remove_reason: '', // 下架原因
       is_choose: true  // 是否被選擇，預設false
+   },
+   // 被下架留言
+   {
+      comm_id: 11, // 留言ID
+      post_id: 'exc9', // 回復交換案件文章ID
+      mem_id: 999, // 留言會員ID
+      headshot: 'sop02.png',
+      name: 'testuser',
+      comm_contact: 'LINE:lineline1234',
+      content: '我是被下架留言',
+      create_time: '2026-08-19',
+      is_show: false, // true = 上架中，false = 已下架
+      remove_reason: '有激烈言論，被下架', // 下架原因
+      is_choose: false  // 是否被選擇，預設false
    }
 ];
 // 「我提出的申請」用的狀態中文對照表（跟文章狀態脫鉤，是「我」這則申請的結果）
