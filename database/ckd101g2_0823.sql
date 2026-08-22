@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Aug 22, 2026 at 02:13 AM
+-- Generation Time: Aug 22, 2026 at 04:45 PM
 -- Server version: 5.7.24
 -- PHP Version: 8.3.1
 
@@ -187,32 +187,34 @@ CREATE TABLE `battle_record` (
   `TO_PAR_COMMENT` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '對參加人的留言評論',
   `TO_PAR_COMMENTED_AT` datetime DEFAULT NULL COMMENT '對參加人的留言時間',
   `IS_SHOW` tinyint(1) NOT NULL DEFAULT '1' COMMENT '顯示狀態',
-  `REMOVE_REASON` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '下架原因'
+  `REMOVE_REASON` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '下架原因',
+  `REMOVED_BY_ADMIN_ID` int(10) UNSIGNED DEFAULT NULL COMMENT '執行下架的管理員編號',
+  `REMOVED_AT` datetime DEFAULT NULL COMMENT '下架時間'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='對戰紀錄表';
 
 --
 -- Dumping data for table `battle_record`
 --
 
-INSERT INTO `battle_record` (`BATTLE_ID`, `INITIATOR_ID`, `PARTICIPANT_ID`, `BATTLE_TITLE`, `BATTLE_IMG`, `BATTLE_DESC`, `CITY_ID`, `DISTRICT_ID`, `BATTLE_MODE`, `BATTLE_TARGET`, `BATTLE_LEVEL`, `BATTLE_DATE`, `BATTLE_DEADLINE`, `BATTLE_LOC`, `BATTLE_STATUS`, `INI_CONTACT`, `PAR_CONTACT`, `WINNER`, `TO_INI_STARS`, `TO_PAR_STARS`, `CREATED_AT`, `TO_INI_COMMENT`, `TO_INI_COMMENTED_AT`, `TO_PAR_COMMENT`, `TO_PAR_COMMENTED_AT`, `IS_SHOW`, `REMOVE_REASON`) VALUES
-(1, 1, NULL, '新手友善！開心打陀螺', 'battle_card_test1.jpg', '假日放鬆場，輕鬆交流，我帶戰鬥盤，你帶陀螺就好！', 3, 43, 'CASUAL', 'ALL', 'BEGINNER', '2026-09-05 14:00:00', '2026-09-04 22:00:00', '桃園市中壢區中壢火車站附近', 'MATCHING', 'LINE：weichen01', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL),
-(2, 2, NULL, '中壢車站週末交流場', 'battle_card_default.jpg', '歡迎各種程度的玩家參加，現場會準備戰鬥盤，一起輕鬆交流。', 3, 43, 'CASUAL', 'ALL', 'ALL', '2026-09-06 15:00:00', '2026-09-05 20:00:00', '桃園市中壢區中壢火車站前廣場', 'MATCHING', 'LINE：spinray02', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL),
-(3, 3, NULL, '競技模式實戰練習', 'battle_card_test2.jpg', '以競技規則進行實戰交流，適合已有對戰經驗並想增加實戰經驗的玩家。', 1, 3, 'COMPETITIVE', 'ADULT', 'ADVANCED', '2026-09-09 19:00:00', '2026-09-08 18:00:00', '臺北市大安區捷運忠孝復興站附近', 'MATCHING', 'LINE：bladegirl03', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL),
-(4, 4, NULL, '親子陀螺交流體驗', 'battle_card_default.jpg', '適合親子一起參加的輕鬆交流場，第一次接觸戰鬥陀螺也沒問題。', 2, 13, 'CASUAL', 'FAMILY', 'BEGINNER', '2026-09-12 10:30:00', '2026-09-11 18:00:00', '新北市板橋區板橋車站附近', 'MATCHING', 'LINE：beyrookie04', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL),
-(5, 5, NULL, '下班後來一場吧！', 'battle_card_default.jpg', '下班後簡單玩幾場，主要以輕鬆交流為主，地點鄰近捷運站。', 1, 2, 'CASUAL', 'ADULT', 'INTERMEDIATE', '2026-09-15 19:30:00', '2026-09-15 12:00:00', '臺北市信義區捷運市政府站附近', 'MATCHING', 'LINE：sunny05', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL),
-(6, 6, NULL, '進階玩家配置測試場', 'battle_card_default.jpg', '帶上最近調整的陀螺配置，一起測試不同零件搭配在實戰中的效果。', 2, 17, 'COMPETITIVE', 'ALL', 'ADVANCED', '2026-09-19 14:00:00', '2026-09-18 22:00:00', '新北市新莊區捷運新莊站附近', 'MATCHING', 'LINE：littleblade06', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL),
-(7, 7, NULL, '初次約戰也不用緊張', 'battle_card_default.jpg', '以交流和認識同好為主，不熟悉規則也可以放心參加，歡迎新手玩家。', 3, 45, 'CASUAL', 'ALL', 'BEGINNER', '2026-09-20 13:00:00', '2026-09-19 20:00:00', '桃園市八德區八德廣豐新天地附近', 'MATCHING', 'LINE：kenblade07', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL),
-(8, 9, NULL, '週日下午競技交流', 'battle_card_default.jpg', '依照競技規則進行多場實戰，歡迎想測試配置與累積實戰經驗的玩家。', 3, 44, 'COMPETITIVE', 'ADULT', 'INTERMEDIATE', '2026-09-26 15:00:00', '2026-09-25 23:00:00', '桃園市平鎮區新勢公園附近', 'MATCHING', 'LINE：beymom09', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL),
-(9, 10, NULL, '桃園陀螺玩家輕鬆聚', 'battle_card_default.jpg', '不論是收藏、配置分享或實際對戰都歡迎，一起認識附近的陀螺同好。', 3, 42, 'CASUAL', 'FAMILY', 'ALL', '2026-09-27 14:30:00', '2026-09-26 21:00:00', '桃園市桃園區桃園藝文特區附近', 'MATCHING', 'LINE：storm10', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL),
-(10, 1, 2, '中壢週末輕鬆交流', 'battle_card_default.jpg', '假日下午簡單交流配置與玩法。', 3, 43, 'CASUAL', 'ALL', 'ALL', '2026-07-05 14:00:00', '2026-07-04 20:00:00', '桃園市中壢區中壢火車站附近', 'CONFIRMED', 'LINE：weichen01', 'LINE：spinray02', NULL, 5, 5, '2026-08-18 13:54:19', '準時又親切，場地資訊也說明得很清楚。', '2026-07-05 17:30:00', '交流過程很愉快，也分享了不少配置想法。', '2026-07-05 17:45:00', 1, NULL),
-(11, 2, 3, '競技配置實戰測試', 'battle_card_default.jpg', '以競技規則測試近期調整的配置。', 1, 3, 'COMPETITIVE', 'ADULT', 'ADVANCED', '2026-07-10 19:00:00', '2026-07-09 20:00:00', '臺北市大安區忠孝復興站附近', 'CONFIRMED', 'LINE：spinray02', 'LINE：bladegirl03', 1, 4, 5, '2026-08-18 13:54:19', '對戰流程安排順暢，是很值得交流的玩家。', '2026-07-10 21:30:00', '實戰經驗豐富，對戰後也願意交流配置心得。', '2026-07-10 21:40:00', 1, NULL),
-(12, 3, 4, '新手友善交流下午場', 'battle_card_default.jpg', '以交流為主，協助新手熟悉基本對戰方式。', 2, 13, 'CASUAL', 'ALL', 'BEGINNER', '2026-07-15 15:00:00', '2026-07-14 21:00:00', '新北市板橋區板橋車站附近', 'CONFIRMED', 'LINE：bladegirl03', 'LINE：beyrookie04', NULL, 5, 5, '2026-08-18 13:54:19', '很有耐心，對新手也會主動說明玩法。', '2026-07-15 18:00:00', '態度很好，交流過程也很有禮貌。', '2026-07-15 18:10:00', 1, NULL),
-(13, 4, 5, '假日新手陀螺同樂會', 'battle_card_default.jpg', '新手玩家一起練習與認識不同配置。', 3, 42, 'CASUAL', 'FAMILY', 'BEGINNER', '2026-07-20 13:30:00', '2026-07-19 20:00:00', '桃園市桃園區藝文特區附近', 'CONFIRMED', 'LINE：beyrookie04', 'LINE：sunny05', NULL, 4, 5, '2026-08-18 13:54:19', '現場氣氛很輕鬆，適合剛開始玩的玩家。', '2026-07-20 16:30:00', '很有活力，也很願意和其他玩家交流。', '2026-07-20 16:40:00', 1, NULL),
-(14, 5, 6, '少年玩家競技練習場', 'battle_card_default.jpg', '進行數場競技規則實戰練習。', 3, 43, 'COMPETITIVE', 'ALL', 'INTERMEDIATE', '2026-07-25 14:00:00', '2026-07-24 20:00:00', '桃園市中壢區中央公園附近', 'CONFIRMED', 'LINE：sunny05', 'LINE：littleblade06', 0, 5, 4, '2026-08-18 13:54:19', '準備充分，對戰時也很遵守規則。', '2026-07-25 17:00:00', '對戰態度認真，之後還會想再一起交流。', '2026-07-25 17:15:00', 1, NULL),
-(15, 6, 7, '配置分享輕鬆交流場', 'battle_card_default.jpg', '分享近期喜歡的配置並進行友善交流。', 2, 17, 'CASUAL', 'ALL', 'ALL', '2026-07-30 15:00:00', '2026-07-29 21:00:00', '新北市新莊區捷運新莊站附近', 'CONFIRMED', 'LINE：littleblade06', 'LINE：kenblade07', NULL, 5, 5, '2026-08-18 13:54:19', '很友善，也會主動分享自己使用零件的心得。', '2026-07-30 18:20:00', '交流態度很好，是很有潛力的玩家。', '2026-07-30 18:30:00', 1, NULL),
-(16, 7, 9, '週末競技實戰挑戰', 'battle_card_default.jpg', '以完整競技規則進行多場實戰。', 3, 44, 'COMPETITIVE', 'ADULT', 'ADVANCED', '2026-08-02 16:00:00', '2026-08-01 22:00:00', '桃園市平鎮區新勢公園附近', 'CONFIRMED', 'LINE：kenblade07', 'LINE：beymom09', 1, 5, 5, '2026-08-18 13:54:19', '實戰經驗非常豐富，對戰節奏也掌握得很好。', '2026-08-02 19:00:00', '對手很有實力，整場對戰十分精彩。', '2026-08-02 19:10:00', 1, NULL),
-(17, 9, 10, '親子友善陀螺交流', 'battle_card_default.jpg', '親子與一般玩家都能輕鬆參加的交流場。', 3, 42, 'CASUAL', 'FAMILY', 'ALL', '2026-08-07 14:30:00', '2026-08-06 20:00:00', '桃園市桃園區藝文特區附近', 'CONFIRMED', 'LINE：beymom09', 'LINE：storm10', NULL, 5, 4, '2026-08-18 13:54:19', '活動安排很細心，對親子玩家也非常友善。', '2026-08-07 17:30:00', '交流過程很愉快，現場氣氛也很好。', '2026-08-07 17:45:00', 1, NULL),
-(18, 10, 1, '進階玩家夜間競技戰', 'battle_card_default.jpg', '進階玩家測試配置與累積實戰經驗。', 1, 2, 'COMPETITIVE', 'ADULT', 'ADVANCED', '2026-08-12 19:30:00', '2026-08-11 22:00:00', '臺北市信義區市政府站附近', 'CONFIRMED', 'LINE：storm10', 'LINE：weichen01', 1, 4, 5, '2026-08-18 13:54:19', '對戰強度很高，也很願意分享自己的戰術思路。', '2026-08-12 22:00:00', '發起人很準時，整體對戰流程也很順暢。', '2026-08-12 22:10:00', 1, NULL);
+INSERT INTO `battle_record` (`BATTLE_ID`, `INITIATOR_ID`, `PARTICIPANT_ID`, `BATTLE_TITLE`, `BATTLE_IMG`, `BATTLE_DESC`, `CITY_ID`, `DISTRICT_ID`, `BATTLE_MODE`, `BATTLE_TARGET`, `BATTLE_LEVEL`, `BATTLE_DATE`, `BATTLE_DEADLINE`, `BATTLE_LOC`, `BATTLE_STATUS`, `INI_CONTACT`, `PAR_CONTACT`, `WINNER`, `TO_INI_STARS`, `TO_PAR_STARS`, `CREATED_AT`, `TO_INI_COMMENT`, `TO_INI_COMMENTED_AT`, `TO_PAR_COMMENT`, `TO_PAR_COMMENTED_AT`, `IS_SHOW`, `REMOVE_REASON`, `REMOVED_BY_ADMIN_ID`, `REMOVED_AT`) VALUES
+(1, 1, NULL, '新手友善！開心打陀螺', 'battle_card_test1.jpg', '假日放鬆場，輕鬆交流，我帶戰鬥盤，你帶陀螺就好！', 3, 43, 'CASUAL', 'ALL', 'BEGINNER', '2026-09-05 14:00:00', '2026-09-04 22:00:00', '桃園市中壢區中壢火車站附近', 'MATCHING', 'LINE：weichen01', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL),
+(2, 2, NULL, '中壢車站週末交流場', 'battle_card_default.jpg', '歡迎各種程度的玩家參加，現場會準備戰鬥盤，一起輕鬆交流。', 3, 43, 'CASUAL', 'ALL', 'ALL', '2026-09-06 15:00:00', '2026-09-05 20:00:00', '桃園市中壢區中壢火車站前廣場', 'MATCHING', 'LINE：spinray02', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL),
+(3, 3, NULL, '競技模式實戰練習', 'battle_card_test2.jpg', '以競技規則進行實戰交流，適合已有對戰經驗並想增加實戰經驗的玩家。', 1, 3, 'COMPETITIVE', 'ADULT', 'ADVANCED', '2026-09-09 19:00:00', '2026-09-08 18:00:00', '臺北市大安區捷運忠孝復興站附近', 'MATCHING', 'LINE：bladegirl03', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL),
+(4, 4, NULL, '親子陀螺交流體驗', 'battle_card_default.jpg', '適合親子一起參加的輕鬆交流場，第一次接觸戰鬥陀螺也沒問題。', 2, 13, 'CASUAL', 'FAMILY', 'BEGINNER', '2026-09-12 10:30:00', '2026-09-11 18:00:00', '新北市板橋區板橋車站附近', 'MATCHING', 'LINE：beyrookie04', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL),
+(5, 5, NULL, '下班後來一場吧！', 'battle_card_default.jpg', '下班後簡單玩幾場，主要以輕鬆交流為主，地點鄰近捷運站。', 1, 2, 'CASUAL', 'ADULT', 'INTERMEDIATE', '2026-09-15 19:30:00', '2026-09-15 12:00:00', '臺北市信義區捷運市政府站附近', 'MATCHING', 'LINE：sunny05', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL),
+(6, 6, NULL, '進階玩家配置測試場', 'battle_card_default.jpg', '帶上最近調整的陀螺配置，一起測試不同零件搭配在實戰中的效果。', 2, 17, 'COMPETITIVE', 'ALL', 'ADVANCED', '2026-09-19 14:00:00', '2026-09-18 22:00:00', '新北市新莊區捷運新莊站附近', 'MATCHING', 'LINE：littleblade06', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL),
+(7, 7, NULL, '初次約戰也不用緊張', 'battle_card_default.jpg', '以交流和認識同好為主，不熟悉規則也可以放心參加，歡迎新手玩家。', 3, 45, 'CASUAL', 'ALL', 'BEGINNER', '2026-09-20 13:00:00', '2026-09-19 20:00:00', '桃園市八德區八德廣豐新天地附近', 'MATCHING', 'LINE：kenblade07', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL),
+(8, 9, NULL, '週日下午競技交流', 'battle_card_default.jpg', '依照競技規則進行多場實戰，歡迎想測試配置與累積實戰經驗的玩家。', 3, 44, 'COMPETITIVE', 'ADULT', 'INTERMEDIATE', '2026-09-26 15:00:00', '2026-09-25 23:00:00', '桃園市平鎮區新勢公園附近', 'MATCHING', 'LINE：beymom09', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL),
+(9, 10, NULL, '桃園陀螺玩家輕鬆聚', 'battle_card_default.jpg', '不論是收藏、配置分享或實際對戰都歡迎，一起認識附近的陀螺同好。', 3, 42, 'CASUAL', 'FAMILY', 'ALL', '2026-09-27 14:30:00', '2026-09-26 21:00:00', '桃園市桃園區桃園藝文特區附近', 'MATCHING', 'LINE：storm10', NULL, NULL, NULL, NULL, '2026-08-17 20:35:15', NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL),
+(10, 1, 2, '中壢週末輕鬆交流', 'battle_card_default.jpg', '假日下午簡單交流配置與玩法。', 3, 43, 'CASUAL', 'ALL', 'ALL', '2026-07-05 14:00:00', '2026-07-04 20:00:00', '桃園市中壢區中壢火車站附近', 'CONFIRMED', 'LINE：weichen01', 'LINE：spinray02', NULL, 5, 5, '2026-08-18 13:54:19', '準時又親切，場地資訊也說明得很清楚。', '2026-07-05 17:30:00', '交流過程很愉快，也分享了不少配置想法。', '2026-07-05 17:45:00', 1, NULL, NULL, NULL),
+(11, 2, 3, '競技配置實戰測試', 'battle_card_default.jpg', '以競技規則測試近期調整的配置。', 1, 3, 'COMPETITIVE', 'ADULT', 'ADVANCED', '2026-07-10 19:00:00', '2026-07-09 20:00:00', '臺北市大安區忠孝復興站附近', 'CONFIRMED', 'LINE：spinray02', 'LINE：bladegirl03', 1, 4, 5, '2026-08-18 13:54:19', '對戰流程安排順暢，是很值得交流的玩家。', '2026-07-10 21:30:00', '實戰經驗豐富，對戰後也願意交流配置心得。', '2026-07-10 21:40:00', 1, NULL, NULL, NULL),
+(12, 3, 4, '新手友善交流下午場', 'battle_card_default.jpg', '以交流為主，協助新手熟悉基本對戰方式。', 2, 13, 'CASUAL', 'ALL', 'BEGINNER', '2026-07-15 15:00:00', '2026-07-14 21:00:00', '新北市板橋區板橋車站附近', 'CONFIRMED', 'LINE：bladegirl03', 'LINE：beyrookie04', NULL, 5, 5, '2026-08-18 13:54:19', '很有耐心，對新手也會主動說明玩法。', '2026-07-15 18:00:00', '態度很好，交流過程也很有禮貌。', '2026-07-15 18:10:00', 1, NULL, NULL, NULL),
+(13, 4, 5, '假日新手陀螺同樂會', 'battle_card_default.jpg', '新手玩家一起練習與認識不同配置。', 3, 42, 'CASUAL', 'FAMILY', 'BEGINNER', '2026-07-20 13:30:00', '2026-07-19 20:00:00', '桃園市桃園區藝文特區附近', 'CONFIRMED', 'LINE：beyrookie04', 'LINE：sunny05', NULL, 4, 5, '2026-08-18 13:54:19', '現場氣氛很輕鬆，適合剛開始玩的玩家。', '2026-07-20 16:30:00', '很有活力，也很願意和其他玩家交流。', '2026-07-20 16:40:00', 1, NULL, NULL, NULL),
+(14, 5, 6, '少年玩家競技練習場', 'battle_card_default.jpg', '進行數場競技規則實戰練習。', 3, 43, 'COMPETITIVE', 'ALL', 'INTERMEDIATE', '2026-07-25 14:00:00', '2026-07-24 20:00:00', '桃園市中壢區中央公園附近', 'CONFIRMED', 'LINE：sunny05', 'LINE：littleblade06', 0, 5, 4, '2026-08-18 13:54:19', '準備充分，對戰時也很遵守規則。', '2026-07-25 17:00:00', '對戰態度認真，之後還會想再一起交流。', '2026-07-25 17:15:00', 1, NULL, NULL, NULL),
+(15, 6, 7, '配置分享輕鬆交流場', 'battle_card_default.jpg', '分享近期喜歡的配置並進行友善交流。', 2, 17, 'CASUAL', 'ALL', 'ALL', '2026-07-30 15:00:00', '2026-07-29 21:00:00', '新北市新莊區捷運新莊站附近', 'CONFIRMED', 'LINE：littleblade06', 'LINE：kenblade07', NULL, 5, 5, '2026-08-18 13:54:19', '很友善，也會主動分享自己使用零件的心得。', '2026-07-30 18:20:00', '交流態度很好，是很有潛力的玩家。', '2026-07-30 18:30:00', 1, NULL, NULL, NULL),
+(16, 7, 9, '週末競技實戰挑戰', 'battle_card_default.jpg', '以完整競技規則進行多場實戰。', 3, 44, 'COMPETITIVE', 'ADULT', 'ADVANCED', '2026-08-02 16:00:00', '2026-08-01 22:00:00', '桃園市平鎮區新勢公園附近', 'CONFIRMED', 'LINE：kenblade07', 'LINE：beymom09', 1, 5, 5, '2026-08-18 13:54:19', '實戰經驗非常豐富，對戰節奏也掌握得很好。', '2026-08-02 19:00:00', '對手很有實力，整場對戰十分精彩。', '2026-08-02 19:10:00', 1, NULL, NULL, NULL),
+(17, 9, 10, '親子友善陀螺交流', 'battle_card_default.jpg', '親子與一般玩家都能輕鬆參加的交流場。', 3, 42, 'CASUAL', 'FAMILY', 'ALL', '2026-08-07 14:30:00', '2026-08-06 20:00:00', '桃園市桃園區藝文特區附近', 'CONFIRMED', 'LINE：beymom09', 'LINE：storm10', NULL, 5, 4, '2026-08-18 13:54:19', '活動安排很細心，對親子玩家也非常友善。', '2026-08-07 17:30:00', '交流過程很愉快，現場氣氛也很好。', '2026-08-07 17:45:00', 1, NULL, NULL, NULL),
+(18, 10, 1, '進階玩家夜間競技戰', 'battle_card_default.jpg', '進階玩家測試配置與累積實戰經驗。', 1, 2, 'COMPETITIVE', 'ADULT', 'ADVANCED', '2026-08-12 19:30:00', '2026-08-11 22:00:00', '臺北市信義區市政府站附近', 'CONFIRMED', 'LINE：storm10', 'LINE：weichen01', 1, 4, 5, '2026-08-18 13:54:19', '對戰強度很高，也很願意分享自己的戰術思路。', '2026-08-12 22:00:00', '發起人很準時，整體對戰流程也很順暢。', '2026-08-12 22:10:00', 1, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -883,7 +885,8 @@ ALTER TABLE `battle_record`
   ADD KEY `FK_BATTLE_PARTICIPANT` (`PARTICIPANT_ID`),
   ADD KEY `FK_BATTLE_CITY` (`CITY_ID`),
   ADD KEY `FK_BATTLE_DISTRICT` (`DISTRICT_ID`),
-  ADD KEY `IDX_BATTLE_STATUS_DATE` (`BATTLE_STATUS`,`BATTLE_DATE`);
+  ADD KEY `IDX_BATTLE_STATUS_DATE` (`BATTLE_STATUS`,`BATTLE_DATE`),
+  ADD KEY `FK_BATTLE_REMOVED_ADMIN` (`REMOVED_BY_ADMIN_ID`);
 
 --
 -- Indexes for table `beyblade`
@@ -1079,7 +1082,8 @@ ALTER TABLE `battle_record`
   ADD CONSTRAINT `FK_BATTLE_CITY` FOREIGN KEY (`CITY_ID`) REFERENCES `city` (`CITY_ID`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_BATTLE_DISTRICT` FOREIGN KEY (`DISTRICT_ID`) REFERENCES `district` (`DISTRICT_ID`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_BATTLE_INITIATOR` FOREIGN KEY (`INITIATOR_ID`) REFERENCES `member` (`MEM_ID`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_BATTLE_PARTICIPANT` FOREIGN KEY (`PARTICIPANT_ID`) REFERENCES `member` (`MEM_ID`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `FK_BATTLE_PARTICIPANT` FOREIGN KEY (`PARTICIPANT_ID`) REFERENCES `member` (`MEM_ID`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_BATTLE_REMOVED_ADMIN` FOREIGN KEY (`REMOVED_BY_ADMIN_ID`) REFERENCES `admin` (`admin_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `district`
