@@ -8,7 +8,7 @@
           <div class="form-group form-group--type">
             <label for="complaintType">申訴類型</label>
             <div class="select-wrap">
-              <select id="complaintType" v-model="formData.type">
+              <select id="complaintType" v-model="formData.type" :disabled="isBattleSource">
                 <option v-for="option in typeOptions" :key="option" :value="option">
                   {{ option }}
                 </option>
@@ -23,6 +23,7 @@
               id="complaintTarget"
               type="text"
               v-model="formData.target"
+              :disabled="isBattleSource"
               required
             />
           </div>
@@ -34,6 +35,7 @@
             id="complaintTitle"
             type="text"
             v-model="formData.title"
+            :disabled="isBattleSource"
             required
           />
         </div>
@@ -99,6 +101,9 @@
 </template>
 
 <script>
+//導入約戰申訴初始化資料API模組
+import { fetchBattleComplaintContext, submitBattleComplaint } from "@/assets/js/complaint/battleComplaint.js";
+
 const MAX_IMAGES = 5;
 
 export default {
@@ -114,8 +119,18 @@ export default {
         description: ""
       },
       images: [],
-      maxImages: MAX_IMAGES
+      maxImages: MAX_IMAGES,
+
+      battleId: null
     };
+  },
+
+  computed: {
+    isBattleSource() {
+      const query = new URLSearchParams(window.location.search);
+
+      return query.get("type") === "battle";
+    }
   },
 
   beforeUnmount() {
@@ -143,15 +158,83 @@ export default {
       this.images.splice(index, 1);
     },
 
-    handleSubmit() {
-      alert("申訴已送出！");
-      window.location.href = `${import.meta.env.BASE_URL}homepage.html`;
+    async handleSubmit() {
+      const isConfirmed = confirm("確定要送出這筆申訴嗎？ 送出後將交由管理員進行審核。");
+
+      if (!isConfirmed) {
+        return;
+      }
+
+      //約戰申訴
+      if(this.isBattleSource) {
+
+        try {
+          const data = await submitBattleComplaint(
+            this.battleId,
+            this.formData.description,
+            this.images
+          );
+          
+          alert(data.message);
+          window.location.href = `${import.meta.env.BASE_URL}homepage.html`;
+
+        } catch (error) {
+          console.error("送出約戰申訴失敗：", error);
+          alert(error.message);
+
+          return;
+        }
+
+      }
+
     },
 
     handleCancel() {
       window.history.back();
+    },
+
+    async initBattleSource() {
+      //先取得目前網址?後的查詢參數
+      const query = new URLSearchParams(window.location.search);
+
+      //讀取申訴來源類型
+      const type = query.get("type");
+
+      //如果非約戰申訴，就不往下執行
+      if(type !== "battle") {
+        return;
+      }
+
+      //存取從網址中取得的battle_id資訊
+      this.battleId = Number(query.get("battle_id"));
+
+      if(!this.battleId) {
+        alert("缺少有效的約戰編號");
+        return;
+      }
+
+      //呼叫後端API (寫在battleComplaint.js中)，取得欲進行申訴的約戰基本資料
+      try {
+        const data = await fetchBattleComplaintContext(this.battleId);
+        
+        //將傳回資料帶入申訴表單中
+        this.formData.type = "約戰配對";
+        this.formData.target = data.battle.opponentName;
+        this.formData.title = data.battle.battleTitle;
+
+      } catch (error) {
+        console.error("取得約戰申訴資料失敗：", error);
+        alert(error.message);
+      }
+
+
     }
-  }
+  },
+
+  mounted() {
+    this.initBattleSource(); //載入申訴頁面時，讀取屬於約戰申訴的對應申訴資料
+
+  },
 };
 </script>
 
