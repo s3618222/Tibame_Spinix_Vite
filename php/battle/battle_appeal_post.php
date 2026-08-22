@@ -126,6 +126,9 @@
 
 
   // =====驗證前端回傳的佐證圖片======
+  
+  $photoEvidence = null; //待會讓會員上傳的圖片跑迴圈，再將圖片的php陣列轉為JSON字串，存入photoEvidence變數中
+
   $evidenceFiles = $_FILES["evidence_images"] ?? null;
 
   if ($evidenceFiles) {
@@ -242,9 +245,6 @@
       $relativePath = "uploads/battle_appeal/" . $newFileName;
       $imagePaths[] = $relativePath; //將每筆上傳圖片的相對路徑資訊放入imagePaths陣列中； $array[] 可理解為 js的 array.push(...)
     }
-
-    //跑完迴圈後，將剛剛儲存會員上傳圖片的php陣列轉為JSON字串，存入photoEvidence變數中
-    $photoEvidence = null;
 
     if (!empty($imagePaths)) {
       $photoEvidence = json_encode(
