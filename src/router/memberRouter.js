@@ -51,7 +51,7 @@ const memberRouter = createRouter({
       component: MyAppeal
     },
     {
-      path: "/appeal/:id",
+      path: "/appeal/:type/:id",
       name: "member-appeal-detail",
       component: MyAppealDetail
     },
