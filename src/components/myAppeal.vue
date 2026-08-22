@@ -66,7 +66,7 @@
               {{ statusLabel(appeal.status) }}
             </span>
           </p>
-          <p>{{ appeal.createdAt }}</p>
+          <p>{{ formatDateTime(appeal.createdAt) }}</p>
           <RouterLink
             :to="{ name: 'member-appeal-detail', params: { type: appeal.sourceType, id: appeal.id } }"
             class="detail-btn"
@@ -182,7 +182,13 @@ export default {
         console.error("取得申訴紀錄失敗：", error);
       }
 
-    }
+    },
+
+    formatDateTime(dateTime) { //日期格式化，不顯示秒數
+      if (!dateTime) return "";
+
+      return dateTime.replaceAll("-", "/").slice(0, 16);
+    },
   },
 
   mounted() { //載入我的申訴後，先取得當前會員提出的申訴紀錄

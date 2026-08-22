@@ -27,7 +27,7 @@
         </div>
         <div class="meta-item">
           <p class="meta-label">建立時間</p>
-          <p class="meta-value">{{ appeal.createdAt }}</p>
+          <p class="meta-value">{{ formatDateTime(appeal.createdAt) }}</p>
         </div>
         <div class="meta-item">
           <p class="meta-label">案件狀態</p>
@@ -60,7 +60,7 @@
       <section class="detail-card result-card" v-if="appeal.result">
         <h2>處份結果</h2>
         <p class="detail-text">{{ appeal.result }}</p>
-        <p class="result-date">回覆時間：{{ appeal.resultDate }}</p>
+        <p class="result-date">回覆時間：{{ formatDateTime(appeal.resultDate) }}</p>
         <p class="result-hint">如果對處置有疑問請聯絡我們，或撥打客服電話：0900-000-000</p>
       </section>
     </template>
@@ -169,6 +169,12 @@ export default {
         //串聯交換申訴詳情API
       }
 
+    },
+
+    formatDateTime(dateTime) { //日期格式化，不顯示秒數
+      if (!dateTime) return "";
+
+      return dateTime.replaceAll("-", "/").slice(0, 16);
     },
 
     getEvidenceImageUrl(imagePath) {
