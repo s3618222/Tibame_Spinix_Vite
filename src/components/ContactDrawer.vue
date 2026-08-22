@@ -38,7 +38,7 @@ const isOpen = ref(false)
 
 
    .btn-showContact{
-      padding-bottom: 8px;
+      padding-top: 8px;
       width: 100%;
       text-align: left;
    }
@@ -56,6 +56,7 @@ const isOpen = ref(false)
       overflow: hidden;
       line-height: 1.6;
       font-size: 14px;
+      // padding-bottom: 8px;
    }
 
    .arrow {

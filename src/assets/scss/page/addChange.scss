@@ -6,6 +6,7 @@
       border: 1px solid map-get($color, gray);
       border-radius: 12px;
       padding: 20px 28px;
+      margin-top: 12px;
 
       form {
          display: flex;
@@ -19,6 +20,11 @@
          }
 
          .form-label-style {
+
+            &:has([required]) .label-title::after{
+               content: ' *';
+               color: map-get($color, error );
+            }
 
             .label-title {
                padding-block: 8px;
