@@ -555,17 +555,17 @@
           
         },
 
-        goToAppeal(appealData) {
-          //送出申訴函式，將子元件傳來的資訊：1.此筆申訴屬約戰類型 2.此筆約戰紀錄的id，攜帶跳轉至申訴分頁
+        goToAppeal(appealData) { //送出申訴函式
+          //將1.此筆申訴屬約戰類型 2.此筆約戰紀錄的id，攜帶跳轉至申訴分頁
 
           //將JS物件轉為網址查詢參數
           const query = new URLSearchParams({
-            type: appealData.appealType,
-            id: appealData.recordId
+            type: "battle",
+            battle_id: appealData.recordId
           });
 
-          //!!!!!!跳轉到申訴分頁 (記得到時候要更換成真的申訴分頁的名稱)
-          window.location.href = `complaint.html?${query.toString()}`;
+          //開啟申訴分頁
+          window.open(`complaint.html?${query.toString()}`, "_blank");
         },
 
         openReviewModal(reviewData) { //開啟評價燈箱時，帶入對手的相關資訊
