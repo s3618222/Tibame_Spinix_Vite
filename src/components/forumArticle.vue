@@ -14,8 +14,8 @@
         :remove_reason="article.removeReason"
         :show_contact="true"
       />
-      <ArticleMain :article-author="articleAuthor" :article="article"/>
-      <CommentList :comments="comments" :is-article-show="article.isShow !== false" />
+      <ArticleMain :article-author="articleAuthor" :article="article" :is-author="isArticleAuthor"/>
+      <CommentList :comments="comments" :is-article-show="article.isShow !== false" :current-member-id="currentMemberId"/>
       <CommentForm v-if="article.isShow !== false"/>
     </div>
 
@@ -47,13 +47,23 @@ export default {
       articleAuthor: {},
       comments: [],
       article: {},
-      notFound: false
+      notFound: false,
+      currentMemberId: null
     }
   },
+
+  computed: {
+    isArticleAuthor(){
+      return this.currentMemberId !== null && Number(this.currentMemberId) === Number(this.article.memId);
+    }
+  },
+
   created(){
     this.fetchArticle();
     this.fetchComments();
+    this.fetchCurrentMember();
   },
+
   methods: {
     async fetchArticle(){
       const params = new URLSearchParams(window.location.search);
@@ -76,7 +86,8 @@ export default {
             category: CATEGORY_LABELS[articleData.category] ?? articleData.category,
             createTime: articleData.create_time,
             isShow: Number(articleData.is_show) === 1,
-            removeReason: articleData.remove_reason
+            removeReason: articleData.remove_reason,
+            memId: articleData.mem_id
           }
         } else {
           this.notFound = true;
@@ -91,7 +102,7 @@ export default {
       const articleId = params.get('id');
 
       try{
-        const res = await fetch(`http://localhost:8888/Spinix/php/forum/getComments.php?id=${articleId}`);
+        const res = await fetch(`http://localhost:8888/Spinix/php/forum/getComments.php?id=${articleId}`, {credentials: "include"});
         const result = await res.json();
         if (result.success) {
           this.comments = result.data.map((c, index) => ({
@@ -99,6 +110,8 @@ export default {
             floor: index + 2,
             content: c.content,
             time: c.create_time,
+            memId: c.mem_id,
+            isShow: Number(c.is_show) === 1,  // 所有上架中留言
             commenter: {
               name: c.commenter_name,
               score: `勝場數：${c.commenter_battle_wins}`,
@@ -108,6 +121,20 @@ export default {
         }
       }catch(error){
         console.error("留言資料載入失敗", error);
+      }
+    },
+
+    async fetchCurrentMember(){
+      try{
+        const res = await fetch("http://localhost:8888/Spinix/php/member/currentMember_get.php", {credentials: "include"});
+        const result = await res.json();
+
+        if (result.isLoggedIn) {
+          this.currentMemberId = result.member.id;
+        }
+
+      }catch(error){
+        console.error("登入狀態確認失敗", error);
       }
     }
   }
