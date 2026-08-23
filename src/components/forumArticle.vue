@@ -4,12 +4,21 @@
       <i class="fa-solid fa-arrow-left"></i>
       <span>返回論壇列表</span>
     </a>
-    <div class="article-content">
-      <ArticleMain :article-author="articleAuthor" :article="article"/>
-      <CommentList :comments="comments"/>
-      <CommentForm/>
+    <div class="not-found" v-if="notFound">
+      <p>找不到這篇文章，可能已被移除或您沒有權限查看。</p>
     </div>
-    
+    <div class="article-content" v-else>
+      <WarningBanner
+        v-if="article.isShow === false"
+        title="文章"
+        :remove_reason="article.removeReason"
+        :show_contact="true"
+      />
+      <ArticleMain :article-author="articleAuthor" :article="article"/>
+      <CommentList :comments="comments" :is-article-show="article.isShow !== false" />
+      <CommentForm v-if="article.isShow !== false"/>
+    </div>
+
   </div>
   
 </template>
@@ -18,6 +27,7 @@
 import ArticleMain from '@/components/forum/articleMain.vue';
 import CommentForm from '@/components/forum/commentForm.vue';
 import CommentList from '@/components/forum/commentList.vue';
+import WarningBanner from '@/components/WarningBanner.vue';
 import { CATEGORY_LABELS } from '@/assets/js/utils/articleCategory.js';
 
 
@@ -27,7 +37,8 @@ export default {
   components: {
     ArticleMain,
     CommentForm,
-    CommentList
+    CommentList,
+    WarningBanner
   },
 
   data(){
@@ -35,7 +46,8 @@ export default {
       baseUrl: import.meta.env.BASE_URL,
       articleAuthor: {},
       comments: [],
-      article: {}
+      article: {},
+      notFound: false
     }
   },
   created(){
@@ -48,7 +60,7 @@ export default {
       const articleId = params.get('id');
       
       try{
-        const res = await fetch(`http://localhost:8888/Spinix/php/forum/getArticleById.php?id=${articleId}`);
+        const res = await fetch(`http://localhost:8888/Spinix/php/forum/getArticleById.php?id=${articleId}`, {credentials: "include"});
         const result = await res.json();
 
         if(result.success){
@@ -62,8 +74,12 @@ export default {
             title: articleData.title,
             content: articleData.content,
             category: CATEGORY_LABELS[articleData.category] ?? articleData.category,
-            createTime: articleData.create_time
+            createTime: articleData.create_time,
+            isShow: Number(articleData.is_show) === 1,
+            removeReason: articleData.remove_reason
           }
+        } else {
+          this.notFound = true;
         }
       }catch(error){
         console.error("文章資料載入失敗", error);
@@ -127,6 +143,17 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+.not-found {
+  text-align: center;
+  padding: 80px 20px;
+  color: map-get($color, secondary);
+
+  p {
+    margin-bottom: 16px;
+    font-size: 16px;
+  }
 }
 
 </style>

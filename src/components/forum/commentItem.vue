@@ -15,7 +15,7 @@
       <div class="comment-body">
         <p>{{ comment.content }}</p>
       </div>
-      <div class="comment-footer">
+      <div class="comment-footer" v-if="isArticleShow">
         <a :href="`${baseURL}complaint.html`" type="button">
           <i class="fa-regular fa-flag"></i>
           <span>檢舉</span>
@@ -41,6 +41,10 @@ import AuthorCard from '@/components/forum/authorCard.vue';
       comment: {
         type: Object,
         default: () => ({})
+      },
+      isArticleShow: {
+        type: Boolean,
+        default: true
       }
     },
 
