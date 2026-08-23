@@ -22,7 +22,8 @@ import { ref } from 'vue'
 
 defineProps({
    contact: { type: String, required: true },
-   show: { type: Boolean, default: true }
+   show: { type: Boolean, default: true },
+   isAdmin:{ type: Boolean , default:false}
 })
 
 const isOpen = ref(false)

@@ -50,7 +50,7 @@
         >
 
       <!-- 自己刊登的文章：顯示編輯按鈕 -->
-        <div class="owner-actions" v-if="isOwner">
+        <div class="owner-actions" v-if="isOwner && !isAdmin">
           <template v-if="!isEditing">
             <button type="button" class="btn-edit" @click="startEdit">
               修改資訊
@@ -99,11 +99,14 @@
           <div class="info-header">
             <p class="user-name">{{ article.name }}</p>
             <a href="complaint.html" target="_blank">
-              <i class="fa-solid fa-triangle-exclamation" v-if="!isOwner"></i>
+              <i class="fa-solid fa-triangle-exclamation" v-if="!isOwner && !isAdmin"></i>
             </a>
           </div>
           <!-- 顯示會員資訊 -->
-          <div :class="{'topLine':article.status === 'exchanging'}">
+          <div
+          :class="{'topLine':article.status === 'exchanging'}"
+          v-if=" !isAdmin"
+          >
             <ContactDrawer
               :contact="article.post_contact"
               :show="article.status === 'exchanging'"
@@ -146,20 +149,30 @@
         v-if="article.remove_reason !== ''"
         title= "文章"
         :remove_reason = "article.remove_reason"
-        :show_contact="isSeller"
+        :show_contact="isOwner"
       />
-      
+
+      <!-- 上下架按鈕(管理員畫面) -->
+      <div>
+        <StatusToggleButton
+          v-if="article.status !== 'completed'"
+          title="文章"
+          :isShow="article.is_show"
+          :isAdmin="isAdmin"
+          @toggle="handleToggleArticleStatus"
+        />
+      </div>
 
 
       <!-- 情況一：賣家，還沒選定對象 -->
-      <p v-if="isOwner && article.status === 'available'" class="apply-hint">
+      <p v-if="isOwner && article.status === 'available' && !isAdmin" class="apply-hint">
         <i class="fa-regular fa-hand-point-down"></i>
         您可於下方查看其他會員的交換提議
         <i class="fa-regular fa-hand-point-down"></i>
       </p>
       <!-- 情況二：買家，還沒申請過 -->
       <button
-        v-else-if="!isOwner && !alreadyApplied"
+        v-else-if="!isOwner && !alreadyApplied && !isAdmin"
         type="button"
         class="btnFill"
         @click="isModalOpen = true"
@@ -167,7 +180,7 @@
         我想交換
       </button>
       <!-- 情況三：買家，已經申請過 -->
-      <p v-else-if="!isOwner && alreadyApplied" class="apply-hint">
+      <p v-else-if="!isOwner && alreadyApplied && !isAdmin" class="apply-hint">
         你已提出過申請，等待版主的選擇
       </p>
 
@@ -209,7 +222,9 @@
               :contact="comment.comm_contact"
               :remove_reason="comment.remove_reason"
               :isShow="comment.is_show"
+              :isAdmin="isAdmin"
               @select-applicant="handleSelectApplicant"
+              @toggle-comment-status="handleToggleCommentStatus"
             />
           </ul>
           <p v-if="!sortedComments.length" class="empty-state">這裡還很安靜，成為第一個提出交換的人吧！</p>
@@ -275,6 +290,14 @@
       </form>
     </div>
   </div>
+
+  <!-- 下架原因燈箱 -->
+  <ConfirmReasonModal
+    :visible="isRemoveModalOpen"
+    title="請說明下架原因"
+    @cancel="handleCancelRemove"
+    @confirm="handleConfirmRemove"
+  />
 </template>
 
 <script setup>
@@ -286,6 +309,8 @@ import 'vue3-carousel/dist/carousel.css';
 import PhotoUploader from '@/components/uploadImg.vue';
 import ContactDrawer from '@/components/ContactDrawer.vue';
 import WarningBanner from '@/components/WarningBanner.vue';
+import StatusToggleButton from '@/components/StatusToggleButton.vue';
+import ConfirmReasonModal from '@/components/common/ConfirmReasonModal.vue';
 
 // 目前登入的測試會員（之後接後端時，改成從登入狀態拿）
 const currentUserId = 999;
@@ -294,9 +319,12 @@ const currentUserId = 999;
 const urlParams = new URLSearchParams(window.location.search);
 
 const articleId = urlParams.get('id'); 
-// const articleId = urlParams.get('post_id'); 
+
 const context = urlParams.get('from') || 'browse';
 
+// 判斷是否從管理者畫面進來
+// const isAdmin = computed(() => context === 'admin');
+const isAdmin = false;
 
 // 從 exchangeList 陣列中，找出 id 相符的那一筆資料
 const article = computed(() =>
@@ -310,13 +338,68 @@ const alreadyApplied = computed(() => {
   return articleComments.value.some(c => c.mem_id === currentUserId);
 });
 
+// 開啟下架原因燈箱
+const isRemoveModalOpen = ref(false);
+const removeTarget = ref(null);   // 記錄這次要下架的是誰
 
+function handleToggleArticleStatus() {
+  if (article.value.is_show) {
+    removeTarget.value = { type: 'article' };
+    isRemoveModalOpen.value = true;
+  } else {
+    const isConfirm = window.confirm('確定要恢復此文章上架嗎？');
+    if (!isConfirm) return;
+    article.value.is_show = true;
+    article.value.remove_reason = '';
+    window.alert('已恢復上架！');
+  }
+}
+
+function handleToggleCommentStatus({ commentId }) {
+  const comment = articleComments.value.find(c => c.comm_id === commentId);
+  if (!comment) return;
+
+  if (comment.is_show) {
+    removeTarget.value = { type: 'comment', commentId };
+    isRemoveModalOpen.value = true;
+  } else {
+    const isConfirm = window.confirm('確定要恢復此留言上架嗎？');
+    if (!isConfirm) return;
+    comment.is_show = true;
+    comment.remove_reason = '';
+    window.alert('已恢復上架！');
+  }
+}
+
+function handleConfirmRemove(reason) {
+  if (removeTarget.value?.type === 'article') {
+    article.value.is_show = false;
+    article.value.remove_reason = reason;
+    window.alert('文章已下架！');
+  } else if (removeTarget.value?.type === 'comment') {
+    const comment = articleComments.value.find(c => c.comm_id === removeTarget.value.commentId);
+    if (comment) {
+      comment.is_show = false;
+      comment.remove_reason = reason;
+    }
+    window.alert('留言已下架！');
+  }
+
+  isRemoveModalOpen.value = false;
+  removeTarget.value = null;
+}
+
+function handleCancelRemove() {
+  isRemoveModalOpen.value = false;
+  removeTarget.value = null;
+}
 
 // 依 context 決定標題文字
 const pageTitleMap = {
   browse: '物品詳情',
   myPosts: '我刊登的物品',
   myApplications: '我提出的申請'
+  
 };
 
 const pageTitle = computed(() => pageTitleMap[context] || '物品詳情');
@@ -325,7 +408,8 @@ const pageTitle = computed(() => pageTitleMap[context] || '物品詳情');
 const backLinkMap = {
   browse: 'market.html',
   myPosts: 'member.html#/exchange',
-  myApplications: 'member.html#/exchange'
+  myApplications: 'member.html#/exchange',
+  backend: 'backMember.html#/exchange'
 };
 const backLink = computed(() => backLinkMap[context] || 'market.html');
 
