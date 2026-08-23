@@ -8,14 +8,14 @@
       <div class="total-item">
         <p>總計貼文數</p>
         <div class="amount-total">
-          <span class="num">25</span>
+          <span class="num">{{ articles.length }}</span>
           <span class="unit">則貼文</span>
         </div>
       </div>
       <div class="total-item">
         <p>總計留言數</p>
         <div class="amount-total">
-          <span class="num">211</span>
+          <span class="num">{{ comments.length }}</span>
           <span class="unit">則留言</span>
         </div>
       </div>
@@ -33,8 +33,8 @@
         </button>
     </div>
     <div class="table-content">
-      <MyArticles v-if="currentTab === 'posts'" />
-      <myComments v-if="currentTab === 'comments'" />
+      <MyArticles v-if="currentTab === 'posts'" :articles="articles"/>
+      <myComments v-if="currentTab === 'comments'" :comments="comments"/>
     </div>
   </section>
 </template>
@@ -52,13 +52,67 @@ export default {
 
   data() {
     return {
-      currentTab: "posts"
+      currentTab: "posts",
+      articles: [],
+      comments: []
     };
+  },
+
+  created(){
+    this.fetchMyArticles();
+    this.fetchMyComments();
   },
 
   methods: {
     switchTab(tab) {
       this.currentTab = tab;
+    },
+
+    async fetchMyArticles() {
+      try {
+        const res = await fetch("http://localhost:8888/Spinix/php/forum/getMyArticles.php", {
+          method: "GET",
+          credentials: "include"
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          this.articles = result.data.map(article => ({
+            id: article.art_id,
+            title: article.title,
+            category: article.category,
+            date: article.create_time.split(" ")[0],
+            commentCount: article.comment_count,
+            isShow: Number(article.is_show) === 1,
+            removeReason: article.remove_reason
+          }));
+        }
+      } catch (error) {
+        console.error("我的文章列表載入失敗", error);
+      }
+    },
+
+    async fetchMyComments() {
+      try {
+        const res = await fetch("http://localhost:8888/Spinix/php/forum/getMyComments.php", {
+          method: "GET",
+          credentials: "include"
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          this.comments = result.data.map(comment => ({
+            id: comment.msg_id,
+            articleId: comment.art_id,
+            articleTitle: comment.title,
+            content: comment.content,
+            date: comment.create_time.split(" ")[0],
+            isShow: Number(comment.is_show) === 1
+          }));
+        }
+      } catch (error) {
+        console.error("我的留言列表載入失敗", error);
+      }
     }
   }
 };

@@ -12,7 +12,7 @@
       <div class="article-card" v-for="article in articles" :key="article.id">
         <p class="col-type">{{ CATEGORY_LABELS[article.category] ?? article.category }}</p>
         <p class="col-title">
-          {{ article.title }}
+          <a :href="`${baseUrl}forumArticle.html?id=${article.id}`" target="_blank">{{ article.title }}</a>
         </p>
         <p class="col-date">{{ article.date }}</p>
         <p class="col-comments">
@@ -46,37 +46,14 @@
     data() {
       return {
         CATEGORY_LABELS,
-        articles: []
+        baseUrl: import.meta.env.BASE_URL
       };
     },
 
-    created() {
-      this.fetchMyArticles();
-    },
-
-    methods: {
-      async fetchMyArticles() {
-        try {
-          const res = await fetch("http://localhost:8888/Spinix/php/forum/getMyArticles.php", {
-            method: "GET",
-            credentials: "include"
-          });
-          const result = await res.json();
-
-          if (result.success) {
-            this.articles = result.data.map(article => ({
-              id: article.art_id,
-              title: article.title,
-              category: article.category,
-              date: article.create_time.split(" ")[0],
-              commentCount: article.comment_count,
-              isShow: Number(article.is_show) === 1,
-              removeReason: article.remove_reason
-            }));
-          }
-        } catch (error) {
-          console.error("我的文章列表載入失敗", error);
-        }
+    props: {
+      articles: {
+        type: Array,
+        default: () => []
       }
     }
   }
@@ -142,6 +119,16 @@ button {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        // text-decoration: underline;
+        color: map-get($color, neutral);
+      }
+    }
   }
 
   .col-date {

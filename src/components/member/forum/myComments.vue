@@ -10,7 +10,7 @@
     <div class="t-body">
       <div class="comment-card" v-for="comment in comments" :key="comment.id">
         <p class="col-article">
-          <router-link :to="`/forum/${comment.articleId}`">{{ comment.articleTitle }}</router-link>
+          <a :href="`${baseUrl}forumArticle.html?id=${comment.articleId}`" target="_blank">{{ comment.articleTitle }}</a>
         </p>
         <p class="col-content">{{ comment.content }}</p>
         <p class="col-date">{{ comment.date }}</p>
@@ -37,36 +37,14 @@
 
     data() {
       return {
-        comments: []
+        baseUrl: import.meta.env.BASE_URL
       };
     },
 
-    created() {
-      this.fetchMyComments();
-    },
-
-    methods: {
-      async fetchMyComments() {
-        try {
-          const res = await fetch("http://localhost:8888/Spinix/php/forum/getMyComments.php", {
-            method: "GET",
-            credentials: "include"
-          });
-          const result = await res.json();
-
-          if (result.success) {
-            this.comments = result.data.map(comment => ({
-              id: comment.msg_id,
-              articleId: comment.art_id,
-              articleTitle: comment.title,
-              content: comment.content,
-              date: comment.create_time.split(" ")[0],
-              isShow: Number(comment.is_show) === 1
-            }));
-          }
-        } catch (error) {
-          console.error("我的留言列表載入失敗", error);
-        }
+    props: {
+      comments: {
+        type: Array,
+        default: () => []
       }
     }
   }
@@ -127,6 +105,11 @@ button {
     a {
       color: inherit;
       text-decoration: none;
+
+      &:hover {
+        // text-decoration: underline;
+        color: map-get($color, neutral);
+      }
     }
   }
 
