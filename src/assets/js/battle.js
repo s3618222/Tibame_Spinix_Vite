@@ -7,8 +7,8 @@ import Footer from "@/components/footer.vue";
 const phpBaseUrl =
   location.hostname === "localhost" ||
     location.hostname === "127.0.0.1"
-    ? "http://localhost:8888/Spinix/php/"
-    : `${location.origin}/ckd101/g2/php/`;
+    ? "http://localhost:8888/Spinix/php"
+    : `${location.origin}/ckd101/g2/php`;
 
 //import TestPic from "/public/battle_bottom_spintop.png";
 
