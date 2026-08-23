@@ -211,6 +211,52 @@ export const exchangeList = [
       is_exchanged: false, // 是否被交換
       post_pic: [],
       remove_reason: '文章因包含不適當言論或違規資訊，已依平台規範停止公開顯示。' // 下架原因
+   },
+   {
+      post_id: 'exc10',
+      mem_id: 999,
+      // comm_mem_id: '', // 申請會員編號，預設空值
+      exchange_comm_id: null,   // 改成存留言ID，尚未定案時是 null
+      type: 'beyblade',
+      product_img: 'BX_02.webp',
+      title: '我是被下架文章',
+      description: '測試文字。',
+      want_item: '絕版XXX',
+      headshot: 'public/spinix_member_test1.png',
+      name: '風火輪',
+      post_contact: '0909123456',
+      create_time: '2026-07-26',
+      city: '基隆市',
+      district: '信義區',
+      status: 'available',
+      condition: 'new',
+      is_show: false, // true = 上架中，false = 已下架
+      is_exchanged: false, // 是否被交換
+      post_pic: [],
+      remove_reason: '文章因包含不適當言論或違規資訊，已依平台規範停止公開顯示。' // 下架原因
+   },
+   {
+      post_id: 'exc11',
+      mem_id: 999,
+      // comm_mem_id: '', // 申請會員編號，預設空值
+      exchange_comm_id: null,   // 改成存留言ID，尚未定案時是 null
+      type: 'beyblade',
+      product_img: 'BX_02.webp',
+      title: '我是被下架文章',
+      description: '測試文字。',
+      want_item: '絕版XXX',
+      headshot: 'public/spinix_member_test1.png',
+      name: '風火輪',
+      post_contact: '0909123456',
+      create_time: '2026-07-26',
+      city: '基隆市',
+      district: '信義區',
+      status: 'available',
+      condition: 'new',
+      is_show: false, // true = 上架中，false = 已下架
+      is_exchanged: false, // 是否被交換
+      post_pic: [],
+      remove_reason: '文章因包含不適當言論或違規資訊，已依平台規範停止公開顯示。' // 下架原因
    }
 ];
 

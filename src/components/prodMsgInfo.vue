@@ -71,6 +71,7 @@
          <!-- 上下架按鈕(管理員畫面) -->
          <div class="btn-statusToggle">
             <StatusToggleButton
+               v-if="articleStatus !== 'completed'"
                title="留言"
                :isShow="isShow"
                :isAdmin="isAdmin"
