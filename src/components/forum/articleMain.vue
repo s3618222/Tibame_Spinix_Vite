@@ -21,7 +21,7 @@
           <i class="fa-solid fa-share-nodes"></i>
           <span>分享</span>
         </button>
-        <a :href="`${baseURL}complaint.html`" type="button">
+        <a v-if="!isAuthor" :href="`${baseURL}complaint.html`" type="button">
           <i class="fa-regular fa-flag"></i>
           <span>檢舉</span>
         </a>
@@ -51,6 +51,10 @@ import AuthorCard from '@/components/forum/authorCard.vue';
       article: {
         type: Object,
         default: () => ({})
+      },
+      isAuthor: {
+        type: Boolean,
+        default: false
       }
     },
 

@@ -15,7 +15,13 @@
       <div class="comment-body">
         <p>{{ comment.content }}</p>
       </div>
-      <div class="comment-footer" v-if="isArticleShow">
+      <WarningBanner
+        v-if="comment.isShow === false"
+        title="留言"
+        remove_reason="該留言因違反社群規範，已由管理員下架"
+        :show_contact="true"
+      />
+      <div class="comment-footer" v-if="isArticleShow && !isCommentAuthor && comment.isShow !== false">
         <a :href="`${baseURL}complaint.html`" type="button">
           <i class="fa-regular fa-flag"></i>
           <span>檢舉</span>
@@ -29,12 +35,14 @@
 
 <script>
 import AuthorCard from '@/components/forum/authorCard.vue';
+import WarningBanner from '@/components/WarningBanner.vue';
 
   export default {
     name: "CommentItem",
 
     components: {
-      AuthorCard
+      AuthorCard,
+      WarningBanner
     },
 
     props: {
@@ -45,12 +53,23 @@ import AuthorCard from '@/components/forum/authorCard.vue';
       isArticleShow: {
         type: Boolean,
         default: true
+      },
+      currentMemberId: {
+        type: [Number, String],
+        default: null
       }
     },
 
     data(){
       return {
         baseURL: import.meta.env.BASE_URL
+      }
+    },
+
+    computed: {
+  isCommentAuthor() {
+    return this.currentMemberId !== null
+      && Number(this.currentMemberId) === Number(this.comment.memId);
       }
     }
   }
