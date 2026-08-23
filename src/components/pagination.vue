@@ -4,7 +4,7 @@
     :current-page="currentPage"
     :page-size="pageSize"
     :total="total"
-    :pager-count="3"
+    :pager-count="5"
     layout="prev, pager, next"
     @current-change="changePage"
   />
