@@ -17,7 +17,7 @@
       </header>
       <section class="body-article" v-html="article.content"></section>
       <footer class="footer-article" v-if="article.isShow !== false">
-        <button type="button">
+        <button type="button" @click="handleShare">
           <i class="fa-solid fa-share-nodes"></i>
           <span>分享</span>
         </button>
@@ -61,6 +61,17 @@ import AuthorCard from '@/components/forum/authorCard.vue';
     data(){
       return{
         baseURL: import.meta.env.BASE_URL
+      }
+    },
+
+    methods: {
+      async handleShare() {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          alert("已複製貼文連結！");
+        } catch (error) {
+          console.error("複製連結失敗", error);
+        }
       }
     }
   }
