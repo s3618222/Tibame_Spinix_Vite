@@ -2,8 +2,8 @@
   require_once("../common/connect_ckd101g2.php");
   require_once("../common/cors.php");
 
-  header('Content-Type: application/json');
-
+  header("Content-Type: application/json; charset=utf-8");
+  
   try {
     $sql = "
     SELECT 
@@ -23,11 +23,11 @@
     $stmt->execute();
     $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode(["success" => true, "data" => $articles]);
+    echo json_encode(["success" => true, "data" => $articles], JSON_UNESCAPED_UNICODE);
 
   } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(["success" => false, "message" => "資料庫查詢失敗"]);
+    echo json_encode(["success" => false, "message" => "資料庫查詢失敗"], JSON_UNESCAPED_UNICODE);
     exit();
   }
 ?>

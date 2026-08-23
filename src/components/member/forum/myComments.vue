@@ -4,15 +4,21 @@
       <p class="col-article">所屬文章</p>
       <p class="col-content">留言內容</p>
       <p class="col-date">留言日期</p>
+      <p class="col-status">狀態</p>
       <p class="col-action">操作</p>
     </div>
     <div class="t-body">
       <div class="comment-card" v-for="comment in comments" :key="comment.id">
         <p class="col-article">
-          <router-link :to="`/forum/${comment.articleId}`">{{ comment.articleTitle }}</router-link>
+          <a :href="`${baseUrl}forumArticle.html?id=${comment.articleId}`" target="_blank">{{ comment.articleTitle }}</a>
         </p>
         <p class="col-content">{{ comment.content }}</p>
         <p class="col-date">{{ comment.date }}</p>
+        <p class="col-status">
+          <span :class="['chip', comment.isShow ? 'chip--exchangeable' : 'chip--completed']">
+            {{ comment.isShow ? '上架中' : '已下架' }}
+          </span>
+        </p>
         <div class="col-action">
           <button type="button" class="btn-del">刪除</button>
         </div>
@@ -31,11 +37,15 @@
 
     data() {
       return {
-        comments: [
-          { id: 101, articleId: 1, articleTitle: "WX-01 爆裂天龍分析", content: "這套配置真的很強！", date: "2026-05-12" },
-          { id: 102, articleId: 4, articleTitle: "大家平常都怎麼保養軸心的？", content: "我都用軟布沾潤滑油擦拭", date: "2026-08-11" }
-        ]
+        baseUrl: import.meta.env.BASE_URL
       };
+    },
+
+    props: {
+      comments: {
+        type: Array,
+        default: () => []
+      }
     }
   }
 </script>
@@ -77,7 +87,8 @@ button {
   grid-template-areas:
     "article article"
     "content content"
-    "date action";
+    "date status"
+    "action action";
   gap: 12px;
   padding: 20px;
   border-radius: 12px;
@@ -94,6 +105,11 @@ button {
     a {
       color: inherit;
       text-decoration: none;
+
+      &:hover {
+        // text-decoration: underline;
+        color: map-get($color, neutral);
+      }
     }
   }
 
@@ -109,6 +125,10 @@ button {
     color: map-get($color, neutral);
     font-size: 14px;
     align-self: center;
+  }
+
+  .col-status {
+    grid-area: status;
   }
 
   .col-action {
@@ -182,6 +202,7 @@ button {
     .col-article,
     .col-content,
     .col-date,
+    .col-status,
     .col-action {
       font-size: 16px; // 💡 強制重置平板/桌機版所有欄位字體為 16px
     }
@@ -200,6 +221,11 @@ button {
 
     .col-date {
       width: 110px;
+      flex-shrink: 0;
+    }
+
+    .col-status {
+      min-width: 90px;
       flex-shrink: 0;
     }
 

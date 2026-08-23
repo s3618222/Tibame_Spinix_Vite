@@ -1,5 +1,10 @@
 <template>
-  <CommentItem v-for="item in comments" :key="item.id" :comment="item"/>
+  <CommentItem
+    v-for="item in comments"
+    :key="item.id"
+    :comment="item"
+    :is-article-show="isArticleShow"
+  />
 
 </template>
 
@@ -18,6 +23,10 @@ import CommentItem from '@/components/forum/commentItem.vue';
       comments: {
         type: Array,
         default: () => []
+      },
+      isArticleShow: {
+        type: Boolean,
+        default: true
       }
     }
   }

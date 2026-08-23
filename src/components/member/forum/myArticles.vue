@@ -5,16 +5,24 @@
       <p class="col-title">貼文標題</p>
       <p class="col-date">發文日期</p>
       <p class="col-comments">留言數</p>
+      <p class="col-status">狀態</p>
       <p class="col-action">操作</p>
     </div>
     <div class="t-body">
       <div class="article-card" v-for="article in articles" :key="article.id">
-        <p class="col-type">{{ article.category }}</p>
-        <p class="col-title">{{ article.title }}</p>
+        <p class="col-type">{{ CATEGORY_LABELS[article.category] ?? article.category }}</p>
+        <p class="col-title">
+          <a :href="`${baseUrl}forumArticle.html?id=${article.id}`" target="_blank">{{ article.title }}</a>
+        </p>
         <p class="col-date">{{ article.date }}</p>
         <p class="col-comments">
           <i class="fa-regular fa-message"></i>
           <span>{{ article.commentCount }}</span>
+        </p>
+        <p class="col-status">
+          <span :class="['chip', article.isShow ? 'chip--exchangeable' : 'chip--completed']">
+            {{ article.isShow ? '上架中' : '已下架' }}
+          </span>
         </p>
         <div class="col-action">
           <button type="button" class="btn-edit">編輯</button>
@@ -30,16 +38,23 @@
 </template>
 
 <script>
+  import { CATEGORY_LABELS } from '@/assets/js/utils/articleCategory.js';
+
   export default {
     name: "myArticles",
 
     data() {
       return {
-        articles: [
-          { id: 1, category: "配裝開箱", title: "WX-01 爆裂天龍 最佳攻擊配裝分析", date: "2026-05-12", commentCount: 6 },
-          { id: 2, category: "新手發問", title: "新手求推薦平民配置", date: "2026-05-10", commentCount: 12 }
-        ]
+        CATEGORY_LABELS,
+        baseUrl: import.meta.env.BASE_URL
       };
+    },
+
+    props: {
+      articles: {
+        type: Array,
+        default: () => []
+      }
     }
   }
 </script>
@@ -82,6 +97,7 @@ button {
   grid-template-areas:
     "type title"
     "date comments"
+    "status status"
     "action action";
   gap: 12px;
   padding: 20px;
@@ -103,6 +119,16 @@ button {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        // text-decoration: underline;
+        color: map-get($color, neutral);
+      }
+    }
   }
 
   .col-date {
@@ -120,6 +146,10 @@ button {
     span {
       margin-left: 4px;
     }
+  }
+
+  .col-status {
+    grid-area: status;
   }
 
   .col-action {
@@ -199,6 +229,7 @@ button {
     .col-title,
     .col-date,
     .col-comments,
+    .col-status,
     .col-action {
       font-size: 16px; // 💡 強制重置平板/桌機版所有欄位字體為 16px
     }
@@ -221,6 +252,11 @@ button {
 
     .col-comments {
       min-width: 50px;
+      flex-shrink: 0;
+    }
+
+    .col-status {
+      min-width: 90px;
       flex-shrink: 0;
     }
 

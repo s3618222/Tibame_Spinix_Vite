@@ -16,7 +16,7 @@
         <h1>{{ article.title }}</h1>
       </header>
       <section class="body-article" v-html="article.content"></section>
-      <footer class="footer-article">
+      <footer class="footer-article" v-if="article.isShow !== false">
         <button type="button">
           <i class="fa-solid fa-share-nodes"></i>
           <span>分享</span>
