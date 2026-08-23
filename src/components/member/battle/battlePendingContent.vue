@@ -6,7 +6,10 @@
       <div class="pending-row">
         <button type="button" class="pending-user" @click="$emit('open-history', battle.participantId)">
           <!-- 顯示申請人頭像 -->
-          <img :src="battle.participantAvatar" :alt="battle.participantName">
+          <img 
+            :src="battle.participantAvatar" 
+            :alt="battle.participantName"
+          >
           <span>
             申請人：{{ battle.participantName }}
           </span>
@@ -36,7 +39,10 @@
       <div class="pending-row">
         <button type="button" class="pending-user" @click="$emit('open-history', battle.initiatorId)">
           <!-- 顯示發起人頭像 -->
-          <img :src="battle.initiatorAvatar" :alt="battle.initiatorName">
+          <img 
+            :src="battle.initiatorAvatar" 
+            :alt="battle.initiatorName"
+          >
           <span>
             發起人：{{ battle.initiatorName }}
           </span>
@@ -136,11 +142,43 @@
   }
 
   .pending-btn {
-  min-width: 96px;
-  padding: 6px 16px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 500;
-}
+    min-width: 96px;
+    padding: 6px 16px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  // ===================== RWD調整 ==========================
+
+  //約戰紀錄下方資訊改上下單欄呈現
+  @media screen and (max-width: 900px) {
+    .pending-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+    }
+
+    .pending-row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+
+    .pending-user {
+      width: fit-content;
+    }
+
+    .pending-message {
+      width: 100%;
+    }
+
+    .pending-actions {
+      width: 100%;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+  }
 
 </style>

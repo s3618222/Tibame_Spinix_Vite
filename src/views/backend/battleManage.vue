@@ -69,27 +69,44 @@
       <!-- 第二列：約戰日期與重置按鈕 -->
       <div class="battle-filter-bottom">
 
-        <div class="filter-item filter-date">
-          <label>
-            <i class="fa-solid fa-calendar-days"></i>
-            約戰日期
-          </label>
+        <!-- 左側：所有日期相關控制 -->
+        <div class="date-filter-group">
+          <!-- 約戰日期排序 -->
+          <div class="filter-item">
+            <label for="dateSort">
+              <i class="fa-solid fa-arrow-down-wide-short"></i>
+              日期排序
+            </label>
 
-          <div class="date-range">
-            <input
-              type="date"
-              id="startDate"
-              v-model="filters.startDate"
-            >
-            <span>至</span>
-            <input
-              type="date"
-              id="endDate"
-              v-model="filters.endDate"
-            >
+            <select id="dateSort" v-model="dateSort">
+              <option value="desc">新到舊</option>
+              <option value="asc">舊到新</option>
+            </select>
+          </div>
+
+          <div class="filter-item filter-date">
+            <label>
+              <i class="fa-solid fa-calendar-days"></i>
+              約戰日期
+            </label>
+
+            <div class="date-range">
+              <input
+                type="date"
+                id="startDate"
+                v-model="filters.startDate"
+              >
+              <span>至</span>
+              <input
+                type="date"
+                id="endDate"
+                v-model="filters.endDate"
+              >
+            </div>
           </div>
         </div>
 
+        <!-- 右側：重置 -->
         <button
           type="button"
           class="battle-filter-reset"
@@ -113,7 +130,6 @@
           <!-- 表頭 -->
           <thead>
             <tr>
-              <th scope="col">邀約 ID</th>
               <th scope="col">標題</th>
               <th scope="col">發起人</th>
               <th scope="col">地區</th>
@@ -128,14 +144,13 @@
             <!-- 當平台目前完全沒有約戰資料時，顯示的空狀態 -->
             <template v-if="battles.length === 0">
               <tr>
-                <td colspan="7" class="battle-table-empty">目前尚無任何約戰資料</td>
+                <td colspan="6" class="battle-table-empty">目前尚無任何約戰資料</td>
               </tr>
             </template>
 
             <!-- 平台有資料時 -->
             <template v-else>
               <tr v-for="battle in paginatedBattles" :key="battle.battleId">
-                <td>{{ battle.battleId }}</td>
                 <td>{{ battle.title }}</td>
                 <td>{{ battle.hostName }}</td>
                 <td>{{ battle.cityLabel }}・{{ battle.district }}</td>
@@ -153,7 +168,7 @@
 
               <!-- 當有約戰資料，但篩選後沒有結果時的空狀態 -->
               <tr v-if="filteredBattles.length === 0">
-                <td colspan="7" class="battle-table-empty">
+                <td colspan="6" class="battle-table-empty">
                   目前沒有符合條件的約戰資料
                 </td>
               </tr>
@@ -222,7 +237,7 @@
             <div class="battle-public-cover">
               <img
                 v-if="selectedBattle.coverImage"
-                :src="selectedBattle.coverImage"
+                :src="getBattleImageUrl(selectedBattle.coverImage)"
                 :alt="selectedBattle.title"
               >
 
@@ -328,7 +343,11 @@
           </section>
 
           <!-- 管理員操作處置 -->
-          <section class="battle-detail-handle">
+          <!-- 僅有狀態為正在配對中的約戰 才可做下假處置動作 -->
+          <section
+            v-if="selectedBattle.status == 'matching'"
+            class="battle-detail-handle"
+          >
             <div class="battle-detail-handle-title">
               <span class="battle-detail-handle-accent"></span>
               <i class="fa-solid fa-shield-halved"></i>
@@ -346,42 +365,72 @@
               </label>
             </div>
             
-            <!-- 當radio選項被切換至與該筆紀錄本身狀態不同的處置時，才會出現處置確認按鈕 -->
-            <template v-if="hasManageActionChanged">
+            <!-- 當radio停在該資料的原處置選項時，底下顯示其最近一次的管理處置內容 -->
+            <template v-if="!hasManageActionChanged">
+
+              <!-- 且要真的有管理處置紀錄時，才顯示 -->
+              <template v-if="selectedBattle.manageAction">
+
+                <div class="battle-handle-notice">
+                  <label>前次通知會員內容</label>
+                  <textarea :value="selectedBattle.manageReason" disabled></textarea>
+                </div>
+
+                <!-- 前次處置資訊 -->
+                <div class="battle-handle-history">
+                  <p>處理管理員：<strong>{{ selectedBattle.managedByAdminName || "—" }}</strong></p>
+                  <p>處理時間：<strong>{{ selectedBattle.managedAt || "—" }}</strong></p>
+                </div>
+
+              </template>
+
+            </template>
+
+            <!-- 當管理員切換成與原處置不同的 radio 選項時，才顯示新的處置操作-->
+            <template v-else>
               <!-- 處置通知內容輸入 -->
               <div class="battle-handle-notice">
                 <label for="memberNotice">
                   通知會員內容（將顯示給發起人）
                 </label>
-                <!-- 當管理者輸入訊息時，就自動清除下方的錯誤提示文字 -->
+
                 <textarea 
                   id="memberNotice" 
                   v-model.trim="memberNotice" 
                   placeholder="請輸入將通知會員的內容"
                   @input="memberNoticeError = ''" 
-                >
-                </textarea>
+                ></textarea>
+
                 <!-- 錯誤提示文字 -->
                 <p v-if="memberNoticeError" class="battle-handle-error">
                   {{ memberNoticeError }}
                 </p>
               </div>
+
               <!-- 處置操作按鈕 -->
               <div class="battle-handle-buttons">
-                <button type="button" class="battle-handle-cancel" @click="cancelManageAction">
+                <button
+                  type="button"
+                  class="battle-handle-cancel"
+                  @click="cancelManageAction"
+                >
                   取消
                 </button>
 
                 <button 
                   type="button" 
                   class="battle-handle-confirm"
-                  :class="{'battle-handle-confirm-restore': manageAction === 'keep'}"
+                  :class="{
+                    'battle-handle-confirm-restore': manageAction === 'keep'
+                  }"
                   @click="confirmManageAction"
                 >
                   {{ manageAction === "remove" ? "確認下架" : "恢復上架" }}
                 </button>
+
               </div>
             </template>
+
           </section>
 
         </div>
@@ -393,7 +442,7 @@
 </template>
 
 <script>
-import battleManageData from "../../data/battleManageData.js";
+// import battleManageData from "../../data/battleManageData.js";
 import Pagination from "../../components/pagination.vue";
 
 export default {
@@ -405,10 +454,14 @@ export default {
 
   data() {
     return {
+      baseUrl: import.meta.env.BASE_URL,
+
       battles: [], //用來存放約戰紀錄的陣列
 
       currentPage: 1,
       pageSize: 10,
+
+      dateSort: "desc", //約戰日期排序 (預設由新到舊)
 
       selectedBattle: null, //用來存取被點選的那筆約戰紀錄資料
       isDetailDialogOpen: false, //詳情燈箱是否開啟
@@ -459,25 +512,21 @@ export default {
         }
       ],
 
-      cityOptions: [
-        {
-          label: "台北市",
-          value: "taipei"
-        },
-        {
-          label: "新北市",
-          value: "new-taipei"
-        },
-        {
-          label: "桃園市",
-          value: "taoyuan"
-        }
-      ]
+      cityOptions: []
 
     };
   },
 
   computed: {
+    phpBaseUrl() { //判斷目前php的執行環境，調整網址前綴
+      return (
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1"
+          ? "http://localhost:8888/Spinix/php"
+          : "/ckd101/g2/php"
+      );
+    },
+
     filteredBattles() { //根據data中的分類選項，篩選對戰資料
       return this.battles.filter((battle) => {
         const matchMode =
@@ -514,11 +563,31 @@ export default {
       });
     },
 
+    sortedBattles() { //將篩選後的資料，按日期排序
+      
+      // 先複製一份篩選後的資料
+      const sorted = [...this.filteredBattles];
+
+      // 再依約戰日期排序
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.battleDate);
+        const dateB = new Date(b.battleDate);
+
+        if (this.dateSort === "asc") {
+          return dateA - dateB;
+        }
+
+        return dateB - dateA;
+      });
+
+      return sorted;
+    },
+
     paginatedBattles() {
       const startIndex = (this.currentPage - 1) * this.pageSize;
       const endIndex = startIndex + this.pageSize;
 
-      return this.filteredBattles.slice(startIndex, endIndex);
+      return this.sortedBattles.slice(startIndex, endIndex);
     },
 
     currentManageStatus() { //根據約戰紀錄原先的上下架狀態，決定打開燈箱時，預設勾選的radio處置
@@ -540,6 +609,10 @@ export default {
         this.currentPage = 1;
       },
       deep: true //因filters是一個物件，需加入deep，才可以進一步監看到內部各個屬性的變換
+    },
+
+    dateSort() { //監聽日期排序，只要有進行日期排序變化，就再重新回到第一頁
+      this.currentPage = 1;
     }
   },
 
@@ -550,11 +623,150 @@ export default {
       this.filters.status = "";
       this.filters.startDate = "";
       this.filters.endDate = "";
+      this.dateSort = "desc";
     },
 
-    getBattles() { //複製、取得 battleManageData.js中的約戰假資料陣列
-      this.battles = [...battleManageData];
+    async fetchCities() { //串聯取得城市API
+      try {
+        const response = await fetch (`${this.phpBaseUrl}/location/cities_get.php`, {
+          credentials: "include"
+        });
+
+        const data = await response.json();
+
+        //將回傳的城市資料轉為前端select內要用的格式
+        this.cityOptions = data.map((city) => {
+          return {
+            label: city.CITY_NAME,
+            value: String(city.CITY_ID)
+          }
+        });
+
+      } catch (error) {
+        console.error("取得縣市資料失敗：", error);
+      }
     },
+
+    async fetchBattles() { //串聯取得約戰紀錄API
+      try {
+        const response = await fetch(`${this.phpBaseUrl}/battle/battle_manage_get.php`, {
+          credentials: "include"
+        });
+
+        const data = await response.json();
+        console.log("後台約戰 API：", data);
+
+        //將後端傳回的資料，先轉成前端用的呈現格式
+        this.battles = data.map((battle) => {
+          return {
+            battleId: Number(battle.BATTLE_ID),
+
+            title: battle.BATTLE_TITLE,
+            description: battle.BATTLE_DESC,
+
+            hostName: battle.INITIATOR_NAME,
+            hostContact: battle.INI_CONTACT,
+
+            participantName: battle.PARTICIPANT_NAME,
+            participantContact: battle.PAR_CONTACT,
+
+            city: String(battle.CITY_ID),
+            cityLabel: battle.CITY_NAME,
+            district: battle.DISTRICT_NAME,
+
+            mode: battle.BATTLE_MODE === "COMPETITIVE" ? "competitive" : "casual",
+
+            status: this.convertBattleStatus(battle.BATTLE_STATUS),
+
+            is_show: Number(battle.IS_SHOW) === 1,
+
+            battleDate: battle.BATTLE_DATE?.slice(0, 10),
+            battleTime: battle.BATTLE_DATE?.slice(11, 16),
+
+            deadline: battle.BATTLE_DEADLINE,
+            createdAt: battle.CREATED_AT,
+
+            meetingPlace: battle.BATTLE_LOC,
+
+            playerLevel: this.getLevelLabel(battle.BATTLE_LEVEL),
+
+            targetAudience: this.getTargetLabel(battle.BATTLE_TARGET),
+
+            coverImage: battle.BATTLE_IMG,
+
+            winner: battle.WINNER === null ? null : Number(battle.WINNER),
+
+            // 最近一次管理處置資訊
+            manageAction: battle.MANAGE_ACTION,
+
+            manageReason: battle.MANAGE_REASON,
+
+            managedByAdminId: battle.MANAGED_BY_ADMIN_ID === null ? null : Number(battle.MANAGED_BY_ADMIN_ID),
+
+            managedByAdminName: battle.MANAGED_BY_ADMIN_NAME,
+
+            managedAt: battle.MANAGED_AT,
+          };
+        });
+
+        console.log("轉換後約戰資料：", this.battles);
+
+      } catch (error) {
+        console.error("取得後台約戰資料失敗：", error);
+      }
+    },
+
+    convertBattleStatus(status) { //將約戰紀錄的狀態更改為前端所需格式
+      const statusMap = {
+        MATCHING: "matching", //配對中
+        PENDING: "pending", //待確認
+        CONFIRMED: "success", //配對成功
+        FAILED: "failed", //配對失敗
+        CANCELLED: "failed" //配對失敗
+      };
+
+      return statusMap[status] || status;
+    },
+
+    getLevelLabel(level) { //玩家程度轉換
+      const levelMap = {
+        ALL: "不限程度",
+        BEGINNER: "新手玩家",
+        INTERMEDIATE: "中階玩家",
+        ADVANCED: "進階玩家"
+      };
+
+      return levelMap[level] || level;
+    },
+
+    getTargetLabel(target) { //適合對象
+      const targetMap = {
+        ALL: "不限對象",
+        ADULT: "成人限定",
+        FAMILY: "親子友善"
+      };
+
+      return targetMap[target] || target;
+    },
+
+    getBattleImageUrl(imagePath) { //判斷封面圖路徑位置
+
+      if (!imagePath) {
+        return "";
+      }
+
+      // 若是會員動態上傳的封面圖，會放在php資料夾內，且資料庫會存相對路徑"uploads/battle/檔名"
+      if (imagePath.startsWith("uploads/battle/")) {
+        return `${this.phpBaseUrl}/${imagePath}`;
+      }
+
+      // 其他圖片是預先放進前端 public 的靜態圖片
+      return import.meta.env.BASE_URL + imagePath;
+    },
+
+    // getBattles() { //複製、取得 battleManageData.js中的約戰假資料陣列
+    //   this.battles = [...battleManageData];
+    // },
 
     getStatusLabel(status) { //把表單上的約戰狀態轉換回中文
       const statusItem = this.statusOptions.find(
@@ -649,7 +861,10 @@ export default {
   },
 
   mounted() {
-    this.getBattles();
+    this.fetchBattles(); //載入時，先取得後端約戰紀錄
+    this.fetchCities();  //取得資料庫縣市資料
+
+    // this.getBattles(); 假資料
   },
 
 };
@@ -703,6 +918,13 @@ export default {
     gap: 24px;
   }
 
+  /* 第二列左側：日期排序、約戰日期區間 */
+  .date-filter-group {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+  }
+
   /* 單一篩選欄位共同樣式 */
   .filter-item {
     display: flex;
@@ -726,12 +948,13 @@ export default {
     }
 
     select {
-      min-width: 160px;
+      width: 180px;
       padding: 8px 30px 8px 12px;
     }
 
     select,
     .date-range input {
+      min-height: 40px;
       background-color: #F7F5F3;
       border: 1px solid #ddd6c8;
       border-radius: 10px;
@@ -756,7 +979,7 @@ export default {
     gap: 12px;
 
     input {
-      width: 160px;
+      width: 180px;
       padding: 8px 12px;
     }
   }
@@ -840,7 +1063,9 @@ export default {
   //約戰資料表格內容
   .battle-table {
     width: 100%;
-    min-width: 900px;
+    // min-width: 820px;
+    min-width: 780px;
+    table-layout: fixed;
     border-collapse: collapse;
 
     color: #141c26;
@@ -848,7 +1073,7 @@ export default {
 
     th,
     td {
-      padding: 16px;
+      padding: 16px 8px;
       text-align: center;
       vertical-align: middle;
     }
@@ -879,7 +1104,7 @@ export default {
     }
 
     //約戰日期欄
-    td:nth-child(5) {
+    td:nth-child(4) {
       color: #808080;
       white-space: nowrap;
     }
@@ -912,6 +1137,45 @@ export default {
         box-shadow: 0 2px 6px rgba(20, 28, 38, 0.12);
       }
     }
+
+    //  調整特定欄位寬度
+    //標題
+    th:nth-child(1),
+    td:nth-child(1) {
+      width: 160px;
+    }
+
+    //發起人
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 96px;
+    }
+
+    //地區
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 180px;
+    }
+
+    // 日期
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 100px;
+    }
+
+    // 狀態
+    th:nth-child(5),
+    td:nth-child(5) {
+      width: 100px;
+    }
+
+    // 操作
+    th:nth-child(6),
+    td:nth-child(6) {
+      width: 80px;
+    }
+
+    
   }
 
   //篩選後，未有符合資料時的空狀態
@@ -1128,16 +1392,6 @@ export default {
       font-size: 20px;
       font-weight: 500;
       color: #141c26;
-    }
-  }
-
-  @media (max-width: 900px) {
-    .battle-detail-content {
-      grid-template-columns: 1fr;
-    }
-
-    .battle-detail-side {
-      position: static;
     }
   }
 
@@ -1440,6 +1694,39 @@ export default {
     }
   }
 
+  // 最近一次管理處置資訊
+  .battle-handle-history {
+    padding: 12px 16px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    border-radius: 8px;
+    background-color: #f7f5f3;
+
+    p {
+      margin: 0;
+
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    strong {
+      margin-left: 4px;
+
+      color: #141c26;
+      font-weight: 500;
+    }
+  }
+
+  .battle-handle-notice textarea:disabled {
+    background-color: #f7f5f3;
+    color: #64748b;
+    cursor: not-allowed;
+  }
+
   //錯誤提示文字
   .battle-handle-error {
     display: inline-block;
@@ -1489,6 +1776,189 @@ export default {
 
     &:hover {
       background-color: darken(#64748b, 10%);
+    }
+  }
+
+  //========================= RWD調整 ==================================
+  @media screen and (max-width: 1024px) {
+    .battle-manage-filter {
+      padding: 16px;
+    }
+
+    .battle-filter-main {
+      gap: 16px;
+    }
+
+    .battle-filter-bottom {
+      gap: 16px;
+    }
+
+    .filter-item {
+      select {
+        width: 148px;
+      }
+    }
+
+    .date-range {
+      input {
+        width: 148px;
+      }
+    }
+  }
+
+  //詳情燈箱改單欄，並限制燈箱高度
+  @media (max-width: 900px) {
+    :deep(.battle-detail-dialog) {
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .battle-detail-content {
+      grid-template-columns: 1fr;
+    }
+
+    .battle-detail-side {
+      position: static;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .battle-filter-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .date-filter-group {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .battle-filter-reset {
+      margin-left: 0;
+    }
+
+    .battle-table {
+      min-width: 560px;
+    }
+
+    //將發起人欄位隱藏
+    .battle-table {
+      th:nth-child(2),
+      td:nth-child(2) {
+        display: none;
+      }
+    }
+
+  }
+
+  @media screen and (max-width: 620px) {
+    .battle-filter-main,
+    .battle-filter-bottom,
+    .date-filter-group {
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+    }
+
+    .filter-item {
+      width: 100%;
+
+      select {
+        width: 100%;
+      }
+    }
+
+    .date-range {
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+
+      input {
+        width: 100%;
+      }
+    }
+
+    // 重置按鈕
+    .battle-filter-reset {
+      margin-inline: auto;
+      width: 100%;
+    }
+  }
+
+  @media screen and (max-width: 576px) {
+    // 篩選面板區改單欄顯示
+    .battle-filter-main,
+    .battle-filter-bottom {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+    }
+
+    // 篩選欄位全部滿版
+    .filter-item {
+      width: 100%;
+
+      label {
+        padding-left: 10px;
+      }
+
+      select {
+        width: 95%;
+        margin-inline: auto;
+        min-width: 0;
+      }
+      
+    }
+
+    // 日期區改上下排列
+    .date-range {
+      width: 95%;
+      margin-inline: auto;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+
+      input {
+        width: 100%;
+        min-width: 0;
+      }
+
+      // 中間的「至」
+      span {
+        // display: none;
+        // margin-inline: auto;
+        padding-left: 8px;
+      }
+    }
+
+    // 重置按鈕
+    .battle-filter-reset {
+      margin-inline: auto;
+      width: 95%;
+    }
+
+    //總筆數與分頁區
+    .battle-manage-list-footer {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+
+      //分頁器
+      .battle-manage-paginator {
+        align-self: center;
+      }
+
+    }
+    
+  }
+
+  //詳情燈箱資訊內容改單欄
+  @media screen and (max-width: 400px) {
+    .battle-public-info-row {
+      grid-template-columns: 1fr;
+      align-items: start;
+      gap: 4px;
     }
   }
 

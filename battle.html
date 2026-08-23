@@ -7,6 +7,8 @@
   <title>尋找下一場對戰｜Spinix</title>
   <link rel="stylesheet" href="/src/assets/scss/style.scss">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link rel="icon" type="image/png" href="spinix_favicon.jpg">
+
   <style>
     * {
       margin: 0;
@@ -26,15 +28,15 @@
     <section class="battle-sec-hero">
       <div class="container">
         <!-- 互動陀螺圖 -->
-        <div class="hero-spintop">
+        <!-- <div class="hero-spintop">
           <img src="/spinix_spintop.png" alt="Spinix spintop">
-        </div>
+        </div> -->
         <!-- 大標與CTA按鈕 -->
         <div class="hero-content">
           <h1>Spinix 對戰配對</h1>
           <p>找到你的對手，轉出新的連結！</p>
           <div class="hero-btns">
-            <a href="createBattle.html" class="btnFill createBattle-link">
+            <a href="createBattle.html" class="btnFill createBattle-link toCreateLink">
               建立邀約
               <i class="fa-solid fa-plus"></i>
             </a>
@@ -49,15 +51,91 @@
     </section>
   </div>
 
+  <!-- 加入約戰步驟引導區 -->
+  <section class="battle-guide battle-sec">
+    <div class="container">
+      <div class="content">
+
+        <!-- 標題 -->
+        <div class="battle-guide-heading">
+          <span>HOW TO BATTLE</span>
+          <h2>4 步找到你的下一場對戰</h2>
+        </div>
+
+        <!-- 操作步驟容器 -->
+        <div class="battle-guide-list">
+
+          <!-- Step 01 -->
+          <article class="battle-guide-step">
+            <span class="guide-number">01</span>
+
+            <div class="guide-icon">
+              <img src="battle_guide_step01.png" alt="設定對戰篩選條件">
+            </div>
+
+            <div class="guide-text">
+              <h3>找到適合你的對戰</h3>
+              <p class="subtext">依照條件快速篩選</p>
+            </div>
+          </article>
+
+          <!-- Step 02 -->
+          <article class="battle-guide-step">
+            <span class="guide-number">02</span>
+
+            <div class="guide-icon">
+              <img src="battle_guide_step02.png" alt="瀏覽對戰邀約">
+            </div>
+
+            <div class="guide-text">
+              <h3>瀏覽對戰邀約</h3>
+              <p class="subtext">比較時間、地點與模式</p>
+            </div>
+          </article>
+
+          <!-- Step 03 -->
+          <article class="battle-guide-step">
+            <span class="guide-number">03</span>
+
+            <div class="guide-icon">
+              <img src="battle_guide_step03.png" alt="查看發起人過往評價">
+            </div>
+
+            <div class="guide-text">
+              <h3>認識你的對手</h3>
+              <p class="subtext">查看發起人的過往評價</p>
+            </div>
+          </article>
+
+          <!-- Step 04 -->
+          <article class="battle-guide-step">
+            <span class="guide-number">04</span>
+
+            <div class="guide-icon">
+              <img src="battle_guide_step04.png" alt="送出加入申請">
+            </div>
+
+            <div class="guide-text">
+              <h3>送出加入申請</h3>
+              <p class="subtext">留下聯絡方式，等待確認</p>
+            </div>
+          </article>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <!-- 篩選分類標籤區 -->
   <section class="battle-sec-tags battle-sec">
     <div class='container'>
       <div class="content">
-        <div class="tag-intro">
+        <div class="tag-intro" id="tagArea">
           <img class="tag-intro-spintop" src="/battle_spintop.png" alt="Beyblade icon">
           <p>開始設定你的搜尋條件，找到適合自己的陀螺對戰！</p>
         </div>
-        <div class="tag-list">
+        <div class="tag-list" id="tagList">
           <!-- 第一列：基本篩選 -->
           <div class="tag-row tag-row-basic">
 
@@ -277,7 +355,7 @@
               <p>還沒找到想挑戰的對手嗎？</p>
               <p>立即建立邀約，讓更多玩家看見你！</p>
             </div>
-            <a href="createBattle.html" class="btnFill createBattle-link">
+            <a href="createBattle.html" class="btnFill createBattle-link toCreateLink">
               建立邀約
               <i class="fa-solid fa-plus"></i>
             </a>
@@ -318,7 +396,7 @@
           <p>加入前可先快速了解發起人的過往紀錄</p>
         </div>
       </div>
-      <!-- 場次與評分數據區 -->
+      <!-- 場次與評分、勝率數據區 -->
       <div class="host-statList">
         <div class="host-stat">
           <p>約戰總場次</p>
@@ -334,6 +412,18 @@
             <span id="averageRating">0.0</span>
             <span class="rating-star">★</span>
           </strong>
+        </div>
+
+        <div class="host-stat">
+          <p>競技勝率</p>
+
+          <strong>
+            <span id="competitiveWinRate">--</span>
+          </strong>
+
+          <span class="competitive-record" id="competitiveRecord">
+            尚無競技紀錄
+          </span>
         </div>
       </div>
 
@@ -359,7 +449,8 @@
 
       <!-- 上方發起人頭像與邀約標題 -->
       <div class="apply-header">
-        <img src="pic/spinix_member_default.png" alt="約戰發起人頭像" class="applyAvatar" id="applyAvatar">
+        <!-- 檢查圖片路徑!!!!!!!!!! -->
+        <img src="/spinix_member_default.png" alt="約戰發起人頭像" class="applyAvatar" id="applyAvatar">
 
         <div class="apply-heading">
           <h3 id="apply-title">申請加入約戰</h3>

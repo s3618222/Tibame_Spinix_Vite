@@ -4,7 +4,10 @@
     <div class="record-main">
       <!-- 卡片封面 -->
       <div class="record-cover">
-        <img :src="battle.coverImage" :alt="battle.title">
+        <img 
+          :src="battle.coverImage" 
+          :alt="battle.title"
+        >
         <span class="target-tag">{{ battle.target }}</span>
       </div>
 
@@ -13,18 +16,21 @@
         <div class="record-heading">
           <p class="record-title">
             {{ battle.title }}
-            <!-- 約戰模式備註文字 -->
-            <span class="record-mode">（{{ modeText }}）</span>
           </p>
           <span 
             class="record-status"
-            :class="`status-${battle.status}`">
+            :class="statusClass">
             {{ statusText }}
           </span>
         </div>
 
         <!-- 卡片約戰資訊 -->
         <div class="record-info">
+          <p class="record-mode">
+            <i class="fa-solid fa-trophy"></i>
+            {{ modeText }}
+          </p>
+
           <p class="record-date">
             <i class="fa-regular fa-calendar"></i>
             {{ battle.battleDate }}（{{ battle.weekday }}）{{ battle.battleTime }}
@@ -39,17 +45,22 @@
         <!-- 卡片下半部資訊 -->
         <div class="record-detail">
           <!-- 依卡片狀態，決定要呈現的資訊元件 -->
+          <BattleMatchingContent
+            v-if="battle.status === 'matching'"
+            :battle="battle"
+          />
+
           <BattlePendingContent 
-            v-if="battle.status == 'pending'" 
+            v-else-if="battle.status == 'pending'" 
             :battle="battle"  
             @open-history="$emit('open-history', $event)"
             @accept-battle="$emit('accept-battle', $event)"
             @reject-battle="$emit('reject-battle', $event)"
             >
           </BattlePendingContent>
-          <BattleCancelledContent v-if="battle.status == 'cancelled'" :battle="battle" @open-history="$emit('open-history', $event)"></BattleCancelledContent>
+          <BattleCancelledContent v-else-if="battle.status == 'cancelled'" :battle="battle" @open-history="$emit('open-history', $event)"></BattleCancelledContent>
           <BattleConfirmedContent 
-            v-if="battle.status == 'confirmed'" 
+            v-else-if="battle.status == 'confirmed'" 
             :battle="battle" 
             @open-history="$emit('open-history', $event)"
             @submit-result="$emit('submit-result', $event)"
@@ -77,6 +88,7 @@
 </template>
 
 <script>
+  import BattleMatchingContent from "./battleMatchingContent.vue";
   import BattlePendingContent from "./BattlePendingContent.vue";
   import BattleCancelledContent from "./BattleCancelledContent.vue";
   import BattleConfirmedContent from "./BattleConfirmedContent.vue";
@@ -85,9 +97,16 @@
     name: "BattleRecord",
 
     components: {
+      BattleMatchingContent,
       BattlePendingContent,
       BattleCancelledContent,
       BattleConfirmedContent
+    },
+
+    data() {
+      return {
+        baseUrl: import.meta.env.BASE_URL
+      };
     },
 
     props: { //由父元件myBattle.vue傳進來的約戰紀錄資料，因為有這筆資料，上面的模板才可以寫battle.id、battle.role...
@@ -108,13 +127,31 @@
 
     computed: {
       statusText() { //將英文狀態資料轉換為中文
+
+        // 在已失效分類底下，再依資料庫的原始狀態顯示實際原因
+        if (this.battle.rawStatus === "FAILED") {
+          return "已過期";
+        }
+
+        if (this.battle.rawStatus === "CANCELLED") {
+          return "已取消";
+        }
+
         const statusMap = {
+          matching: "待加入",
           pending: "待確認",
-          confirmed: "已確認",
-          cancelled: "已取消"
+          confirmed: "已確認"
         };
 
-        return statusMap[this.battle.status];
+        return statusMap[this.battle.status] || this.battle.status;
+      },
+
+      statusClass() { //供約戰紀錄的狀態標籤，判斷該筆紀錄為FAILED還是CANCELLED
+        if (this.battle.rawStatus === "FAILED") {
+          return "status-expired";
+        }
+
+        return `status-${this.battle.status}`;
       },
 
       modeText() {
@@ -168,10 +205,10 @@
   //卡片封面圖
   .record-cover {
     position: relative;
-    width: 192px;
-    // min-height: 180px;
-    height: 184px;
-    flex-shrink: 0;
+    width: clamp(144px, 15vw, 180px);
+    aspect-ratio: 1 / 1;
+    // height: 184px;
+    flex-shrink: 1;
     overflow: hidden;
     border-radius: 12px;
 
@@ -219,16 +256,6 @@
     color: #141c26;
     font-size: 20px;
     font-weight: 500;
-
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .record-mode {
-    color: #64748b;
-    font-size: 16px;
-    font-weight: 400;
   }
 
   .record-status {
@@ -237,6 +264,12 @@
     border: 1px solid;
     border-radius: 8px;
     font-size: 16px;
+  }
+
+  //待加入標籤樣式
+  .status-matching {
+    color: #64748b;
+    background-color: #f1f5f9;
   }
   
   //待確認標籤樣式
@@ -253,8 +286,9 @@
     color: #4f8a5b;
   }
 
-  //已取消標籤樣式
-  .status-cancelled {
+  //已取消、已過期標籤樣式
+  .status-cancelled,
+  .status-expired {
     border-color: rgba(230, 57, 70, 0.35);
     background-color: #f9d7da;
     color: #e63946;
@@ -264,15 +298,21 @@
     display: flex;
     align-items: center;
     gap: 40px;
-    margin-top: 16px;
+    margin-top: 20px;
     padding-bottom: 16px;
     border-bottom: 1px solid #e3ddd5;
+
+    // 資訊列icon
+    i {
+      color: #64748b;
+    }
   }
 
+  .record-mode,
   .record-date,
   .record-location {
     color: #141c26;
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .record-detail {
@@ -317,5 +357,142 @@
     text-decoration: underline;
     cursor: pointer;
   }
+
+  // =================== RWD調整 ======================
+
+  //封面圖和標題改單欄
+  @media screen and (max-width: 900px) {
+    .battle-record {
+      height: 620px;
+
+      display: flex;
+      flex-direction: column;
+      // padding-bottom: 16px;
+    }
+
+    .record-main {
+      min-height: 0;
+      flex: 1;
+
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+    }
+
+    .record-cover {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      flex-shrink: 0;
+    }
+
+    .record-content {
+      width: 100%;
+      min-height: 0;
+      flex: 1;
+    }
+
+    //卡片標題列
+    .record-heading {
+      margin-bottom: 8px;
+      flex-shrink: 0;
+      flex-direction: column-reverse;
+
+      .record-title {
+        align-self: flex-start;
+      }
+
+      .record-status {
+        margin-bottom: 4px;
+        align-self: flex-start;
+      }
+    }
+
+    .record-info {
+      flex-shrink: 0;
+
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+
+      margin-top: 12px;
+      padding-bottom: 12px;
+    }
+
+    .record-detail {
+      flex: 1;
+      min-height: 0;
+
+      display: block;
+
+      padding-top: 12px;
+      padding-right: 6px;
+
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .record-appeal {
+      flex-shrink: 0;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 12px;
+    }
+
+    //固定讓scroll-bar可以出現，提示會員可以滑動
+      .record-detail {
+        overflow-y: auto;
+        scrollbar-width: thin;
+      }
+
+      .record-detail::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      .record-detail::-webkit-scrollbar-thumb {
+        background: rgba(100, 116, 139, 0.45);
+        border-radius: 999px;
+      }
+  }
+
+  @media screen and (max-width: 576px) {
+    .battle-record {
+      height: 640px;
+    }
+
+    .record-detail {
+      padding-top: 0px;
+    }
+
+    .record-heading {
+      .record-title {
+        align-self: center;
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+    }
+  }
+
+  @media screen and (max-width: 375px) {
+    .battle-record {
+      // height: 588px;
+      height: 620px;
+    }
+
+    //固定讓scroll-bar可以出現，提示會員可以滑動
+    .record-detail {
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .record-detail::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .record-detail::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.45);
+      border-radius: 999px;
+    }
+  }
+
 
 </style>

@@ -4,6 +4,7 @@
     :current-page="currentPage"
     :page-size="pageSize"
     :total="total"
+    :pager-count="5"
     layout="prev, pager, next"
     @current-change="changePage"
   />
@@ -88,6 +89,23 @@
 
     :deep(.el-pager li.is-active:hover) {
       color: #141c26;
+    }
+  }
+
+  @media screen and (max-width: 576px) {
+    .pagination {
+      gap: 6px;
+
+      :deep(.el-pager) {
+        gap: 8px;
+      }
+
+      :deep(.btn-prev),
+      :deep(.btn-next),
+      :deep(.el-pager li) {
+        min-width: 28px;
+        font-size: 14px;
+      }
     }
   }
 

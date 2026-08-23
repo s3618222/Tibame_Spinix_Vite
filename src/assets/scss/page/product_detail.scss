@@ -1,0 +1,135 @@
+@use '../_var' as *;
+
+#prod_detail {
+   display: flex;
+   flex-direction: column;
+   min-height: 100vh; // 確保至少撐滿一個視窗高度
+}
+
+.sec {
+   margin-top: 88px;
+   width: 100%;
+   padding: 20px;
+   background-color: map-get($color, tertiary);
+   flex: 1;
+}
+
+.fa-triangle-exclamation {
+   color: map-get($color, error);
+}
+
+// 大頭貼樣式
+.img-user {
+   width: 40px;
+   aspect-ratio: 1/1;
+   overflow: hidden;
+   border-radius: 50%;
+   background-color: white;
+   border: 1px solid map-get($color, hint);
+
+   img {
+      width: 100%;
+      object-fit: contain;
+   }
+}
+
+#headerApp {
+   flex-shrink: 0; // Header 不要被壓縮
+}
+
+
+#footerApp {
+   flex-shrink: 0; // Footer 不要被壓縮
+}
+
+
+// == 頁面標題 / 返回連結 ================================================
+h1 {
+   color: map-get($color, secondary2);
+   font-size: map-get($fontSize, h3);
+   font-weight: 900;
+}
+
+.back-page {
+   display: inline-block;
+   color: map-get($color, neutral);
+   font-weight: 600;
+   padding-top: 12px;
+   padding-bottom: 8px;
+   position: relative;
+
+}
+
+p {
+   font-size: 16px;
+}
+
+@media screen and (width >=1024px) {
+   .back-page::after{
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 1.5px;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: map-get($color, neutral);
+      transition: all .3s ease;
+   }
+   .back-page:hover::after{
+      width: 100%;
+   }
+}
+
+// == 表單欄位 ================================================
+.form-label-style {
+   display: flex;
+   flex-direction: column;
+   gap: 8px;
+
+   .label-title {
+      font-weight: 550;
+   }
+
+   &:has([data-required]) .label-title::after {
+      content: ' *';
+      color: map-get($color, error);
+   }
+
+   input,
+   textarea,
+   select {
+      border: 1px solid map-get($color, hint);
+      border-radius: 8px;
+      padding: 8px;
+      outline: none;
+
+      &:focus {
+         border-color: map-get($color, primary);
+      }
+   }
+
+   textarea {
+      resize: none;
+      height: 120px;
+      overflow-y: auto;
+   }
+}
+
+form {
+   .-isError {
+      border: 1.5px solid map-get($color, error) !important;
+   }
+}
+
+.form-btn {
+   display: flex;
+   gap: 24px;
+   justify-content: center;
+
+   .btnNoFill:hover {
+      background-color: map-get($color, neutral);
+      color: map-get($color, tertiary);
+      border-color: map-get($color, neutral);
+   }
+}

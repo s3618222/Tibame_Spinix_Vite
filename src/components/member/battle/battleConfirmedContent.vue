@@ -12,7 +12,10 @@
           class="confirmed-user"
           @click="$emit('open-history', opponentId)"
         >
-          <img :src="opponentAvatar" :alt="opponentName">
+          <img 
+            :src="opponentAvatar" 
+            :alt="opponentName"
+          >
           <span>{{ opponentName }}</span>
         </button>
 
@@ -98,17 +101,17 @@
   export default {
     name: "BattleConfirmedContent",
 
+    data() {
+      return {
+        selectedWinner: ""
+      };
+    },
+
     props: {
       battle: {
         type: Object,
         required: true
       }
-    },
-
-    data() {
-      return {
-        selectedWinner: ""
-      };
     },
 
     emits: [
@@ -149,10 +152,6 @@
           alert("請先選擇本次對戰勝者");
           return;
         }
-
-        const isConfirmed = confirm("確定提交此次對戰結果嗎？");
-
-        if (!isConfirmed) return;
 
         this.$emit("submit-result", {
           battleId: this.battle.id, //傳出此筆約戰紀錄id
@@ -359,6 +358,127 @@
   .review-btn:disabled {
     opacity: 0.55;
     cursor: not-allowed;
+  }
+
+  // ================ RWD調整 ==========================
+@media screen and (max-width: 1180px) {
+  .confirmed-details {
+      grid-template-columns:
+        minmax(100px, 0.85fr)
+        minmax(0, 1fr)
+        minmax(0, 1fr)
+        minmax(158px, 1.2fr);
+
+      gap: 8px;
+    }
+
+    .confirmed-location,
+    .confirmed-contact {
+      padding-left: 8px;
+    }
+
+    .detail-label {
+      font-size: 16px;
+    }
+
+    .confirmed-details .confirmed-user {
+      font-size: 16px;
+    }
+
+    .confirmed-location p,
+    .confirmed-contact p,
+    .result-title,
+    .result-status,
+    .result-option,
+    .result-hint {
+      font-size: 14px;
+    }
+
+    .review-btn,
+    .result-submit-btn {
+      padding: 4px 12px;
+      font-size: 14px;
+    }
+
+    .confirmed-result {
+      padding: 8px 6px;
+      gap: 6px;
+    }
+  }
+
+  //約戰紀錄下半部資訊改單欄呈現
+  @media screen and (max-width: 900px) {
+    .confirmed-details,
+    .confirmed-details.is-casual {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .confirmed-player,
+    .confirmed-location,
+    .confirmed-contact,
+    .confirmed-result {
+      width: 100%;
+      padding: 16px 12px;
+    }
+
+    .confirmed-location,
+    .confirmed-contact {
+      border-left: 0;
+      border-top: 1px solid #dddddd;
+    }
+
+    /* 對戰玩家區 */
+    .confirmed-player {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 8px 16px;
+    }
+
+    .confirmed-player .detail-label {
+      grid-column: 1 / -1;
+    }
+
+    .confirmed-user {
+      grid-column: 1;
+      justify-self: start;
+      margin-bottom: 0;
+    }
+
+    .review-btn {
+      grid-column: 2;
+      justify-self: end;
+      align-self: center;
+      margin-left: 0;
+    }
+
+    /* 集合地點 */
+    .confirmed-location {
+      display: block;
+    }
+
+    /* 聯絡方式 */
+    .confirmed-contact {
+      display: block;
+    }
+
+    /* 對戰結果區 */
+    .confirmed-result {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .result-option {
+      align-self: flex-start;
+    }
+
+    .result-submit-btn {
+      align-self: flex-end;
+      margin-top: 8px;
+    }
   }
 
 </style>

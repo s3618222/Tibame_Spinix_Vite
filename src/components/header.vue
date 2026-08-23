@@ -8,46 +8,104 @@
   }"
 >
     <div class="header-main">
-      <a href="index.html" class="logo">
+      <a href="homepage.html" class="logo">
         <img src="/spinix_logo.png" alt="Spinix Logo">
       </a>
 
       <nav :class="{active: isMenuOpen}">
         <ul>
           <li>
-            <a href="index.html">首頁</a>
+            <a :href="`${baseUrl}battle.html`" :class="{active: currentPath.toLowerCase().includes('battle')}">對戰配對</a>
           </li>
 
           <li>
-            <a href="battle.html">對戰配對</a>
+            <a :href="`${baseUrl}build.html`" :class="{active: currentPath.toLowerCase().includes('build')}">陀螺配置</a>
           </li>
 
           <li>
-            <a href="build.html">陀螺配置</a>
+            <a :href="`${baseUrl}forum.html`" :class="{active: currentPath.toLowerCase().includes('forum')}">Spinix論壇</a>
           </li>
 
           <li>
-            <a href="forum.html">Spinix論壇</a>
-          </li>
-
-          <li>
-            <a href="market.html">交換專區</a>
+            <a :href="`${baseUrl}market.html`" 
+            :class="{active: 
+              currentPath.toLowerCase().includes('market') ||
+              currentPath.toLowerCase().includes('product') ||
+              currentPath.toLowerCase().includes('addchange')
+            }"
+          >
+            交換專區</a>
           </li>
         </ul>
-        <div class="header-btns">
-          <a class="signUp-btn" href="signUp.html">註冊</a>
-          <a class="signIn-btn" href="signIn.html">登入</a>
+        <div class="header-btns" v-if="isChecked && !isLogin">
+          <a class="signUp-btn" :href=" `${baseUrl}signUp.html`">註冊</a>
+          <a class="signIn-btn" :href="`${baseUrl}signIn.html`">登入</a>
         </div>
+
       </nav>
-      
-    </div>
+      <!-- 登入後會員頭貼 -->
+        <div class="member-center" ref="userMenuWrapper" v-if="isChecked && isLogin">
+          <div class="header-user-headshot" @click="openUserPanel">
+            <img 
+              :src="`${baseUrl}${currentMember.photo}`"
+              :alt="`${currentMember.name}的會員頭像`"
+            >
+          </div>
+          
+          <div class="user-panel"  :class="{ open: isUserPanelOpen }">
+            <Transition :name="transitionName">
+                <!-- 菜單面板 -->
+              <div class="user-menu" v-if="currentPanel === 'menu'" key="menu">
+                <div class="menu-user-info">
+                  <div class="user-headshot">
+                    <img 
+                      :src="`${baseUrl}${currentMember.photo}`"
+                      :alt="`${currentMember.name}的會員頭像`"
+                    >
+                  </div>
+                  <p class="user-name">{{ currentMember.name }}</p>
+                </div>
+              <div class="menu-list">
+                <ul>
+                  <li>
+                    <button type="button" class="menu-item" @click="goToPanel('notice')">
+                        <i class="fa-solid fa-bell"></i>
+                        <p class="item-label">會員通知</p>
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                  </li>
+                  <li>
+                    <a :href=" `${baseUrl}member.html`" class="menu-item">
+                        <i class="fa-solid fa-user"></i>
+                        <p class="item-label">會員中心</p>
+                        <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                  </li>
+                  <li class="btn-login">
+                    <a href="#" class="menu-item " @click.prevent="signOut">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <p class="item-label">登出</p>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              </div>
 
-    <!-- <div class="header-btns">
-      <a class="signUp-btn" href="signUp.html">註冊</a>
-      <a class="signIn-btn" href="signIn.html">登入</a>
-    </div> -->
 
-    <!-- 手機漢堡選單 -->
+              <!-- 通知面板 -->
+              <noticePanel 
+                v-else-if="currentPanel === 'notice'" 
+                key="notice"
+                @close="goToPanel('menu')"
+              />
+            </Transition>
+
+          </div>
+        
+  
+
+        </div>
+        <!-- 手機漢堡選單 -->
     <button 
       id="burger"
       type="button"
@@ -58,12 +116,28 @@
       <span></span>
       <span></span>
     </button>
+    </div>
+    
   </header>
 </template>
 
 <script>
+import noticePanel from "./Userpanel.vue";
+
+//判斷當前環境!
+const phpBaseUrl =
+  location.hostname === "localhost" ||
+  location.hostname === "127.0.0.1"
+    ? "http://localhost:8888/Spinix/php"
+    : "/ckd101/g2/php";
+
 export default {
   name: "Header",
+
+  components: {
+    noticePanel   
+  },
+
 
   props: {
     solid: {
@@ -74,9 +148,17 @@ export default {
 
   data() {
     return {
+      baseUrl: import.meta.env.BASE_URL,
       isScrolled: false,
       isMenuOpen: false,
-      isMenuClosing: false
+      isMenuClosing: false,
+      isUserPanelOpen: false,
+      isLogin:false, // 檢查是否登入
+      isChecked: false, //用來記錄是否已確認登入狀態
+      currentMember: null, //紀錄當下登入會員資料
+      currentPanel: "menu",   // menu | notice
+      transitionName: "slide-left",  // 控制滑動方向
+      currentPath: window.location.pathname, //用來判斷當下所在位置在哪個分頁
     };
   },
 
@@ -107,21 +189,72 @@ export default {
         this.isMenuOpen = false;
         this.isMenuClosing = false;
       }, 500);
+    },
+
+    // 打開會員中心面板
+    openUserPanel(){
+      this.isUserPanelOpen = !this.isUserPanelOpen;
+      if (this.isUserPanelOpen) {
+        this.currentPanel = "menu";
+      }
+    },
+     // 點擊選單以外的地方要關閉
+    handleClickOutside(e) {
+      // this.$refs.userMenuWrapper 是包住頭貼+下拉選單的外層容器
+      if (this.$refs.userMenuWrapper && !this.$refs.userMenuWrapper.contains(e.target)) {
+        this.isUserPanelOpen = false;
+      }
+    },
+    goToPanel(panelName) {
+      // 進入通知面板 → 從右往左滑入
+      // 返回選單面板 → 從左往右滑入 (退回去的感覺)
+      this.transitionName = panelName === "notice" ? "slide-left" : "slide-right";
+      this.currentPanel = panelName;
+    },
+    fetchCurrentMember() { //取得當前是否有登入、登入者資訊
+      fetch(`${phpBaseUrl}/member/currentMember_get.php`, {
+        method: "GET",
+        credentials: "include"
+      }).then(res => res.json()).then(data => {
+          this.isLogin = data.isLoggedIn;
+          
+          if (data.isLoggedIn) { //已登入狀態時，將登入會員的基本資訊存在currentMember變數中
+            this.currentMember = data.member;
+          } else {
+            this.currentMember = null;
+          }
+
+          this.isChecked = true; //登入狀態檢查完畢後，將此變數更改為true，避免每次重新載入header時，都會在已登入/未登入UI間快速變動
+        });
+    },
+    signOut() { //串接登出api
+      fetch(`${phpBaseUrl}/member/signOut_post.php`, {
+        method: "POST",
+        credentials: "include"
+      }).then(res => res.json()).then(data => {
+          if (data.success) { //登出成功後，跳轉回首頁
+            window.location.href = `${this.baseUrl}homepage.html`;
+          }
+        });
     }
   },
 
   mounted() {
+    this.fetchCurrentMember(); //一載入header時，即優先判斷是否有登入
     this.changeHeader();
-
     if (!this.solid) {
       window.addEventListener("scroll", this.changeHeader);
     }
+    document.addEventListener("click", this.handleClickOutside);
   },
 
   beforeUnmount() {
     window.removeEventListener("scroll", this.changeHeader);
+    document.removeEventListener("click", this.handleClickOutside);
   }
 };
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -139,7 +272,6 @@ export default {
 
       width: 100%;
       height: 88px;
-      padding-inline: 20px;
 
       background-color: transparent;
       border-bottom: 1px solid transparent;
@@ -168,7 +300,7 @@ export default {
       align-items: center;
       gap: 24px;
       width: 100%;
-      
+      padding-inline: 20px;
   }
 
   .header-main .logo {
@@ -202,9 +334,7 @@ export default {
   .header-main nav{
     width: 100%;
     display: flex;
-    align-items: center;
-    
-    
+    align-items: center; 
   }
 
   .header-main nav ul {
@@ -295,6 +425,167 @@ export default {
 
   .header-btns a:active {
       transform: translateY(0);
+  }
+
+
+
+  .header-main {
+    .member-center{
+      padding-right: 32px;
+
+      .header-user-headshot{
+        width: 50px;
+        height: 50px;
+        background-color: white;
+        border-radius:50% ;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition:.3s ease;
+        flex-shrink: 0;
+
+        &:hover{
+          border-color: #F29B00;
+        }
+        img{
+          width: 100%;
+        }
+      }
+      // 下拉選單
+      .user-panel{
+        background-color: #F7F5F3;
+        border: 1px solid #dddddd;
+        box-shadow: 0 8px 12px rgba(20, 28, 38, 0.1);
+        position: absolute;
+        right: 20px;
+        margin-top: 20px;
+        border-radius: 10px;
+        // min-width: 300px;
+        width: 300px;
+        height: 350px;
+        display: flex;  
+        overflow: hidden;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-8px);
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+
+        .user-menu{
+          width: 100%;
+          padding: 20px 12px;
+          height: 100%;
+          display: flex;              
+          flex-direction: column;   
+        }
+        
+
+        &.open {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+
+        .slide-left-enter-active,
+        .slide-left-leave-active,
+        .slide-right-enter-active,
+        .slide-right-leave-active {
+          transition: transform 0.32s ease;   
+          position: absolute;                  
+          top: 0;
+          left: 0;
+          width: 100%;
+        }
+
+         // 前往通知面板：新面板從右邊滑進來，舊面板往左邊滑出去
+        .slide-left-enter-from {
+          transform: translateX(100%);
+        }
+        .slide-left-leave-to {
+          transform: translateX(-100%);
+        }
+
+        // 返回選單面板：新面板從左邊滑進來，舊面板往右邊滑出去
+        .slide-right-enter-from {
+          transform: translateX(-100%);
+        }
+        .slide-right-leave-to {
+          transform: translateX(100%);
+        }
+
+        .menu-user-info{
+          display: flex;
+          gap: 16px;
+          align-items: center;
+          flex-shrink: 0; 
+          
+
+          .user-headshot{
+            width: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: white;
+            border: 1px solid #dddddd;
+            
+            img{
+              width: 100%;
+            }
+          }
+        }
+
+        .menu-list{
+          flex: 1;                // ⚠️ 確認這裡有沒有寫？
+          min-height: 0;           // ⚠️ 確認這裡有沒有寫？（固定公式）
+          
+          height: 100%;
+          ul{
+            padding-top: 4px ;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+
+            li{  
+              width: 100%;
+              border-radius: 8px;
+              transition: all .3s ease;
+              margin-top: 12px;
+              &:last-child {
+                margin-top: auto;
+              }
+              
+
+              &:hover{
+                background-color: #fec96b;
+
+                .menu-item{
+                  color: #a86B00 ;
+                }
+
+                
+              }
+
+              .menu-item{
+                display: flex;
+                gap: 8px;
+                padding: 8px 4px;
+                align-items: center;
+                justify-content: start;
+                width: 100%;
+                font-size: 18px;
+
+                .item-label{
+                  flex: 1;
+                  text-align: left;
+                  font-weight: lighter;
+                  
+                }
+              }
+              
+            }
+            
+          }
+        }
+      }
+    }
   }
 
   // 漢堡選單
@@ -394,11 +685,12 @@ export default {
     }
   }
 
+
+
   // RWD
   // 手機板
   @media screen and (width < 992px) {
     header{
-      // position: relative;
       background-color: #141C26;
     }
     .header-main {
@@ -420,10 +712,7 @@ export default {
         transform: translateX(100%);
         transition: transform 0.6s ease;
         flex-direction: column;
-        // align-content: center;
-        // align-items: end;
         justify-content: flex-start;
-        // align-content: space-between;
           &.active{
             transform: translateX(0);
             box-shadow: -12px 0 32px rgba(20, 28, 38, 0.22);
@@ -434,7 +723,6 @@ export default {
             flex-direction: column;
             flex: initial;
             gap: 28px;
-            // flex: 1;
 
             li {
               width: 100%;
@@ -463,6 +751,10 @@ export default {
             gap: 20px;
             
           }
+        }
+      
+        .logo{
+          flex: 1;
         }
     }
 

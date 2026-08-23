@@ -12,14 +12,15 @@
 
         <!-- 左欄：結果卡片與按鈕組 -->
         <section class="left-col">
-          <ResultCard />
-          <ActionGroup />
+          <ResultCard :selected-parts="selectedParts" />
+          <ActionGroup @clear-all="handleClearAll" />
         </section>
 
         <!-- 右欄：頁籤與零件列表  -->
         <section class="right-col">
-          <CategoryTabs />
-          <PartGrid />
+          <!-- 父元件記錄的 currentTab 傳給 CategoryTabs 判斷高亮 -->
+          <CategoryTabs :current-tab="currentTab" @change-tab="handleTabChange"/>
+          <PartGrid :parts="filteredParts" :selected-id="currentSelectedId" @select-part="handleSelectPart"/>
           <p style="color: #fff;">右欄區域（頁籤與零件網格）</p>
         </section>
 
@@ -42,6 +43,92 @@
       ResultCard,
       CategoryTabs,
       PartGrid
+    },
+
+    data(){
+      return {
+        // 目前的分類tab，預設blade
+        currentTab: "blade",
+        // 各分類目前已選擇的零件，key 為 category，value 為零件物件
+        selectedParts: {},
+        // 零件們的假資料，待補數值
+        allParts: []
+      }
+    },
+
+    computed: {
+      /* 
+        動態過濾器 (Computed Property)：
+        當 this.currentTab 發生改變時，Vue 會自動重新執行這個函式，
+        從 allParts 大水庫中只篩選出 category 等於 currentTab 的項目，組成新陣列傳出。
+      */
+
+      // 資料庫裡沒有存中文標籤，所以前端自己維護這份對照
+      categoryLabelMap() {
+        return { Blade: "戰刃", Ratchet: "固鎖", Bit: "軸心" };
+      },
+      filteredParts() {
+        return this.allParts.filter(part => {
+          return part.category === this.currentTab;
+        });
+      },
+      /* 目前分類已選擇的零件 id，供 PartGrid/PartCard 判斷高亮用 */
+      currentSelectedId() {
+        return this.selectedParts[this.currentTab]?.id ?? null;
+      }
+    },
+
+    created() {
+      this.fetchParts();
+    },
+
+    methods: {
+      /*
+        事件接收函式：
+        當收到來自 CategoryTabs 的廣播時觸發。
+        newTabId 就是子元件帶過來的參數 (例如 "ratchet")。
+      */
+
+      async fetchParts() {
+        try {
+          const res = await fetch("http://localhost:8888/Spinix/php/build/getParts.php");
+          const result = await res.json();
+
+          if (result.success) {
+            // 轉換：把 API 回傳的原始欄位，對應成子元件原本熟悉的欄位名稱
+            this.allParts = result.data.map(item => ({
+              id: item.beyblade_id,
+              name: item.name,
+              image: item.pic,
+              type: this.categoryLabelMap[item.category] ?? item.category,
+              category: item.category.toLowerCase(),  // 轉小寫，對應 CategoryTabs 的 currentTab 值
+              atk: Number(item.attack),
+              def: Number(item.defense),
+              sta: Number(item.stamina),
+              wei: Number(item.weight)
+            }));
+          }
+        } catch (error) {
+          console.error("零件資料載入失敗", error);
+        }
+      },
+
+      handleTabChange(newTabId) {
+        this.currentTab = newTabId; // 修改中央狀態，這會自動觸發上方 computed: filteredParts 重新計算
+      },
+      /*
+        接收來自 PartGrid 轉發的 select-part 事件，
+        依零件的 category 記錄該分類目前選擇的零件。
+      */
+      handleSelectPart(part) {
+        this.selectedParts = { ...this.selectedParts, [part.category]: part };
+      },
+      /*
+        接收來自 ActionGroup 的 clear-all 事件，清空所有已選零件。
+      */
+      handleClearAll() {
+        this.selectedParts = {};
+      }
     }
   }
 </script>

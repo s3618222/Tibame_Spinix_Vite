@@ -4,8 +4,11 @@
 
     <div class="cancelled-row">
       <!-- 會員是發起人，顯示參加人資訊 -->
-      <button v-if="battle.role === 'initiator'" type="button" class="cancelled-user" @click="$emit('open-history', battle.participantId)">
-        <img :src="battle.participantAvatar" :alt="battle.participantName">
+      <button v-if="battle.role === 'initiator' && battle.participantId" type="button" class="cancelled-user" @click="$emit('open-history', battle.participantId)">
+        <img 
+          :src="battle.participantAvatar" 
+          :alt="battle.participantName"
+        >
         <span>
           參加人：{{ battle.participantName }}
         </span>
@@ -13,15 +16,25 @@
 
       <!-- 會員是參加人，顯示發起人資訊 -->
       <button v-else-if="battle.role === 'participant'" type="button" class="cancelled-user" @click="$emit('open-history', battle.initiatorId)">
-        <img :src="battle.initiatorAvatar" :alt="battle.initiatorName">
+        <img 
+          :src="battle.initiatorAvatar" 
+          :alt="battle.initiatorName"
+        >
         <span>
           發起人：{{ battle.initiatorName }}
         </span>
       </button>
 
-      <div class="cancelled-message">
+      <div 
+        class="cancelled-message"
+        :class="{ 'failed-message': battle.rawStatus === 'FAILED' }"
+      >
         <i class="fa-solid fa-circle-xmark"></i>
-        <p>此次約戰已取消。</p>
+        <!-- 報名截止時間到，沒人加入時顯示 -->
+        <p v-if="battle.rawStatus === 'FAILED'">本次配對未成立，邀約已結束。</p>
+
+        <!-- 有人加入，但最後取消時顯示 -->
+        <p v-else>此次約戰已取消。</p>
       </div>
     </div>
 
@@ -88,19 +101,6 @@
     }
   }
 
-  // .cancelled-message {
-  //   display: flex;
-  //   align-items: center;
-  //   gap: 8px;
-  //   color: #64748b;
-  //   font-size: 16px;
-
-  //   i {
-  //     color: #e63946;
-  //     font-size: 18px;
-  //   }
-  // }
-
   .cancelled-message {
     width: fit-content;
     max-width: 100%;
@@ -126,6 +126,36 @@
       flex-shrink: 0;
       color: #e63946;
       font-size: 18px;
+    }
+  }
+
+  .failed-message {
+    margin-inline: auto;
+  }
+
+  // ========================= RWD調整 =============================
+  
+  //約戰紀錄下方資訊改單欄呈現
+  @media screen and (max-width: 900px) {
+    .cancelled-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+    }
+
+    .cancelled-row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+
+    .cancelled-user {
+      width: fit-content;
+    }
+
+    .cancelled-message {
+      width: 100%;
     }
   }
 

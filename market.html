@@ -7,10 +7,11 @@
    <title>二手交換</title>
    <link rel="stylesheet" href="./src/assets/scss/_reset.scss">
    <link rel="stylesheet" href="./src/assets/scss/style.scss">
+   <link rel="icon" type="image/png" href="spinix_favicon.jpg">
    <script src="https://kit.fontawesome.com/865a269d64.js" crossorigin="anonymous"></script>
 </head>
 
-<body>
+<body id="market">
 
    <!-- header -------------------------------------------->
    <div id="headerApp" class=""></div>
@@ -23,7 +24,7 @@
             <a href="#marketCardInfo">開始導覽</a>
          </button>
          <button type="button" class="btnFill btn-exchaunge">
-            <a href="./addChange.html">建立交換</a>
+            <a href="addChange.html">建立交換</a>
          </button>
       </div>
    </div>
@@ -39,7 +40,7 @@
                   <option value="blade">戰刃</option>
                   <option value="ratchet">固鎖</option>
                   <option value="bit">軸心</option>
-                  <option value="other">其他</option>
+                  <option value="others">其他</option>
                </select>
                <label for="city">縣市:</label>
                <select name="city" id="select-city">
@@ -98,8 +99,9 @@
 
    <!-- footer -------------------------------------------->
    <div id="footerApp"></div>
-   <script src="./src/assets/js/public.js"></script>
-   <script src="./src/assets/js/market.js" type="module"></script>
+   <!-- <script src="/src/assets/js/public.js"></script> -->
+   <script src="/src/assets/js/market.js" type="module"></script>
+   <script src="/src/assets/js/sort.js" type="module"></script>
 </body>
 
 </html>

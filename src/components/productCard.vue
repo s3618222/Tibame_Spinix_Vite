@@ -7,34 +7,47 @@
          <h4>{{ title }}</h4>
 
          <div class="wrapper">
-            <img :src="avatar" alt="">
-            <p>{{ username }}</p>
+            <div class="img-user">
+               <img :src="avatar" alt="">
+            </div>
+            <p class="username">{{ username }}</p>
          </div>
 
          <div class="wrapper">
-            <p class="date">
-               <i class="fa-solid fa-calendar-days"></i>
-               刊登日期:
+            <i class="fa-solid fa-calendar-days icon-style"></i>
+            <p>
+               刊登日期：
+               <span class="date">{{ create_time }}</span>
             </p>
-            <span>{{ postDate }}</span>
          </div>
 
-         <p>
-            <i class="fa-solid fa-location-dot"></i>
-            {{ city }}<span>{{ district }}</span>
-         </p>
+         <div class="wrapper">
+            <i class="fa-solid fa-location-dot icon-style"></i>
+            <p>{{ city }}<span>{{ district }}</span></p>
+         </div>
       </div>
 
       <div class="card-footer">
-         <p class="state">{{ state }}</p>
-         <a :href="`./product_detail.html?id=${id}`" class="btnNoFill" @click.stop>查看詳情</a>
+         <p class="chip" :class="chipModifier">{{ state }}</p>
+
+         <div class="card-buttons" @click.stop>
+            <button
+               v-for="btn in buttons"
+               :key="btn.action"
+               type="button"
+               
+               :class="getBtnClass(btn)"
+               @click="handleBtnClick(btn)"
+            >{{ btn.label }}</button>
+         </div>
       </div>
    </div>
 </template>
-
 <script setup>
+import { computed } from 'vue';
+
 const props = defineProps({
-   id: {
+   post_id: {
       type: [String, Number],
       required: true
    },
@@ -54,7 +67,7 @@ const props = defineProps({
       type: String,
       required: true
    },
-   postDate: {
+   create_time: {
       type: String,
       required: true
    },
@@ -69,38 +82,100 @@ const props = defineProps({
    state: {
       type: String,
       default: '可交換'
+   },
+   // 這張卡片目前是在哪個情境下顯示：
+   // 'browse'（一般瀏覽，預設）／'myPosts'（我刊登的交換）／'myApplications'（我提出的申請）
+   context: {
+      type: String,
+      default: 'browse'
    }
-})
+});
+
+const emit = defineEmits(['reply-exchange']);
+
+// 狀態文字 → chip modifier 對照，涵蓋文章狀態 & 申請狀態
+const stateChipMap = {
+   '可交換': 'chip--exchangeable',
+   '交換中': 'chip--category',
+   '待確認': 'chip--state',
+   '交換完成': 'chip--completed',
+   '申請中': 'chip--exchangeable',
+   '已回覆': 'chip--state'
+};
+
+const chipModifier = computed(() => stateChipMap[props.state] || '');
+
+const buttons = computed(() => {
+   const viewMore = { label: '查看詳情', action: 'view-more', type: 'btnNoFill' };
+
+   if (props.context === 'myApplications' && props.state === '已回覆') {
+      return [{ label: '回覆交換', action: 'reply-exchange', type: 'btnFill' }];
+   }
+
+   return [viewMore];
+});
+function getBtnClass(btn) {
+   return [`${btn.type}`, { 'btn-disabled': btn.disabled }];
+}
+
+function handleBtnClick(btn) {
+   if (btn.disabled) return;
+
+   if (btn.action === 'view-more') {
+      goToDetail();
+      return;
+   }
+
+   emit(btn.action, { id: props.post_id, title: props.title,username:props.username });
+}
 
 function goToDetail() {
-   window.location.href = `./product_detail.html?id=${props.id}`
+   const params = new URLSearchParams({
+      id: props.post_id,
+      from: props.context
+   });
+   window.location.href = `product_detail.html?${params.toString()}`;
 }
 </script>
 
 
 <style lang="scss">
    @use '@/assets/scss/_var' as *;
-   @use '@/assets/scss/style' as *;
+
+   .icon-style{
+      display: none;
+   }
 
    .card {
       width: 100%;
       background-color: white;
       padding: 12px;
-      border: 1px solid var(--tertiary);
+      border: 1px solid map-get($color , tertiary);
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(20, 28, 38, 0.06);
       height: fit-content;
+      overflow: hidden;
+      color: #141C26;
 
       .wrapper {
+         display: flex;
          align-items: center;
          gap: 8px;
-
-         img {
+      
+         .img-user{
             width: 36px;
+         }
+
+         .username{
+            font-weight: 600;
          }
 
          p {
             height: fit-content;
+         }
+
+         .date{
+            margin-left: -4px;
          }
       }
 
@@ -121,6 +196,7 @@ function goToDetail() {
          display: flex;
          flex-direction: column;
          gap: 12px;
+         
 
          h4 {
             font-weight: 600;
@@ -135,50 +211,78 @@ function goToDetail() {
          span {
             margin-left: 4px;
          }
-
-         .date {
-            display: none;
-         }
       }
 
-      .card-footer {
-         display: flex;
-         padding-top: 12px;
-         font-size: map-get($fontSize , hint);
-         // gap: 12px;
-         align-items: center;
-         justify-content: space-between;
-
-         .state {
-            background-color: var(--lightGreen);
-            padding: 4px 8px;
-            border-radius: 4px;
-            color: var(--olive);
-            font-weight: 550;
-         }
-
-         .btnNoFill {
-            display: none;
-         }
-      }
+      
    }
    
+   @media screen and ( 768px > width) {
+      .card-footer {
+         padding-top: 12px;
+         font-size: map-get($fontSize , hint);
+
+         .chip{
+            width: fit-content;
+         }
+
+         .card-buttons {
+            display: flex;
+            justify-content: center;
+            margin: 12px -12px -12px;
+            border-top: 1px solid #dddddd;
+
+            .btnNoFill,
+            .btnFill{
+               border: none;
+               background-color: transparent;
+            }
+
+            .btnFill{
+               color: map-get($color, secondary2 );
+            }
+         }
+
+      }
+   }
 
 
 // == 平板 ========================================
    @media screen and (width >=768px) {
-      
+      .card-footer {
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         margin-top: 12px;
+
+            .card-buttons {
+               display: flex;
+            }
+
+            .btnNoFill {
+
+               &:hover{
+                  border-color: map-get( $color, neutral);
+                  background-color:  map-get( $color, neutral);;
+                  color: white;
+               }
+            }
+         }
    }
 
 // == 桌機 =====================================
    @media screen  and (width >= 992px ){
+      
 
+      .icon-style {
+         display: flex;
+         color: map-get($color , neutral);
+      }
       .card {
          cursor: pointer;
          transition: transform .5s ease, border .25s ease;
 
          &:hover {
-            border: 1px solid var(--primary);
+            border: 1px solid map-get($color , primary );
             transform: translateY(-4px);
             box-shadow: 0 10px 20px rgba(20, 28, 38, 0.1);
          }
@@ -188,23 +292,10 @@ function goToDetail() {
             gap: 16px;
 
             .wrapper {
-               display: flex;
-
-               .date {
-                  display: block;
-               }
+               display: flex;               
             }
          }
 
-         .card-footer {
-            align-items: center;
-
-            .btnNoFill {
-               display: block;
-               // margin-left: auto;
-               padding: 12px 16px;
-            }
-         }
       }
    }
 </style>

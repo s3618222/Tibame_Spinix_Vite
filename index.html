@@ -4,162 +4,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>spinix</title>
-  <!-- ========SCSS======== -->
-  <link rel="stylesheet" href="./src/assets/scss/style.scss">
+  <title>Spinix | Choose your side</title>
+  <link rel="stylesheet" href="/src/assets/scss/style.scss">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link rel="icon" type="image/png" href="spinix_favicon.jpg">
 </head>
 
-<body class="page-index">
-  <!-- ========MAIN======== -->
-  <main class="main">
-    <!-- ========HEADER======== -->
-    <div id="headerApp"></div>
+<body>
+  <div id="entryApp"></div>
 
-    <!-- ========HERO======== -->
-    <section class="hero">
-      <div class="hero__box">
-        <div class="hero__heading">
-          <h1>Every Spin Connects Players</h1>
-          <p class="hero__subtitle">每次發射，都能連結新的故事</p>
-        </div>
-        <p class="hero__body">Spinix是專為陀螺玩家打造的互動平台，讓每位玩家都能感受陀螺帶來的熱血與連結。</p>
-        <div class="hero__actions">
-          <a href="forum.html" class="btn-cta">加入Spinix社群</a>
-          <a href="#about" class="btn-cta btn-cta--white">
-            <img src="/icon_explore.svg" alt="" class="btn-cta__icon">
-            探索平台功能
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========ABOUT SPINIX======== -->
-    <section class="about" id="about">
-      <div class="home-container about__inner">
-        <div class="about__text">
-          <div class="about__intro">
-            <h2>About Spinix</h2>
-            <p class="about__tagline">讓陀螺不只是玩具，而是我們的連結</p>
-            <p class="about__body">無論你是剛接觸陀螺的新手、追求極限競技的玩家，還是陪伴孩子一起成長的家長，Spinix 希望每一位玩家，都能找到屬於自己的位置，並與熱愛陀螺的人建立真正的連結。</p>
-          </div>
-
-          <div class="about__features">
-            <h3>四大核心功能</h3>
-            <p class="about__tagline">滿足每位陀螺玩家的需求</p>
-            <div class="feature-grid">
-              <div class="feature-card">
-                <h4>🎯 連結玩家</h4>
-                <p>找到志同道合的對手。</p>
-              </div>
-              <div class="feature-card">
-                <h4>⚙️ 探索配置</h4>
-                <p>分享你的陀螺組合。</p>
-              </div>
-              <div class="feature-card">
-                <h4>💬 交流討論</h4>
-                <p>從經驗中一起成長。</p>
-              </div>
-              <div class="feature-card">
-                <h4>🔄 陀螺交換</h4>
-                <p>延續每顆陀螺的故事。</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="about__media">
-          <img src="/home_about.png" alt="玩家喜愛的戰鬥陀螺" loading="lazy">
-        </div>
-      </div>
-    </section>
-
-    <!-- ========01 約戰配對======== -->
-    <section class="highlight highlight--dark" id="battle">
-      <div class="home-container highlight__inner">
-        <span class="highlight__number">01</span>
-        <div class="highlight__body">
-          <div class="highlight__media">
-            <img src="/home_battle.png" alt="玩家進行約戰配對" loading="lazy">
-          </div>
-          <div class="highlight__text">
-            <h2>約戰配對</h2>
-            <p class="highlight__tagline">找到下一位值得全力以赴的對手！</p>
-            <p class="highlight__desc">快速建立約戰，認識更多陀螺玩家，讓每一次發射，都成為新的相遇。</p>
-            <a href="battle.html" class="btn-cta">前往約戰配對</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========02 陀螺配置分享======== -->
-    <section class="highlight highlight--light highlight--reverse" id="build">
-      <div class="home-container highlight__inner">
-        <span class="highlight__number">02</span>
-        <div class="highlight__body">
-          <div class="highlight__media">
-            <img src="/home_build.png" alt="陀螺配置分享" loading="lazy">
-          </div>
-          <div class="highlight__text">
-            <h2>陀螺配置分享</h2>
-            <p class="highlight__tagline">打造屬於你的專屬戰鬥風格。</p>
-            <p class="highlight__desc">每一種組合，都有不同的可能。分享你的配置，也從其他玩家身上找到新的靈感。</p>
-            <a href="build.html" class="btn-cta">建立你的配置</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========03 玩家社群======== -->
-    <section class="highlight highlight--dark" id="community">
-      <div class="home-container highlight__inner">
-        <span class="highlight__number">03</span>
-        <div class="highlight__body">
-          <div class="highlight__media">
-            <img src="/home_community.png" alt="玩家社群交流" loading="lazy">
-          </div>
-          <div class="highlight__text highlight__text--right">
-            <h2>玩家社群</h2>
-            <p class="highlight__tagline">與社群同伴一起交流、學習、成長。</p>
-            <p class="highlight__desc">分享戰術、討論新產品、交流賽事心得，各種精彩的戰鬥陀螺話題皆可在Spinix論壇中找到，快來與其他同好一起分享你的陀螺新發現！</p>
-            <a href="forum.html" class="btn-cta">瀏覽Spinix社群</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========04 交換市集======== -->
-    <section class="highlight highlight--light highlight--reverse" id="market">
-      <div class="home-container highlight__inner">
-        <span class="highlight__number">04</span>
-        <div class="highlight__body">
-          <div class="highlight__media">
-            <img src="/home_market.png" alt="陀螺交換市集" loading="lazy">
-          </div>
-          <div class="highlight__text">
-            <h2>交換市集</h2>
-            <p class="highlight__tagline">讓每顆陀螺或每個零件，找到下一位主人。</p>
-            <p class="highlight__desc">趕緊查看Spinix陀螺交換市集，讓你輕鬆找到想要的陀螺與零件，擴充你的收藏！</p>
-            <a href="market.html" class="btn-cta">前往交換市集</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========FEEL THE SPIRIT======== -->
-    <section class="video-cta">
-      <div class="video-cta__box">
-        <h2>FEEL THE SPIRIT</h2>
-        <p>別只在螢幕前看！握緊發射器，準備好加入戰局了嗎？</p>
-        <a href="forum.html" class="btn-cta">加入Spinix社群</a>
-      </div>
-    </section>
-
-    <!-- ========FOOTER======== -->
-    <div id="footerApp"></div>
-  </main>
-
-  <!-- ========JS======== -->
-  <script type="module" src="./src/assets/js/index.js"></script>
+  <script type="module" src="/src/assets/js/index.js"></script>
 </body>
 
 </html>

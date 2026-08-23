@@ -5,39 +5,55 @@
     <div class="pic-logo">spinix</div>
 
     <div class="pics-container">
-      <img src="/public/build/blade/BX-49 蒼龍突擊.png" alt="" class="preview-pic">
-      <img src="/public/build/ratchet/BX-50-04.png" alt="" class="preview-pic">
-      <img src="/public/build/bit/BX-50-02 TP.png" alt="" class="preview-pic">
-      
+      <div class="part-item" v-for="slot in partSlots" :key="slot.category">
+        <div class="part-img-box">
+          <img src="/build/background-circle.png" alt="" class="bg-ring">
+          <img
+            v-if="selectedParts[slot.category]"
+            :src="imgUrl(selectedParts[slot.category])"
+            alt=""
+            class="preview-pic"
+          >
+          <span v-else class="preview-placeholder">{{ slot.label }}</span>
+        </div>
+        <div class="part-txt">
+          <p class="part-title">{{ slot.label }}</p>
+          <p class="part-name">{{ selectedParts[slot.category] ? selectedParts[slot.category].name : '尚未選擇' }}</p>
+        </div>
+
+      </div>
     </div>
 
-    <ul class="spec-card__parts">
-      <li><span class="label">戰刃</span><span class="val">X-Calibur</span></li>
-      <li><span class="label">固鎖</span><span class="val">Magnum</span></li>
-      <li><span class="label">軸心</span><span class="val">Impact</span></li>
-    </ul>
+
 
     <ul class="stat-list">
       <li class="stat-item">
         <span class="stat-label">攻擊</span>
         <div class="stat-bar">
-          <span class="stat-bar-fill" style="width: 85%;"></span>
+          <span class="stat-bar-fill" :style="{ width: statBarWidth(totalStats.atk) }"></span>
         </div>
-        <span class="stat-value">90</span>
+        <span class="stat-value">{{ totalStats.atk }}</span>
       </li>
       <li class="stat-item">
-        <span class="stat-label">攻擊</span>
+        <span class="stat-label">防守</span>
         <div class="stat-bar">
-          <span class="stat-bar-fill" style="width: 85%;"></span>
+          <span class="stat-bar-fill" :style="{ width: statBarWidth(totalStats.def) }"></span>
         </div>
-        <span class="stat-value">90</span>
+        <span class="stat-value">{{ totalStats.def }}</span>
       </li>
       <li class="stat-item">
-        <span class="stat-label">攻擊</span>
+        <span class="stat-label">持久</span>
         <div class="stat-bar">
-          <span class="stat-bar-fill" style="width: 85%;"></span>
+          <span class="stat-bar-fill" :style="{ width: statBarWidth(totalStats.sta) }"></span>
         </div>
-        <span class="stat-value">90</span>
+        <span class="stat-value">{{ totalStats.sta }}</span>
+      </li>
+      <li class="stat-item">
+        <span class="stat-label">重量(g)</span>
+        <div class="stat-bar">
+          <span class="stat-bar-fill" :style="{ width: statBarWidth(totalStats.wei) }"></span>
+        </div>
+        <span class="stat-value">{{ totalStats.wei }}</span>
       </li>
     </ul>
 
@@ -46,54 +62,200 @@
 
 <script>
 export default {
-  name: "ResultCard"
+  name: "ResultCard",
+
+  props: {
+    selectedParts: { type: Object, default: () => ({}) }
+  },
+
+  data() {
+    return {
+      partSlots: [
+        { category: 'blade', label: '戰刃' },
+        { category: 'ratchet', label: '固鎖' },
+        { category: 'bit', label: '軸心' }
+      ]
+    }
+  },
+
+  computed: {
+    totalStats() {
+      return ['atk', 'def', 'sta', 'wei'].reduce((totals, key) => {
+        totals[key] = this.partSlots.reduce((sum, slot) => {
+          const part = this.selectedParts[slot.category];
+          return sum + (part?.[key] ?? 0);
+        }, 0);
+        return totals;
+      }, {});
+    }
+  },
+
+  methods: {
+    imgUrl(part) {
+      const baseUrl = import.meta.env.BASE_URL;
+      return `${baseUrl}${part.image.replace(/^\//, '')}`;
+    },
+    statBarWidth(value) {
+      return `${Math.min(value, 100)}%`;
+    }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 @use "@/assets/scss/var" as *;
-  img {
-    box-sizing: border-box;
-  }
-  .result-card {
-    position: relative;
-    width: 100%;
-    background-color: map-get($color, secondary );
-  }
-  
-  .card-tag {
-    color: map-get($color, secondary );
-    position: absolute;
-    top: 0;
-    right: 0;
-    background-color: map-get($color, primary );
-  }
+img {
+  box-sizing: border-box;
+}
+.result-card {
+  position: relative;
+  width: 100%;
+  background-color: map-get($color, secondary );
+  border-radius: 12px;
+  overflow: hidden;
 
-  .pic-logo {
-    color: map-get($color, neutral );
-  }
+}
 
-  .pics-container {
-    padding-inline: 8px;
-    width: 100%;
-    min-width: 0;
-    background-color: map-get($color, secondary );
-    // height: 200px;
+.card-tag {
+  color: map-get($color, secondary );
+  font-weight: 600;
+  font-size: 14px;
+  padding: 4px 16px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: map-get($color, secondary2 );
+  border-radius: 0 0 0 12px;
+
+}
+
+.pic-logo {
+  color: map-get($color, neutral );
+}
+
+.pics-container {
+  justify-content: space-between;
+  padding: 12px 12px;
+  // padding-inline: 8px;
+  width: 100%;
+  min-width: 0;
+  // background-color: map-get($color, secondary );
+  // height: 200px;
+  display: flex;
+  gap: 12px;
+
+  .part-item {
+    font-size: 16px;
+
     display: flex;
-    gap: 4px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 0;
+    min-width: 0;
 
-    .preview-pic {
-      flex: 1;
+    .part-img-box {
+      position: relative;
       width: 100%;
-      min-width: 0;
-      height: auto;
+      max-width: 240px;
       aspect-ratio: 1 / 1;
-      display: block;
-      object-fit: contain;
-      
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .bg-ring {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        animation: rotate 20s linear infinite;
+      }
+
+      @keyframes rotate {
+        from {
+          rotate: 0deg;
+        }
+
+        to {
+          rotate: 360deg;
+        }
+      }
+
+      .preview-pic {
+        position: relative;
+        z-index: 2;
+        width: 60%;
+        height: 60%;
+      }
+
+      .preview-placeholder {
+        position: relative;
+        z-index: 2;
+        font-size: 20px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+    }
+
+    .part-txt {
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+  }
+
+
+  .preview-pic {
+    flex: 1;
+    width: 60%;
+    min-width: 0;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    display: block;
+    object-fit: contain;
+
+  }
+}
+
+
+
+
+.stat-list {
+  color: map-get($color , white );
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.stat-item{
+  display: flex;
+  align-items: center;
+  line-height: 14px;
+  font-size: 14px;
+  gap: 4px;
+
+  .stat-bar {
+    background-color: map-get($color , hint );
+    height: 10px;
+    flex: 1;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+
+    .stat-bar-fill {
+      display: inline-block;
+      position: absolute;
+      top: 0;left: 0;
+      height: 100%;
+      background-color: map-get($color, primary );
+
     }
   }
-  .stat-item{
-    display: flex;
-  }
+}
 </style>

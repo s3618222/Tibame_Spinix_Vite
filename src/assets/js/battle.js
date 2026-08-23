@@ -3,13 +3,48 @@ import { createApp } from "vue";
 import Header from "@/components/header.vue";
 import Footer from "@/components/footer.vue";
 
+//重要!!! 判斷當前環境
+const phpBaseUrl =
+  location.hostname === "localhost" ||
+    location.hostname === "127.0.0.1"
+    ? "http://localhost:8888/Spinix/php"
+    : `${location.origin}/ckd101/g2/php`;
+
+//import TestPic from "/public/battle_bottom_spintop.png";
+
+//document.querySelector("img.bottom-spintop").src = new URL("/ckd101/g2/front/battle_bottom_spintop.png").href;
+
 createApp(Header).mount("#headerApp");
 createApp(Footer).mount("#footerApp");
+
+let currentMember = null; //存取當前登入者資訊
+
+//串接currentMember API 取得登入者資訊
+// ***Session 是後端 PHP 的資料；前端 JS 需透過 API 才能取得!!!
+function fetchCurrentMember() {
+  return fetch(`${phpBaseUrl}/member/currentMember_get.php`, {
+    credentials: "include"
+  }).then(res => res.json()).then(data => {
+
+    if (data.success && data.isLoggedIn) { //已有登入會員時
+      currentMember = data.member;
+    } else { //未登入時
+      currentMember = null;
+    }
+
+    console.log("目前登入會員：", currentMember);
+  });
+}
+
+//一進入頁面時，先抓取當前是否有登入與登入者資訊，再接著render卡片 (方便讓系統判斷，卡池中是否有登入會員自己發起的約戰)
+fetchCurrentMember()
+  .then(() => {
+    fetchBattles();
+  });
 
 //Hero區視差設定
 const battleHeroScroll = document.querySelector(".battle-hero-scroll");
 const battleHero = document.querySelector(".battle-sec-hero");
-const heroSpintop = document.querySelector(".hero-spintop img");
 
 // 讓這個頁面可以使用GSAP的ScrollTrigger外掛
 gsap.registerPlugin(ScrollTrigger);
@@ -33,6 +68,11 @@ let heroTimeline;
 
 // 建立Hero區的ScrollTrigger動畫
 function createHeroAnimation() {
+
+  // 當畫面寬度是1100px以下時，就不建立Hero視差動畫；因為這時的hero高度已經跟圖片差不多了
+  if (window.innerWidth <= 1100) {
+    return;
+  }
 
   //如果先前已經建立過動畫，重新建立前要先清除舊動畫
   if (heroTimeline) {
@@ -72,20 +112,20 @@ function createHeroAnimation() {
     0
   );
 
-  //第二段動畫，陀螺圖同步跟著漸入，並順時針旋轉一圈
-  heroTimeline.fromTo(
-    heroSpintop,
-    {
-      opacity: 0.1,
-      rotation: 0
-    },
-    {
-      opacity: 1,
-      rotation: 360,
-      ease: "none"
-    },
-    0
-  );
+  //先刪除---第二段動畫，陀螺圖同步跟著漸入，並順時針旋轉一圈
+  // heroTimeline.fromTo(
+  //   heroSpintop,
+  //   {
+  //     opacity: 0.1,
+  //     rotation: 0
+  //   },
+  //   {
+  //     opacity: 1,
+  //     rotation: 360,
+  //     ease: "none"
+  //   },
+  //   0
+  // );
 }
 
 //頁面剛進入時，先建立一次Hero動畫
@@ -100,6 +140,20 @@ window.addEventListener("load", () => {
 // 瀏覽器上一頁、下一頁或快取恢復頁面時
 window.addEventListener("pageshow", () => {
   refreshHeroScroll();
+});
+
+// 當瀏覽器尺寸改變時，重新判斷是否還需要 Hero 視差
+window.addEventListener("resize", () => {
+
+  // 如果先前已有建立過動畫，就先清掉
+  if (heroTimeline) {
+    heroTimeline.scrollTrigger?.kill();
+    heroTimeline.kill();
+    heroTimeline = null;
+  }
+
+  // 再依照目前瀏覽器寬度重新判斷是否要建立視差動畫
+  createHeroAnimation();
 });
 
 //篩選列表上方的介紹文字動畫設定
@@ -155,49 +209,50 @@ gsap.timeline({
   0.45
 );
 
-
-//建立縣市與行政區資料
-const cityDistricts = {
-  "臺北市": [
-    "中正區",
-    "大同區",
-    "中山區",
-    "松山區",
-    "大安區",
-    "信義區"
-  ],
-
-  "新北市": [
-    "板橋區",
-    "中和區",
-    "永和區",
-    "新莊區"
-  ],
-
-  "桃園市": [
-    "桃園區",
-    "中壢區",
-    "平鎮區",
-    "八德區"
-  ]
-};
-
 const citySelect = document.querySelector("#citySelect"); //城市選擇欄位
 const districtSelect = document.querySelector("#districtSelect"); //行政區選擇欄位
+let citiesData = []; // 儲存從後端取得的縣市資料
 
-//帶入各個城市與行政區至option中
-function initSelect() {
-  // Object.keys(...) → 將目標物件中的key值(即城市名)提出，單獨拉出，建立一個陣列
-  Object.keys(cityDistricts).forEach(city => {
-    const option = document.createElement("option"); //動態建立html的option標籤
-    option.value = city; //帶入陣列中的每個城市做為option的值
-    option.textContent = city; //設定各option的顯示字樣為城市名稱
-    citySelect.append(option); //將新生成的option加入至select內
+//向後端取得所有縣市資料
+function fetchCities() {
+  //fetch()的method預設就是get，所以不用特別寫 {method: get}
+  fetch(`${phpBaseUrl}/location/cities_get.php`).then(res => res.json()).then(data => {
+    // 將後端取得的縣市資料保存起來，方面後續自動定位功能也能使用
+    citiesData = data;
+
+    //抓到縣市資料後，將每筆縣市跑迴圈，放進select中
+    data.forEach(city => {
+      const option = document.createElement('option');
+      option.value = city.CITY_ID;
+      option.textContent = city.CITY_NAME;
+
+      citySelect.append(option);
+    });
   });
 }
 
-initSelect(); //一進頁面時，就先將select的城市選項準備好
+citySelect.addEventListener("change", function () {
+  console.log(this.value);
+});
 
+// 一載入分頁時，立即取得縣市資料
+fetchCities();
+
+// 依據傳入的CITY_ID，向後端索取對應城市底下的行政區資料
+function fetchDistricts(cityId) {
+  return fetch(`${phpBaseUrl}/location/districts_get.php?city_id=${cityId}`).then(res => res.json()).then(data => {
+    //透過CITY_ID抓到對應行政區資料後，跑迴圈，放進select
+    data.forEach(district => {
+      const option = document.createElement('option');
+      option.value = district.DISTRICT_ID;
+      option.textContent = district.DISTRICT_NAME;
+
+      districtSelect.append(option);
+    });
+
+    return data;
+  });
+}
 
 //行政區顯示設定
 citySelect.addEventListener("change", function () {
@@ -212,14 +267,8 @@ citySelect.addEventListener("change", function () {
 
   districtSelect.disabled = false;
 
-  //將被選中城市的行政區跑forEach，放進行政區欄位中
-  cityDistricts[this.value].forEach(district => {
-    const option = document.createElement("option");
-    option.value = district;
-    option.textContent = district;
-    districtSelect.append(option);
-  });
-
+  //將目前選到的 CITY_ID 傳給行政區 API
+  fetchDistricts(this.value);
 });
 
 //篩選重置
@@ -326,8 +375,8 @@ locateBtn.addEventListener("click", () => {
       // 優先取得較精確的位置
       enableHighAccuracy: true,
 
-      // 最多等待 10 秒
-      timeout: 10000,
+      // 最多等待 15 秒
+      timeout: 15000,
 
       // 避免抓到之前的舊位置，每次都得重新定位
       maximumAge: 0
@@ -391,44 +440,45 @@ async function locationSuccess(position) {
     detectedDistrict =
       detectedDistrict.replace("台", "臺");
 
-    //定位出的縣市如果不在目前網站設定的資料中時，顯示對應系統提示文
-    if (!cityDistricts[detectedCity]) {
+    // 從後端取得的縣市資料中，找出定位到的縣市；e.g.{CITY_ID: 3, CITY_NAME: "桃園市"}
+    const matchedCity = citiesData.find(city => {
+      return city.CITY_NAME === detectedCity;
+    });
+
+    // 如果資料庫中找不到這個縣市，就顯示對應系統提示文
+    if (!matchedCity) {
       locationStatus.textContent = "無法判斷目前所在位置，請手動選擇";
 
       return;
     }
 
     // 自動將縣市 select 切換到定位結果
-    citySelect.value = detectedCity;
+    citySelect.value = matchedCity.CITY_ID;
 
-    //因應縣市選擇設定後，行政區的選項也要先重新更新
-    districtSelect.innerHTML =
-      `<option value="">全部行政區</option>`;
+    // 先清空前一次殘留的行政區資料
+    districtSelect.innerHTML = `<option value="">全部行政區</option>`;
 
-    //重新將縣市對應的行政區選項render出
-    cityDistricts[detectedCity].forEach(district => {
-      const option = document.createElement("option");
-      option.value = district;
-      option.textContent = district;
-      districtSelect.append(option);
-    });
+    // 再使用新定位到的 CITY_ID 向後端取得行政區
+    const districtsData = await fetchDistricts(matchedCity.CITY_ID);
 
-    // 有設定縣市後，行政區欄位要關閉disabled設定
+    // 有縣市後，開放行政區選單
     districtSelect.disabled = false;
 
-    //確認定位到的行政區是否有存在目前網頁資料中
-    const hasDistrict = cityDistricts[detectedCity].includes(detectedDistrict);
+    // 再從該縣市的行政區資料中，找出定位得到的行政區
+    const matchedDistrict = districtsData.find(district => {
+      return district.DISTRICT_NAME === detectedDistrict;
+    });
 
-    if (hasDistrict) {
-      // 找到對應行政區時，自動選取
-      districtSelect.value = detectedDistrict;
+    // 如果有找到，就自動選取對應的 DISTRICT_ID
+    if (matchedDistrict) {
+      districtSelect.value = matchedDistrict.DISTRICT_ID;
     } else {
-      //否則顯示「全部行政區」
       districtSelect.value = "";
     }
 
+
     // 顯示定位成功結果
-    locationStatus.textContent = hasDistrict
+    locationStatus.textContent = matchedDistrict
       ? `已定位至 ${detectedCity}${detectedDistrict}`
       : `已定位至 ${detectedCity}`;
 
@@ -479,239 +529,80 @@ function locationError(error) {
   hideLoading();
 }
 
-//針對發起人的評價假資料
-const hostReviewData = {
-  //發起人約戰歷史評分紀錄
-  101: {
-    hostId: 101,
-    name: "WeiChen",
-    avatar: "/spinix_member_default.png",
-    totalBattles: 18,
-    averageRating: 4.7,
-    //過往評論紀錄
-    reviews: [
-      {
-        reviewId: 1001,
-        reviewerName: "小宇",
-        rating: 5,
-        content: "發起人很準時，也很親切，現場交流氣氛很好！",
-        createdAt: "2026-07-15"
-      },
-      {
-        reviewId: 1002,
-        reviewerName: "BladeKen",
-        rating: 5,
-        content: "場地資訊說明得很清楚，對新手也很有耐心。",
-        createdAt: "2026-07-08"
-      },
-      {
-        reviewId: 1003,
-        reviewerName: "阿哲",
-        rating: 4,
-        content: "整體約戰體驗很好，下次有機會還會再參加。",
-        createdAt: "2026-06-29"
-      },
-      {
-        reviewId: 1004,
-        reviewerName: "Ray",
-        rating: 5,
-        content: "準備了戰鬥盤，時間安排也很順利。",
-        createdAt: "2026-06-17"
-      },
-      {
-        reviewId: 1005,
-        reviewerName: "陀螺新手",
-        rating: 4,
-        content: "交流過程很友善，適合剛接觸戰鬥陀螺的玩家。",
-        createdAt: "2026-06-03"
-      }
-    ]
-  },
+//存取從後端抓取、要放進對戰配對卡池中的約戰紀錄
+let battleData = [];
 
-  102: {
-    hostId: 102,
-    name: "SpinRay",
-    avatar: "/spinix_member_default.png",
-    totalBattles: 18,
-    averageRating: 4.7,
-    reviews: [
-      {
-        reviewId: 2001,
-        reviewerName: "小宇",
-        rating: 5,
-        content: "發起人很準時，也很親切，現場交流氣氛很好！",
-        createdAt: "2026-07-15"
-      },
-      {
-        reviewId: 2002,
-        reviewerName: "BladeKen",
-        rating: 5,
-        content: "場地資訊說明得很清楚，對新手也很有耐心。",
-        createdAt: "2026-07-08"
-      },
-      {
-        reviewId: 2003,
-        reviewerName: "阿哲",
-        rating: 4,
-        content: "整體約戰體驗很好，下次有機會還會再參加。",
-        createdAt: "2026-06-29"
-      },
-      {
-        reviewId: 2004,
-        reviewerName: "Ray",
-        rating: 5,
-        content: "準備了戰鬥盤，時間安排也很順利。",
-        createdAt: "2026-06-17"
-      },
-      {
-        reviewId: 2005,
-        reviewerName: "陀螺新手",
-        rating: 4,
-        content: "交流過程很友善，適合剛接觸戰鬥陀螺的玩家。",
-        createdAt: "2026-06-03"
-      }
-    ]
-  }
+//將後端約戰資料原先儲存的英文文字轉換為欲顯示的中文
+const battleModeText = {
+  CASUAL: "休閒模式",
+  COMPETITIVE: "競技模式"
 };
 
-// 約戰邀約卡片假資料
-const battleData = [
-  {
-    battleId: 1,
-    title: "新手友善！開心打陀螺",
-    coverImage: "/battle_card_default.jpg",
-    target: "不限對象",
-    city: "桃園市",
-    district: "中壢區",
-    mode: "休閒模式",
-    battleDate: "2026-08-15T14:00:00",
-    deadline: "2026-08-21T22:00:00",
-    level: "新手玩家",
-    description: "假日放鬆場，輕鬆交流，我帶戰鬥盤，你帶陀螺就好！",
-    hostId: 101,
-    status: "matching"
-  },
-  {
-    battleId: 2,
-    title: "中壢車站週末交流場",
-    coverImage: "/battle_card_test1.jpg",
-    target: "不限對象",
-    city: "桃園市",
-    district: "中壢區",
-    mode: "休閒模式",
-    battleDate: "2026-08-16T15:00:00",
-    deadline: "2026-08-15T20:00:00",
-    level: "不限程度",
-    description: "歡迎各種程度的玩家參加，現場會準備戰鬥盤。",
-    hostId: 102,
-    status: "matching"
-  },
-  {
-    battleId: 3,
-    title: "競技模式實戰練習",
-    coverImage: "/battle_card_default.jpg",
-    target: "成人限定",
-    city: "臺北市",
-    district: "大安區",
-    mode: "競技模式",
-    battleDate: "2026-08-17T19:00:00",
-    deadline: "2026-08-16T18:00:00",
-    level: "進階玩家",
-    description: "以競技規則進行實戰交流，適合已有對戰經驗的玩家。",
-    hostId: 101,
-    status: "matching"
-  },
-  {
-    battleId: 4,
-    title: "親子陀螺交流體驗",
-    coverImage: "/battle_card_default.jpg",
-    target: "親子友善",
-    city: "新北市",
-    district: "板橋區",
-    mode: "休閒模式",
-    battleDate: "2026-08-22T10:30:00",
-    deadline: "2026-08-21T18:00:00",
-    level: "新手玩家",
-    description: "適合親子一起參加的輕鬆交流場，歡迎第一次接觸的玩家。",
-    hostId: 102,
-    status: "matching"
-  },
-  {
-    battleId: 5,
-    title: "下班後來一場吧！",
-    coverImage: "/battle_card_default.jpg",
-    target: "成人限定",
-    city: "臺北市",
-    district: "信義區",
-    mode: "休閒模式",
-    battleDate: "2026-08-20T19:30:00",
-    deadline: "2026-08-20T12:00:00",
-    level: "中階玩家",
-    description: "下班後簡單玩幾場，地點鄰近捷運站，交通方便。",
-    hostId: 101,
-    status: "matching"
-  },
-  {
-    battleId: 6,
-    title: "進階玩家配置測試場",
-    coverImage: "/battle_card_test2.jpg",
-    target: "不限對象",
-    city: "新北市",
-    district: "新莊區",
-    mode: "競技模式",
-    battleDate: "2026-08-23T14:00:00",
-    deadline: "2026-08-22T22:00:00",
-    level: "進階玩家",
-    description: "帶上最近調整的配置，一起測試不同零件搭配的實戰效果。",
-    hostId: 102,
-    status: "matching"
-  },
-  {
-    battleId: 7,
-    title: "初次約戰也不用緊張",
-    coverImage: "/battle_card_default.jpg",
-    target: "不限對象",
-    city: "桃園市",
-    district: "八德區",
-    mode: "休閒模式",
-    battleDate: "2026-08-29T13:00:00",
-    deadline: "2026-08-28T20:00:00",
-    level: "新手玩家",
-    description: "以交流和認識同好為主，不熟悉規則也可以放心參加。",
-    hostId: 101,
-    status: "matching"
-  },
-  {
-    battleId: 8,
-    title: "週日下午競技交流",
-    coverImage: "/battle_card_default.jpg",
-    target: "成人限定",
-    city: "桃園市",
-    district: "平鎮區",
-    mode: "競技模式",
-    battleDate: "2026-08-30T15:00:00",
-    deadline: "2026-08-29T23:00:00",
-    level: "中階玩家",
-    description: "依照競技規則進行多場對戰，歡迎想累積實戰經驗的玩家。",
-    hostId: 102,
-    status: "matching"
-  },
-  {
-    battleId: 9,
-    title: "桃園陀螺玩家輕鬆聚",
-    coverImage: "/battle_card_default.jpg",
-    target: "親子友善",
-    city: "桃園市",
-    district: "桃園區",
-    mode: "休閒模式",
-    battleDate: "2026-09-05T14:30:00",
-    deadline: "2026-09-04T21:00:00",
-    level: "不限程度",
-    description: "不論是收藏、配置分享或實際對戰都歡迎，一起認識附近同好。",
-    hostId: 101,
-    status: "matching"
+const battleTargetText = {
+  ALL: "不限對象",
+  ADULT: "成人限定",
+  FAMILY: "親子友善"
+};
+
+const battleLevelText = {
+  ALL: "不限程度",
+  BEGINNER: "新手玩家",
+  INTERMEDIATE: "中階玩家",
+  ADVANCED: "進階玩家"
+};
+
+function getBattleImageUrl(imagePath) {
+
+  // 會員動態上傳的約戰封面
+  if (imagePath.startsWith("uploads/battle/")) {
+    return `${phpBaseUrl}/${imagePath}`;
   }
-];
+
+  // 平台原本的預設封面
+  return import.meta.env.BASE_URL + imagePath;
+}
+
+//串接後端約戰資料api
+function fetchBattles() {
+  fetch(`${phpBaseUrl}/battle/battle_get.php`).then(res => res.json()).then(data => {
+
+    //將後端的約戰資料先轉成待會要render約戰卡片時的呈現格式
+    battleData = data.map(item => {
+      return {
+        //後端經JSON回傳後，有時數字欄位會變成字串，因此需使用NUMBER方法轉回數字
+        battleId: Number(item.BATTLE_ID),
+        title: item.BATTLE_TITLE,
+        coverImage: item.BATTLE_IMG,
+        description: item.BATTLE_DESC,
+
+        cityId: Number(item.CITY_ID),
+        city: item.CITY_NAME,
+
+        districtId: Number(item.DISTRICT_ID),
+        district: item.DISTRICT_NAME,
+
+        mode: battleModeText[item.BATTLE_MODE],
+        target: battleTargetText[item.BATTLE_TARGET],
+        level: battleLevelText[item.BATTLE_LEVEL],
+
+        battleDate: item.BATTLE_DATE,
+        deadline: item.BATTLE_DEADLINE,
+
+        hostId: Number(item.INITIATOR_ID),
+        hostName: item.MEM_NAME,
+        hostAvatar: item.MEM_PHOTO,
+
+        status: item.BATTLE_STATUS
+      };
+    });
+
+    console.log(battleData);
+
+    // 取得目前所有可公開顯示的邀約，生成卡片
+    renderBattleCards(battleData);
+    updateAllCountdowns();
+  });
+}
 
 //轉換日期時間
 function formatBattleDate(dateString) {
@@ -739,8 +630,8 @@ function formatBattleDate(dateString) {
 
 //根據邀約卡目前的狀態，生成對應的申請按鈕架構
 function createApplyButton(battle) {
-  // 當已經提出申請時，卡片按鈕顯示「等待確認」
-  if (battle.status === "pending") {
+  // 如果該筆約戰是目前登入會員自己發起的，按鈕文字改為「等待加入」，且不可操作
+  if (currentMember && battle.hostId === Number(currentMember.id)) {
     return `
       <button
         type="button"
@@ -748,12 +639,12 @@ function createApplyButton(battle) {
         data-battle-id="${battle.battleId}"
         disabled
       >
-        等待確認
+        等待加入
       </button>
     `;
   }
 
-  // 邀約仍在配對中時，顯示「申請加入」
+  // 其他人發起的約戰，按鈕正常顯示「申請加入」
   return `
     <button
       type="button"
@@ -767,15 +658,13 @@ function createApplyButton(battle) {
 
 //生成對戰邀約卡
 function createBattleCard(battle) {
-  const host = hostReviewData[battle.hostId];
-
   //邀約卡片HTML架構生成
   return `
     <article class="battleCard" data-battle-id="${battle.battleId}">
       <div class="pic">
         <img
           class="battle-cover"
-          src="${battle.coverImage}"
+          src="${getBattleImageUrl(battle.coverImage)}"
           alt="${battle.title}的邀約封面"
         >
         <span class="target-tag">${battle.target}</span>
@@ -799,14 +688,14 @@ function createBattleCard(battle) {
           <button
               type="button"
               class="hostBtn"
-              data-host-id="${host.hostId}"
+              data-host-id="${battle.hostId}"
             >
               <img
                 class="host-avatar"
-                src="${host.avatar}"
+                src="${import.meta.env.BASE_URL + battle.hostAvatar}"
                 alt=""
               >
-              <span class="host-name">${host.name}</span>
+              <span class="host-name">${battle.hostName}</span>
             </button>
           <h4 class="battle-title">${battle.title}</h4>
 
@@ -859,26 +748,11 @@ let currentBattleList = []; // 記錄目前經過篩選後的卡片資料
 
 // 取得平台目前所有「仍可顯示」的對戰邀約函式
 function getAvailableBattles() {
-
-  //從battleData中檢查，回傳符合條件的新陣列。
-  return battleData.filter(battle => {
-
-    //檢查邀約的報名截止時間是否還沒到
-    const isNotExpired =
-      new Date(battle.deadline).getTime() > Date.now();
-
-    //檢查該筆邀約狀態是否仍為matching
-    const isMatching =
-      battle.status === "matching";
-
-    //回傳符合條件的約戰卡片新陣列
-    return isNotExpired && isMatching;
-  });
+  return battleData;
 }
 
 //render出每張邀約卡片
 function renderBattleCards(battles) {
-
   // 保存目前要顯示的邀約資料
   currentBattleList = battles;
 
@@ -891,7 +765,7 @@ function renderBattleCards(battles) {
     battleCardList.innerHTML = `
       <div class="battle-empty battle-empty-all">
         <img
-          src="/battle_empty_state.png"
+          src="battle_empty_state.png"
           alt="等待發起對戰的戰鬥陀螺"
         >
 
@@ -901,7 +775,7 @@ function renderBattleCards(battles) {
           成為第一位發起挑戰的玩家，找到附近的陀螺同好吧！
         </p>
 
-        <a href="createBattle.html" class="btnFill empty-createBattleBtn">
+        <a href="createBattle.html" class="btnFill empty-createBattleBtn toCreateLink">
           建立邀約
           <i class="fa-solid fa-plus"></i>
         </a>
@@ -965,9 +839,6 @@ moreBtn.addEventListener("click", () => {
   //因重新render後產生了新的倒數DOM，所以要立即更新一次倒數內容。
   updateAllCountdowns();
 });
-
-// 取得目前所有可公開顯示的邀約，並在載入網頁時，首次生成卡片
-renderBattleCards(getAvailableBattles());
 
 // 卡片生成後，進行倒數計時
 function updateCountdown(element) {
@@ -1041,8 +912,15 @@ const historyAvatar = document.querySelector("#historyAvatar");
 //燈箱發起人姓名slot
 const historyHostName = document.querySelector("#history-hostName");
 const totalBattles = document.querySelector("#totalBattles"); //總約戰場次slot
-const averageRating = document.querySelector("#averageRating");//平均評分slot
-const reviewList = document.querySelector("#reviewList");//評論列表
+const averageRating = document.querySelector("#averageRating"); //平均評分slot
+const competitiveWinRate = document.querySelector("#competitiveWinRate"); //競技勝率slot
+const competitiveRecord = document.querySelector("#competitiveRecord"); //競技場數slot
+const reviewList = document.querySelector("#reviewList"); //評論列表
+
+//向後端取得指定約戰發起人的歷史資料
+function fetchHostHistory(hostId) {
+  return fetch(`${phpBaseUrl}/battle/host_history_get.php?host_id=${hostId}`).then(res => res.json());
+}
 
 // render出個別評論函式
 function createReviewItem(review) {
@@ -1063,42 +941,116 @@ function createReviewItem(review) {
                 ${review.content}
             </p>
 
-            <time class="review-date">
-                ${review.createdAt}
+            <time class="review-date" datetime="${review.createdAt}">
+                ${formatReviewDate(review.createdAt)}
             </time>
         </article>
     `;
 }
 
+//燈箱內評論日期顯示格式化
+function formatReviewDate(dateString) {
+  const date = new Date(dateString);
+
+  const year = date.getFullYear();
+
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, "0");
+
+  const day = String(
+    date.getDate()
+  ).padStart(2, "0");
+
+  return `${year}/${month}/${day}`;
+}
+
 // 將發起人資料放入燈箱中
 function renderHostHistory(host) {
-  historyAvatar.src = host.avatar;
+
+  historyAvatar.src = import.meta.env.BASE_URL + host.avatar;
   historyAvatar.alt = `${host.name}的會員頭像`;
 
   historyHostName.textContent = host.name;
+
   totalBattles.textContent = host.totalBattles;
-  averageRating.textContent = host.averageRating.toFixed(1);
 
-  //將發起人對應的約戰留言評論放入列表中
-  reviewList.innerHTML = host.reviews
-    .map(createReviewItem)
-    .join("");
-}
+  averageRating.textContent = host.averageRating === null ? "--" : host.averageRating.toFixed(1);
 
-// 開啟燈箱
-function openHistoryModal() {
-  // 暫時先固定以host 101假資料呈現
-  const host = hostReviewData[101];
+  //顯示競技模式勝率資訊
+  if (host.winRate === null) { //尚無參加過的競技約戰時
+    competitiveWinRate.textContent = "--";
+    competitiveRecord.textContent = "尚無紀錄";
+  } else { //有參加過競技約戰時
+    competitiveWinRate.textContent = `${Math.round(host.winRate)}%`;
+    competitiveRecord.textContent = `${host.competitiveWins} 勝 / ${host.competitiveTotal} 場`;
+  }
 
-  if (!host) {
+
+  // 當該會員目前沒有任何歷史評價時，顯示空狀態
+  if (host.reviews.length === 0) {
+    reviewList.innerHTML = `
+      <div class="review-empty">
+        <p>目前尚無約戰評價</p>
+      </div>
+    `;
+
     return;
   }
 
-  renderHostHistory(host);
+  // 有評價資料時，才render出評價
+  reviewList.innerHTML =
+    host.reviews
+      .map(createReviewItem)
+      .join("");
+}
 
-  historyModal.hidden = false;
-  historyModal.classList.add("is-open");
-  document.body.style.overflow = "hidden";
+// 開啟燈箱
+function openHistoryModal(hostId) {
+
+  if (!hostId) {
+    return;
+  }
+
+  fetchHostHistory(hostId)
+    .then(data => {
+
+      // 將API取得的資料格式轉為前端燈箱使用的格式
+      const hostHistory = {
+        hostId: Number(data.host.MEM_ID),
+        name: data.host.MEM_NAME,
+        avatar: data.host.MEM_PHOTO,
+
+        totalBattles: Number(data.host.TOTAL_BATTLES), //參加過的約戰總場次
+        averageRating: data.host.AVERAGE_RATING === null ? null : Number(data.host.AVERAGE_RATING), //平均約戰評價分數
+
+        competitiveTotal: Number(data.host.COMPETITIVE_TOTAL), //參加過的競技模式約戰場次
+        competitiveWins: Number(data.host.COMPETITIVE_WINS), //競技模式約戰勝場數
+
+        winRate: data.host.WIN_RATE === null ? null : Number(data.host.WIN_RATE), //競技模式勝率
+
+        //發起人的過往約戰評價
+        reviews: data.reviews.map(review => {
+          return {
+            reviewerName: review.REVIEWER_NAME,
+            rating: Number(review.RATING),
+            content: review.COMMENT,
+            createdAt: review.COMMENTED_AT
+          };
+        })
+      };
+
+      console.log("整理後的發起人資料：", hostHistory);
+
+      // 將整理完整的資料送給燈箱內容的render函式
+      renderHostHistory(hostHistory);
+
+      // 資料準好後，才開啟燈箱
+      historyModal.hidden = false;
+      historyModal.classList.add("is-open");
+      document.body.style.overflow = "hidden";
+    });
+
 }
 
 // 關閉燈箱
@@ -1115,18 +1067,28 @@ battleCardList.addEventListener("click", e => {
   const hostBtn = e.target.closest(".hostBtn");
 
   if (hostBtn) {
-    openHistoryModal();
+    //取得發起人的會員id
+    const hostId = Number(hostBtn.dataset.hostId);
+    openHistoryModal(hostId);
     return;
   }
 
   // 點擊申請加入按鈕，開啟對應加入燈箱
   const applyBtn = e.target.closest(".applyBtn");
 
-  if (applyBtn) {
-    const battleId = Number(applyBtn.dataset.battleId);
-
-    openApplyModal(battleId);
+  // 沒有點到「申請加入」按鈕時，不執行後續動作；避免點卡片其他地方也會往下執行
+  if (!applyBtn) {
+    return;
   }
+
+  if (!currentMember) { //使用者還未登入帳號時
+    alert("請先登入會員，再申請加入約戰");
+    window.location.href = `${import.meta.env.BASE_URL}signIn.html`;
+    return;
+  }
+
+  const battleId = Number(applyBtn.dataset.battleId);
+  openApplyModal(battleId);
 
 });
 
@@ -1162,10 +1124,8 @@ const applyContact = document.querySelector("#applyContact"); //參加人輸入�
 
 // 將對應邀約資訊放進申請燈箱
 function renderApplyModal(battle) {
-  const host = hostReviewData[battle.hostId];
-
-  applyAvatar.src = host.avatar;
-  applyAvatar.alt = `${host.name}的會員頭像`;
+  applyAvatar.src = import.meta.env.BASE_URL + battle.hostAvatar;
+  applyAvatar.alt = `${battle.hostName}的會員頭像`;
 
   applyBattleTitle.textContent = battle.title;
 
@@ -1251,16 +1211,28 @@ applyForm.addEventListener("submit", e => {
     return;
   }
 
-  // demo時，先模擬資料狀態改變
-  battle.status = "pending";
-  battle.applicantContact = contact;
-  battle.appliedAt = new Date().toISOString();
+  //將欲申請加入的約戰id、申請者id、聯絡資訊送回串端API
+  const formData = new FormData();
+  formData.append("battle_id", currentApplyBattleId);
+  formData.append("contact", contact);
 
-  updateAppliedCard(battle.battleId);
+  fetch(`${phpBaseUrl}/battle/battle_apply_post.php`, {
+    method: "POST",
+    body: formData,
+    credentials: "include"
+  }).then(res => res.json()).then(data => {
+    if (data.success) { //成功串聯API時
 
-  closeApplyModal();
+      //重新整理一次畫面中的卡片，不讓PENDING狀態的卡片還暫時留在畫面中
+      closeApplyModal();
+      alert(data.message);
+      fetchBattles();
+    } else {
+      alert(data.message);
+    }
+  });
 
-  alert("申請已送出，請等待發起人確認。");
+
 });
 
 // 當確認送出申請時，需更新邀約卡狀態
@@ -1295,18 +1267,13 @@ function battleFilter() {
   const selectedMode = battleType.value; //選定對戰模式
   const selectedTarget = battleTarget.value; //選定對象
   const selectedLevel = playerLevel.value; // 選定玩家程度
-  const selectedCity = citySelect.value;
-  const selectedDistrict = districtSelect.value;
+  const selectedCityId = Number(citySelect.value);
+  const selectedDistrictId = Number(districtSelect.value);
   const selectedStartDate = startDate.value; //篩選起始日期
   const selectedEndDate = endDate.value; //篩選截止日期
 
   //最後render出的約戰卡，需符合所有篩選條件
   const filteredBattles = battleData.filter(battle => {
-    const isNotExpired =
-      new Date(battle.deadline).getTime() > Date.now();
-
-    const isMatching =
-      battle.status === "matching";
 
     //當使用者沒有設定對戰模式時，則所有模式的約戰都會通過檢查；有設定模式時，才會比對卡片池中，有哪些卡片符合條件
     const matchesMode =
@@ -1319,11 +1286,10 @@ function battleFilter() {
       !selectedLevel || battle.level === selectedLevel;
 
     const matchesCity =
-      !selectedCity || battle.city === selectedCity;
+      !selectedCityId || battle.cityId === selectedCityId;
 
     const matchesDistrict =
-      !selectedDistrict ||
-      battle.district === selectedDistrict;
+      !selectedDistrictId || battle.districtId === selectedDistrictId;
 
     const battleDate =
       new Date(battle.battleDate).getTime();
@@ -1341,8 +1307,6 @@ function battleFilter() {
       ).getTime();
 
     return (
-      isNotExpired &&
-      isMatching &&
       matchesMode &&
       matchesTarget &&
       matchesLevel &&
@@ -1359,9 +1323,9 @@ function battleFilter() {
   renderBattleCards(filteredBattles);
   updateAllCountdowns();
 
-  requestAnimationFrame(() => {
-    ScrollTrigger.refresh();
-  });
+  // requestAnimationFrame(() => {
+  //   ScrollTrigger.refresh();
+  // });
 }
 
 //將所有頁面上的篩選分類欄位 select 或 input 集結成陣列，然後對陣列中的每個條件都綁定change事件，只要有設定任一篩選條件，都會跑一次約戰卡的過濾篩選函式
@@ -1381,6 +1345,7 @@ filterElements.forEach(element => {
 
 // back to top: 回到約戰列表設定
 const battleCardArea = document.getElementById("battleCardArea"); //約戰列表區
+const tagArea = document.getElementById('tagArea'); //篩選面板區頂部
 const backToTopBtn = document.getElementById("backToTopBtn"); // 置頂按鈕
 
 //置頂函式
@@ -1398,9 +1363,9 @@ function handleBackToTop() {
 
 window.addEventListener("scroll", handleBackToTop);
 
-// 點擊按鈕後回到約戰列表頂部
+// 點擊按鈕後回到篩選面板區
 backToTopBtn.addEventListener("click", function () {
-  battleCardArea.scrollIntoView({
+  tagArea.scrollIntoView({
     behavior: "smooth",
     block: "start" //讓battleCardArea的頂端對齊畫面頂端
   });
@@ -1550,4 +1515,25 @@ bottomSpintopBtn.addEventListener("click", () => {
       visibility: "hidden"
     });
 
+});
+
+// 要前往建立約戰分頁前，需先確認會員是否已登入
+document.addEventListener("click", e => {
+
+  // 判斷此次點擊是否來自頁面上的「建立邀約」連結
+  const createBattleLink = e.target.closest(".toCreateLink");
+
+  // 若不是建立邀約連結，就不往下處理
+  if (!createBattleLink) {
+    return;
+  }
+
+  // 未登入會員時，無法進入對戰配對頁
+  if (!currentMember) {
+    e.preventDefault();
+    alert("請先登入會員，再建立對戰邀約");
+
+    // 跳轉登入頁
+    window.location.href = `${import.meta.env.BASE_URL}signIn.html`;
+  }
 });

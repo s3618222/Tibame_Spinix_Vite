@@ -9,10 +9,12 @@ import MyBattle from "@/components/member/battle/myBattle.vue";
 import MyForum from "@/components/myForum.vue";
 import MyExchange from "@/components/myExchange.vue";
 import MyAppeal from "@/components/myAppeal.vue";
+import MyAppealDetail from "@/components/myAppealDetail.vue";
 import MyViolation from "@/components/myViolation.vue";
+import MyViolationDetail from "@/components/myViolationDetail.vue";
 
 const memberRouter = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
 
   //後續新建區塊，需在此處增加對應路徑與名稱
   routes: [
@@ -49,9 +51,19 @@ const memberRouter = createRouter({
       component: MyAppeal
     },
     {
+      path: "/appeal/:type/:id",
+      name: "member-appeal-detail",
+      component: MyAppealDetail
+    },
+    {
       path: "/violation",
       name: "member-violation",
       component: MyViolation
+    },
+    {
+      path: "/violation/:id",
+      name: "member-violation-detail",
+      component: MyViolationDetail
     }
   ]
 });
