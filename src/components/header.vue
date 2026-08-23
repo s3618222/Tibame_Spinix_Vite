@@ -460,7 +460,8 @@ export default {
         right: 20px;
         margin-top: 20px;
         border-radius: 10px;
-        min-width: 300px;
+        // min-width: 300px;
+        width: 300px;
         height: 350px;
         display: flex;  
         overflow: hidden;

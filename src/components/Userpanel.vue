@@ -67,40 +67,41 @@
          },
 
          // 假資料
-         noticeList: [
-         {
-            id: 1,
-            type: "battle",
-            text: "會員A申請約戰配對",
-            date: "2026-08-12 22:47",
-            isUnread: true,
-            targetId: 101 // 對應的資料 id，例如要連到哪一場對戰
-         },
-         {
-            id: 2,
-            type: "forum",
-            text: "會員B回覆了你的貼文",
-            date: "2026-08-12 20:15",
-            isUnread: true,
-            targetId: 202
-         },
-         {
-            id: 3,
-            type: "market",
-            text: "會員C想跟你交換陀螺",
-            date: "2026-08-11 18:30",
-            isUnread: false,
-            targetId: 303
-         },
-         {
-            id: 4,
-            type: "system",
-            text: "你的帳號已完成信箱驗證",
-            date: "2026-08-10 09:00",
-            isUnread: false,
-            targetId: null
-         }
-         ]
+         // noticeList: [
+         // {
+         //    id: 1,
+         //    type: "battle",
+         //    text: "會員A申請約戰配對",
+         //    date: "2026-08-12 22:47",
+         //    isUnread: true,
+         //    targetId: 101 // 對應的資料 id，例如要連到哪一場對戰
+         // },
+         // {
+         //    id: 2,
+         //    type: "forum",
+         //    text: "會員B回覆了你的貼文",
+         //    date: "2026-08-12 20:15",
+         //    isUnread: true,
+         //    targetId: 202
+         // },
+         // {
+         //    id: 3,
+         //    type: "market",
+         //    text: "會員C想跟你交換陀螺",
+         //    date: "2026-08-11 18:30",
+         //    isUnread: false,
+         //    targetId: 303
+         // },
+         // {
+         //    id: 4,
+         //    type: "system",
+         //    text: "你的帳號已完成信箱驗證",
+         //    date: "2026-08-10 09:00",
+         //    isUnread: false,
+         //    targetId: null
+         // }
+         // ]
+         noticeList: [] //接收通知列表資料
       };
    },
 
@@ -114,14 +115,22 @@
       },
       hasUnread() {
          return this.noticeList.some(item => item.isUnread);
+      },
+      phpBaseUrl() { //判斷當前php執行環境
+         return (
+            location.hostname === "localhost" ||
+            location.hostname === "127.0.0.1"
+               ? "http://localhost:8888/Spinix/php"
+               : "/ckd101/g2/php"
+         );
       }
    },
 
    methods: {
       // 點擊通知：標記已讀 + 導頁到對應類別頁面
-      handleClick(item) {
+      async handleClick(item) {
          // 1. 標記已讀
-         item.isUnread = false;
+         await this.markNotificationAsRead(item);
 
          // 2. 根據類別連到對應頁面
          const target = this.typeMap[item.type];
@@ -137,12 +146,92 @@
          this.$router.push(target.path);
          }
       },
-      markAllAsRead() {
-         this.noticeList.forEach(item => {
+      async markAllAsRead() { //標記所有通知為已讀
+         try {
+
+            const response = await fetch(`${this.phpBaseUrl}/member/notification_read_all_post.php`, {
+               method: "POST",
+               credentials: "include"
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+               throw new Error(data.message || "全部標記已讀失敗");
+            }
+
+            //串接後端成功後，再將前端通知畫面全更新為已讀
+            this.noticeList.forEach(item => {
+               item.isUnread = false;
+            });
+
+         } catch (error) {
+            console.error("全部標記已讀失敗：", error);
+         }
+      },
+      async fetchNotifications() { //取得後端會員通知資料
+         try {
+            const response = await fetch(`${this.phpBaseUrl}/member/notification_get.php`, {
+               credentials: "include"
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+               throw new Error(data.message || "取得通知失敗");
+            }
+
+            console.log("會員通知：", data.notifications);
+
+            //存入後端傳回的通知列表
+            this.noticeList = data.notifications.map(item => {
+               return {
+                  id: Number(item.ntfn_id), //通知編號
+                  text: item.content, //通知內容
+                  date: item.create_time, //通知時間
+                  isUnread: Number(item.is_read) === 0
+               }
+            });
+
+         } catch (error) {
+            console.error("取得會員通知失敗：", error);
+         }
+      },
+      async markNotificationAsRead(item) { //單筆通知標為已讀
+         //原先即為已讀的通知，不往下執行
+         if (!item.isUnread) return;
+
+         try {
+
+            const formData = new FormData();
+            //將通知ID傳回給後端
+            formData.append("notification_id", item.id);
+
+            const response = await fetch(`${this.phpBaseUrl}/member/notification_read_post.php`, {
+               method: "POST",
+               credentials: "include",
+               body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+               throw new Error(data.message || "更新通知狀態失敗");
+            }
+
+            //後端串接成功後，前端再同步修改畫面
+            // 後端成功後，再同步修改前端畫面
             item.isUnread = false;
-         });
+
+         } catch (error) {
+            console.error("更新通知已讀狀態失敗：", error);
+         }
       }
       
+   },
+
+   mounted() {
+      this.fetchNotifications();
    }
 };
 </script>
@@ -229,6 +318,10 @@
                   gap: 12px;   
                   padding-block: 16px;
                   // margin-inline: -12px;
+               }
+
+               .notice-txt {
+                  line-height: 1.5;
                }
 
                &.isUnread::after{
