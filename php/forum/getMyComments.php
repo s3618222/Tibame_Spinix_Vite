@@ -35,7 +35,7 @@
 
   } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(["success" => false, "message" => "資料庫查詢失敗"]);
+    echo json_encode(["success" => false, "message" => "資料庫查詢失敗"], JSON_UNESCAPED_UNICODE);
     exit();
   }
 ?>
