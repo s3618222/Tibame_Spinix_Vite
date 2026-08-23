@@ -98,7 +98,7 @@ export const exchangeList = [
       mem_id: 112,
       // comm_mem_id: '', // 申請會員編號，預設空值
       exchange_comm_id: null,   // 改成存留言ID，尚未定案時是 null
-      type: 'ratchet',
+      type: 'blade',
       product_img: 'BX_02.webp',
       title: '交換商品5',
       description: '測試文字。',
@@ -106,7 +106,7 @@ export const exchangeList = [
       headshot: 'public/spinix_member_test1.png',
       name: '風火輪',
       post_contact: '0909123456',
-      create_time: '2026-07-26',
+      create_time: '2026-07-16',
       city: '基隆市',
       district: '信義區',
       status: 'available',
@@ -130,7 +130,7 @@ export const exchangeList = [
       headshot: 'public/spinix_member_test1.png',
       name: '風火輪',
       post_contact: '0909123456',
-      create_time: '2026-07-26',
+      create_time: '2026-08-26',
       city: '基隆市',
       district: '信義區',
       status: 'exchanging',
@@ -146,7 +146,7 @@ export const exchangeList = [
       mem_id: 112,
       // comm_mem_id: '', // 申請會員編號，預設空值
       exchange_comm_id: 9,   // 改成存留言ID，尚未定案時是 null
-      type: 'ratchet',
+      type: 'others',
       product_img: 'BX_02.webp',
       title: '交換商品7',
       description: '測試文字。',
@@ -154,7 +154,7 @@ export const exchangeList = [
       headshot: 'public/spinix_member_test1.png',
       name: '風火輪',
       post_contact: '0909123456',
-      create_time: '2026-07-26',
+      create_time: '2026-06-26',
       city: '基隆市',
       district: '信義區',
       status: 'completed',
@@ -170,7 +170,7 @@ export const exchangeList = [
       mem_id: 999,
       // comm_mem_id: '', // 申請會員編號，預設空值
       exchange_comm_id: null,   // 改成存留言ID，尚未定案時是 null
-      type: 'ratchet',
+      type: 'bit',
       product_img: 'BX_02.webp',
       title: '交換商品7',
       description: '測試文字。',
@@ -194,7 +194,7 @@ export const exchangeList = [
       mem_id: 999,
       // comm_mem_id: '', // 申請會員編號，預設空值
       exchange_comm_id: null,   // 改成存留言ID，尚未定案時是 null
-      type: 'ratchet',
+      type: 'beyblade',
       product_img: 'BX_02.webp',
       title: '我是被下架文章',
       description: '測試文字。',

@@ -399,6 +399,7 @@ const pageTitleMap = {
   browse: '物品詳情',
   myPosts: '我刊登的物品',
   myApplications: '我提出的申請'
+  
 };
 
 const pageTitle = computed(() => pageTitleMap[context] || '物品詳情');
@@ -407,7 +408,8 @@ const pageTitle = computed(() => pageTitleMap[context] || '物品詳情');
 const backLinkMap = {
   browse: 'market.html',
   myPosts: 'member.html#/exchange',
-  myApplications: 'member.html#/exchange'
+  myApplications: 'member.html#/exchange',
+  backend: 'backMember.html#/exchange'
 };
 const backLink = computed(() => backLinkMap[context] || 'market.html');
 
