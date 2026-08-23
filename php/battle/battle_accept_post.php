@@ -57,6 +57,7 @@
       BATTLE_ID,
       INITIATOR_ID,
       PARTICIPANT_ID,
+      BATTLE_TITLE,
       BATTLE_STATUS
     FROM battle_record
     WHERE BATTLE_ID = ?
@@ -118,37 +119,97 @@
     exit;
   }
 
-  //通過以上條件檢查後，再將後端資料庫的該筆約戰狀態更新為CONFIRMED
-  $sql = "
-    UPDATE battle_record
-    SET BATTLE_STATUS = 'CONFIRMED'
-    WHERE BATTLE_ID = ?
-      AND INITIATOR_ID = ?
-      AND PARTICIPANT_ID IS NOT NULL
-      AND BATTLE_STATUS = 'PENDING'
-  ";
+  try {
 
-  $stmt = $pdo->prepare($sql);
-  $stmt->execute([
-    $battleId,
-    $memberId
-  ]);
+    //開始資料庫交易
+    $pdo->beginTransaction();
 
-  //防呆：避免使用者連點兩次 接受申請
-  if ($stmt->rowCount() === 0) {
-    http_response_code(409);
+    //將約戰狀態更新為 CONFIRMED
+    $sql = "
+      UPDATE battle_record
+      SET BATTLE_STATUS = 'CONFIRMED'
+      WHERE BATTLE_ID = ?
+        AND INITIATOR_ID = ?
+        AND PARTICIPANT_ID IS NOT NULL
+        AND BATTLE_STATUS = 'PENDING'
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+      $battleId,
+      $memberId
+    ]);
+
+    //防呆：避免使用者重複點擊接受
+    if ($stmt->rowCount() === 0) {
+
+      $pdo->rollBack();
+
+      http_response_code(409);
+
+      echo json_encode([
+        "success" => false,
+        "message" => "約戰狀態已變更，請重新整理後再試"
+      ], JSON_UNESCAPED_UNICODE);
+
+      exit;
+    }
+
+    //取得約戰發起人的會員名稱
+    $sql = "
+      SELECT MEM_NAME
+      FROM member
+      WHERE MEM_ID = ?
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$memberId]);
+
+    $initiator = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    //通知收件人：申請加入約戰的會員
+    $notificationMemberId = (int) $battle["PARTICIPANT_ID"];
+
+    //通知內容
+    $notificationContent = "你的約戰申請「" . $battle["BATTLE_TITLE"] . "」已被 " . $initiator["MEM_NAME"] . " 接受";
+
+    //新增通知資料
+    $sql = "
+      INSERT INTO notification (
+        mem_id,
+        content,
+        is_read,
+        create_time
+      )
+      VALUES (?, ?, 0, NOW())
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+      $notificationMemberId,
+      $notificationContent
+    ]);
+
+    //約戰狀態與通知都成功更新後，才正式提交
+    $pdo->commit();
+
+    echo json_encode([
+      "success" => true,
+      "message" => "已接受申請，約戰配對成功"
+    ], JSON_UNESCAPED_UNICODE);
+
+  } catch (PDOException $e) {
+
+    if ($pdo->inTransaction()) {
+      $pdo->rollBack();
+    }
+
+    http_response_code(500);
 
     echo json_encode([
       "success" => false,
-      "message" => "約戰狀態已變更，請重新整理後再試"
+      "message" => "接受約戰申請時發生錯誤"
     ], JSON_UNESCAPED_UNICODE);
-
-    exit;
   }
-
-  echo json_encode([
-    "success" => true,
-    "message" => "已接受申請，約戰配對成功"
-  ], JSON_UNESCAPED_UNICODE);
 
 ?>
