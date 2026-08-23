@@ -13,12 +13,13 @@
                      <p class="user-name">{{username}}</p>
                      <p class="msg-date">{{postDate}}</p>
                   </div>
-                  <a href="./complaint.html" target="_blank" v-if="!isMyComment">
+                  <a href="./complaint.html" target="_blank" v-if="!isMyComment && !isAdmin">
                      <i class="fa-solid fa-triangle-exclamation"></i>
                   </a>
                </div>
                <p class="msg-txt">{{msgtxt}}</p>
-               <div 
+               <div
+                  v-if="!isAdmin"
                   class="applyer-contact"
                   :class="{'topLine':props.isChoose && props.articleStatus === 'exchanging'}"
                   >
@@ -26,10 +27,9 @@
                      <ContactDrawer
                      :contact="contact"
                      :show="articleStatus === 'exchanging'"
-                     
                   />
                   </div>
-                  <div v-if="props.isOwner && props.isChoose && props.articleStatus === 'exchanging'" class="exchange-actions">
+                  <div v-if="props.isOwner && props.isChoose && props.articleStatus === 'exchanging' && !isAdmin" class="exchange-actions">
                      <button 
                         class="btnFill"
                         @click="handleCompleteExchange">
@@ -49,16 +49,18 @@
          <div class="btn-choose">
             <button
                class="btnNeutral"
-               v-if="isOwner && !isChoose && articleStatus === 'available'"
+               v-if="isOwner && !isChoose && articleStatus === 'available' && !isAdmin"
                type="button"
                @click="$emit('select-applicant', { commentId: id })"
-            >跟他交換</button>
+            >
+               跟他交換
+            </button>
             <p
                class="--chosen"
-               v-if="isOwner && isChoose && articleStatus === 'pending'"
+               v-if="isOwner && isChoose && !isAdmin && articleStatus === 'pending'"
             >等待對方回覆中</p>
 
-            <div v-if="isMyComment && isChoose && articleStatus === 'pending'" class="selected-notice">
+            <div v-if="isMyComment && isChoose && articleStatus === 'pending' && !isAdmin" class="selected-notice">
                <p class="--chosen">恭喜你被選中了！<br>快回覆對方，一起完成交換吧!</p>
                <!-- 留言元件 -->
                <button class="btnFill" @click="handleReplyExchange">
@@ -66,19 +68,27 @@
                </button>
             </div>
          </div>
+         <!-- 上下架按鈕(管理員畫面) -->
+         <div class="btn-statusToggle">
+            <StatusToggleButton
+               title="留言"
+               :isShow="isShow"
+               :isAdmin="isAdmin"
+               @toggle="$emit('toggle-comment-status', { commentId: id })"
+            />
+         </div>
       </div>
       </div>
       <!-- 被申訴時警告訊息 -->
       <div>
          <WarningBanner
-            v-if="isMyComment"
+            v-if="remove_reason !== '' && (isMyComment || isAdmin)"
             title= "留言"
             :remove_reason = "remove_reason"
             :show_contact="isOwner"
             class="warning-banner"
          />
       </div>
-      
    </li>         
 </template>
 <script setup>
@@ -86,6 +96,9 @@
    import { exchangeList, replyExchange, completeExchange } from '@/data/mockExchangeData.js';
    import ContactDrawer from '@/components/ContactDrawer.vue';
    import WarningBanner from '@/components/WarningBanner.vue';
+   import StatusToggleButton from '@/components/StatusToggleButton.vue';
+
+   defineEmits(['select-applicant', 'toggle-comment-status']);
 
    const props = defineProps({
       id: { type: [String, Number], required: true },
@@ -101,7 +114,8 @@
       posterName: { type: String, required: true },         // 發文者名字
       contact: { type: String, required: true },   // 新增：留言者自己的聯絡方式
       isShow:{ type: Boolean , default: true },
-      remove_reason:{ type: String, default:''}
+      remove_reason:{ type: String, default:''},
+      isAdmin:{ type:Boolean , default:false}
    });
 
    const statusClass = computed(() => (props.isChoose ? 'li--selected' : ''));
@@ -139,6 +153,11 @@
 
 <style lang="scss" scoped>
    @use '@/assets/scss/_var' as *;
+
+   .btn-statusToggle{
+      padding-top: 12px;
+      
+   }
 
    .warning-banner{
       margin-top: 12px;
