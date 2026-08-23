@@ -70,6 +70,7 @@
         BATTLE_ID,
         INITIATOR_ID,
         PARTICIPANT_ID,
+        BATTLE_TITLE,
         BATTLE_STATUS,
         IS_SHOW,
         BATTLE_DEADLINE
@@ -156,44 +157,101 @@
     exit;
   }
 
-  //將申請者的資料寫入該筆約戰紀錄中，並將約戰狀態改為PENDING
-  // UPDATE資料時，再次確認該場約戰目前無申請者，避免當兩個會員同時按下送出時，有可能後者覆蓋前者
-  $sql = "
-    UPDATE battle_record
-    SET
-        PARTICIPANT_ID = ?,
-        PAR_CONTACT = ?,
-        BATTLE_STATUS = 'PENDING'
-    WHERE BATTLE_ID = ?
-        AND PARTICIPANT_ID IS NULL
-        AND BATTLE_STATUS = 'MATCHING'
-        AND IS_SHOW = 1
-        AND BATTLE_DEADLINE > NOW()
-  ";
 
-  $stmt = $pdo->prepare($sql);
-  $stmt->execute([$memberId, $contact, $battleId]);
+  try {
+    //開始資料庫交易
+    $pdo->beginTransaction();
+
+    //將申請者的資料寫入該筆約戰紀錄中，並將約戰狀態改為PENDING
+    // UPDATE資料時，再次確認該場約戰目前無申請者，避免當兩個會員同時按下送出時，有可能後者覆蓋前者
+    $sql = "
+      UPDATE battle_record
+      SET
+          PARTICIPANT_ID = ?,
+          PAR_CONTACT = ?,
+          BATTLE_STATUS = 'PENDING'
+      WHERE BATTLE_ID = ?
+          AND PARTICIPANT_ID IS NULL
+          AND BATTLE_STATUS = 'MATCHING'
+          AND IS_SHOW = 1
+          AND BATTLE_DEADLINE > NOW()
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$memberId, $contact, $battleId]);
 
 
-  //確認是否有成功更新約戰資料；rowCount會反映實際影響幾筆資料，當筆數為1時，代表有更新成功，若為0，即代表送出申請那刻，原約戰紀錄已經不符合申請條件了
-  if ($stmt->rowCount() === 0) {
+    //確認是否有成功更新約戰資料；rowCount會反映實際影響幾筆資料，當筆數為1時，代表有更新成功，若為0，即代表送出申請那刻，原約戰紀錄已經不符合申請條件了
+    if ($stmt->rowCount() === 0) {
 
-    http_response_code(409);
+      //前面UPDATE沒有成功，就取消這次交易
+      $pdo->rollBack();
 
+      http_response_code(409);
+
+      echo json_encode([
+          "success" => false,
+          "message" => "這場約戰目前已無法申請，請重新整理後再試"
+      ], JSON_UNESCAPED_UNICODE);
+
+      exit;
+    }
+
+    //約戰申請成功後，新增通知給該約戰的發起人
+    $notificationMemberId = (int) $battle["INITIATOR_ID"];
+
+    //取得申請加入約戰 (即當前會員)的會員名稱
+    $sql = "
+      SELECT MEM_NAME
+      FROM member
+      WHERE MEM_ID = ?
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$memberId]);
+    $applicant = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    //通知內容
+    $notificationContent = $applicant["MEM_NAME"] . " 已申請加入你的約戰「" . $battle["BATTLE_TITLE"] . "」";
+
+    //將通知訊息放進notification資料表
+    $sql = "
+      INSERT INTO notification (
+          mem_id,
+          content,
+          is_read,
+          create_time
+      )
+      VALUES (?, ?, 0, NOW())
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        $notificationMemberId,
+        $notificationContent
+    ]);
+
+    //當約戰資料與通知資料都成功寫入後，再正式提交交易
+    $pdo->commit();
+    
     echo json_encode([
-        "success" => false,
-        "message" => "這場約戰目前已無法申請，請重新整理後再試"
+      "success" => true,
+      "message" => "申請已送出，請等待發起人確認"
     ], JSON_UNESCAPED_UNICODE);
 
-    exit;
+  } catch (PDOException $e) {
+    
+    //將此次交易中的資料修改內容全取消
+    if ($pdo->inTransaction()) {
+      $pdo->rollBack();
+    }
+
+    http_response_code(500);
+
+    echo json_encode([
+      "success" => false,
+      "message" => "申請加入約戰時發生錯誤"
+    ], JSON_UNESCAPED_UNICODE);
   }
-
-
-  //申請加入成功
-  echo json_encode([
-    "success" => true,
-    "message" => "申請已送出，請等待發起人確認"
-  ], JSON_UNESCAPED_UNICODE);
-
 
 ?>
