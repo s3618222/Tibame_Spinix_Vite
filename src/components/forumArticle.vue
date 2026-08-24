@@ -16,7 +16,7 @@
       />
       <ArticleMain :article-author="articleAuthor" :article="article" :is-author="isArticleAuthor"/>
       <CommentList :comments="comments" :is-article-show="article.isShow !== false" :current-member-id="currentMemberId"/>
-      <CommentForm v-if="article.isShow !== false"/>
+      <CommentForm v-if="article.isShow !== false" @submit-comment="handleSubmitComment" :is-logged-in="currentMemberId !== null"/>
     </div>
 
   </div>
@@ -44,6 +44,7 @@ export default {
   data(){
     return {
       baseUrl: import.meta.env.BASE_URL,
+      articleId: null,
       articleAuthor: {},
       comments: [],
       article: {},
@@ -59,6 +60,9 @@ export default {
   },
 
   created(){
+    const params = new URLSearchParams(window.location.search);
+    this.articleId = params.get('id');   // 在這裡解析當前文章id，存起來
+    
     this.fetchArticle();
     this.fetchComments();
     this.fetchCurrentMember();
@@ -66,11 +70,8 @@ export default {
 
   methods: {
     async fetchArticle(){
-      const params = new URLSearchParams(window.location.search);
-      const articleId = params.get('id');
-      
       try{
-        const res = await fetch(`http://localhost:8888/Spinix/php/forum/getArticleById.php?id=${articleId}`, {credentials: "include"});
+        const res = await fetch(`http://localhost:8888/Spinix/php/forum/getArticleById.php?id=${this.articleId}`, {credentials: "include"});
         const result = await res.json();
 
         if(result.success){
@@ -98,11 +99,8 @@ export default {
     },
 
     async fetchComments(){
-      const params = new URLSearchParams(window.location.search);
-      const articleId = params.get('id');
-
       try{
-        const res = await fetch(`http://localhost:8888/Spinix/php/forum/getComments.php?id=${articleId}`, {credentials: "include"});
+        const res = await fetch(`http://localhost:8888/Spinix/php/forum/getComments.php?id=${this.articleId}`, {credentials: "include"});
         const result = await res.json();
         if (result.success) {
           this.comments = result.data.map((c, index) => ({
@@ -135,6 +133,44 @@ export default {
 
       }catch(error){
         console.error("登入狀態確認失敗", error);
+      }
+    },
+
+    async handleSubmitComment(payload){
+      // payload 參數就是留言表單送過來的物件
+      try{
+        const formData = new FormData();
+        formData.append("art_id", this.articleId);
+        formData.append("content", payload.content);   
+
+        const res = await fetch("http://localhost:8888/Spinix/php/forum/addComment.php", {
+          method: "POST",
+          credentials: "include",
+          body: formData
+        });
+        const result = await res.json();
+
+        if(result.success){
+          const newComment = {
+            id: result.data.msg_id,
+            floor: this.comments.length + 2,
+            content: result.data.content,
+            time: result.data.create_time,
+            memId: result.data.mem_id,
+            isShow: true,
+            commenter: {
+              name: result.data.commenter_name,
+              score: `勝場數：${result.data.commenter_battle_wins}`,
+              img: result.data.commenter_photo
+            }
+          };
+          this.comments.push(newComment);
+          alert("留言成功！");
+        }else{
+          alert(result.message || "留言失敗，請稍後再試");
+        }
+      }catch(error){
+        console.error("送出留言失敗", error);
       }
     }
   }
