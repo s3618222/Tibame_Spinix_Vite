@@ -44,32 +44,6 @@
           </label>
           <div class="custom-editor">
             <textarea name="" id="default"></textarea>
-
-
-            <!-- 頂部功能工具列 -->
-            <!-- <div class="editor-toolbar">
-              <button type="button" class="toolbar-btn" title="粗體">
-                <i class="fa-solid fa-bold"></i>
-              </button>
-              <button type="button" class="toolbar-btn" title="斜體">
-                <i class="fa-solid fa-italic"></i>
-              </button>
-              <span class="divider"></span>
-              <button type="button" class="toolbar-btn" title="插入連結">
-                <i class="fa-solid fa-link"></i>
-              </button>
-              <button type="button" class="toolbar-btn" title="上傳圖片">
-                <i class="fa-regular fa-image"></i>
-              </button>
-            </div> -->
-
-            <!-- 輸入區域 -->
-            <!-- <textarea
-              v-model="formData.content"
-              rows="12"
-              placeholder="請輸入貼文內容，分享你的戰鬥陀螺心得、戰術或配裝..."
-              required
-            ></textarea> -->
           </div>
         </div>
 
@@ -115,7 +89,10 @@ export default {
     }
   },
 
-  mounted() {
+  async mounted() {
+    const isLoggedIn = await this.checkLoginStatus();
+    if (!isLoggedIn) return;
+
     const urlParams = new URLSearchParams(window.location.search);
     this.articleId = urlParams.get("id");
 
@@ -149,11 +126,50 @@ export default {
         ul, ol { padding-left: 24px; margin: 8px 0; }
         li { margin-bottom: 4px; }
         a { color: #fec96b; text-decoration: underline; }
-      `
+      `,
+
+      images_upload_handler: async (blobInfo) => {
+        const formData = new FormData();
+          formData.append("file", blobInfo.blob(), blobInfo.filename());
+          
+          const res = await fetch("http://localhost:8888/Spinix/php/forum/uploadArticleImage.php", {
+            method: "POST",
+            credentials: "include",
+            body: formData
+          });
+          const result = await res.json();
+
+          if(result.location){
+            return result.location;
+          }else{
+            throw new Error(result.error || "圖片上傳失敗");
+          }
+        
+      }
+
     });
   },
 
   methods: {
+    async checkLoginStatus() {
+      try {
+        const res = await fetch("http://localhost:8888/Spinix/php/member/currentMember_get.php", {
+          credentials: "include"
+        });
+        const result = await res.json();
+
+        if (!result.isLoggedIn) {
+          alert("請先登入才能發表文章");
+          window.location.href = `${this.baseUrl}signIn.html`;
+          return false;
+        }
+        return true;
+      } catch (error) {
+        console.error("登入狀態確認失敗", error);
+        return false;
+      }
+    },
+
     fetchArticleData(id) {
       // 假資料代入
       this.formData = {
@@ -163,9 +179,37 @@ export default {
       };
     },
 
-    handleSubmit() {
-      alert(this.isEdit ? "修改成功！" : "發布成功！");
-      window.location.href = "forum.html";
+    async handleSubmit() {
+      const content = tinymce.get('default').getContent(); // 取得使用者在tinymce裡寫的內容，tinymce預設會回傳字串，不可能是null，所以if條件不需針對null的情況
+      
+      if(content.trim() === ""){
+        alert("文章內容不可空白");
+        return;
+      }
+
+      try{
+        const formData = new FormData();
+        formData.append("title", this.formData.title);
+        formData.append("category", this.formData.category);
+        formData.append("content", content);
+
+        const res = await fetch("http://localhost:8888/Spinix/php/forum/addArticle.php", {
+          method: "POST",
+          credentials: "include",
+          body: formData
+        });
+        const result = await res.json();
+
+        if(result.success){
+          alert("發布成功！");
+          window.location.href = `${this.baseUrl}forumArticle.html?id=${result.data.art_id}`;
+
+        }else{
+          alert(result.message || "發布失敗，請稍後再試");
+        }
+      }catch(error){
+        console.error("發布文章失敗", error);
+      }
     },
 
     handleCancel() {

@@ -16,7 +16,7 @@
         @input="$emit('search', $event.target.value)"
       >
     </div>
-    <a :href="`${baseUrl}forumForm.html`" type="button" class="btnFill btn-post">
+    <a :href="`${baseUrl}forumForm.html`" @click.prevent="handlePostClick" type="button" class="btnFill btn-post">
       <i class="fa-regular fa-pen-to-square"></i>
       <span>我要發文</span>
     </a>
@@ -46,6 +46,26 @@
     data(){
       return {
         baseUrl: import.meta.env.BASE_URL
+      }
+    },
+
+    methods: {
+      async handlePostClick() {
+        try {
+          const res = await fetch("http://localhost:8888/Spinix/php/member/currentMember_get.php", {
+            credentials: "include"
+          });
+          const result = await res.json();
+
+          if (result.isLoggedIn) {
+            window.location.href = `${this.baseUrl}forumForm.html`;
+          } else {
+            alert("請先登入才能發表文章");
+            window.location.href = `${this.baseUrl}signIn.html`;
+          }
+        } catch (error) {
+          console.error("登入狀態確認失敗", error);
+        }
       }
     }
   }
