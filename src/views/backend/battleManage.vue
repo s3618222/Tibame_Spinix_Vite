@@ -7,6 +7,22 @@
 
     <!-- 篩選區 -->
     <div class="battle-manage-filter">
+
+      <!-- 關鍵字搜尋列 -->
+      <div class="battle-filter-search">
+        <div class="battle-search-input">
+          <i class="fa-solid fa-magnifying-glass"></i>
+
+          <input
+            id="battleKeyword"
+            type="text"
+            v-model.trim="filters.keyword"
+            placeholder="搜尋約戰標題"
+            aria-label="搜尋約戰標題"
+          >
+        </div>
+      </div>
+
       <!-- 第一列：對戰模式、縣市、狀態 -->
       <div class="battle-filter-main">
 
@@ -212,7 +228,7 @@
       <!-- 燈箱上方摘要 -->
       <div v-if="selectedBattle" class="battle-detail-summary">
         <div class="battle-detail-meta">
-          <span>{{ selectedBattle.battleId }}</span>
+          <!-- <span>{{ selectedBattle.battleId }}</span> -->
           <span class="battle-detail-divider"></span>
           <span>{{ getModeLabel(selectedBattle.mode) }}</span>
           <span class="battle-detail-divider"></span>
@@ -471,6 +487,7 @@ export default {
       memberNoticeError: "", //未輸入通知內容時，出現的錯誤訊息
 
       filters: {
+        keyword: "",
         mode: "",
         city: "",
         status: "",
@@ -529,6 +546,13 @@ export default {
 
     filteredBattles() { //根據data中的分類選項，篩選對戰資料
       return this.battles.filter((battle) => {
+
+        const matchKeyword =
+          !this.filters.keyword ||
+          battle.title
+            .toLowerCase()
+            .includes(this.filters.keyword.trim().toLowerCase());
+
         const matchMode =
           !this.filters.mode ||
           battle.mode === this.filters.mode;
@@ -555,6 +579,7 @@ export default {
           battle.battleDate <= this.filters.endDate;
 
         return (
+          matchKeyword &&
           matchMode && 
           matchCity && 
           matchStatus && 
@@ -618,6 +643,7 @@ export default {
 
   methods: {
     resetFilters() { //重置篩選條件函式
+      this.filters.keyword = "";
       this.filters.mode = "";
       this.filters.city = "";
       this.filters.status = "";
@@ -820,7 +846,7 @@ export default {
       return "尚未回傳";
     },
 
-    confirmManageAction() {  //確認處置操作
+    async confirmManageAction() { //串接上下架處置操作API
       if (!this.selectedBattle) {
         return;
       }
@@ -845,12 +871,50 @@ export default {
         return;
       }
 
-      // 確認後才真正修改上下架狀態
-      //判斷管理員最終選擇的處置操作是否為keep，不是的話為false，判斷下架約戰
-      this.selectedBattle.is_show = this.manageAction === "keep";
-      this.currentPage = 1; //將畫面跳回列表第一頁
-      this.memberNotice = "";
-      this.isDetailDialogOpen = false;
+      //先將前端處置radio的值，轉成要回給後端API的格式
+      const action = this.manageAction === "remove" ? "REMOVE" : "RESTORE";
+
+      const formData = new FormData();
+
+      formData.append("battle_id", this.selectedBattle.battleId);
+      formData.append("action", action);
+      formData.append("reason", this.memberNotice);
+
+      try {
+        const response = await fetch(`${this.phpBaseUrl}/battle/battle_manage_post.php`, {
+          method: "POST",
+          credentials: "include", //讓前端的API請求，可以將瀏覽器存於Session中與登入相關的cookie帶回給php，識別當前登入管理員是誰
+          body: formData
+        });
+
+        const data = await response.json();
+        console.log("約戰管理 API 回傳：", data);
+
+        // API 處置失敗時，顯示後端回傳的錯誤訊息
+        if (!response.ok || !data.success) {
+          alert(data.message || "約戰處置失敗");
+          return;
+        }
+
+        //處置成功後
+        alert(data.message);
+
+        //再重新向後端取得最新約戰資料
+        await this.fetchBattles();
+        //回到第一頁
+        this.currentPage = 1;
+        // 清空本次輸入內容與錯誤訊息
+        this.memberNotice = "";
+        this.memberNoticeError = "";
+        // 關閉燈箱
+        this.isDetailDialogOpen = false;
+
+        } catch (error) {
+
+          console.error("約戰管理 API 發生錯誤：", error);
+          alert("系統發生錯誤，請稍後再試");
+        }
+
     },
 
     cancelManageAction() { //取消處置操作按鈕
@@ -900,6 +964,55 @@ export default {
     background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(20, 28, 38, 0.05);
+  }
+
+  /* 關鍵字搜尋列 */
+.battle-filter-search {
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+/* 搜尋 input 外層 */
+.battle-search-input {
+  position: relative;
+
+  width: 360px;
+  max-width: 100%;
+
+  i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+
+      color: #64748b;
+      font-size: 16px;
+
+      // 避免 icon 擋住 input 點擊
+      pointer-events: none;
+    }
+
+  input {
+      width: 100%;
+      min-height: 40px;
+
+      padding: 8px 14px 8px 40px;
+
+      color: #141c26;
+      background-color: #F7F5F3;
+
+      border: 1px solid #ddd6c8;
+      border-radius: 10px;
+
+      font-size: 14px;
+
+      outline: none;
+
+      &::placeholder {
+        color: #aaaaaa;
+      }
+
+    }
   }
 
   /* 篩選第一列：對戰模式、縣市、約戰狀態 */
@@ -1853,6 +1966,10 @@ export default {
   }
 
   @media screen and (max-width: 620px) {
+    .battle-search-input {
+      width: 100%;
+    }
+
     .battle-filter-main,
     .battle-filter-bottom,
     .date-filter-group {
@@ -1887,6 +2004,11 @@ export default {
   }
 
   @media screen and (max-width: 576px) {
+    .battle-search-input {
+      width: 95%;
+      margin-inline: auto;
+    }
+
     // 篩選面板區改單欄顯示
     .battle-filter-main,
     .battle-filter-bottom {
