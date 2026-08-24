@@ -46,22 +46,13 @@
           <div class="col col--name">{{ member.name }}</div>
           <div class="col col--account">{{ member.account }}</div>
           <div class="col col--status">
-            <MemberStatusPill
-              :status="member.battleStatus"
-              :until="member.battleUntil"
-            />
+            <MemberStatusPill :status="member.battleStatus" />
           </div>
           <div class="col col--status">
-            <MemberStatusPill
-              :status="member.forumStatus"
-              :until="member.forumUntil"
-            />
+            <MemberStatusPill :status="member.forumStatus" />
           </div>
           <div class="col col--status">
-            <MemberStatusPill
-              :status="member.marketStatus"
-              :until="member.marketUntil"
-            />
+            <MemberStatusPill :status="member.marketStatus" />
           </div>
           <div class="col col--action">
             <button
@@ -226,7 +217,6 @@
 
   .member-manage__title h1 {
     font-size: map-get($fontSize, h1);
-    font-weight: 500;
     color: map-get($color, secondary2);
   }
 
