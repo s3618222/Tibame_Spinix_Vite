@@ -89,7 +89,10 @@ export default {
     }
   },
 
-  mounted() {
+  async mounted() {
+    const isLoggedIn = await this.checkLoginStatus();
+    if (!isLoggedIn) return;
+
     const urlParams = new URLSearchParams(window.location.search);
     this.articleId = urlParams.get("id");
 
@@ -148,6 +151,25 @@ export default {
   },
 
   methods: {
+    async checkLoginStatus() {
+      try {
+        const res = await fetch("http://localhost:8888/Spinix/php/member/currentMember_get.php", {
+          credentials: "include"
+        });
+        const result = await res.json();
+
+        if (!result.isLoggedIn) {
+          alert("請先登入才能發表文章");
+          window.location.href = `${this.baseUrl}signIn.html`;
+          return false;
+        }
+        return true;
+      } catch (error) {
+        console.error("登入狀態確認失敗", error);
+        return false;
+      }
+    },
+
     fetchArticleData(id) {
       // 假資料代入
       this.formData = {
