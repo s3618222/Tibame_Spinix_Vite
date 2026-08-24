@@ -159,8 +159,15 @@
     LEFT JOIN member AS participant
       ON battle_record.PARTICIPANT_ID = participant.MEM_ID
 
-    WHERE battle_record.INITIATOR_ID = ?
+    WHERE (
+      battle_record.INITIATOR_ID = ?
       OR battle_record.PARTICIPANT_ID = ?
+    )
+
+    /*
+    被下架的紀錄不顯示
+    */
+    AND battle_record.IS_SHOW = 1
     
     /*
     「我的約戰」回傳資料排序順位：依使用者當前最需注意的事情決定優先順位
