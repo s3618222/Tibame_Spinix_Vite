@@ -123,7 +123,27 @@ export default {
         ul, ol { padding-left: 24px; margin: 8px 0; }
         li { margin-bottom: 4px; }
         a { color: #fec96b; text-decoration: underline; }
-      `
+      `,
+
+      images_upload_handler: async (blobInfo) => {
+        const formData = new FormData();
+          formData.append("file", blobInfo.blob(), blobInfo.filename());
+          
+          const res = await fetch("http://localhost:8888/Spinix/php/forum/uploadArticleImage.php", {
+            method: "POST",
+            credentials: "include",
+            body: formData
+          });
+          const result = await res.json();
+
+          if(result.location){
+            return result.location;
+          }else{
+            throw new Error(result.error || "圖片上傳失敗");
+          }
+        
+      }
+
     });
   },
 
