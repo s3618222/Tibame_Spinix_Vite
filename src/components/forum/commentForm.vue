@@ -8,7 +8,7 @@
       ></textarea>
       <div class="form-footer">
         <label class="upload-btn">
-          <i class="fa-regular fa-image"></i>
+          <i class="fa-regular fa-image" title="最多上傳一張照片"></i>
           <input type="file" accept="image/*" @change="handleFileChange" hidden>
         </label>
         <button type="button" class="btnFill" @click="handleSubmit" :disabled="!commentText.trim()">

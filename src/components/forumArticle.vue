@@ -108,6 +108,7 @@ export default {
             floor: index + 2,
             content: c.content,
             time: c.create_time,
+            pic: c.pic,
             memId: c.mem_id,
             isShow: Number(c.is_show) === 1,  // 所有上架中留言
             commenter: {
@@ -143,6 +144,10 @@ export default {
         formData.append("art_id", this.articleId);
         formData.append("content", payload.content);   
 
+        if (payload.image) {
+          formData.append("image", payload.image);
+        }
+
         const res = await fetch("http://localhost:8888/Spinix/php/forum/addComment.php", {
           method: "POST",
           credentials: "include",
@@ -156,6 +161,7 @@ export default {
             floor: this.comments.length + 2,
             content: result.data.content,
             time: result.data.create_time,
+            pic: result.data.pic,
             memId: result.data.mem_id,
             isShow: true,
             commenter: {

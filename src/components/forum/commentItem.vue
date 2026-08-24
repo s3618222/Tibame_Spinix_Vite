@@ -14,6 +14,7 @@
       </div>
       <div class="comment-body">
         <p>{{ comment.content }}</p>
+        <img v-if="comment.pic" :src="comment.pic" alt="留言圖片">
       </div>
       <WarningBanner
         v-if="comment.isShow === false"
@@ -158,6 +159,16 @@ import WarningBanner from '@/components/WarningBanner.vue';
 }
 .comment-body {
   order: 3;
+
+  img {
+    max-width: 320px;
+    max-height: 320px;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-top: 8px;
+  }
 }
 .comment-footer {
   order: 4;

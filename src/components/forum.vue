@@ -8,7 +8,10 @@
 
       <ForumToolbar :search-keyword="searchKeyword" :sort-by="sortBy" @search="updateSearch" @sort="updateSort"/>
       <CategoryTabs :current-tab="currentTab" @change-tab="switchTab"/>
-      <ArticleList :article-list="displayArticles"/>
+      <ArticleList :article-list="paginatedArticles"/>
+      <div class="pagination-wrap">
+        <Pagination v-model:current-page="currentPage" :page-size="6" :total="displayArticles.length" />
+      </div>
 
     </div>
   </div>
@@ -20,6 +23,7 @@ import ForumToolbar from "@/components/forum/forumToolbar.vue";
 import CategoryTabs from "@/components/forum/categoryTabs.vue";
 import ArticleList from "@/components/forum/articleList.vue";
 import { CATEGORY_LABELS } from '@/assets/js/utils/articleCategory.js';
+import Pagination from "@/components/pagination.vue";
 
 export default {
   name: "ForumView",
@@ -30,7 +34,8 @@ export default {
       currentTab: "all",  // 預設值
       searchKeyword: "",
       sortBy: "latestPost",
-      allArticles: []
+      allArticles: [],
+      currentPage: 1
     }
   },
 
@@ -41,7 +46,8 @@ export default {
   components: {
     ForumToolbar,
     CategoryTabs,
-    ArticleList
+    ArticleList,
+    Pagination
   },
 
   computed: {
@@ -70,8 +76,19 @@ export default {
         sorted.sort((a, b) => new Date(b.createTime) - new Date(a.createTime));
       }
       return sorted;
+    },
+
+    paginatedArticles() {
+      const start = (this.currentPage - 1) * 6;
+      return this.displayArticles.slice(start, start + 6);
     }
   },
+
+  watch: {
+    currentTab() { this.currentPage = 1; },
+    searchKeyword() { this.currentPage = 1; },
+    sortBy() { this.currentPage = 1; }
+  }, 
 
   methods: {
     async fetchArticles(){
@@ -140,8 +157,17 @@ export default {
       font-weight: 600;
     }
   }
-  
+
 }
 
+.pagination-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  // margin-top: 12px;
+  background-color: map-get($color, white);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 20px rgba(20, 28, 38, 0.05);
+}
 
 </style>
