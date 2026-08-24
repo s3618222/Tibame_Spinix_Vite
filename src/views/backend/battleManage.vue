@@ -212,7 +212,7 @@
       <!-- 燈箱上方摘要 -->
       <div v-if="selectedBattle" class="battle-detail-summary">
         <div class="battle-detail-meta">
-          <span>{{ selectedBattle.battleId }}</span>
+          <!-- <span>{{ selectedBattle.battleId }}</span> -->
           <span class="battle-detail-divider"></span>
           <span>{{ getModeLabel(selectedBattle.mode) }}</span>
           <span class="battle-detail-divider"></span>
@@ -820,7 +820,7 @@ export default {
       return "尚未回傳";
     },
 
-    confirmManageAction() {  //確認處置操作
+    async confirmManageAction() { //串接上下架處置操作API
       if (!this.selectedBattle) {
         return;
       }
@@ -845,12 +845,50 @@ export default {
         return;
       }
 
-      // 確認後才真正修改上下架狀態
-      //判斷管理員最終選擇的處置操作是否為keep，不是的話為false，判斷下架約戰
-      this.selectedBattle.is_show = this.manageAction === "keep";
-      this.currentPage = 1; //將畫面跳回列表第一頁
-      this.memberNotice = "";
-      this.isDetailDialogOpen = false;
+      //先將前端處置radio的值，轉成要回給後端API的格式
+      const action = this.manageAction === "remove" ? "REMOVE" : "RESTORE";
+
+      const formData = new FormData();
+
+      formData.append("battle_id", this.selectedBattle.battleId);
+      formData.append("action", action);
+      formData.append("reason", this.memberNotice);
+
+      try {
+        const response = await fetch(`${this.phpBaseUrl}/battle/battle_manage_post.php`, {
+          method: "POST",
+          credentials: "include", //讓前端的API請求，可以將瀏覽器存於Session中與登入相關的cookie帶回給php，識別當前登入管理員是誰
+          body: formData
+        });
+
+        const data = await response.json();
+        console.log("約戰管理 API 回傳：", data);
+
+        // API 處置失敗時，顯示後端回傳的錯誤訊息
+        if (!response.ok || !data.success) {
+          alert(data.message || "約戰處置失敗");
+          return;
+        }
+
+        //處置成功後
+        alert(data.message);
+
+        //再重新向後端取得最新約戰資料
+        await this.fetchBattles();
+        //回到第一頁
+        this.currentPage = 1;
+        // 清空本次輸入內容與錯誤訊息
+        this.memberNotice = "";
+        this.memberNoticeError = "";
+        // 關閉燈箱
+        this.isDetailDialogOpen = false;
+
+        } catch (error) {
+
+          console.error("約戰管理 API 發生錯誤：", error);
+          alert("系統發生錯誤，請稍後再試");
+        }
+
     },
 
     cancelManageAction() { //取消處置操作按鈕
