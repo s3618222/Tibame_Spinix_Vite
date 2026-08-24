@@ -12,6 +12,7 @@
           <option value="all">所有會員</option>
           <option value="suspended">已停權會員</option>
         </select>
+        <i class="fa-solid fa-chevron-down"></i>
       </div>
       <div class="filter-search">
         <i class="fa-solid fa-magnifying-glass"></i>
@@ -210,6 +211,7 @@
   }
 
   .filter-item {
+    position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -217,6 +219,8 @@
     select {
       min-width: 120px;
       padding: 8px 30px 8px 12px;
+      appearance: none;
+      -webkit-appearance: none;
 
       border: 1px solid map-get($color, warmGray);
       border-radius: 10px;
@@ -232,6 +236,17 @@
       &:focus {
         border-color: map-get($color, secondary2);
       }
+    }
+
+    i {
+      position: absolute;
+      right: 8px; // 箭頭距右緣 8px
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none; // 點擊穿透到 select
+
+      color: map-get($color, secondary);
+      font-size: 14px;
     }
   }
 
