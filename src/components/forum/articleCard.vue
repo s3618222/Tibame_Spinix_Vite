@@ -7,7 +7,7 @@
         <div class="text-group">
           <div class="label-article"></div><!-- 如果有空做置頂功能的話 -->
           <p class="title-article">{{ article.title }}</p>
-          <p class="content-preview">{{article.content}}</p>
+          <p class="content-preview">{{ contentPreview }}</p>
         </div>
         <!-- <img :src="imgURL" :alt="article.title" class="img-article"> -->
         
@@ -33,34 +33,38 @@
 </template>
 
 <script>
-  import { getRelativeTime } from "@/assets/js/utils/formatRelativeTime.js";
+import { getRelativeTime } from "@/assets/js/utils/formatRelativeTime.js";
+import { stripHtmlTags } from "@/assets/js/utils/stripHtmlTags.js";
 
-  export default {
-    name: "ArticleCard",
+export default {
+  name: "ArticleCard",
 
-    props: ["article"],
+  props: ["article"],
 
-    data(){
-      return {
-        baseUrl: import.meta.env.BASE_URL
-      }
+  data(){
+    return {
+      baseUrl: import.meta.env.BASE_URL
+    }
+  },
+
+  computed: {
+    imgURL() {
+      const baseUrl = import.meta.env.BASE_URL;
+      return `${baseUrl}${this.article.image.replace(/^\//, '')}`;
     },
-
-    computed: {
-      imgURL() {
-        const baseUrl = import.meta.env.BASE_URL;
-        return `${baseUrl}${this.article.image.replace(/^\//, '')}`;
-      },
-      avatarUrl() {
-        return this.article.imgWriter
-          ? `${this.baseUrl}${this.article.imgWriter}`
-          : `${this.baseUrl}spinix_member_default.png`;
-      },
-      relativeTime() {
-        return getRelativeTime(this.article.createTime);
-      }
+    avatarUrl() {
+      return this.article.imgWriter
+        ? `${this.baseUrl}${this.article.imgWriter}`
+        : `${this.baseUrl}spinix_member_default.png`;
+    },
+    relativeTime() {
+      return getRelativeTime(this.article.createTime);
+    },
+    contentPreview() {
+      return stripHtmlTags(this.article.content);
     }
   }
+}
 </script>
 
 <style lang="scss" scoped>
