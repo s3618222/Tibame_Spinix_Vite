@@ -9,7 +9,7 @@
       <ForumToolbar :search-keyword="searchKeyword" :sort-by="sortBy" @search="updateSearch" @sort="updateSort"/>
       <CategoryTabs :current-tab="currentTab" @change-tab="switchTab"/>
       <ArticleList :article-list="paginatedArticles"/>
-      <div class="pagination-wrap">
+      <div class="pagination-wrap" v-if="displayArticles.length > 0">
         <Pagination v-model:current-page="currentPage" :page-size="6" :total="displayArticles.length" />
       </div>
 
