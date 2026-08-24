@@ -88,33 +88,12 @@
 
         <!-- 分頁列 -->
         <div class="member-table__footer">
-          <span class="member-table__count">顯示：{{ members.length }}筆</span>
-          <div class="pagination">
-            <button
-              type="button"
-              class="pagination__btn"
-              @click="prevPage"
-            >
-              <i class="fa-solid fa-angle-left"></i>
-            </button>
-            <button
-              v-for="page in totalPages"
-              :key="page"
-              type="button"
-              class="pagination__btn"
-              :class="{ 'is-active': page === currentPage }"
-              @click="currentPage = page"
-            >
-              {{ page }}
-            </button>
-            <button
-              type="button"
-              class="pagination__btn"
-              @click="nextPage"
-            >
-              <i class="fa-solid fa-angle-right"></i>
-            </button>
-          </div>
+          <span class="member-table__count">顯示：{{ pageSize }}筆</span>
+          <Pagination
+            v-model:current-page="currentPage"
+            :page-size="pageSize"
+            :total="total"
+          />
         </div>
       </div>
     </div>
@@ -142,6 +121,7 @@
   import MemberStatusPill from "@/components/backend/member/MemberStatusPill.vue";
   import SuspendModal from "@/components/backend/member/SuspendModal.vue";
   import RestoreModal from "@/components/backend/member/RestoreModal.vue";
+  import Pagination from "@/components/pagination.vue";
 
   // 假資料（欄位命名對齊 DB member 表語意，方便日後接 API）
   const members = ref([
@@ -161,17 +141,10 @@
   const filterType = ref("all");
   const searchId = ref("");
 
-  // 分頁（純外觀）
+  // 分頁（純外觀，尚未串接 API）
   const currentPage = ref(1);
-  const totalPages = ref(3);
-
-  function prevPage() {
-    if (currentPage.value > 1) currentPage.value--;
-  }
-
-  function nextPage() {
-    if (currentPage.value < totalPages.value) currentPage.value++;
-  }
+  const pageSize = ref(10);
+  const total = ref(30); // 假資料總筆數，接 API 後改為真實總數
 
   // 列操作下拉
   const openMenuId = ref(null);
@@ -370,6 +343,7 @@
   .member-table__footer {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
     padding: 12px 20px;
 
@@ -380,31 +354,5 @@
   .member-table__count {
     font-size: map-get($fontSize, default);
     color: #262626;
-  }
-
-  .pagination {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-
-    &__btn {
-      min-width: 40px;
-      padding: 4px 12px;
-
-      font-size: map-get($fontSize, default);
-      font-weight: 500;
-      color: map-get($color, hint);
-      background-color: map-get($color, white);
-      border: 1px solid rgba(238, 238, 238, 0.93);
-      border-radius: 8px;
-      cursor: pointer;
-
-      &.is-active {
-        color: map-get($color, secondary);
-        background-color: map-get($color, primary);
-        border-color: map-get($color, primary);
-      }
-    }
   }
 </style>
