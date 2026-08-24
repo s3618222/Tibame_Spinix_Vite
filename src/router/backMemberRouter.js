@@ -13,6 +13,7 @@ import ForumManageDetail from "@/views/backend/forumManageDetail.vue";
 import ExchangeManage from "@/views/backend/exchangeManage.vue";
 import ComplaintManage from "@/views/backend/complaintManage.vue";
 import AdminAccountManage from "@/views/backend/adminAccountManage.vue";
+import ProductDetail from "@/components/ProdDetail.vue"; 
 
 const backMemberRouter = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -63,6 +64,11 @@ const backMemberRouter = createRouter({
       path: "/exchange",
       name: "backend-exchange",
       component: ExchangeManage
+    },
+    {
+      path: "/product_detail",
+      name: "product_detail",
+      component: ProductDetail
     },
     {
       path: "/complaint",

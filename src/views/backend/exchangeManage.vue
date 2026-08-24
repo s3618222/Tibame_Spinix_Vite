@@ -1,13 +1,13 @@
 <template>
 <section class="exchange-manage">
    <div class="exchange-manage-header">
-      <h2 class="exchange-manage-title">交換專區</h2>
+      <h1 class="exchange-manage-title">交換專區</h1>
    </div>
 
    <!-- 篩選工具列 -->
    <div class="exchange-manage-filter">
       <div class="filter-item">
-         <label for="">交換狀態：</label>
+         <label for="">狀態：</label>
          <select v-model="filters.status">
             <option value="">全部</option>
             <option value="exchanging">交換中</option>
@@ -46,15 +46,17 @@
    <div class="exchange-manage-list">
       <div class="exchange-table-wrap">
          <div class="exchange-row exchange-row--head">
-            <div class="col col-author">發文者</div>
-            <div class="col col-type">類型</div>
-            <div class="col col-status">狀態</div>
-            <div class="col col-time">刊登時間</div>
-            <div class="col col-action">操作</div>
+            <div class="col">標題</div>
+            <div class="col">發文者</div>
+            <div class="col">類型</div>
+            <div class="col">狀態</div>
+            <div class="col">刊登時間</div>
+            <div class="col">操作</div>
          </div>
 
          <template v-if="paginatedItems.length">
             <div class="exchange-row" v-for="item in paginatedItems" :key="item.post_id">
+               <div class="col col-author">{{ item.title }}</div>
                <div class="col col-author">{{ item.name }}</div>
                <div class="col col-type">{{ typeLabelMap[item.type] || item.type }}</div>
                <div class="col col-status">
@@ -67,13 +69,12 @@
                </div>
                <div class="col col-time">{{ item.create_time }}</div>
                <div class="col col-action">
-               <button
-                  type="button"
-                  class="btn-view"
-                  @click="goToDetail(item.post_id)"
-               >
-                  查看
-               </button>
+                  <RouterLink
+                     :to="{ name: 'product_detail', query: { id: item.post_id, from: 'backend' } }"
+                     class="btn-view"
+                  >
+                     查看
+                  </RouterLink>
                </div>
             </div>
          </template>
@@ -216,7 +217,7 @@ watch: {
          id: postId,
          from: "backend"
       });
-      window.location.href = `product_detail.html?${params.toString()}`;
+      window.location.href = `product_detail?${params.toString()}`;
    }
 }
 };
@@ -230,7 +231,7 @@ watch: {
 }
 
 .exchange-manage-title {
-  color: map-get($color, secondary2);
+
   font-weight: 600;
   font-size: map-get($fontSize, h1);
   margin-bottom: 28px;
@@ -250,6 +251,11 @@ watch: {
   background-color: map-get($color, white);
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(20, 28, 38, 0.05);
+}
+
+.filter-item{
+   flex-direction: row;
+   align-items: center;
 }
 
 .filter-item select {
@@ -344,32 +350,10 @@ watch: {
   font-size: 14px;
   color: map-get($color, secondary);
   text-align: center;
-}
-
-.col-author {
   flex: 1;
-  min-width: 0;
-}
-
-.col-type {
-  width: 140px;
   flex-shrink: 0;
 }
 
-.col-status {
-  width: 100px;
-  flex-shrink: 0;
-}
-
-.col-time {
-  width: 150px;
-  flex-shrink: 0;
-}
-
-.col-action {
-  width: 90px;
-  flex-shrink: 0;
-}
 
 .status-badge {
   display: inline-block;

@@ -4,7 +4,7 @@
 
   <div class="container" v-if="article">
     <!-- 商品圖片 -->
-    <div class="panel" >
+    <div class="panel" :class=" {'panel-back':isAdmin} ">
       <div v-if="!isEditing">
         <div class="gallery-wrap">
           <Carousel v-model="activeImageIndex" :items-to-show="1" :wrap-around="true">
@@ -302,6 +302,7 @@
 
 <script setup>
 import { ref, computed, reactive } from 'vue';
+import {useRoute} from 'vue-router';
 import prodMsgInfo from '@/components/prodMsgInfo.vue';
 import { exchangeList, fakeComments, statusLabelMap, typeLabelMap, conditionLabelMap } from '@/data/mockExchangeData';
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
@@ -316,19 +317,51 @@ import ConfirmReasonModal from '@/components/common/ConfirmReasonModal.vue';
 const currentUserId = 999;
 
 // 讀取網址參數：product_detail.html?id=5&from=myPosts
-const urlParams = new URLSearchParams(window.location.search);
+// const urlParams = new URLSearchParams(window.location.search);
 
-const articleId = urlParams.get('id'); 
+// const articleId = urlParams.get('id'); 
 
-const context = urlParams.get('from') || 'browse';
+// const context = urlParams.get('from') || 'browse';
+
+
+// 嘗試取得 route,如果沒有 router 環境會是 undefined，不會報錯
+let route;
+try {
+  route = useRoute();
+} catch (e) {
+  route = null;
+}
+
+
+
+const articleId = computed(() => {
+  if (route) {
+    // 後台：有 router，走 route.query
+    return route.query.id;
+  } else {
+    // 前台：沒有 router，走原生 URLSearchParams
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('id');
+  }
+});
+
+const context = computed(() => {
+  if (route) {
+    return route.query.from || 'browse';
+  } else {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('from') || 'browse';
+  }
+});
+
 
 // 判斷是否從管理者畫面進來
-// const isAdmin = computed(() => context === 'admin');
-const isAdmin = false;
+const isAdmin = computed(() => context.value === 'backend');
+// const isAdmin = false;
 
 // 從 exchangeList 陣列中，找出 id 相符的那一筆資料
 const article = computed(() =>
-  exchangeList.find(item => item.post_id === articleId)
+  exchangeList.find(item => item.post_id === articleId.value)
 );
 
 
@@ -402,7 +435,7 @@ const pageTitleMap = {
   
 };
 
-const pageTitle = computed(() => pageTitleMap[context] || '物品詳情');
+const pageTitle = computed(() => pageTitleMap[context.value] || '物品詳情');
 
 // 依 context 決定「返回」要導回哪個頁面
 const backLinkMap = {
@@ -411,7 +444,7 @@ const backLinkMap = {
   myApplications: 'member.html#/exchange',
   backend: 'backMember.html#/exchange'
 };
-const backLink = computed(() => backLinkMap[context] || 'market.html');
+const backLink = computed(() => backLinkMap[context.value] || 'market.html');
 
 
 // == 圖片輪播 ============================================
@@ -501,15 +534,15 @@ function saveEdit() {
 
 
 const commentMode = computed(() => {
-  if (context === 'myPosts') return 'seller';
-  if (context === 'myApplications') return 'applicant';
+  if (context.value === 'myPosts') return 'seller';
+  if (context.value === 'myApplications') return 'applicant';
   return 'browse';
 });
 
 
 // 該文章留言列表
 const articleComments = computed(() =>
-  fakeComments.filter(comment => comment.post_id === articleId)
+  fakeComments.filter(comment => comment.post_id === articleId.value)
 );
 
 const sortOrder = ref('newest');
@@ -830,6 +863,8 @@ p{
     }
   }
 
+  
+
   .panel {
     max-width: 500px;
 
@@ -1029,6 +1064,11 @@ p{
           }
         }
       }
+    }
+
+    .panel-back{
+      position: static;
+      width: 45%;
     }
 
   }
