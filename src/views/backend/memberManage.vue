@@ -258,7 +258,8 @@
   }
 
   .member-table {
-    min-width: 960px;
+    width: 100%;
+    min-width: 640px; // 收縮到此為止，更窄則由外層 wrap 水平捲動
 
     border: 1px solid map-get($color, hint);
     border-radius: 8px;
@@ -287,26 +288,35 @@
   .col {
     font-size: 16px;
     color: map-get($color, secondary);
+    min-width: 0; // 允許在 flex 版面中收縮（RWD）
 
     &--id {
-      width: 120px;
+      flex: 0 1 80px;
     }
 
     &--name {
-      width: 200px;
+      flex: 1 1 120px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
+    // 佔比最大，吸收多餘空間 → 把後面的欄位（含操作）推到最右側
     &--account {
-      width: 240px;
+      flex: 2 1 180px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     &--status {
-      width: 100px;
+      flex: 0 1 90px;
     }
 
+    // 固定寬且為最後一欄 → 靠齊最右
     &--action {
       position: relative;
-      width: 100px;
+      flex: 0 0 56px;
       display: flex;
       justify-content: flex-end;
     }
