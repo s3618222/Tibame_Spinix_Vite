@@ -332,7 +332,8 @@
                   border-radius: 50%;
                   background-color: map-get($color, secondary2);
                   right: 5%;
-                  top: 50%;
+                  // top: 50%;
+                  top: 80%; //避免蓋住通知文字
                   transform: translateY(-50%);
                }
 
