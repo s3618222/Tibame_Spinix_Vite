@@ -137,6 +137,11 @@
 
     </div>
 
+    <!-- 手機版面下的提示文字 -->
+    <div class="battle-mobile-hint" id="mobileHint">
+      <p>← 左右滑動查看完整表格 →</p>
+    </div>
+
     <!-- 約戰列表區 -->
     <div class="battle-manage-list">
       <div class="battle-table-wrap">
@@ -1154,6 +1159,11 @@ export default {
     align-items: center;
   }
 
+  //手機版面時，才顯示的操作提示文
+  div#mobileHint p {
+    display: none;
+  }
+
   //約戰資訊列表
   .battle-manage-list {
     width: 100%;
@@ -2071,6 +2081,18 @@ export default {
         align-self: center;
       }
 
+    }
+
+    div#mobileHint p {
+      display: block;
+      
+      font-size: 16px;
+      margin-top: 32px;
+      color: #aaaaaa;
+    }
+
+    .battle-manage-list {
+      margin-top: 12px;
     }
     
   }
