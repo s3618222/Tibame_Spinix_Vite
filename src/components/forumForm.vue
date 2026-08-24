@@ -44,32 +44,6 @@
           </label>
           <div class="custom-editor">
             <textarea name="" id="default"></textarea>
-
-
-            <!-- 頂部功能工具列 -->
-            <!-- <div class="editor-toolbar">
-              <button type="button" class="toolbar-btn" title="粗體">
-                <i class="fa-solid fa-bold"></i>
-              </button>
-              <button type="button" class="toolbar-btn" title="斜體">
-                <i class="fa-solid fa-italic"></i>
-              </button>
-              <span class="divider"></span>
-              <button type="button" class="toolbar-btn" title="插入連結">
-                <i class="fa-solid fa-link"></i>
-              </button>
-              <button type="button" class="toolbar-btn" title="上傳圖片">
-                <i class="fa-regular fa-image"></i>
-              </button>
-            </div> -->
-
-            <!-- 輸入區域 -->
-            <!-- <textarea
-              v-model="formData.content"
-              rows="12"
-              placeholder="請輸入貼文內容，分享你的戰鬥陀螺心得、戰術或配裝..."
-              required
-            ></textarea> -->
           </div>
         </div>
 
@@ -163,9 +137,37 @@ export default {
       };
     },
 
-    handleSubmit() {
-      alert(this.isEdit ? "修改成功！" : "發布成功！");
-      window.location.href = "forum.html";
+    async handleSubmit() {
+      const content = tinymce.get('default').getContent(); // 取得使用者在tinymce裡寫的內容，tinymce預設會回傳字串，不可能是null，所以if條件不需針對null的情況
+      
+      if(content.trim() === ""){
+        alert("文章內容不可空白");
+        return;
+      }
+
+      try{
+        const formData = new FormData();
+        formData.append("title", this.formData.title);
+        formData.append("category", this.formData.category);
+        formData.append("content", content);
+
+        const res = await fetch("http://localhost:8888/Spinix/php/forum/addArticle.php", {
+          method: "POST",
+          credentials: "include",
+          body: formData
+        });
+        const result = await res.json();
+
+        if(result.success){
+          alert("發布成功！");
+          window.location.href = `${this.baseUrl}forumArticle.html?id=${result.data.art_id}`;
+
+        }else{
+          alert(result.message || "發布失敗，請稍後再試");
+        }
+      }catch(error){
+        console.error("發布文章失敗", error);
+      }
     },
 
     handleCancel() {
