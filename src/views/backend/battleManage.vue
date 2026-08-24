@@ -7,6 +7,22 @@
 
     <!-- 篩選區 -->
     <div class="battle-manage-filter">
+
+      <!-- 關鍵字搜尋列 -->
+      <div class="battle-filter-search">
+        <div class="battle-search-input">
+          <i class="fa-solid fa-magnifying-glass"></i>
+
+          <input
+            id="battleKeyword"
+            type="text"
+            v-model.trim="filters.keyword"
+            placeholder="搜尋約戰標題"
+            aria-label="搜尋約戰標題"
+          >
+        </div>
+      </div>
+
       <!-- 第一列：對戰模式、縣市、狀態 -->
       <div class="battle-filter-main">
 
@@ -471,6 +487,7 @@ export default {
       memberNoticeError: "", //未輸入通知內容時，出現的錯誤訊息
 
       filters: {
+        keyword: "",
         mode: "",
         city: "",
         status: "",
@@ -529,6 +546,13 @@ export default {
 
     filteredBattles() { //根據data中的分類選項，篩選對戰資料
       return this.battles.filter((battle) => {
+
+        const matchKeyword =
+          !this.filters.keyword ||
+          battle.title
+            .toLowerCase()
+            .includes(this.filters.keyword.trim().toLowerCase());
+
         const matchMode =
           !this.filters.mode ||
           battle.mode === this.filters.mode;
@@ -555,6 +579,7 @@ export default {
           battle.battleDate <= this.filters.endDate;
 
         return (
+          matchKeyword &&
           matchMode && 
           matchCity && 
           matchStatus && 
@@ -618,6 +643,7 @@ export default {
 
   methods: {
     resetFilters() { //重置篩選條件函式
+      this.filters.keyword = "";
       this.filters.mode = "";
       this.filters.city = "";
       this.filters.status = "";
@@ -938,6 +964,55 @@ export default {
     background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(20, 28, 38, 0.05);
+  }
+
+  /* 關鍵字搜尋列 */
+.battle-filter-search {
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+/* 搜尋 input 外層 */
+.battle-search-input {
+  position: relative;
+
+  width: 360px;
+  max-width: 100%;
+
+  i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+
+      color: #64748b;
+      font-size: 16px;
+
+      // 避免 icon 擋住 input 點擊
+      pointer-events: none;
+    }
+
+  input {
+      width: 100%;
+      min-height: 40px;
+
+      padding: 8px 14px 8px 40px;
+
+      color: #141c26;
+      background-color: #F7F5F3;
+
+      border: 1px solid #ddd6c8;
+      border-radius: 10px;
+
+      font-size: 14px;
+
+      outline: none;
+
+      &::placeholder {
+        color: #aaaaaa;
+      }
+
+    }
   }
 
   /* 篩選第一列：對戰模式、縣市、約戰狀態 */
@@ -1891,6 +1966,10 @@ export default {
   }
 
   @media screen and (max-width: 620px) {
+    .battle-search-input {
+      width: 100%;
+    }
+
     .battle-filter-main,
     .battle-filter-bottom,
     .date-filter-group {
@@ -1925,6 +2004,11 @@ export default {
   }
 
   @media screen and (max-width: 576px) {
+    .battle-search-input {
+      width: 95%;
+      margin-inline: auto;
+    }
+
     // 篩選面板區改單欄顯示
     .battle-filter-main,
     .battle-filter-bottom {
