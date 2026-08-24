@@ -5,15 +5,17 @@
       <h1>會員管理</h1>
     </div>
 
-    <!-- 篩選列 -->
-    <div class="member-filter">
-      <div class="member-filter__select">
+    <!-- 篩選工具列 -->
+    <div class="member-manage-filter">
+      <div class="filter-item">
         <select v-model="filterType">
           <option value="all">所有會員</option>
           <option value="suspended">已停權會員</option>
         </select>
+        <i class="fa-solid fa-chevron-down"></i>
       </div>
-      <div class="member-filter__search">
+      <div class="filter-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
         <input
           v-model="searchId"
           type="text"
@@ -46,22 +48,13 @@
           <div class="col col--name">{{ member.name }}</div>
           <div class="col col--account">{{ member.account }}</div>
           <div class="col col--status">
-            <MemberStatusPill
-              :status="member.battleStatus"
-              :until="member.battleUntil"
-            />
+            <MemberStatusPill :status="member.battleStatus" />
           </div>
           <div class="col col--status">
-            <MemberStatusPill
-              :status="member.forumStatus"
-              :until="member.forumUntil"
-            />
+            <MemberStatusPill :status="member.forumStatus" />
           </div>
           <div class="col col--status">
-            <MemberStatusPill
-              :status="member.marketStatus"
-              :until="member.marketUntil"
-            />
+            <MemberStatusPill :status="member.marketStatus" />
           </div>
           <div class="col col--action">
             <button
@@ -97,33 +90,12 @@
 
         <!-- 分頁列 -->
         <div class="member-table__footer">
-          <span class="member-table__count">顯示：{{ members.length }}筆</span>
-          <div class="pagination">
-            <button
-              type="button"
-              class="pagination__btn"
-              @click="prevPage"
-            >
-              <i class="fa-solid fa-angle-left"></i>
-            </button>
-            <button
-              v-for="page in totalPages"
-              :key="page"
-              type="button"
-              class="pagination__btn"
-              :class="{ 'is-active': page === currentPage }"
-              @click="currentPage = page"
-            >
-              {{ page }}
-            </button>
-            <button
-              type="button"
-              class="pagination__btn"
-              @click="nextPage"
-            >
-              <i class="fa-solid fa-angle-right"></i>
-            </button>
-          </div>
+          <span class="member-table__count">顯示：{{ pageSize }}筆</span>
+          <Pagination
+            v-model:current-page="currentPage"
+            :page-size="pageSize"
+            :total="total"
+          />
         </div>
       </div>
     </div>
@@ -151,6 +123,7 @@
   import MemberStatusPill from "@/components/backend/member/MemberStatusPill.vue";
   import SuspendModal from "@/components/backend/member/SuspendModal.vue";
   import RestoreModal from "@/components/backend/member/RestoreModal.vue";
+  import Pagination from "@/components/pagination.vue";
 
   // 假資料（欄位命名對齊 DB member 表語意，方便日後接 API）
   const members = ref([
@@ -170,17 +143,10 @@
   const filterType = ref("all");
   const searchId = ref("");
 
-  // 分頁（純外觀）
+  // 分頁（純外觀，尚未串接 API）
   const currentPage = ref(1);
-  const totalPages = ref(3);
-
-  function prevPage() {
-    if (currentPage.value > 1) currentPage.value--;
-  }
-
-  function nextPage() {
-    if (currentPage.value < totalPages.value) currentPage.value++;
-  }
+  const pageSize = ref(10);
+  const total = ref(30); // 假資料總筆數，接 API 後改為真實總數
 
   // 列操作下拉
   const openMenuId = ref(null);
@@ -226,37 +192,88 @@
 
   .member-manage__title h1 {
     font-size: map-get($fontSize, h1);
-    font-weight: 500;
     color: map-get($color, secondary2);
   }
 
-  // 篩選列
-  .member-filter {
+  // 篩選工具列（對齊其他後台頁樣式）
+  .member-manage-filter {
+    width: 100%;
+    padding: 20px;
+
     display: flex;
-    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+
+    background-color: map-get($color, white);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(20, 28, 38, 0.05);
+  }
+
+  .filter-item {
+    position: relative;
+    display: flex;
+    flex-direction: row;
     align-items: center;
 
-    &__select select,
-    &__search input {
-      padding: 8px 12px;
-      font-size: map-get($fontSize, default);
-      color: map-get($color, secondary);
-      background-color: map-get($color, white);
-      border: 1px solid #ddd6c8;
-      border-radius: 10px;
-    }
-
-    &__select select {
-      min-width: 140px;
+    select {
+      min-width: 120px;
+      padding: 8px 30px 8px 12px;
       appearance: none;
+      -webkit-appearance: none;
+
+      border: 1px solid map-get($color, warmGray);
+      border-radius: 10px;
+      outline: none;
+
+      background-color: map-get($color, tertiary);
+      color: map-get($color, secondary);
+      font-size: 14px;
       cursor: pointer;
+
+      transition: border-color 0.24s;
+
+      &:focus {
+        border-color: map-get($color, secondary2);
+      }
     }
 
-    &__search input {
-      width: 200px;
+    i {
+      position: absolute;
+      right: 8px; // 箭頭距右緣 8px
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none; // 點擊穿透到 select
+
+      color: map-get($color, secondary);
+      font-size: 14px;
+    }
+  }
+
+  .filter-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    margin-left: auto;
+
+    border: 1px solid map-get($color, warmGray);
+    border-radius: 10px;
+    background-color: map-get($color, tertiary);
+
+    i {
+      color: map-get($color, neutral);
+    }
+
+    input {
+      width: 240px;
+      border: none;
+      outline: none;
+      background-color: transparent;
+      font-size: 14px;
+      color: map-get($color, secondary);
 
       &::placeholder {
-        font-size: map-get($fontSize, hint);
         color: map-get($color, hint);
       }
     }
@@ -268,7 +285,8 @@
   }
 
   .member-table {
-    min-width: 960px;
+    width: 100%;
+    min-width: 640px; // 收縮到此為止，更窄則由外層 wrap 水平捲動
 
     border: 1px solid map-get($color, hint);
     border-radius: 8px;
@@ -297,26 +315,35 @@
   .col {
     font-size: 16px;
     color: map-get($color, secondary);
+    min-width: 0; // 允許在 flex 版面中收縮（RWD）
 
     &--id {
-      width: 120px;
+      flex: 0 1 80px;
     }
 
     &--name {
-      width: 200px;
+      flex: 1 1 120px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
+    // 佔比最大，吸收多餘空間 → 把後面的欄位（含操作）推到最右側
     &--account {
-      width: 240px;
+      flex: 2 1 180px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     &--status {
-      width: 100px;
+      flex: 0 1 90px;
     }
 
+    // 固定寬且為最後一欄 → 靠齊最右
     &--action {
       position: relative;
-      width: 100px;
+      flex: 0 0 56px;
       display: flex;
       justify-content: flex-end;
     }
@@ -370,6 +397,7 @@
   .member-table__footer {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
     padding: 12px 20px;
 
@@ -380,31 +408,5 @@
   .member-table__count {
     font-size: map-get($fontSize, default);
     color: #262626;
-  }
-
-  .pagination {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-
-    &__btn {
-      min-width: 40px;
-      padding: 4px 12px;
-
-      font-size: map-get($fontSize, default);
-      font-weight: 500;
-      color: map-get($color, hint);
-      background-color: map-get($color, white);
-      border: 1px solid rgba(238, 238, 238, 0.93);
-      border-radius: 8px;
-      cursor: pointer;
-
-      &.is-active {
-        color: map-get($color, secondary);
-        background-color: map-get($color, primary);
-        border-color: map-get($color, primary);
-      }
-    }
   }
 </style>
