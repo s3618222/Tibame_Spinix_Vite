@@ -81,6 +81,8 @@
   $sql = "
     SELECT
       BATTLE_ID,
+      INITIATOR_ID,
+      BATTLE_TITLE,
       BATTLE_STATUS,
       BATTLE_DEADLINE,
       IS_SHOW,
@@ -215,7 +217,40 @@
       $reason
     ]);
 
-    //當以上兩筆sql執行都成功後，才確認此次交易
+
+    //依照管理員操作，產生對應的會員通知內容
+    if ($action === "REMOVE") {
+      $notificationContent =
+        "你發起的約戰「" .
+        $battle["BATTLE_TITLE"] .
+        "」，因內容不符合平台管理規範，已進行下架處置。";
+
+    } else {
+      $notificationContent =
+        "你發起的約戰「" .
+        $battle["BATTLE_TITLE"] .
+        "」經管理員重新審核後，已恢復上架。";
+    }
+
+
+    //將處置結果通知約戰發起人
+    $sql = "
+      INSERT INTO notification (
+        mem_id,
+        content,
+        is_read,
+        create_time
+      )
+      VALUES (?, ?, 0, NOW())
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+      $battle["INITIATOR_ID"],
+      $notificationContent
+    ]);
+
+    //當所有sql都執行成功後，才確認此次交易
     $pdo->commit();
 
     //回傳操作結果成功
