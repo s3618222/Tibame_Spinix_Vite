@@ -163,7 +163,6 @@
 
   .admin-manage__title h1 {
     font-size: map-get($fontSize, h1);
-    font-weight: 500;
     color: map-get($color, secondary2);
   }
 
@@ -184,17 +183,12 @@
   }
 
   // 資料表
-  .admin-table-wrap {
-    overflow-x: auto;
-  }
-
   .admin-table {
     width: 100%;
-    min-width: 760px; // 收縮到此為止，更窄則由外層 wrap 水平捲動
+    min-width: 760px; // 窄於此則由頁面層級橫向捲動（不裁切陰影/下拉）
 
     border: 1px solid map-get($color, hint);
     border-radius: 8px;
-    overflow: hidden;
     box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.15);
 
     &__caption,
@@ -207,12 +201,18 @@
     &__caption {
       height: 48px;
       background-color: rgba(254, 201, 107, 0.4);
+      border-radius: 8px 8px 0 0; // 維持上緣圓角（取代 overflow:hidden）
     }
 
     &__row {
       height: 48px;
       border-bottom: 1px solid map-get($color, black);
       background-color: map-get($color, white);
+
+      &:last-child {
+        border-bottom: none;
+        border-radius: 0 0 8px 8px; // 維持下緣圓角
+      }
     }
   }
 
