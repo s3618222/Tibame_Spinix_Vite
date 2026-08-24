@@ -5,15 +5,16 @@
       <h1>會員管理</h1>
     </div>
 
-    <!-- 篩選列 -->
-    <div class="member-filter">
-      <div class="member-filter__select">
+    <!-- 篩選工具列 -->
+    <div class="member-manage-filter">
+      <div class="filter-item">
         <select v-model="filterType">
           <option value="all">所有會員</option>
           <option value="suspended">已停權會員</option>
         </select>
       </div>
-      <div class="member-filter__search">
+      <div class="filter-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
         <input
           v-model="searchId"
           type="text"
@@ -193,33 +194,71 @@
     color: map-get($color, secondary2);
   }
 
-  // 篩選列
-  .member-filter {
+  // 篩選工具列（對齊其他後台頁樣式）
+  .member-manage-filter {
+    width: 100%;
+    padding: 20px;
+
     display: flex;
-    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+
+    background-color: map-get($color, white);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(20, 28, 38, 0.05);
+  }
+
+  .filter-item {
+    display: flex;
+    flex-direction: row;
     align-items: center;
 
-    &__select select,
-    &__search input {
-      padding: 8px 12px;
-      font-size: map-get($fontSize, default);
-      color: map-get($color, secondary);
-      background-color: map-get($color, white);
-      border: 1px solid #ddd6c8;
+    select {
+      min-width: 120px;
+      padding: 8px 30px 8px 12px;
+
+      border: 1px solid map-get($color, warmGray);
       border-radius: 10px;
-    }
+      outline: none;
 
-    &__select select {
-      min-width: 140px;
-      appearance: none;
+      background-color: map-get($color, tertiary);
+      color: map-get($color, secondary);
+      font-size: 14px;
       cursor: pointer;
+
+      transition: border-color 0.24s;
+
+      &:focus {
+        border-color: map-get($color, secondary2);
+      }
+    }
+  }
+
+  .filter-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    margin-left: auto;
+
+    border: 1px solid map-get($color, warmGray);
+    border-radius: 10px;
+    background-color: map-get($color, tertiary);
+
+    i {
+      color: map-get($color, neutral);
     }
 
-    &__search input {
-      width: 200px;
+    input {
+      width: 240px;
+      border: none;
+      outline: none;
+      background-color: transparent;
+      font-size: 14px;
+      color: map-get($color, secondary);
 
       &::placeholder {
-        font-size: map-get($fontSize, hint);
         color: map-get($color, hint);
       }
     }
