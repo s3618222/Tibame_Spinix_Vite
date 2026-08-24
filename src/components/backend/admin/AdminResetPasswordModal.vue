@@ -96,7 +96,7 @@
   .modal-mask {
     position: fixed;
     inset: 0;
-    z-index: 1000;
+    z-index: 1200;
 
     display: flex;
     align-items: center;
