@@ -54,8 +54,8 @@
             </div>
             <div class="result-panel__item">
               <p class="result-panel__label">處理結果</p>
-              <!-- TODO: 三表尚無「處置結果」欄位，暫以申訴狀態代替，待下次補欄位後改回 -->
-              <p class="result-panel__value">{{ statusMeta[appeal.status].label }}</p>
+              <!-- 處理結果由狀態推導（不另存欄位）：成立→違規次數+1、不成立→駁回申訴 -->
+              <p class="result-panel__value">{{ resultMeta[appeal.status] }}</p>
             </div>
           </div>
         </div>
@@ -200,6 +200,12 @@
     rejected: { label: "不成立" }
   };
 
+  // 已結案「處理結果」由處置/狀態推導（不另存欄位）
+  const resultMeta = {
+    confirmed: "違規次數+1",
+    rejected: "駁回申訴"
+  };
+
   const adminOptions = ["管理員A", "管理員B"];
 
   // 從後台合併清單取回資料，依路由參數（sourceType + id）找出該筆
@@ -240,20 +246,38 @@
   const disposition = ref(""); // 'confirm' | 'reject'
   const note = ref("");
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!disposition.value) {
       window.alert("請先選擇處置內容");
       return;
     }
 
-    // TODO: 尚未串接 API，先於前端更新本地假資料以模擬結案
-    const target = appeal.value;
-    target.status = disposition.value === "confirm" ? "confirmed" : "rejected";
-    target.handler = handler.value;
-    target.handleResult = disposition.value === "confirm" ? "累計違規次數+1" : "駁回申訴";
-    target.handleNote = note.value;
+    // 送出處理結果 → 寫回該筆申訴（狀態 / 處理管理員 / 回覆時間與內容）
+    // 註：違規次數+1、停權為之後步驟，本次只判定結果
+    try {
+      const body = new URLSearchParams({
+        sourceType: appeal.value.sourceType,
+        id: appeal.value.id,
+        disposition: disposition.value,
+        note: note.value
+      });
 
-    router.push({ name: "backend-complaint" });
+      const res = await fetch(`${phpBaseUrl}/complaint/complaint_handle_post.php`, {
+        method: "POST",
+        credentials: "include",
+        body
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        router.push({ name: "backend-complaint" });
+      } else {
+        window.alert(data.message || "送出處理結果失敗");
+      }
+    } catch (err) {
+      console.error("送出處理結果失敗", err);
+      window.alert("送出處理結果失敗");
+    }
   }
 </script>
 
