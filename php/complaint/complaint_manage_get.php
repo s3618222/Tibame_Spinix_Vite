@@ -82,6 +82,19 @@
     $stmt = $pdo->query($sql);
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // 將 evidence 正規化為陣列（比照 battle_appeal_detail_get.php）
+    //   battle：PHOTO_EVIDENCE 為 JSON 陣列字串；forum/exchange：單一檔名字串；NULL：空陣列
+    foreach ($data as &$row) {
+      $ev = $row["evidence"];
+      if (empty($ev)) {
+        $row["evidence"] = [];
+      } else {
+        $decoded = json_decode($ev, true);
+        $row["evidence"] = is_array($decoded) ? $decoded : [$ev];
+      }
+    }
+    unset($row);
+
     echo json_encode([
       "success" => true,
       "appeals" => $data

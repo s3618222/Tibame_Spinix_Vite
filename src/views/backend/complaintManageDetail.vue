@@ -72,20 +72,27 @@
         <p class="content-panel__text">{{ appeal.content }}</p>
 
         <h2 class="panel__title">證據截圖</h2>
-        <div class="evidence-list">
+        <div
+          v-if="appeal.evidence && appeal.evidence.length"
+          class="evidence-list"
+        >
           <div
-            v-for="(img, index) in evidenceSlots"
+            v-for="(img, index) in appeal.evidence"
             :key="index"
             class="evidence-item"
           >
             <img
-              v-if="img"
-              :src="img"
-              alt="證據截圖"
+              :src="resolveEvidenceUrl(img)"
+              alt="申訴佐證截圖"
             >
-            <span v-else>IMG</span>
           </div>
         </div>
+        <p
+          v-else
+          class="evidence-empty"
+        >
+          此申訴未提供佐證圖片
+        </p>
       </div>
 
       <!-- 待處理：處理面板 -->
@@ -223,13 +230,10 @@
     () => appeal.value && appeal.value.status !== "pending"
   );
 
-  // 證據截圖：有圖用圖，無圖顯示 3 個 IMG 佔位（比照設計稿）
-  const evidenceSlots = computed(() => {
-    if (!appeal.value) return [];
-    return Array.isArray(appeal.value.evidence) && appeal.value.evidence.length
-      ? appeal.value.evidence
-      : [null, null, null];
-  });
+  // 證據截圖圖片 URL（比照 myAppealDetail.getEvidenceImageUrl）
+  function resolveEvidenceUrl(path) {
+    return `${phpBaseUrl}/${path}`;
+  }
 
   // 處理面板表單狀態
   const handler = ref(adminOptions[0]);
@@ -412,16 +416,16 @@
 
     background-color: map-get($color, secondary);
 
-    span {
-      font-size: 12px;
-      color: #808080;
-    }
-
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+  }
+
+  .evidence-empty {
+    font-size: map-get($fontSize, default);
+    color: map-get($color, hint);
   }
 
   // 待處理：處理面板
