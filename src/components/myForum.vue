@@ -33,7 +33,7 @@
         </button>
     </div>
     <div class="table-content">
-      <MyArticles v-if="currentTab === 'posts'" :articles="articles"/>
+      <MyArticles v-if="currentTab === 'posts'" :articles="articles" @delete-article="handleDeleteArticle"/>
       <myComments v-if="currentTab === 'comments'" :comments="comments"/>
     </div>
   </section>
@@ -112,6 +112,29 @@ export default {
         }
       } catch (error) {
         console.error("我的留言列表載入失敗", error);
+      }
+    },
+
+    async handleDeleteArticle(articleId){
+      try {
+        const formData = new FormData();
+        formData.append("art_id", articleId);
+
+        const res = await fetch("http://localhost:8888/Spinix/php/forum/deleteArticle.php", {
+          method: "POST",
+          credentials: "include",
+          body: formData
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          this.articles = this.articles.filter(article => article.id !== articleId);
+          alert("刪除成功");
+        } else {
+          alert(result.message || "刪除失敗，請稍後再試");
+        }
+      } catch (error) {
+        console.error("刪除文章失敗", error);
       }
     }
   }

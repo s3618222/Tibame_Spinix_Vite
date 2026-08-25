@@ -25,8 +25,8 @@
           </span>
         </p>
         <div class="col-action">
-          <button type="button" class="btn-edit">編輯</button>
-          <button type="button" class="btn-del">刪除</button>
+          <button type="button" class="btn-edit" v-if="article.isShow">編輯</button>
+          <button type="button" class="btn-del" @click="handleDeleteClick(article.id)" v-if="article.isShow">刪除</button>
         </div>
       </div>
     </div>
@@ -43,6 +43,8 @@
   export default {
     name: "myArticles",
 
+    emits: ["delete-article"],
+
     data() {
       return {
         CATEGORY_LABELS,
@@ -54,6 +56,14 @@
       articles: {
         type: Array,
         default: () => []
+      }
+    },
+    methods: {
+      handleDeleteClick(articleId) {
+        const confirmed = confirm("確定要刪除這篇文章嗎？此動作無法在畫面上復原。");
+        if (!confirmed) return;
+
+        this.$emit("delete-article", articleId);
       }
     }
   }

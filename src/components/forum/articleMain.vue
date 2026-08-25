@@ -124,13 +124,6 @@ import AuthorCard from '@/components/forum/authorCard.vue';
     gap: 24px;
     box-shadow: 3px 3px 8px 3px rgba(0, 0, 0, 0.1);
   }
-
-  img {
-    // object-fit: contain;
-    width: 100%;
-  }
-
-
 }
 
 .header-article {
@@ -226,6 +219,16 @@ import AuthorCard from '@/components/forum/authorCard.vue';
   :deep(a) {
     color: map-get($color, primary);
     text-decoration: underline;
+  }
+
+  :deep(img) {
+    max-width: 100%;
+    max-height: 500px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    margin: 12px auto;
+    display: block;
   }
 }
 
