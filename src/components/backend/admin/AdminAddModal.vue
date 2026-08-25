@@ -72,13 +72,22 @@
         </div>
 
         <!-- 按鈕 -->
-        <button
-          type="button"
-          class="admin-form__submit"
-          @click="handleSubmit"
-        >
-          新增 <i class="fa-solid fa-arrow-right"></i>
-        </button>
+        <div class="admin-form__buttons">
+          <button
+            type="button"
+            class="btn btn--primary"
+            @click="handleSubmit"
+          >
+            新增
+          </button>
+          <button
+            type="button"
+            class="btn btn--outline"
+            @click="$emit('close')"
+          >
+            取消
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -214,19 +223,31 @@
     }
   }
 
-  .admin-form__submit {
-    width: 100%;
-    padding: 14px;
+  .admin-form__buttons {
+    display: flex;
+    gap: 16px;
+  }
 
-    font-size: map-get($fontSize, default);
+  .btn {
+    flex: 1;
+    padding: 16px;
+
+    font-size: map-get($fontSize, h4);
     font-weight: 500;
     color: map-get($color, secondary);
-    background-color: map-get($color, primary);
-    border-radius: 4px;
     cursor: pointer;
 
     i {
       margin-left: 4px;
+    }
+
+    &--primary {
+      background-color: map-get($color, primary);
+    }
+
+    &--outline {
+      background-color: map-get($color, white);
+      border: 1px solid map-get($color, secondary);
     }
   }
 </style>
