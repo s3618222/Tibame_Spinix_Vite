@@ -54,14 +54,15 @@
             </div>
             <div class="result-panel__item">
               <p class="result-panel__label">處理結果</p>
-              <p class="result-panel__value">{{ appeal.handleResult }}</p>
+              <!-- TODO: 三表尚無「處置結果」欄位，暫以申訴狀態代替，待下次補欄位後改回 -->
+              <p class="result-panel__value">{{ statusMeta[appeal.status].label }}</p>
             </div>
           </div>
         </div>
 
         <div class="panel note-panel">
           <h2 class="panel__title">處理備註</h2>
-          <p class="note-panel__text">{{ appeal.handleNote }}</p>
+          <p class="note-panel__text">{{ appeal.respondedText }}</p>
         </div>
       </div>
 
@@ -174,12 +175,17 @@
 </template>
 
 <script setup>
-  import { ref, computed } from "vue";
+  import { ref, computed, onMounted } from "vue";
   import { useRoute, useRouter } from "vue-router";
-  import complaintManageData from "@/data/complaintManageData.js";
 
   const route = useRoute();
   const router = useRouter();
+
+  // 判斷 php 執行環境，調整網址前綴（比照 myAppeal.vue）
+  const phpBaseUrl =
+    location.hostname === "localhost" || location.hostname === "127.0.0.1"
+      ? "http://localhost:8888/Spinix/php"
+      : "/ckd101/g2/php";
 
   const statusMeta = {
     pending: { label: "待處理" },
@@ -189,13 +195,29 @@
 
   const adminOptions = ["管理員A", "管理員B"];
 
-  // 依路由參數（sourceType + id）找出該筆
-  const appeal = computed(() =>
-    complaintManageData.find(
-      (item) =>
-        item.sourceType === route.params.sourceType && item.id === route.params.id
-    ) || null
-  );
+  // 從後台合併清單取回資料，依路由參數（sourceType + id）找出該筆
+  const appeal = ref(null);
+
+  async function fetchAppeal() {
+    try {
+      const res = await fetch(`${phpBaseUrl}/complaint/complaint_manage_get.php`, {
+        credentials: "include"
+      });
+      const data = await res.json();
+      if (data.success) {
+        appeal.value =
+          data.appeals.find(
+            (item) =>
+              item.sourceType === route.params.sourceType &&
+              String(item.id) === route.params.id
+          ) || null;
+      }
+    } catch (err) {
+      console.error("取得申訴詳情失敗", err);
+    }
+  }
+
+  onMounted(fetchAppeal);
 
   const isClosed = computed(
     () => appeal.value && appeal.value.status !== "pending"
@@ -204,7 +226,9 @@
   // 證據截圖：有圖用圖，無圖顯示 3 個 IMG 佔位（比照設計稿）
   const evidenceSlots = computed(() => {
     if (!appeal.value) return [];
-    return appeal.value.evidence.length ? appeal.value.evidence : [null, null, null];
+    return Array.isArray(appeal.value.evidence) && appeal.value.evidence.length
+      ? appeal.value.evidence
+      : [null, null, null];
   });
 
   // 處理面板表單狀態
