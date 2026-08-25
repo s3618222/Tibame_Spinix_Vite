@@ -167,7 +167,9 @@ import WarningBanner from '@/components/WarningBanner.vue';
     height: auto;
     border-radius: 8px;
     object-fit: cover;
+    margin: 8px auto;
     margin-top: 8px;
+    display: block;
   }
 }
 .comment-footer {
