@@ -8,7 +8,7 @@
       <p class="col-action">操作</p>
     </div>
     <div class="t-body">
-      <div class="comment-card" v-for="comment in comments" :key="comment.id">
+      <div class="comment-card" v-for="comment in visibleComments" :key="comment.id">
         <p class="col-article">
           <a :href="`${baseUrl}forumArticle.html?id=${comment.articleId}`" target="_blank">{{ comment.articleTitle }}</a>
         </p>
@@ -24,20 +24,27 @@
         </div>
       </div>
     </div>
-    <div class="t-footer">
-      <button type="button" class="btnNoFill">顯示更多留言</button>
+    <div class="t-footer" v-if="hasMore">
+      <LoadMoreButton @click="showMore">顯示更多留言</LoadMoreButton>
     </div>
   </div>
 
 </template>
 
 <script>
+  import LoadMoreButton from '@/components/LoadMoreButton.vue';
+
   export default {
     name: "myComments",
 
+    components: {
+      LoadMoreButton
+    },
+
     data() {
       return {
-        baseUrl: import.meta.env.BASE_URL
+        baseUrl: import.meta.env.BASE_URL,
+        visibleCount: 5   // 一開始只顯示 5 筆留言
       };
     },
 
@@ -45,6 +52,21 @@
       comments: {
         type: Array,
         default: () => []
+      }
+    },
+
+    computed: {
+      visibleComments() {
+        return this.comments.slice(0, this.visibleCount);
+      },
+      hasMore() {
+        return this.visibleCount < this.comments.length;
+      }
+    },
+
+    methods: {
+      showMore() {
+        this.visibleCount += 5;
       }
     }
   }
@@ -151,6 +173,10 @@ button {
    ========================================================================== */
 @include rwd("tablet") {
   // 1. 表格外框與陰影設定
+  .t-body {
+    gap: 0;
+  }
+
   .my-comment-table {
     border-radius: 12px;
     overflow: hidden;
@@ -173,10 +199,13 @@ button {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 12px;
+    padding: 16px;
     border-radius: 0;
     box-shadow: none;
-    border-bottom: 1px solid map-get($color, warmGray);
+    
+    &:not(:last-child){
+      border-bottom: 1px solid map-get($color, warmGray);
+    }
 
     // 重置操作欄位的邊框與內距，按鈕改為置中
     .col-action {
