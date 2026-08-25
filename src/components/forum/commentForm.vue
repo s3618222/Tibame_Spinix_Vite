@@ -6,10 +6,18 @@
         placeholder="撰寫回覆..."
         class="comment-textarea"
       ></textarea>
+
+      <div v-if="imagePreviewUrl" class="image-preview">
+        <img :src="imagePreviewUrl" alt="預覽圖片">
+        <button type="button" class="btn-remove" @click="handleRemoveImage">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
       <div class="form-footer">
         <label class="upload-btn">
           <i class="fa-regular fa-image" title="最多上傳一張照片"></i>
-          <input type="file" accept="image/*" @change="handleFileChange" hidden>
+          <input ref="fileInput" type="file" accept="image/*" @change="handleFileChange" hidden>
         </label>
         <button type="button" class="btnFill" @click="handleSubmit" :disabled="!commentText.trim()">
           <i class="fa-solid fa-paper-plane"></i>
@@ -42,13 +50,28 @@
       return {
         baseUrl: import.meta.env.BASE_URL,
         commentText: "",
-        commentImage: null
+        commentImage: null,
+        imagePreviewUrl: null   // 存縮圖的暫時網址
       }
     },
 
     methods: {
+      handleRemoveImage() {
+        if (this.imagePreviewUrl) {
+          URL.revokeObjectURL(this.imagePreviewUrl);
+        }
+        this.commentImage = null;
+        this.imagePreviewUrl = null;
+        this.$refs.fileInput.value = "";
+      },
+
       handleFileChange(event) {
-        this.commentImage = event.target.files[0] || null;
+        const file = event.target.files[0];
+        if(!file) return;
+        
+        this.commentImage = file;
+        this.imagePreviewUrl = URL.createObjectURL(file);
+        //把使用者選的檔案，轉換成一個只存在瀏覽器記憶體裡的暫時網址，這個網址可以直接塞給 <img :src="..."> 顯示縮圖
       },
       handleSubmit() {
         if (!this.commentText.trim()) return;
@@ -57,7 +80,7 @@
           image: this.commentImage
         });
         this.commentText = "";
-        this.commentImage = null;
+        this.handleRemoveImage();
       }
     }
   }
@@ -126,6 +149,36 @@ a.login-area {
   &:focus {
     background-color: #fff;
     border-color: map-get($color, primary);
+  }
+}
+
+.image-preview {
+  position: relative;
+  width: 100px;
+  height: 100px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .btn-remove {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    border: none;
   }
 }
 
