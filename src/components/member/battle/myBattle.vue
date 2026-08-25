@@ -565,7 +565,8 @@
           });
 
           //開啟申訴分頁
-          window.open(`complaint.html?${query.toString()}`, "_blank");
+          // window.open(`complaint.html?${query.toString()}`, "_blank");
+          window.location.href = `complaint.html?${query.toString()}`;
         },
 
         openReviewModal(reviewData) { //開啟評價燈箱時，帶入對手的相關資訊
