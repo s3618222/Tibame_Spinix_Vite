@@ -54,14 +54,15 @@
             </div>
             <div class="result-panel__item">
               <p class="result-panel__label">處理結果</p>
-              <p class="result-panel__value">{{ appeal.handleResult }}</p>
+              <!-- 處理結果由狀態推導（不另存欄位）：成立→違規次數+1、不成立→駁回申訴 -->
+              <p class="result-panel__value">{{ resultMeta[appeal.status] }}</p>
             </div>
           </div>
         </div>
 
         <div class="panel note-panel">
           <h2 class="panel__title">處理備註</h2>
-          <p class="note-panel__text">{{ appeal.handleNote }}</p>
+          <p class="note-panel__text">{{ appeal.respondedText }}</p>
         </div>
       </div>
 
@@ -71,20 +72,27 @@
         <p class="content-panel__text">{{ appeal.content }}</p>
 
         <h2 class="panel__title">證據截圖</h2>
-        <div class="evidence-list">
+        <div
+          v-if="appeal.evidence && appeal.evidence.length"
+          class="evidence-list"
+        >
           <div
-            v-for="(img, index) in evidenceSlots"
+            v-for="(img, index) in appeal.evidence"
             :key="index"
             class="evidence-item"
           >
             <img
-              v-if="img"
-              :src="img"
-              alt="證據截圖"
+              :src="resolveEvidenceUrl(img)"
+              alt="申訴佐證截圖"
             >
-            <span v-else>IMG</span>
           </div>
         </div>
+        <p
+          v-else
+          class="evidence-empty"
+        >
+          此申訴未提供佐證圖片
+        </p>
       </div>
 
       <!-- 待處理：處理面板 -->
@@ -174,12 +182,17 @@
 </template>
 
 <script setup>
-  import { ref, computed } from "vue";
+  import { ref, computed, onMounted } from "vue";
   import { useRoute, useRouter } from "vue-router";
-  import complaintManageData from "@/data/complaintManageData.js";
 
   const route = useRoute();
   const router = useRouter();
+
+  // 判斷 php 執行環境，調整網址前綴（比照 myAppeal.vue）
+  const phpBaseUrl =
+    location.hostname === "localhost" || location.hostname === "127.0.0.1"
+      ? "http://localhost:8888/Spinix/php"
+      : "/ckd101/g2/php";
 
   const statusMeta = {
     pending: { label: "待處理" },
@@ -187,45 +200,84 @@
     rejected: { label: "不成立" }
   };
 
+  // 已結案「處理結果」由處置/狀態推導（不另存欄位）
+  const resultMeta = {
+    confirmed: "違規次數+1",
+    rejected: "駁回申訴"
+  };
+
   const adminOptions = ["管理員A", "管理員B"];
 
-  // 依路由參數（sourceType + id）找出該筆
-  const appeal = computed(() =>
-    complaintManageData.find(
-      (item) =>
-        item.sourceType === route.params.sourceType && item.id === route.params.id
-    ) || null
-  );
+  // 從後台合併清單取回資料，依路由參數（sourceType + id）找出該筆
+  const appeal = ref(null);
+
+  async function fetchAppeal() {
+    try {
+      const res = await fetch(`${phpBaseUrl}/complaint/complaint_manage_get.php`, {
+        credentials: "include"
+      });
+      const data = await res.json();
+      if (data.success) {
+        appeal.value =
+          data.appeals.find(
+            (item) =>
+              item.sourceType === route.params.sourceType &&
+              String(item.id) === route.params.id
+          ) || null;
+      }
+    } catch (err) {
+      console.error("取得申訴詳情失敗", err);
+    }
+  }
+
+  onMounted(fetchAppeal);
 
   const isClosed = computed(
     () => appeal.value && appeal.value.status !== "pending"
   );
 
-  // 證據截圖：有圖用圖，無圖顯示 3 個 IMG 佔位（比照設計稿）
-  const evidenceSlots = computed(() => {
-    if (!appeal.value) return [];
-    return appeal.value.evidence.length ? appeal.value.evidence : [null, null, null];
-  });
+  // 證據截圖圖片 URL（比照 myAppealDetail.getEvidenceImageUrl）
+  function resolveEvidenceUrl(path) {
+    return `${phpBaseUrl}/${path}`;
+  }
 
   // 處理面板表單狀態
   const handler = ref(adminOptions[0]);
   const disposition = ref(""); // 'confirm' | 'reject'
   const note = ref("");
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!disposition.value) {
       window.alert("請先選擇處置內容");
       return;
     }
 
-    // TODO: 尚未串接 API，先於前端更新本地假資料以模擬結案
-    const target = appeal.value;
-    target.status = disposition.value === "confirm" ? "confirmed" : "rejected";
-    target.handler = handler.value;
-    target.handleResult = disposition.value === "confirm" ? "累計違規次數+1" : "駁回申訴";
-    target.handleNote = note.value;
+    // 送出處理結果 → 寫回該筆申訴（狀態 / 處理管理員 / 回覆時間與內容）
+    // 註：違規次數+1、停權為之後步驟，本次只判定結果
+    try {
+      const body = new URLSearchParams({
+        sourceType: appeal.value.sourceType,
+        id: appeal.value.id,
+        disposition: disposition.value,
+        note: note.value
+      });
 
-    router.push({ name: "backend-complaint" });
+      const res = await fetch(`${phpBaseUrl}/complaint/complaint_handle_post.php`, {
+        method: "POST",
+        credentials: "include",
+        body
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        router.push({ name: "backend-complaint" });
+      } else {
+        window.alert(data.message || "送出處理結果失敗");
+      }
+    } catch (err) {
+      console.error("送出處理結果失敗", err);
+      window.alert("送出處理結果失敗");
+    }
   }
 </script>
 
@@ -388,16 +440,16 @@
 
     background-color: map-get($color, secondary);
 
-    span {
-      font-size: 12px;
-      color: #808080;
-    }
-
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+  }
+
+  .evidence-empty {
+    font-size: map-get($fontSize, default);
+    color: map-get($color, hint);
   }
 
   // 待處理：處理面板

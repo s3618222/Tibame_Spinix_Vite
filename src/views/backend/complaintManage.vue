@@ -110,12 +110,17 @@
 </template>
 
 <script setup>
-  import { ref, computed, watch } from "vue";
+  import { ref, computed, watch, onMounted } from "vue";
   import { useRouter } from "vue-router";
-  import complaintManageData from "@/data/complaintManageData.js";
   import Pagination from "@/components/pagination.vue";
 
   const router = useRouter();
+
+  // 判斷 php 執行環境，調整網址前綴（比照 myAppeal.vue）
+  const phpBaseUrl =
+    location.hostname === "localhost" || location.hostname === "127.0.0.1"
+      ? "http://localhost:8888/Spinix/php"
+      : "/ckd101/g2/php";
 
   // 狀態 value → 顯示標籤 + badge 樣式
   const statusMeta = {
@@ -124,7 +129,24 @@
     rejected: { label: "不成立", cls: "is-rejected" }
   };
 
-  const rows = ref(complaintManageData);
+  const rows = ref([]);
+
+  // 載入後台合併申訴清單（三表 UNION ALL）
+  async function fetchAppeals() {
+    try {
+      const res = await fetch(`${phpBaseUrl}/complaint/complaint_manage_get.php`, {
+        credentials: "include"
+      });
+      const data = await res.json();
+      if (data.success) {
+        rows.value = data.appeals;
+      }
+    } catch (err) {
+      console.error("取得申訴清單失敗", err);
+    }
+  }
+
+  onMounted(fetchAppeals);
 
   const statusFilter = ref("all");
   const typeFilter = ref("all");
@@ -143,7 +165,7 @@
       const matchType = typeFilter.value === "all" || item.type === typeFilter.value;
       const matchSearch =
         !keyword ||
-        item.id.toLowerCase().includes(keyword) ||
+        String(item.id).toLowerCase().includes(keyword) ||
         item.complainant.toLowerCase().includes(keyword) ||
         item.respondent.toLowerCase().includes(keyword);
       return matchStatus && matchType && matchSearch;
