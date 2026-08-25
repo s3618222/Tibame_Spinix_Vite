@@ -8,48 +8,38 @@
     <!-- 篩選列 -->
     <div class="complaint-filters">
       <div class="filter-item">
-        <span class="filter-item__label">狀態：</span>
-        <div class="select-wrap">
-          <select v-model="statusFilter">
-            <option value="all">全部</option>
-            <option value="pending">待處理</option>
-            <option value="confirmed">成立</option>
-            <option value="rejected">不成立</option>
-          </select>
-          <i class="fa-solid fa-chevron-down"></i>
-        </div>
+        <label>狀態：</label>
+        <select v-model="statusFilter">
+          <option value="all">全部</option>
+          <option value="pending">待處理</option>
+          <option value="confirmed">成立</option>
+          <option value="rejected">不成立</option>
+        </select>
       </div>
 
       <div class="filter-item">
-        <span class="filter-item__label">類型：</span>
-        <div class="select-wrap">
-          <select v-model="typeFilter">
-            <option value="all">全部</option>
-            <option value="對戰">對戰</option>
-            <option value="二手交換">二手交換</option>
-            <option value="論壇">論壇</option>
-          </select>
-          <i class="fa-solid fa-chevron-down"></i>
-        </div>
+        <label>類型：</label>
+        <select v-model="typeFilter">
+          <option value="all">全部</option>
+          <option value="對戰">對戰</option>
+          <option value="二手交換">二手交換</option>
+          <option value="論壇">論壇</option>
+        </select>
       </div>
 
       <div class="filter-item">
-        <span class="filter-item__label">排序：</span>
-        <div class="select-wrap">
-          <select v-model="sortOrder">
-            <option value="desc">由新到舊</option>
-            <option value="asc">由舊到新</option>
-          </select>
-          <i class="fa-solid fa-chevron-down"></i>
-        </div>
+        <label>排序：</label>
+        <select v-model="sortOrder">
+          <option value="desc">由新到舊</option>
+          <option value="asc">由舊到新</option>
+        </select>
       </div>
 
-      <div class="filter-item filter-item--search">
-        <span class="filter-item__label">搜尋</span>
+      <div class="filter-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
         <input
           v-model="searchText"
           type="text"
-          class="filter-search__input"
           placeholder="申訴編號 / 申訴人 / 被申訴對象"
         >
       </div>
@@ -205,77 +195,79 @@
     color: map-get($color, secondary2);
   }
 
-  // 篩選列
+  // 篩選列卡片（比照 exchangeManage）
   .complaint-filters {
+    width: 100%;
+    padding: 20px;
+
     display: flex;
-    align-items: center;
-    gap: 20px;
     flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+
+    background-color: map-get($color, white);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(20, 28, 38, 0.05);
   }
 
   .filter-item {
     display: flex;
+    flex-direction: row;
     align-items: center;
+    gap: 4px;
 
-    &__label {
-      padding-right: 12px;
-      font-size: map-get($fontSize, default);
-      font-weight: 500;
+    label {
+      font-size: map-get($fontSize, hint);
       color: map-get($color, secondary);
       white-space: nowrap;
     }
 
-    &--search {
-      flex: 1;
-      min-width: 220px;
+    select {
+      min-width: 120px;
+      padding: 8px 30px 8px 12px;
+
+      font-size: 14px;
+      color: map-get($color, secondary);
+      background-color: map-get($color, tertiary);
+      border: 1px solid map-get($color, warmGray);
+      border-radius: 10px;
+      outline: none;
+
+      transition: border-color 0.24s;
+
+      &:focus {
+        border-color: map-get($color, secondary2);
+      }
     }
   }
 
-  // 下拉選單外框
-  .select-wrap {
-    position: relative;
-    min-width: 140px;
+  .filter-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    margin-left: auto;
 
-    select {
-      width: 100%;
-      padding: 8px 36px 8px 12px;
-      appearance: none;
-
-      font-size: map-get($fontSize, default);
-      color: map-get($color, secondary);
-      background-color: map-get($color, white);
-      border: 1px solid #ddd6c8;
-      border-radius: 10px;
-      cursor: pointer;
-    }
+    background-color: map-get($color, tertiary);
+    border: 1px solid map-get($color, warmGray);
+    border-radius: 10px;
 
     i {
-      position: absolute;
-      top: 50%;
-      right: 12px;
-      transform: translateY(-50%);
-      pointer-events: none;
+      color: map-get($color, neutral);
+    }
+
+    input {
+      width: 240px;
+
+      font-size: 14px;
       color: map-get($color, secondary);
-    }
-  }
+      background-color: transparent;
+      border: none;
+      outline: none;
 
-  .filter-search__input {
-    width: 100%;
-    padding: 9px 12px;
-
-    font-size: map-get($fontSize, default);
-    color: map-get($color, secondary);
-    background-color: map-get($color, white);
-    border: 1px solid map-get($color, hint);
-    border-radius: 6px;
-    outline: none;
-
-    &::placeholder {
-      color: map-get($color, hint);
-    }
-
-    &:focus {
-      border-color: map-get($color, secondary2);
+      &::placeholder {
+        color: map-get($color, hint);
+      }
     }
   }
 
