@@ -94,6 +94,10 @@ function emitUpdate() {
   emit('update:modelValue', photos.value.map(p => p.url))
 }
 
+defineExpose({
+  getFiles: () => photos.value.map(p => p.file)
+});
+
 </script>
 
 <style lang="scss" scoped>

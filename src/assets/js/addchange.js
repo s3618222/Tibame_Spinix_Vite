@@ -10,31 +10,16 @@ createApp(Header, {
 }).mount("#headerApp");
 createApp(Footer).mount("#footerApp");
 
-createApp(upload).mount('#uploadImgApp');
+//重要!!! 判斷當前環境
+const phpBaseUrl =
+   location.hostname === "localhost" ||
+      location.hostname === "127.0.0.1"
+      ? "http://localhost:8888/Spinix/php"
+      : `${location.origin}/ckd101/g2/php`;
 
-// == 縣市篩選 ======================================
-const taiwanDistricts = {
-   '基隆市': ['仁愛區', '信義區', '中正區', '中山區', '安樂區', '暖暖區', '七堵區'],
-   '台北市': ['中正區', '大同區', '中山區', '松山區', '大安區', '萬華區', '信義區', '士林區', '北投區', '內湖區', '南港區', '文山區'],
-   '新北市': ['板橋區', '三重區', '中和區', '永和區', '新莊區', '新店區', '樹林區', '鶯歌區', '三峽區', '淡水區'],
-};
-
-const selectCity = document.getElementById('select-city');
-const selectDistrict = document.getElementById('select-district');
-
-selectCity.addEventListener('change', function () {
-   let city = selectCity.value;
-   // console.log(city);
-   let district = taiwanDistricts[city];
-   // console.log(district);
-   district.forEach(district => {
-      const option = document.createElement('option');
-      option.value = district;
-      option.textContent = district;
-      selectDistrict.appendChild(option);
-   });
-});
-
+// createApp(upload).mount('#uploadImgApp');
+const uploadImgVm = createApp(upload).mount('#uploadImgApp');
+window.photoUploadInstance = uploadImgVm;
 
 // == 取消按鈕 ==========================================
 const btnReset = document.querySelector('.btnNoFill');
@@ -94,6 +79,9 @@ function isFormInvalid() {
 
 
 // == 送出按鈕 =====================================
+
+
+
 btnSubmit.addEventListener('click', (e) => {
    e.preventDefault(); // 1. 先阻擋表單預設送出
 
@@ -133,14 +121,43 @@ btnSubmit.addEventListener('click', (e) => {
       // 將游標自動聚焦到第一個沒填的欄位（體貼使用者的操作體驗）
       firstErrorField?.focus();
       return;
-   } else {
-      window.alert('送出成功');
-   }
 
-   if (document.referrer && document.referrer.includes(window.location.host)) {
-      window.history.back(); // 回到進表單前的那一頁
    } else {
-      window.location.href = '/'; // 沒上一頁紀錄時的預設首頁
-   }
+      // 表單驗證
+      const addChangeForm = new FormData(document.getElementById('form-addchange'));
 
+      if (window.photoUploadInstance) {
+         const files = window.photoUploadInstance.getFiles();
+         files.forEach((file) => {
+            if (file) {
+               addChangeForm.append('photos[]', file);
+            }
+         });
+      } else {
+         console.warn('找不到圖片上傳元件實例');
+      }
+
+      fetch(`${phpBaseUrl}/exchange/add_change.php`, {
+         method: 'POST',
+         body: addChangeForm,
+         credentials: 'include'
+      }).then(res => res.json()).then(data => {
+         if (data.success) {
+            alert('成功刊登');
+            if (document.referrer && document.referrer.includes(window.location.host)) {
+               window.history.back();
+            } else {
+               window.location.href = 'homepage.html';
+            }
+         } else {
+            alert('錯誤');
+         }
+      })
+   }
 });
+
+
+
+
+
+
