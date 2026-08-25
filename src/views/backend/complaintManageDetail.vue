@@ -2,13 +2,13 @@
   <section class="complaint-detail">
     <!-- 標題 -->
     <div class="complaint-detail__title">
-      <h1>申訴處理詳情</h1>
       <RouterLink
         :to="{ name: 'backend-complaint' }"
         class="back-link"
       >
         <i class="fa-solid fa-chevron-left"></i> 返回列表
       </RouterLink>
+      <h1>申訴處理詳情</h1>
     </div>
 
     <template v-if="appeal">
@@ -242,8 +242,8 @@
 
   .complaint-detail__title {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 16px;
 
     h1 {
