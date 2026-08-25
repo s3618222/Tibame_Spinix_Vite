@@ -8,7 +8,6 @@ require_once("../common/connect_ckd101g2.php");
 
 header("Content-Type: application/json; charset=utf-8");
 
-//限制申請加入約戰需使用 POST METHOD
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
    http_response_code(405);
 
