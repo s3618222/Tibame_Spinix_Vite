@@ -7,24 +7,27 @@
         class="comment-textarea"
       ></textarea>
 
-      <div v-if="imagePreviewUrl" class="image-preview">
-        <img :src="imagePreviewUrl" alt="預覽圖片">
-        <button type="button" class="btn-remove" @click="handleRemoveImage">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
       <div class="form-footer">
-        <label class="upload-btn">
-          <i class="fa-regular fa-image" title="最多上傳一張照片"></i>
+        <label v-if="!imagePreviewUrl" class="upload-btn">
+          <i class="fa-regular fa-image"></i>
+          <span>新增照片</span>
           <input ref="fileInput" type="file" accept="image/*" @change="handleFileChange" hidden>
         </label>
+
+        <div v-if="imagePreviewUrl" class="image-preview">
+          <img :src="imagePreviewUrl" alt="預覽圖片">
+          <button type="button" class="btn-remove" @click="handleRemoveImage">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
         <button type="button" class="btnFill" @click="handleSubmit" :disabled="!commentText.trim()">
           <i class="fa-solid fa-paper-plane"></i>
           送出回覆
         </button>
       </div>
     </div>
+    
     <div v-else class="logout-box">
       <a :href="`${baseUrl}signIn.html`" class="login-area">想發表你的看法嗎？登入會員即可參與討論</a>
     </div>
@@ -131,12 +134,12 @@ a.login-area {
 
 .comment-textarea {
   width: 100%;
-  resize: vertical;
+  resize: none;
   border: 1px solid transparent;
   outline: none;
   font-family: inherit;
   font-size: 14px;
-  min-height: 60px;
+  min-height: 90px;
   padding: 8px;
   border-radius: 8px;
   background-color: map-get($color, tertiary);
@@ -192,9 +195,19 @@ a.login-area {
 .upload-btn {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   cursor: pointer;
   color: map-get($color, neutral);
-  font-size: 18px;
+  font-size: 14px;
+  transition: color 0.2s;
+
+  i {
+    font-size: 18px;
+  }
+
+  &:hover {
+    color: map-get($color, primary);
+  }
 }
 
 .btnFill:disabled {
