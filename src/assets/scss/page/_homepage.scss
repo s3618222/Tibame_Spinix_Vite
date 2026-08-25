@@ -73,9 +73,7 @@
     min-height: 320px;
     padding: 24px;
 
-    background-image: url(/ckd101/g2/front/home_hero.png);
-    background-size: cover;
-    background-position: center;
+    overflow: hidden;
 
     @include rwd("tablet") {
       padding-inline: 48px;
@@ -87,11 +85,31 @@
     }
   }
 
+  .hero__bg {
+    position: absolute;
+
+    // 讓四周都比 Hero 多留一點背景範圍，
+    // 避免動畫位移時露出空白
+    inset: -30px;
+
+    background-image: url(/ckd101/g2/front/home_hero.png);
+    background-size: cover;
+    background-position: center;
+
+    // 讓背景待在文字內容後面
+    z-index: 0;
+
+    transform-origin: center;
+  }
+
   .hero__box {
     display: flex;
     flex-direction: column;
     gap: 24px;
     align-items: flex-start;
+
+    position: relative;
+    z-index: 1;
 
     max-width: 640px;
     padding: 24px;
@@ -290,7 +308,8 @@
       display: block;
       position: absolute;
       top: 0;
-      right: 0;
+      // right: 0;
+      right: clamp(18px, 1.8vw, 60px);
       font-size: map-get($fontSize, h1);
       font-weight: 500;
     }
@@ -299,7 +318,8 @@
   .highlight--reverse .highlight__number {
     @include rwd("desktop") {
       right: auto;
-      left: 0;
+      // left: 0;
+      left: clamp(18px, 1.8vw, 60px);
     }
   }
 
@@ -325,6 +345,7 @@
   .highlight__media {
     width: 100%;
     flex: 1;
+    overflow: hidden;
 
     img {
       display: block;
@@ -365,6 +386,78 @@
     }
   }
 
+  // ===== 02區圖片 =====
+  .highlight__media--build {
+
+    // 768px以下：顯示原本完整圖片
+    .build-assembly {
+      display: none;
+    }
+
+    .build-static {
+      display: block;
+      width: 100%;
+    }
+
+    // 769px以上：顯示三個零件
+    @media (min-width: 769px) {
+
+      .build-static {
+        display: none;
+      }
+
+      .build-assembly {
+        display: block;
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+      }
+
+      .build-part {
+        position: absolute;
+        left: 0;
+        right: 0;
+        display: block;
+
+        height: auto;
+        margin-inline: auto;
+
+        transform: none;
+
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .build-part--blade {
+        top: 30%; //18
+        width: 40%;
+        z-index: 3;
+      }
+
+      .build-part--lock {
+        top: 41%; //41
+        width: 35%;
+        z-index: 2;
+      }
+
+      .build-part--core {
+        top: 55%; //65
+        width: 20%;
+        z-index: 1;
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 991px) {
+
+      flex: none;
+
+      .build-assembly {
+        aspect-ratio: unset;
+        height: 460px;
+      }
+    }
+  }
+
   // ===== FEEL THE SPIRIT 影片區 =====
   .video-cta {
     display: flex;
@@ -373,16 +466,33 @@
     min-height: 360px;
     padding: 24px;
 
-    background-image: url(/ckd101/g2/front/home_video.png);
-    background-size: cover;
-    background-position: center;
+    position: relative;
+    overflow: hidden;
+
+    // background-image: url(/ckd101/g2/front/home_video.png);
+    // background-size: cover;
+    // background-position: center;
 
     @include rwd("desktop") {
       height: 674px;
     }
   }
 
+  .video-cta__bg {
+    position: absolute;
+    inset: -20px;
+
+    background-image: url(/ckd101/g2/front/home_video.png);
+    background-size: cover;
+    background-position: center;
+
+    z-index: 0;
+  }
+
   .video-cta__box {
+    position: relative;
+    z-index: 1;
+
     display: flex;
     flex-direction: column;
     align-items: center;
