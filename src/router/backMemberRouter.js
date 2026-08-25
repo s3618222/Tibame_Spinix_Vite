@@ -12,6 +12,7 @@ import ForumManage from "@/views/backend/forumManage.vue";
 import ForumManageDetail from "@/views/backend/forumManageDetail.vue";
 import ExchangeManage from "@/views/backend/exchangeManage.vue";
 import ComplaintManage from "@/views/backend/complaintManage.vue";
+import ComplaintManageDetail from "@/views/backend/complaintManageDetail.vue";
 import AdminAccountManage from "@/views/backend/adminAccountManage.vue";
 import ProductDetail from "@/components/ProdDetail.vue"; 
 
@@ -74,6 +75,11 @@ const backMemberRouter = createRouter({
       path: "/complaint",
       name: "backend-complaint",
       component: ComplaintManage
+    },
+    {
+      path: "/complaint/:sourceType/:id",
+      name: "backend-complaint-detail",
+      component: ComplaintManageDetail
     },
     {
       path: "/admin-account",
