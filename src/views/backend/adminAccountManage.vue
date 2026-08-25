@@ -58,14 +58,14 @@
             >
               <button
                 type="button"
-                class="action-menu__item"
+                class="action-menu__item action-menu__item--edit"
                 @click="openModal('edit', admin)"
               >
                 編輯
               </button>
               <button
                 type="button"
-                class="action-menu__item"
+                class="action-menu__item action-menu__item--reset"
                 @click="openModal('reset', admin)"
               >
                 重設密碼
@@ -291,6 +291,14 @@
       cursor: pointer;
       text-align: left;
       color: map-get($color, secondary);
+
+      &--edit {
+        color: map-get($color, olive);
+      }
+
+      &--reset {
+        color: map-get($color, error);
+      }
     }
   }
 </style>
