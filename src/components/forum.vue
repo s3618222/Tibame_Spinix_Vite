@@ -8,9 +8,12 @@
 
       <ForumToolbar :search-keyword="searchKeyword" :sort-by="sortBy" @search="updateSearch" @sort="updateSort"/>
       <CategoryTabs :current-tab="currentTab" @change-tab="switchTab"/>
-      <ArticleList :article-list="paginatedArticles"/>
-      <div class="pagination-wrap" v-if="displayArticles.length > 0">
+      <ArticleList :article-list="articlesToShow"/>
+      <div class="pagination-wrap" v-if="!isMobile && displayArticles.length > 0">
         <Pagination v-model:current-page="currentPage" :page-size="6" :total="displayArticles.length" />
+      </div>
+      <div class="load-more-wrap" v-if="isMobile && hasMoreMobile">
+        <LoadMoreButton @click="mobileVisibleCount += 6">顯示更多文章</LoadMoreButton>
       </div>
 
     </div>
@@ -24,6 +27,7 @@ import CategoryTabs from "@/components/forum/categoryTabs.vue";
 import ArticleList from "@/components/forum/articleList.vue";
 import { CATEGORY_LABELS } from '@/assets/js/utils/articleCategory.js';
 import Pagination from "@/components/pagination.vue";
+import LoadMoreButton from '@/components/LoadMoreButton.vue';
 
 export default {
   name: "ForumView",
@@ -35,7 +39,9 @@ export default {
       searchKeyword: "",
       sortBy: "latestPost",
       allArticles: [],
-      currentPage: 1
+      currentPage: 1,
+      isMobile: false,
+      mobileVisibleCount: 6
     }
   },
 
@@ -43,11 +49,23 @@ export default {
     this.fetchArticles();
   },
 
+  mounted(){
+    this.checkIsMobile();
+    // 只要視窗寬度有改變，就會重新確認當下是否為手機版斷點
+    window.addEventListener('resize', this.checkIsMobile);
+  },
+
+  beforeUnmount(){
+    // 清除瀏覽器記憶體(監聽視窗寬度)
+    window.removeEventListener('resize', this.checkIsMobile);
+  },
+
   components: {
     ForumToolbar,
     CategoryTabs,
     ArticleList,
-    Pagination
+    Pagination,
+    LoadMoreButton
   },
 
   computed: {
@@ -81,13 +99,28 @@ export default {
     paginatedArticles() {
       const start = (this.currentPage - 1) * 6;
       return this.displayArticles.slice(start, start + 6);
+    },
+
+    mobileVisibleArticles(){
+      return this.displayArticles.slice(0, this.mobileVisibleCount);
+    },
+
+    //判斷畫面上所有文章是否都顯示完了，讓「顯示更多」按鈕消失不給使用者按
+    hasMoreMobile(){
+      return this.mobileVisibleCount < this.displayArticles.length;
+    },
+
+    //總開關，依當下是不是手機版，決定要用顯示更多按鈕還是分頁器
+    articlesToShow(){
+      return this.isMobile ? this.mobileVisibleArticles : this.paginatedArticles;
     }
   },
 
   watch: {
-    currentTab() { this.currentPage = 1; },
-    searchKeyword() { this.currentPage = 1; },
-    sortBy() { this.currentPage = 1; }
+    //使用者在第 3 頁的時候切換分類 tab，畫面重置回第1頁
+    currentTab() { this.currentPage = 1; this.mobileVisibleCount = 6;},
+    searchKeyword() { this.currentPage = 1; this.mobileVisibleCount = 6;},
+    sortBy() { this.currentPage = 1; this.mobileVisibleCount = 6;},
   }, 
 
   methods: {
@@ -124,6 +157,9 @@ export default {
     },
     updateSort(value) {
       this.sortBy = value;
+    },
+    checkIsMobile(){
+      this.isMobile = window.innerWidth < 992;
     }
   }
 }
@@ -133,7 +169,6 @@ export default {
 
 <style lang="scss" scoped>
 @use '@/assets/scss/var' as *;
-@use '@/assets/scss/reset' as *;
 
 .forum-page {
   // background-color: map-get($color, secondary);
@@ -168,6 +203,11 @@ export default {
   background-color: map-get($color, white);
   border-radius: 0 0 12px 12px;
   box-shadow: 0 4px 20px rgba(20, 28, 38, 0.05);
+}
+
+.load-more-wrap{
+  display: flex;
+  justify-content: center;
 }
 
 </style>
