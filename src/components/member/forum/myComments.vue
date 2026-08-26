@@ -14,6 +14,7 @@
         </p>
         <p class="col-content">{{ comment.content }}</p>
         <p class="col-date">{{ comment.date }}</p>
+        <hr class="divider">
         <p class="col-status">
           <span :class="['chip', comment.isShow ? 'chip--exchangeable' : 'chip--completed']">
             {{ comment.isShow ? '上架中' : '已下架' }}
@@ -24,11 +25,11 @@
         </div>
       </div>
     </div>
-    <div class="t-footer" v-if="hasMore">
-      <LoadMoreButton @click="showMore">顯示更多留言</LoadMoreButton>
-    </div>
   </div>
-
+  <div class="t-footer" v-if="hasMore">
+    <LoadMoreButton @click="showMore" class="btn-load">顯示更多留言</LoadMoreButton>
+  </div>
+  
 </template>
 
 <script>
@@ -109,8 +110,9 @@ button {
   grid-template-areas:
     "article article"
     "content content"
-    "date status"
-    "action action";
+    "date date"
+    "divider divider"
+    "status action";
   gap: 12px;
   padding: 20px;
   border-radius: 12px;
@@ -120,6 +122,9 @@ button {
     grid-area: article;
     font-size: 18px;
     text-align: left;
+    min-width: 0;
+    line-height: 18px;
+    min-height: 20px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -140,6 +145,9 @@ button {
     color: map-get($color, secondary2);
     font-size: 14px;
     text-align: left;
+    min-width: 0;
+    line-height: 18px;
+    min-height: 20px;
   }
 
   .col-date {
@@ -147,24 +155,34 @@ button {
     color: map-get($color, neutral);
     font-size: 14px;
     align-self: center;
+    text-align: left;
+  }
+
+  .divider {
+    grid-area: divider;
+    border: none;
+    border-top: 1px solid map-get($color, warmGray);
+    width: 100%;
+    margin: 0;
   }
 
   .col-status {
     grid-area: status;
+    justify-self: start;
   }
 
   .col-action {
     grid-area: action;
     display: flex;
     gap: 8px;
-    border-top: 1px solid map-get($color, warmGray);
-    padding-top: 12px; // 按鈕靠左預設生效，並推開頂部線條
     justify-content: end;
   }
 }
 
 .t-footer {
   margin-top: 32px;
+  display: flex;
+  justify-content: center;
 }
 
 
@@ -194,6 +212,11 @@ button {
     font-weight: 600;
   }
 
+  // 桌機版不需要手機版專用的分隔線
+  .divider {
+    display: none;
+  }
+
   // 3. 重置卡片為表格列 (Flex)
   .comment-card {
     display: flex;
@@ -217,9 +240,8 @@ button {
 
   // 4. 重置頁尾樣式
   .t-footer {
-    margin-top: 0;
-    background-color: #fff;
-    padding-block: 16px;
+    margin: 20px ;
+    // padding-block: 16px;
   }
 
   /* ------------------------------------------------------------------------
@@ -246,6 +268,9 @@ button {
       flex: 1;
       min-width: 0;
       text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .col-date {
