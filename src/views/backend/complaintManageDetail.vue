@@ -248,7 +248,7 @@
   // 被申訴內容的上下架狀態（is_show：1=上架、0=下架；PDO 可能回字串）
   function showLabel(isShow) {
     if (isShow === null || isShow === undefined || isShow === "") return "—";
-    return Number(isShow) === 1 ? "上架" : "下架";
+    return Number(isShow) === 1 ? "上架中" : "已下架";
   }
 
   // 處理面板表單狀態
@@ -340,10 +340,9 @@
   // 資訊卡
   .info-card {
     display: flex;
+    gap: 40px;
     flex-wrap: wrap;
-    gap: 32px;
     padding: 16px;
-    max-width: $cardWidth;
 
     background-color: map-get($color, white);
     border: 1px solid map-get($color, hint);
