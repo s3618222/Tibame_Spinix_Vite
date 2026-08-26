@@ -125,10 +125,7 @@
 
         <!-- 處置內容 -->
         <div class="handle-field">
-          <label class="handle-field__label">
-            處置內容
-            <span class="handle-field__hint">(累積違規次數3時，停權7天)</span>
-          </label>
+          <label class="handle-field__label">處置內容</label>
           <div class="disposition">
             <button
               type="button"
@@ -136,7 +133,7 @@
               :class="{ active: disposition === 'confirm' }"
               @click="disposition = 'confirm'"
             >
-              累計違規次數+1
+              確認違規
             </button>
             <button
               type="button"
@@ -166,6 +163,9 @@
         >
           送出處理結果
         </button>
+        <p class="disposition__note">
+            確認違規後，將下架該內容，並累計違規次數 1 次；累計滿 3 次，會員將被停權 7 天。
+        </p>
       </div>
     </template>
 
@@ -560,6 +560,13 @@
         background-color: map-get($color, lightYellow);
       }
     }
+  }
+
+  .disposition__note {
+    font-size: map-get($fontSize, hint);
+    color: map-get($color, error);
+    text-decoration: underline;
+    line-height: 1.5;
   }
 
   // 送出按鈕
