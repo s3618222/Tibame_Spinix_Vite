@@ -1,8 +1,9 @@
 <?php
   // 後台「申訴管理」— 送出處理結果（管理員裁決寫回）
-  // 成立(confirm)：更新申訴為 CONFIRMED，並「被申訴人違規次數+1」＋「下架該內容 is_show=0」（一個交易內完成）
+  // 成立(confirm)：一個交易內完成 → 更新申訴為 CONFIRMED、被申訴人違規次數+1、下架該內容 is_show=0；
+  //                 違規累計達門檻(3)時，該功能自動停權(TEMP-RESTRICT) 7 天
   // 駁回(reject)：只更新申訴為 REJECTED，member 與內容上下架皆不變
-  // 延後：達3次自動停權7天、remove_reason / battle_manage_record 記錄
+  // 延後：升級永久停權、停權到期自動恢復、remove_reason / battle_manage_record 記錄
 
   session_start();
 
@@ -40,8 +41,10 @@
       "admin"      => "ADMIN_ID",
       "at"         => "RESPONDED_AT",
       "text"       => "RESPONDED_TEXT",
-      "respondent" => "RESPONDENT_MEM_ID",
-      "vio"        => "BATTLE_VIO_COUNTS",
+      "respondent"    => "RESPONDENT_MEM_ID",
+      "vio"           => "BATTLE_VIO_COUNTS",
+      "suspendStatus" => "BATTLE_STATUS",
+      "suspendUntil"  => "BATTLE_SUSPEND_UNTIL",
       "targets"    => [
         ["fk" => "BATTLE_ID", "table" => "battle_record", "pk" => "BATTLE_ID", "show" => "IS_SHOW"]
       ]
@@ -53,8 +56,10 @@
       "admin"      => "admin_id",
       "at"         => "responded_at",
       "text"       => "responded_text",
-      "respondent" => "respondent_mem_id",
-      "vio"        => "EXCHANGE_VIO_COUNTS",
+      "respondent"    => "respondent_mem_id",
+      "vio"           => "EXCHANGE_VIO_COUNTS",
+      "suspendStatus" => "MARKET_STATUS",
+      "suspendUntil"  => "MARKET_SUSPEND_UNTIL",
       "targets"    => [
         ["fk" => "post_id", "table" => "exchange_post",    "pk" => "post_id", "show" => "is_show"],
         ["fk" => "comm_id", "table" => "exchange_comment", "pk" => "comm_id", "show" => "is_show"]
@@ -67,8 +72,10 @@
       "admin"      => "admin_id",
       "at"         => "responded_at",
       "text"       => "responded_text",
-      "respondent" => "respondent_mem_id",
-      "vio"        => "FORUM_VIO_COUNTS",
+      "respondent"    => "respondent_mem_id",
+      "vio"           => "FORUM_VIO_COUNTS",
+      "suspendStatus" => "FORUM_STATUS",
+      "suspendUntil"  => "FORUM_SUSPEND_UNTIL",
       "targets"    => [
         ["fk" => "art_id", "table" => "article", "pk" => "art_id", "show" => "is_show"],
         ["fk" => "msg_id", "table" => "message", "pk" => "msg_id", "show" => "is_show"]
@@ -81,6 +88,10 @@
     "confirm" => "CONFIRMED",
     "reject"  => "REJECTED"
   ];
+
+  // 自動停權門檻與天數（違規累計達門檻 → 該功能停權 N 天）
+  $suspendThreshold = 3;
+  $suspendDays      = 7;
 
   // 參數驗證
   if (!isset($map[$sourceType]) || $appealId <= 0 || !isset($statusMap[$disposition])) {
@@ -142,11 +153,28 @@
 
     // 2. 成立才有的副作用：違規次數+1、下架內容
     if ($disposition === "confirm") {
-      // 2-1. 被申訴人違規次數 +1
+      // 2-1. 被申訴人違規次數 +1；累計達門檻則自動停權該功能
       $respondentId = (int) $row[$m["respondent"]];
       if ($respondentId > 0) {
-        $vioSql = "UPDATE member SET {$m['vio']} = {$m['vio']} + 1 WHERE MEM_ID = ?";
-        $pdo->prepare($vioSql)->execute([$respondentId]);
+        $pdo->prepare("UPDATE member SET {$m['vio']} = {$m['vio']} + 1 WHERE MEM_ID = ?")
+            ->execute([$respondentId]);
+
+        // 讀出加完後的違規次數
+        $cntStmt = $pdo->prepare("SELECT {$m['vio']} FROM member WHERE MEM_ID = ?");
+        $cntStmt->execute([$respondentId]);
+        $newCount = (int) $cntStmt->fetchColumn();
+
+        // 達門檻（含以上）→ 該功能停權 N 天，並刷新到期日；不覆蓋永久停權
+        if ($newCount >= $suspendThreshold) {
+          $suspendSql = "
+            UPDATE member
+            SET {$m['suspendStatus']} = 'TEMP-RESTRICT',
+                {$m['suspendUntil']}  = DATE_ADD(NOW(), INTERVAL {$suspendDays} DAY)
+            WHERE MEM_ID = ?
+              AND {$m['suspendStatus']} <> 'PERMA-RESTRICT'
+          ";
+          $pdo->prepare($suspendSql)->execute([$respondentId]);
+        }
       }
 
       // 2-2. 下架對應內容（找外鍵非空的那個目標，只下架一個）
