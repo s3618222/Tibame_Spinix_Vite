@@ -21,7 +21,7 @@
           </span>
         </p>
         <div class="col-action">
-          <button type="button" class="btn-del">刪除</button>
+          <button type="button" class="btn-del" @click="handleDeleteClick(comment.id)" v-if="comment.isShow">刪除</button>
         </div>
       </div>
     </div>
@@ -41,6 +41,8 @@
     components: {
       LoadMoreButton
     },
+
+    emits: ["delete-message"],
 
     data() {
       return {
@@ -66,6 +68,12 @@
     },
 
     methods: {
+      handleDeleteClick(commentId) {
+        const confirmed = confirm("確定要刪除這則留言嗎？此動作無法在畫面上復原。");
+        if (!confirmed) return;
+
+        this.$emit("delete-message", commentId);
+      },
       showMore() {
         this.visibleCount += 5;
       }
