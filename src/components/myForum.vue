@@ -34,7 +34,7 @@
     </div>
     <div class="table-content">
       <MyArticles v-if="currentTab === 'posts'" :articles="articles" @delete-article="handleDeleteArticle"/>
-      <myComments v-if="currentTab === 'comments'" :comments="comments"/>
+      <myComments v-if="currentTab === 'comments'" :comments="comments" @delete-message="handleDeleteMessage"/>
     </div>
   </section>
 </template>
@@ -135,6 +135,29 @@ export default {
         }
       } catch (error) {
         console.error("刪除文章失敗", error);
+      }
+    },
+
+    async handleDeleteMessage(messageId){
+      try {
+        const formData = new FormData();
+        formData.append("msg_id", messageId);
+
+        const res = await fetch("http://localhost:8888/Spinix/php/forum/deleteComment.php", {
+          method: "POST",
+          credentials: "include",
+          body: formData
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          this.comments = this.comments.filter(comment => comment.id !== messageId);
+          alert("刪除成功");
+        } else {
+          alert(result.message || "刪除失敗，請稍後再試");
+        }
+      } catch (error) {
+        console.error("刪除留言失敗", error);
       }
     }
   }

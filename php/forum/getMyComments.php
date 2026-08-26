@@ -25,6 +25,7 @@
     FROM message 
     JOIN article ON article.art_id = message.art_id
     WHERE message.mem_id = ?
+    AND (message.delete_type IS NULL OR message.delete_type != 'self_deleted')
     ORDER BY message.create_time DESC
     ";
     $stmt = $pdo->prepare($sql);

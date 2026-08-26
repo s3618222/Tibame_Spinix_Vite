@@ -10,42 +10,25 @@
 
       <div class="meta-bar">
         <div class="meta-item">
-          <p class="meta-label">申訴編號</p>
-          <p class="meta-value">#{{ violation.id }}</p>
+          <p class="meta-label">被申訴人</p>
+          <p class="meta-value">{{ violation.respondentName }}</p>
         </div>
+
         <div class="meta-item">
-          <p class="meta-label">被申訴對象</p>
-          <p class="meta-value">{{ violation.target }}</p>
-        </div>
-        <div class="meta-item">
-          <p class="meta-label">申訴類型</p>
+          <p class="meta-label">違規類型</p>
           <p class="meta-value">{{ violation.type }}</p>
         </div>
+
         <div class="meta-item">
-          <p class="meta-label">處份記錄</p>
-          <p class="meta-value">{{ violation.punishment }}</p>
-        </div>
-        <div class="meta-item">
-          <p class="meta-label">建立時間</p>
-          <p class="meta-value">{{ violation.reportedAt }}</p>
+          <p class="meta-label">處理時間</p>
+          <p class="meta-value">{{ formatDateTime(violation.respondedAt) }}</p>
         </div>
       </div>
 
-      <section class="detail-card">
-        <h2>{{ violation.type }}</h2>
-        <p class="detail-text">{{ violation.content }}</p>
-
-        <h2>證據截圖</h2>
-        <div class="evidence-grid">
-          <div class="evidence-item" v-for="n in violation.images" :key="n">IMG</div>
-        </div>
-      </section>
-
       <section class="detail-card result-card">
-        <h2>處份結果</h2>
-        <p class="detail-text">{{ violation.result }}</p>
-        <p class="result-date">回復時間：{{ violation.resultDate }}</p>
-        <p class="result-hint">如果對處置有疑問請聯絡我們，或撥打客服電話：0900-000-000</p>
+        <h2>違規處分說明</h2>
+        <p class="detail-text">{{ violation.respondedText }}</p>
+        <p class="result-hint">如果對處置有疑問請聯絡我們 (contact@spinix.com.tw)，或撥打客服電話：0900-000-000</p>
       </section>
     </template>
 
@@ -57,17 +40,74 @@
 </template>
 
 <script>
-import myViolationData from "@/data/myViolationData.js";
+// import myViolationData from "@/data/myViolationData.js";
 
 export default {
   name: "MyViolationDetail",
 
-  computed: {
-    violation() {
-      return myViolationData.find((item) => item.id === this.$route.params.id) || null;
+  data () {
+    return {
+      violation: null //儲存後端回傳的單筆違規詳情
     }
+  },
+
+  computed: {
+    phpBaseUrl() { //判斷目前php的執行環境，調整網址前綴
+      return (
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1"
+          ? "http://localhost:8888/Spinix/php"
+          : "/ckd101/g2/php"
+      );
+    },
+  },
+
+  methods: {
+    async fetchViolationDetail () { //串接違規詳情API
+      try {
+        //從vue router的網址參數取得違規類型與該筆申訴ID資料
+        const type = this.$route.params.type;
+        const id = this.$route.params.id;
+
+        const response = await fetch(`${this.phpBaseUrl}/member/my_violation_detail_get.php?type=${type}&id=${id}`, {
+          credentials: "include"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          console.error(data.message);
+          return;
+
+        }
+          
+        //將傳回資料存入violation變數
+        this.violation = data.violation;
+
+      } catch (error) {
+        console.error("取得違規詳情失敗：", error);
+      }
+    },
+
+    formatDateTime(dateTime) { //日期格式化
+      if (!dateTime) return "-";
+
+      return new Date(dateTime).toLocaleString("zh-TW", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
+    }
+  },
+
+  mounted() {
+    this.fetchViolationDetail();
   }
 };
+
 </script>
 
 <style lang="scss" scoped>
@@ -151,25 +191,25 @@ export default {
     line-height: 1.6;
   }
 
-  .evidence-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+  // .evidence-grid {
+  //   display: flex;
+  //   flex-wrap: wrap;
+  //   gap: 8px;
+  // }
 
-  .evidence-item {
-    width: 120px;
-    height: 90px;
-    flex-shrink: 0;
+  // .evidence-item {
+  //   width: 120px;
+  //   height: 90px;
+  //   flex-shrink: 0;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
 
-    background-color: map.get($color, secondary);
-    color: map.get($color, neutral);
-    font-size: 12px;
-  }
+  //   background-color: map.get($color, secondary);
+  //   color: map.get($color, neutral);
+  //   font-size: 12px;
+  // }
 
   .result-date {
     font-size: map.get($fontSize, hint);
@@ -177,10 +217,11 @@ export default {
   }
 
   .result-hint {
+    margin-top: 8px;
     padding-top: 4px;
     border-top: 1px solid map.get($color, neutral);
 
-    font-size: 10px;
+    font-size: 12px;
     color: map.get($color, neutral);
   }
 

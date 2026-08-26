@@ -3,8 +3,9 @@ const myViolationData = [
   {
     id: "A001",
     type: "交易糾紛",
+    sourceType: "exchange",
     punishment: "禁言3天",
-    reportedAt: "2026-07-01",
+    respondedAt: "2026-07-01",
     target: "會員 B（ID:0098）",
     content:
       "收到檢舉指出刊登商品與實際狀況不符，經審核後屬實，已對帳號進行處分。",
@@ -15,8 +16,9 @@ const myViolationData = [
   {
     id: "A005",
     type: "論壇糾紛",
+    sourceType: "forum",
     punishment: "留言下架",
-    reportedAt: "2026-07-06",
+    respondedAt: "2026-07-06",
     target: "會員 F（ID:0142）",
     content: "於論壇文章留言區使用不當言語，經檢舉查證後違反社群規範。",
     images: 1,
@@ -26,8 +28,9 @@ const myViolationData = [
   {
     id: "A007",
     type: "約戰糾紛",
+    sourceType: "battle",
     punishment: "停權7天",
-    reportedAt: "2026-07-10",
+    respondedAt: "2026-07-10",
     target: "會員 G（ID:0203）",
     content: "多次約戰未到場也未提前告知取消，經多筆檢舉查證屬實。",
     images: 3,
@@ -37,8 +40,9 @@ const myViolationData = [
   {
     id: "A009",
     type: "交易糾紛",
+    sourceType: "exchange",
     punishment: "禁止刊登交換物品",
-    reportedAt: "2026-07-15",
+    respondedAt: "2026-07-15",
     target: "會員 H（ID:0088）",
     content: "刊登商品與描述明顯不符，且拒絕依規定辦理退款。",
     images: 2,

@@ -266,20 +266,20 @@ const phpBaseUrl =
       ? "http://localhost:8888/Spinix/php"
       : `${location.origin}/ckd101/g2/php`;
 
-export async function getExchangItems() {
-   fetch(`${phpBaseUrl}/exchange/change_get.php`, {
-      method: 'GET',
-      credentials: 'include'
+// export async function getExchangItems() {
+//    fetch(`${phpBaseUrl}/exchange/change_get.php`, {
+//       method: 'GET',
+//       credentials: 'include'
 
-   }).then(res => res.json()).then(data => {
-      if (data.success) {
-         return data.items;
-      }else{
-         console.error(data.message);
-         return [];
-      }
-   });
-}
+//    }).then(res => res.json()).then(data => {
+//       if (data.success) {
+//          return data.items;
+//       }else{
+//          console.error(data.message);
+//          return [];
+//       }
+//    });
+// }
 
 
 // 文章本身的狀態中文對照表（可交換／交換中／待確認／交換完成）
