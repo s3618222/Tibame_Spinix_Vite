@@ -57,10 +57,30 @@
         </p>
       </section>
 
-      <section class="detail-card result-card" v-if="appeal.result">
-        <h2>處份結果</h2>
-        <p class="detail-text">{{ appeal.result }}</p>
-        <p class="result-date">回覆時間：{{ formatDateTime(appeal.resultDate) }}</p>
+      <section class="detail-card result-card">
+        <h2>審核結果</h2>
+        <!-- 尚未處理時 -->
+        <p
+          v-if="appeal.status === 'PENDING'"
+          class="detail-text"
+        >
+          此申訴仍在審核中，請耐心等候管理員處理。
+        </p>
+        <!-- 申訴成立 -->
+        <p
+          v-else-if="appeal.status === 'CONFIRMED'"
+          class="detail-text"
+        >
+          經管理員審核，本次申訴內容經查證屬實，申訴成立。
+        </p>
+        <!-- 申訴不成立時，才顯示完整回覆說明 -->
+        <p
+          v-else-if="appeal.status === 'REJECTED'"
+          class="detail-text"
+        >
+          {{ appeal.result || "經管理員審核，本次申訴未成立。" }}
+        </p>
+        <p class="result-date">審核時間：{{ formatDateTime(appeal.resultDate) }}</p>
         <p class="result-hint">如果對處置有疑問請聯絡我們，或撥打客服電話：0900-000-000</p>
       </section>
     </template>
