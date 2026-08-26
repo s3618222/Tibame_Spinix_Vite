@@ -1,5 +1,5 @@
 <template>
-  <div class="my-article-table">
+  <div class="my-article-table" v-if="articles.length > 0">
     <div class="th">
       <p class="col-type">類別</p>
       <p class="col-title">貼文標題</p>
@@ -35,6 +35,7 @@
     </div>
     
   </div>
+  <div class="empty-state" v-else><p>目前沒有發文</p></div>
   <div class="t-footer" v-if="hasMore">
     <LoadMoreButton @click="showMore">顯示更多貼文</LoadMoreButton>
   </div>
@@ -221,7 +222,15 @@ export default {
     justify-content: end;
   }
 }
-
+.empty-state {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  padding: 40px 20px;
+  text-align: center;
+  color: map-get($color, neutral);
+  font-size: 16px;
+}
 .t-footer {
   margin-top: 32px;
   display: flex;
