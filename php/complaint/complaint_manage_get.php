@@ -25,12 +25,14 @@
       IFNULL(a.name, '未指派')                AS handler,
       battle_appeal.APPEAL_CONTENT            AS content,
       battle_appeal.PHOTO_EVIDENCE            AS evidence,
-      battle_appeal.RESPONDED_TEXT            AS respondedText
+      battle_appeal.RESPONDED_TEXT            AS respondedText,
+      br.IS_SHOW                              AS isShow
 
     FROM battle_appeal
     LEFT JOIN member c ON c.MEM_ID   = battle_appeal.COMPLAINANT_MEM_ID
     LEFT JOIN member r ON r.MEM_ID   = battle_appeal.RESPONDENT_MEM_ID
     LEFT JOIN admin  a ON a.admin_id = battle_appeal.ADMIN_ID
+    LEFT JOIN battle_record br ON br.BATTLE_ID = battle_appeal.BATTLE_ID
 
     UNION ALL
 
@@ -46,12 +48,15 @@
       IFNULL(a.name, '未指派')                AS handler,
       appeal_exchange.ae_content              AS content,
       appeal_exchange.ae_evidence             AS evidence,
-      appeal_exchange.responded_text          AS respondedText
+      appeal_exchange.responded_text          AS respondedText,
+      COALESCE(ep.is_show, ec.is_show)        AS isShow
 
     FROM appeal_exchange
     LEFT JOIN member c ON c.MEM_ID   = appeal_exchange.complainant_mem_id
     LEFT JOIN member r ON r.MEM_ID   = appeal_exchange.respondent_mem_id
     LEFT JOIN admin  a ON a.admin_id = appeal_exchange.admin_id
+    LEFT JOIN exchange_post    ep ON ep.post_id = appeal_exchange.post_id
+    LEFT JOIN exchange_comment ec ON ec.comm_id = appeal_exchange.comm_id
 
     UNION ALL
 
@@ -67,12 +72,15 @@
       IFNULL(a.name, '未指派')                AS handler,
       appeal_forum.af_content                 AS content,
       appeal_forum.af_evidence                AS evidence,
-      appeal_forum.responded_text             AS respondedText
+      appeal_forum.responded_text             AS respondedText,
+      COALESCE(art.is_show, msg.is_show)      AS isShow
 
     FROM appeal_forum
     LEFT JOIN member c ON c.MEM_ID   = appeal_forum.complainant_mem_id
     LEFT JOIN member r ON r.MEM_ID   = appeal_forum.respondent_mem_id
     LEFT JOIN admin  a ON a.admin_id = appeal_forum.admin_id
+    LEFT JOIN article art ON art.art_id = appeal_forum.art_id
+    LEFT JOIN message msg ON msg.msg_id = appeal_forum.msg_id
 
     /* 三表合併後統一依申訴時間新到舊排序 */
     ORDER BY createdAt DESC

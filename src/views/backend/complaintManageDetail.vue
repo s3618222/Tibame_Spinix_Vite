@@ -38,6 +38,10 @@
           <p class="info-card__label">建立時間</p>
           <p class="info-card__value">{{ appeal.createdAt }}</p>
         </div>
+        <div class="info-card__field">
+          <p class="info-card__label">上下架狀態</p>
+          <p class="info-card__value">{{ showLabel(appeal.isShow) }}</p>
+        </div>
       </div>
 
       <!-- 已結案：處理結果 + 處理備註 -->
@@ -121,10 +125,7 @@
 
         <!-- 處置內容 -->
         <div class="handle-field">
-          <label class="handle-field__label">
-            處置內容
-            <span class="handle-field__hint">(累積違規次數3時，停權7天)</span>
-          </label>
+          <label class="handle-field__label">處置內容</label>
           <div class="disposition">
             <button
               type="button"
@@ -132,7 +133,7 @@
               :class="{ active: disposition === 'confirm' }"
               @click="disposition = 'confirm'"
             >
-              累計違規次數+1
+              確認違規
             </button>
             <button
               type="button"
@@ -162,6 +163,9 @@
         >
           送出處理結果
         </button>
+        <p class="disposition__note">
+            確認違規後，將下架該內容，並累計違規次數 1 次；累計滿 3 次，會員將被停權 7 天。
+        </p>
       </div>
     </template>
 
@@ -239,6 +243,12 @@
   // 證據截圖圖片 URL（比照 myAppealDetail.getEvidenceImageUrl）
   function resolveEvidenceUrl(path) {
     return `${phpBaseUrl}/${path}`;
+  }
+
+  // 被申訴內容的上下架狀態（is_show：1=上架、0=下架；PDO 可能回字串）
+  function showLabel(isShow) {
+    if (isShow === null || isShow === undefined || isShow === "") return "—";
+    return Number(isShow) === 1 ? "上架中" : "已下架";
   }
 
   // 處理面板表單狀態
@@ -330,10 +340,9 @@
   // 資訊卡
   .info-card {
     display: flex;
+    gap: 40px;
     flex-wrap: wrap;
-    gap: 32px;
     padding: 16px;
-    max-width: $cardWidth;
 
     background-color: map-get($color, white);
     border: 1px solid map-get($color, hint);
@@ -551,6 +560,13 @@
         background-color: map-get($color, lightYellow);
       }
     }
+  }
+
+  .disposition__note {
+    font-size: map-get($fontSize, hint);
+    color: map-get($color, error);
+    text-decoration: underline;
+    line-height: 1.5;
   }
 
   // 送出按鈕
