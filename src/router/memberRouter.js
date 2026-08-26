@@ -61,7 +61,7 @@ const memberRouter = createRouter({
       component: MyViolation
     },
     {
-      path: "/violation/:id",
+      path: "/violation/:type/:id",
       name: "member-violation-detail",
       component: MyViolationDetail
     }
