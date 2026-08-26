@@ -22,9 +22,9 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import ProductCard from './productCard.vue';
-import { getExchangItems, statusLabelMap } from '@/data/mockExchangeData.js';   //  改用共用資料
+import { exchangeList, statusLabelMap } from '@/data/mockExchangeData.js';   //  改用共用資料
 
-const ExChangeInfo = ref(getExchangItems);   // 不用自己重複寫一份
+const ExChangeInfo = ref(exchangeList);   // 不用自己重複寫一份
 
 const currentFilters = ref({
    type: 'all',
