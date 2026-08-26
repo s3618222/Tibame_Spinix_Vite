@@ -43,7 +43,7 @@
             <span class="required">*</span>
           </label>
           <div class="custom-editor">
-            <textarea name="" id="default"></textarea>
+            <textarea name="" id="default">{{ formData.content }}</textarea>
           </div>
         </div>
 
@@ -66,15 +66,20 @@ export default {
   name: "forumForm",
 
   data() {
+    //抓網址列上?後面的值，如果有值就是文章id；如果是null，代表當前是新增模式
+    const urlParams = new URLSearchParams(window.location.search);
+    let my_articleId = urlParams.get("id");
+
     return {
       baseUrl: import.meta.env.BASE_URL,
-      articleId: null,
+      articleId: my_articleId,
       formData: {
         category: "",
         title: "",
         content: ""
       },
-      
+      tinymce_init: false,
+      currentMemberId: null
   
     };
   },
@@ -89,66 +94,32 @@ export default {
     }
   },
 
-  async mounted() {
+  async created(){
+    // 未登入者阻擋
     const isLoggedIn = await this.checkLoginStatus();
     if (!isLoggedIn) return;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    this.articleId = urlParams.get("id");
-
     if (this.isEdit) {
-      this.fetchArticleData(this.articleId);
+      await this.fetchArticleData(this.articleId);
     }
-
-    tinymce.init({
-      selector: 'textarea#default',
-      license_key: 'gpl',
-      plugins: 'link image lists',
-      toolbar: 'undo redo | blocks | bold italic underline | bullist numlist | link image',
-      height: 400,
-      menubar: false,
-      branding: false,
-
-      block_formats: '內文=p; 標題一=h2; 標題二=h3; 標題三=h4',
-
-      content_style: `
-        body {
-          background-color: #F7F5F3;
-          font-family: "Segoe UI", "Microsoft JhengHei", "PingFang TC", sans-serif;
-          font-size: 18px;
-          line-height: 1.6;              /* 同一段落內，換行後的行距，數字越大行距越鬆 */
-          color: #141C26;
-        }
-        h2 { font-size: 30px; font-weight: 700; margin: 24px 0 12px; color: #141C26; }
-        h3 { font-size: 26px; font-weight: 700; margin: 20px 0 10px; color: #141C26; }
-        h4 { font-size: 22px; font-weight: 700; margin: 16px 0 8px; color: #141C26; }
-        p { margin: 0 0 16px; }          /* 段落與段落之間的距離 */
-        ul, ol { padding-left: 24px; margin: 8px 0; }
-        li { margin-bottom: 4px; }
-        a { color: #fec96b; text-decoration: underline; }
-      `,
-
-      images_upload_handler: async (blobInfo) => {
-        const formData = new FormData();
-          formData.append("file", blobInfo.blob(), blobInfo.filename());
-          
-          const res = await fetch("http://localhost:8888/Spinix/php/forum/uploadArticleImage.php", {
-            method: "POST",
-            credentials: "include",
-            body: formData
-          });
-          const result = await res.json();
-
-          if(result.location){
-            return result.location;
-          }else{
-            throw new Error(result.error || "圖片上傳失敗");
-          }
-        
-      }
-
-    });
   },
+
+  mounted(){
+    // ?後面沒有值，為新增模式，初始化tinymce
+    if (!this.isEdit) {
+      this.myTinyMCEActivate();
+    }
+  },
+
+  updated() {
+    // 不能用isEdit來判斷，會變成永遠都是true，一直觸發tinymce初始化；而且isEdit是computed的計算結果，不能在其他地方改動；變成變數的話會牽扯到其他判斷邏輯
+    // 預設值tinymce還沒初始化，當偵測到畫面變化了(formData抓回的文章資料丟到模板上)，觸發update，執行初始化tinymce，並用是否完成初始化作為旗標，避免使用者增修文章持續觸發tinymce初始化
+    if(!this.tinymce_init){
+      this.tinymce_init = true;
+      this.myTinyMCEActivate();
+    }
+  },
+  
 
   methods: {
     async checkLoginStatus() {
@@ -163,6 +134,8 @@ export default {
           window.location.href = `${this.baseUrl}signIn.html`;
           return false;
         }
+        
+        this.currentMemberId = result.member.id;
         return true;
       } catch (error) {
         console.error("登入狀態確認失敗", error);
@@ -170,13 +143,34 @@ export default {
       }
     },
 
-    fetchArticleData(id) {
-      // 假資料代入
-      this.formData = {
-        category: "unboxing",
-        title: "【心得】關於 B-201 的配重塊最佳化方案",
-        content: "這是我經過多次測試後的軸心配置..."
-      };
+    async fetchArticleData(id) {
+      try {
+        const res = await fetch(`http://localhost:8888/Spinix/php/forum/getArticleById.php?id=${id}`, {
+          credentials: "include"
+        });
+        const result = await res.json();
+
+        if (!result.success) {
+          alert(result.message || "找不到這篇文章");
+          window.location.href = `${this.baseUrl}forum.html`;
+          return;
+          
+        }
+        
+        if(Number(this.currentMemberId) !== Number(result.data.mem_id)){
+          alert("您沒有權限編輯這篇文章");
+          window.location.href = `${this.baseUrl}forum.html`;
+          return;
+        }
+
+        this.formData = {
+          category: result.data.category,
+          title: result.data.title,
+          content: result.data.content
+        };
+      } catch (error) {
+        console.error("文章資料載入失敗", error);
+      }
     },
 
     async handleSubmit() {
@@ -193,7 +187,16 @@ export default {
         formData.append("category", this.formData.category);
         formData.append("content", content);
 
-        const res = await fetch("http://localhost:8888/Spinix/php/forum/addArticle.php", {
+        //用變數apiUrl 決定要打哪支api
+        const apiUrl = this.isEdit
+        ? "http://localhost:8888/Spinix/php/forum/updateArticle.php"
+        : "http://localhost:8888/Spinix/php/forum/addArticle.php";
+
+        if (this.isEdit) {
+          formData.append("art_id", this.articleId);
+        }
+
+        const res = await fetch(apiUrl, {
           method: "POST",
           credentials: "include",
           body: formData
@@ -201,19 +204,70 @@ export default {
         const result = await res.json();
 
         if(result.success){
-          alert("發布成功！");
-          window.location.href = `${this.baseUrl}forumArticle.html?id=${result.data.art_id}`;
+          alert(this.isEdit ? "修改成功！" : "發布成功！");
+          const redirectId = this.isEdit ? this.articleId : result.data.art_id;
+          window.location.href = `${this.baseUrl}forumArticle.html?id=${redirectId}`;
 
         }else{
-          alert(result.message || "發布失敗，請稍後再試");
+          alert(result.message || (this.isEdit ? "修改失敗，請稍後再試" : "發布失敗，請稍後再試"));
         }
       }catch(error){
-        console.error("發布文章失敗", error);
+        console.error(this.isEdit ? "修改文章失敗" : "發布文章失敗", error);
       }
     },
 
     handleCancel() {
       window.history.back();
+    },
+    myTinyMCEActivate(){
+      tinymce.init({
+        selector: 'textarea#default',
+        license_key: 'gpl',
+        plugins: 'link image lists',
+        toolbar: 'undo redo | blocks | bold italic underline | bullist numlist | link image',
+        height: 400,
+        menubar: false,
+        branding: false,
+
+        block_formats: '內文=p; 標題一=h2; 標題二=h3; 標題三=h4',
+
+        content_style: `
+          body {
+            background-color: #F7F5F3;
+            font-family: "Segoe UI", "Microsoft JhengHei", "PingFang TC", sans-serif;
+            font-size: 18px;
+            line-height: 1.6;              
+            color: #141C26;
+          }
+          h2 { font-size: 30px; font-weight: 700; margin: 24px 0 12px; color: #141C26; }
+          h3 { font-size: 26px; font-weight: 700; margin: 20px 0 10px; color: #141C26; }
+          h4 { font-size: 22px; font-weight: 700; margin: 16px 0 8px; color: #141C26; }
+          p { margin: 0 0 16px; }          
+          ul, ol { padding-left: 24px; margin: 8px 0; }
+          li { margin-bottom: 4px; }
+          a { color: #fec96b; text-decoration: underline; }
+        `,
+
+        images_upload_handler: async (blobInfo) => {
+          const formData = new FormData();
+            formData.append("file", blobInfo.blob(), blobInfo.filename());
+            
+            const res = await fetch("http://localhost:8888/Spinix/php/forum/uploadArticleImage.php", {
+              method: "POST",
+              credentials: "include",
+              body: formData
+            });
+            const result = await res.json();
+
+            if(result.location){
+              return result.location;
+            }else{
+              throw new Error(result.error || "圖片上傳失敗");
+            }
+          
+        }
+
+      });
     }
   }
 };
