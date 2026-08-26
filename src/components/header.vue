@@ -45,7 +45,11 @@
       </nav>
       <!-- 登入後會員頭貼 -->
         <div class="member-center" ref="userMenuWrapper" v-if="isChecked && isLogin">
-          <div class="header-user-headshot" @click="openUserPanel">
+          <div 
+            class="header-user-headshot" 
+            :class="{ 'has-unread': hasUnreadNotification }"
+            @click="openUserPanel"
+          >
             <img 
               :src="`${baseUrl}${currentMember.photo}`"
               :alt="`${currentMember.name}的會員頭像`"
@@ -70,7 +74,10 @@
                   <li>
                     <button type="button" class="menu-item" @click="goToPanel('notice')">
                         <i class="fa-solid fa-bell"></i>
-                        <p class="item-label">會員通知</p>
+                        <p class="item-label">
+                          會員通知
+                          <span v-if="hasUnreadNotification" class="notification-dot"></span>
+                        </p>
                         <i class="fa-solid fa-angle-right"></i>
                     </button>
                   </li>
@@ -93,10 +100,12 @@
 
 
               <!-- 通知面板 -->
+              <!-- 收到來自Userpanel傳出的notification-status-change事件時，就再重新檢查一次，還有沒有未讀通知 -->
               <noticePanel 
                 v-else-if="currentPanel === 'notice'" 
                 key="notice"
                 @close="goToPanel('menu')"
+                @notification-status-change="fetchNotificationStatus"
               />
             </Transition>
 
@@ -155,6 +164,7 @@ export default {
       isUserPanelOpen: false,
       isLogin:false, // 檢查是否登入
       isChecked: false, //用來記錄是否已確認登入狀態
+      hasUnreadNotification: false, // 是否存在未讀通知
       currentMember: null, //紀錄當下登入會員資料
       currentPanel: "menu",   // menu | notice
       transitionName: "slide-left",  // 控制滑動方向
@@ -163,6 +173,31 @@ export default {
   },
 
   methods: {
+    async fetchNotificationStatus() { 
+      //串接目前登入會員的通知列表API
+      //判斷目前會員是否仍有未讀訊息，切換對應Class作提醒
+
+      try {
+        const response = await fetch(`${phpBaseUrl}/member/notification_get.php`, {
+          method: "GET",
+          credentials: "include"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "取得通知狀態失敗");
+        }
+
+        //檢查回傳的通知訊息中，是否至少有一筆是未讀狀態 (is_read = 0)
+        this.hasUnreadNotification = data.notifications.some(item => Number(item.is_read) === 0);
+
+      } catch (error) {
+        console.error("取得通知狀態失敗：", error);
+        this.hasUnreadNotification = false;
+      }
+    },
+
     changeHeader() {
       // 固定實心的頁面不需要切換 scrolled
       if (this.solid) {
@@ -220,6 +255,10 @@ export default {
           
           if (data.isLoggedIn) { //已登入狀態時，將登入會員的基本資訊存在currentMember變數中
             this.currentMember = data.member;
+
+             // 確認登入後，再檢查該會員是否有未讀通知
+            this.fetchNotificationStatus();
+
           } else {
             this.currentMember = null;
           }
@@ -427,7 +466,20 @@ export default {
       transform: translateY(0);
   }
 
+  //有未讀通知時的呼吸燈動畫
+  @keyframes notificationPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(242, 155, 0, 0);
+    }
 
+    50% {
+      box-shadow: 0 0 0 6px rgba(242, 155, 0, 0.35);
+    }
+
+    100% {
+      box-shadow: 0 0 0 0 rgba(242, 155, 0, 0);
+    }
+  }
 
   .header-main {
     .member-center{
@@ -446,6 +498,10 @@ export default {
 
         &:hover{
           border-color: #F29B00;
+        }
+        &.has-unread { // 當有未讀通知時
+          border-color: #F29B00;
+          animation: notificationPulse 2s ease-in-out infinite;
         }
         img{
           width: 100%;
@@ -576,7 +632,20 @@ export default {
                   flex: 1;
                   text-align: left;
                   font-weight: lighter;
-                  
+
+                  display: flex;
+                  align-items: center;
+                  gap: 20px;
+                }
+
+                .notification-dot { //有未讀訊息時的橘點
+                  width: 12px;
+                  height: 12px;
+
+                  flex-shrink: 0;
+
+                  border-radius: 50%;
+                  background-color: #F29B00;
                 }
               }
               

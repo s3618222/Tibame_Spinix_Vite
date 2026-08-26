@@ -54,6 +54,10 @@
    export default {
       name: "NoticePanel",
 
+      emits: [ //通知header，會員通知未讀狀態有改變
+         "notification-status-change"
+      ],
+
       data() {
          return {
          activeTab: "all", // all | unread
@@ -165,6 +169,8 @@
                item.isUnread = false;
             });
 
+            this.$emit("notification-status-change");
+
          } catch (error) {
             console.error("全部標記已讀失敗：", error);
          }
@@ -222,6 +228,9 @@
             //後端串接成功後，前端再同步修改畫面
             // 後端成功後，再同步修改前端畫面
             item.isUnread = false;
+
+            // 通知父元件header：未讀狀態已改變，供header的會員頭像知道通知被已讀了，不需要保持提醒動畫樣式
+            this.$emit("notification-status-change");
 
          } catch (error) {
             console.error("更新通知已讀狀態失敗：", error);
