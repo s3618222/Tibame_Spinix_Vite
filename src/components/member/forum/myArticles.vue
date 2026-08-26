@@ -26,8 +26,10 @@
           </span>
         </p>
         <div class="col-action">
-          <button type="button" class="btn-edit" v-if="article.isShow">編輯</button>
-          <button type="button" class="btn-del" @click="handleDeleteClick(article.id)" v-if="article.isShow">刪除</button>
+          <a type="button" class="btn-edit btn-action" v-if="article.isShow" 
+          :href="`${baseUrl}forumForm.html?id=${article.id}`"
+          >編輯</a>
+          <button type="button" class="btn-del btn-action" @click="handleDeleteClick(article.id)" v-if="article.isShow">刪除</button>
         </div>
       </div>
     </div>
@@ -95,10 +97,23 @@ export default {
 @use '@/assets/scss/var' as *;
 @use '@/assets/scss/mixin' as *;
 
-button {
+.btn-action {
   font-size: 16px;
-  &.btn-edit {color: map-get($color, secondary2 );}
-  &.btn-del {color: map-get($color, error );}
+  line-height: 16px;
+  font-weight: 600;
+  
+  &.btn-edit {
+    color: map-get($color, secondary2 );
+    &:hover{
+      color: lighten(map-get($color, secondary2 ), 10%);
+    }
+  }
+  &.btn-del {
+    color: map-get($color, error );
+    &:hover{
+        color: lighten(map-get($color, error ), 10%);
+    }
+  }
 }
 
 .my-article-table {
