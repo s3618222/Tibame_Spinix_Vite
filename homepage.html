@@ -19,6 +19,10 @@
 
     <!-- ========HERO======== -->
     <section class="hero">
+
+      <!-- 放hero區背景圖 -->
+      <div class="hero__bg"></div>
+
       <div class="hero__box">
         <div class="hero__heading">
           <h1>Every Spin Connects Players</h1>
@@ -98,8 +102,22 @@
       <div class="home-container highlight__inner">
         <span class="highlight__number">02</span>
         <div class="highlight__body">
-          <div class="highlight__media">
+          <!-- <div class="highlight__media">
             <img src="/home_build.png" alt="陀螺配置分享" loading="lazy">
+          </div> -->
+          <div class="highlight__media highlight__media--build">
+            <!-- 769px 以上時：GSAP 組裝動畫 -->
+            <div class="build-assembly">
+              <img src="/home_build_blade.png" alt="陀螺組裝零件" class="build-part build-part--blade">
+
+              <img src="/home_build_lock.png" alt="陀螺組裝零件" class="build-part build-part--lock">
+
+              <img src="/home_build_core.png" alt="陀螺組裝零件" class="build-part build-part--core">
+            </div>
+
+            <!-- 768px 以下：顯示完整原始圖片 -->
+            <img src="/home_build.png" alt="陀螺配置分享" class="build-static" loading="lazy">
+
           </div>
           <div class="highlight__text">
             <h2>陀螺配置分享</h2>
@@ -149,6 +167,7 @@
 
     <!-- ========FEEL THE SPIRIT======== -->
     <section class="video-cta">
+      <div class="video-cta__bg"></div>
       <div class="video-cta__box">
         <h2>FEEL THE SPIRIT</h2>
         <p>別只在螢幕前看！握緊發射器，準備好加入戰局了嗎？</p>
@@ -161,6 +180,8 @@
   </main>
 
   <!-- ========JS======== -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
   <script type="module" src="./src/assets/js/homepage.js"></script>
 </body>
 

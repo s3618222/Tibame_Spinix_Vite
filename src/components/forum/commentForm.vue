@@ -6,17 +6,28 @@
         placeholder="撰寫回覆..."
         class="comment-textarea"
       ></textarea>
+
       <div class="form-footer">
-        <label class="upload-btn">
-          <i class="fa-regular fa-image" title="最多上傳一張照片"></i>
-          <input type="file" accept="image/*" @change="handleFileChange" hidden>
+        <label v-if="!imagePreviewUrl" class="upload-btn">
+          <i class="fa-regular fa-image"></i>
+          <span>新增照片</span>
+          <input ref="fileInput" type="file" accept="image/*" @change="handleFileChange" hidden>
         </label>
+
+        <div v-if="imagePreviewUrl" class="image-preview">
+          <img :src="imagePreviewUrl" alt="預覽圖片">
+          <button type="button" class="btn-remove" @click="handleRemoveImage">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
         <button type="button" class="btnFill" @click="handleSubmit" :disabled="!commentText.trim()">
           <i class="fa-solid fa-paper-plane"></i>
           送出回覆
         </button>
       </div>
     </div>
+    
     <div v-else class="logout-box">
       <a :href="`${baseUrl}signIn.html`" class="login-area">想發表你的看法嗎？登入會員即可參與討論</a>
     </div>
@@ -42,13 +53,28 @@
       return {
         baseUrl: import.meta.env.BASE_URL,
         commentText: "",
-        commentImage: null
+        commentImage: null,
+        imagePreviewUrl: null   // 存縮圖的暫時網址
       }
     },
 
     methods: {
+      handleRemoveImage() {
+        if (this.imagePreviewUrl) {
+          URL.revokeObjectURL(this.imagePreviewUrl);
+        }
+        this.commentImage = null;
+        this.imagePreviewUrl = null;
+        this.$refs.fileInput.value = "";
+      },
+
       handleFileChange(event) {
-        this.commentImage = event.target.files[0] || null;
+        const file = event.target.files[0];
+        if(!file) return;
+        
+        this.commentImage = file;
+        this.imagePreviewUrl = URL.createObjectURL(file);
+        //把使用者選的檔案，轉換成一個只存在瀏覽器記憶體裡的暫時網址，這個網址可以直接塞給 <img :src="..."> 顯示縮圖
       },
       handleSubmit() {
         if (!this.commentText.trim()) return;
@@ -57,7 +83,7 @@
           image: this.commentImage
         });
         this.commentText = "";
-        this.commentImage = null;
+        this.handleRemoveImage();
       }
     }
   }
@@ -108,12 +134,12 @@ a.login-area {
 
 .comment-textarea {
   width: 100%;
-  resize: vertical;
+  resize: none;
   border: 1px solid transparent;
   outline: none;
   font-family: inherit;
   font-size: 14px;
-  min-height: 60px;
+  min-height: 90px;
   padding: 8px;
   border-radius: 8px;
   background-color: map-get($color, tertiary);
@@ -129,6 +155,36 @@ a.login-area {
   }
 }
 
+.image-preview {
+  position: relative;
+  width: 100px;
+  height: 100px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .btn-remove {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    border: none;
+  }
+}
+
 .form-footer {
   display: flex;
   justify-content: space-between;
@@ -139,9 +195,19 @@ a.login-area {
 .upload-btn {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   cursor: pointer;
   color: map-get($color, neutral);
-  font-size: 18px;
+  font-size: 14px;
+  transition: color 0.2s;
+
+  i {
+    font-size: 18px;
+  }
+
+  &:hover {
+    color: map-get($color, primary);
+  }
 }
 
 .btnFill:disabled {

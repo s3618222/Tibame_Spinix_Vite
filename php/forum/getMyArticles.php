@@ -25,6 +25,7 @@
     FROM article 
     LEFT JOIN message ON message.art_id = article.art_id
     WHERE article.mem_id = ?
+    AND (delete_type IS NULL OR delete_type != 'self_deleted')
     GROUP BY article.art_id
     ORDER BY article.create_time DESC
     ";

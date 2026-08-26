@@ -12,7 +12,7 @@
             <option value="">全部</option>
             <option value="exchanging">交換中</option>
             <option value="removed">已下架</option>
-            <option value="exchanged">已交換</option>
+            <option value="completed">交換完成</option>
          </select>
       </div>
 

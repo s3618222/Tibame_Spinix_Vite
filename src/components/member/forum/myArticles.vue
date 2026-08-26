@@ -9,7 +9,7 @@
       <p class="col-action">操作</p>
     </div>
     <div class="t-body">
-      <div class="article-card" v-for="article in articles" :key="article.id">
+      <div class="article-card" v-for="article in visibleArticles" :key="article.id">
         <p class="col-type">{{ CATEGORY_LABELS[article.category] ?? article.category }}</p>
         <p class="col-title">
           <a :href="`${baseUrl}forumArticle.html?id=${article.id}`" target="_blank">{{ article.title }}</a>
@@ -25,38 +25,68 @@
           </span>
         </p>
         <div class="col-action">
-          <button type="button" class="btn-edit">編輯</button>
-          <button type="button" class="btn-del">刪除</button>
+          <button type="button" class="btn-edit" v-if="article.isShow">編輯</button>
+          <button type="button" class="btn-del" @click="handleDeleteClick(article.id)" v-if="article.isShow">刪除</button>
         </div>
       </div>
     </div>
-    <div class="t-footer">
-      <button type="button" class="btnNoFill">顯示更多貼文</button>
+    <div class="t-footer" v-if="hasMore">
+      <LoadMoreButton @click="showMore">顯示更多貼文</LoadMoreButton>
     </div>
   </div>
 
 </template>
 
 <script>
-  import { CATEGORY_LABELS } from '@/assets/js/utils/articleCategory.js';
+import { CATEGORY_LABELS } from '@/assets/js/utils/articleCategory.js';
+import LoadMoreButton from '@/components/LoadMoreButton.vue';
 
-  export default {
-    name: "myArticles",
+export default {
+  name: "myArticles",
 
-    data() {
-      return {
-        CATEGORY_LABELS,
-        baseUrl: import.meta.env.BASE_URL
-      };
+  components: {
+    LoadMoreButton
+  },
+
+  emits: ["delete-article"],
+
+  data() {
+    return {
+      CATEGORY_LABELS,
+      baseUrl: import.meta.env.BASE_URL,
+      visibleCount: 5   // 一開始只顯示 5 筆貼文
+    };
+  },
+
+  props: {
+    articles: {
+      type: Array,
+      default: () => []
+    }
+  },
+
+  computed: {
+    visibleArticles() {
+      return this.articles.slice(0, this.visibleCount);
     },
+    hasMore() {
+      // 判斷還有沒有更多貼文可以顯示
+      return this.visibleCount < this.articles.length;
+    }
+  },
 
-    props: {
-      articles: {
-        type: Array,
-        default: () => []
-      }
+  methods: {
+    handleDeleteClick(articleId) {
+      const confirmed = confirm("確定要刪除這篇文章嗎？此動作無法在畫面上復原。");
+      if (!confirmed) return;
+
+      this.$emit("delete-article", articleId);
+    },
+    showMore() {
+      this.visibleCount += 5;
     }
   }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -171,6 +201,10 @@ button {
    二、平板 / 電腦版樣式 (Tablet & Desktop - Flex 表格流)
    ========================================================================== */
 @include rwd("tablet") {
+  .t-body {
+    gap: 0;
+  }
+
   // 1. 表格外框與陰影設定
   .my-article-table {
     border-radius: 12px;
@@ -194,10 +228,13 @@ button {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 12px;
+    padding: 16px;
     border-radius: 0;
     box-shadow: none;
-    border-bottom: 1px solid map-get($color, warmGray);
+    
+    &:not(:last-child){
+      border-bottom: 1px solid map-get($color, warmGray);
+    }
 
     // 隱藏留言圖示
     .col-comments i {

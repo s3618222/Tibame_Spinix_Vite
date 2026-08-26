@@ -82,3 +82,46 @@ form.querySelectorAll('.btn-reset').forEach(btn => {
 
 // 問題2修正:module script 執行時機等同 defer,DOMContentLoaded 可能已經錯過,直接呼叫即可
 broadcastFilters();
+
+// 目前登入會員
+let currentMember = null; //存取當前登入者資訊
+
+const phpBaseUrl =
+   location.hostname === "localhost" ||
+      location.hostname === "127.0.0.1"
+      ? "http://localhost:8888/Spinix/php"
+      : `${location.origin}/ckd101/g2/php`;
+
+function fetchCurrentMember() {
+   return fetch(`${phpBaseUrl}/member/currentMember_get.php`, {
+      credentials: "include"
+   }).then(res => res.json()).then(data => {
+
+      if (data.success && data.isLoggedIn) { //已有登入會員時
+         currentMember = data.member;
+      } else { //未登入時
+         currentMember = null;
+      }
+
+      console.log("目前登入會員：", currentMember);
+   });
+}
+
+const addExchange = document.querySelectorAll('.gotoaddChange');
+
+addExchange.forEach((item, index)=>{
+   // console.log(item);
+   item.addEventListener('click',function(e){
+      e.preventDefault();
+      
+      if(currentMember === null){
+         window.alert('請先登入會員');
+         window.location.href = `${import.meta.env.BASE_URL}signIn.html`;
+      }else{
+         window.location.href = `addChange.html`;
+      }
+   })
+});
+
+
+fetchCurrentMember();
