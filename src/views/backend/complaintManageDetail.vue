@@ -38,6 +38,10 @@
           <p class="info-card__label">建立時間</p>
           <p class="info-card__value">{{ appeal.createdAt }}</p>
         </div>
+        <div class="info-card__field">
+          <p class="info-card__label">上下架狀態</p>
+          <p class="info-card__value">{{ showLabel(appeal.isShow) }}</p>
+        </div>
       </div>
 
       <!-- 已結案：處理結果 + 處理備註 -->
@@ -239,6 +243,12 @@
   // 證據截圖圖片 URL（比照 myAppealDetail.getEvidenceImageUrl）
   function resolveEvidenceUrl(path) {
     return `${phpBaseUrl}/${path}`;
+  }
+
+  // 被申訴內容的上下架狀態（is_show：1=上架、0=下架；PDO 可能回字串）
+  function showLabel(isShow) {
+    if (isShow === null || isShow === undefined || isShow === "") return "—";
+    return Number(isShow) === 1 ? "上架" : "下架";
   }
 
   // 處理面板表單狀態
