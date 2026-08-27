@@ -5,13 +5,14 @@
          :key="item.post_id"
          :post_id="item.post_id"
          :title="item.title"
-         :image="item.product_img"
-         :avatar="item.headshot"
-         :username="item.name"
+         :image="item.post_pic1"
+         :avatar="item.mem_photo"
+         :username="item.mem_name"
          :create_time="item.create_time"
          :city="item.city"
          :district="item.district"
          :state="statusLabelMap[item.status]"
+         :type="typeLabelMap[item.type]"
       />
       <p v-if="filteredCards.length === 0" class="empty-state">
          查無符合條件的商品
@@ -22,7 +23,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import ProductCard from './productCard.vue';
-import { exchangeList, statusLabelMap } from '@/data/mockExchangeData.js';   //  改用共用資料
+import { exchangeList, statusLabelMap , typeLabelMap} from '@/data/mockExchangeData.js';   //  改用共用資料
 
 const ExChangeInfo = ref(exchangeList);   // 不用自己重複寫一份
 
@@ -66,14 +67,14 @@ const filteredCards = computed(() => {
       const isVisible = item.is_show === true;
 
       const matchType = f.type === 'all' || item.type === f.type;
-      const matchCity = !f.city || item.city === f.city;
-      const matchDistrict = !f.district || item.district === f.district;
+      const matchCity = !f.city || String(item.city_id) === String(f.city);
+      const matchDistrict = !f.district || String(item.district_id) === String(f.district);
       return matchStatus && matchType && matchCity && matchDistrict && isVisible;
    });
 
    result = [...result].sort((a, b) => {
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
+      const dateA = new Date(a.create_time);
+      const dateB = new Date(b.create_time);
       return currentFilters.value.sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
    });
 
