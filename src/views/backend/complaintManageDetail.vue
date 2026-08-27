@@ -14,10 +14,10 @@
     <template v-if="appeal">
       <!-- 資訊卡 -->
       <div class="info-card">
-        <div class="info-card__field">
+        <!-- <div class="info-card__field">
           <p class="info-card__label">申訴編號</p>
           <p class="info-card__value">#{{ appeal.id }}</p>
-        </div>
+        </div> -->
         <div class="info-card__field">
           <p class="info-card__label">申訴人</p>
           <p class="info-card__value">{{ appeal.complainant }}</p>
@@ -104,7 +104,7 @@
         v-if="!isClosed"
         class="panel handle-panel"
       >
-        <h2 class="panel__title">處理面板</h2>
+        <h2 class="panel__title">審核與處置</h2>
 
         <!-- 處理人員 -->
         <div class="handle-field">
@@ -148,12 +148,17 @@
 
         <!-- 處理備註 -->
         <div class="handle-field">
-          <label class="handle-field__label">處理備註</label>
+          <label class="handle-field__label">處置說明</label>
+          <p class="disposition-hint">
+            {{ dispositionHint }}
+          </p>
           <textarea
             v-model="note"
             class="handle-field__textarea"
-            placeholder="輸入處理備註"
+            placeholder="請輸入處置說明"
+            required
           ></textarea>
+
         </div>
 
         <button
@@ -256,9 +261,28 @@
   const disposition = ref(""); // 'confirm' | 'reject'
   const note = ref("");
 
+  // 依管理員所選的審核結果，提示處置說明的撰寫對象與內容
+  const dispositionHint = computed(() => {
+    if (disposition.value === "confirm") {
+      return "此說明將提供「被申訴的會員」查看，請說明其違規事由及相關處置內容。";
+    }
+
+    if (disposition.value === "reject") {
+      return "此說明將提供「提出申訴的會員」查看，請說明本次申訴不成立的原因。";
+    }
+
+    return "請先選擇審核結果，再填寫對應的處置說明。";
+  });
+
   async function handleSubmit() {
     if (!disposition.value) {
       window.alert("請先選擇處置內容");
+      return;
+    }
+
+      // 需填寫處置說明
+    if (!note.value.trim()) {
+      alert("請填寫處置說明後再送出審核結果");
       return;
     }
 
@@ -476,6 +500,7 @@
     gap: 6px;
 
     &__label {
+      margin-top: 4px;
       font-size: map-get($fontSize, default);
       color: map-get($color, secondary);
     }
@@ -501,6 +526,12 @@
       &:focus {
         border-color: map-get($color, secondary2);
       }
+    }
+
+    .disposition-hint {
+      font-size: map-get($fontSize, hint);
+      color: map-get($color, hint);
+      line-height: 1.5;
     }
   }
 
