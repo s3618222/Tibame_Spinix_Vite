@@ -1,5 +1,5 @@
 <template>
-  <div class="my-comment-table">
+  <div class="my-comment-table" v-if="comments.length > 0">
     <div class="th">
       <p class="col-article">所屬文章</p>
       <p class="col-content">留言內容</p>
@@ -26,6 +26,7 @@
       </div>
     </div>
   </div>
+  <div class="empty-state" v-else><p>目前沒有留言</p></div>
   <div class="t-footer" v-if="hasMore">
     <LoadMoreButton @click="showMore" class="btn-load">顯示更多留言</LoadMoreButton>
   </div>
@@ -33,52 +34,52 @@
 </template>
 
 <script>
-  import LoadMoreButton from '@/components/LoadMoreButton.vue';
+import LoadMoreButton from '@/components/LoadMoreButton.vue';
 
-  export default {
-    name: "myComments",
+export default {
+  name: "myComments",
 
-    components: {
-      LoadMoreButton
+  components: {
+    LoadMoreButton
+  },
+
+  emits: ["delete-message"],
+
+  data() {
+    return {
+      baseUrl: import.meta.env.BASE_URL,
+      visibleCount: 5   // 一開始只顯示 5 筆留言
+    };
+  },
+
+  props: {
+    comments: {
+      type: Array,
+      default: () => []
+    }
+  },
+
+  computed: {
+    visibleComments() {
+      return this.comments.slice(0, this.visibleCount);
     },
+    hasMore() {
+      return this.visibleCount < this.comments.length;
+    }
+  },
 
-    emits: ["delete-message"],
+  methods: {
+    handleDeleteClick(commentId) {
+      const confirmed = confirm("確定要刪除這則留言嗎？此動作無法在畫面上復原。");
+      if (!confirmed) return;
 
-    data() {
-      return {
-        baseUrl: import.meta.env.BASE_URL,
-        visibleCount: 5   // 一開始只顯示 5 筆留言
-      };
+      this.$emit("delete-message", commentId);
     },
-
-    props: {
-      comments: {
-        type: Array,
-        default: () => []
-      }
-    },
-
-    computed: {
-      visibleComments() {
-        return this.comments.slice(0, this.visibleCount);
-      },
-      hasMore() {
-        return this.visibleCount < this.comments.length;
-      }
-    },
-
-    methods: {
-      handleDeleteClick(commentId) {
-        const confirmed = confirm("確定要刪除這則留言嗎？此動作無法在畫面上復原。");
-        if (!confirmed) return;
-
-        this.$emit("delete-message", commentId);
-      },
-      showMore() {
-        this.visibleCount += 5;
-      }
+    showMore() {
+      this.visibleCount += 5;
     }
   }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -185,6 +186,16 @@ button {
     gap: 8px;
     justify-content: end;
   }
+}
+
+.empty-state {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  padding: 40px 20px;
+  text-align: center;
+  color: map-get($color, neutral);
+  font-size: 16px;
 }
 
 .t-footer {

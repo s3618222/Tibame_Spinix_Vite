@@ -1,5 +1,5 @@
 <template>
-  <div class="my-article-table">
+  <div class="my-article-table" v-if="articles.length > 0">
     <div class="th">
       <p class="col-type">類別</p>
       <p class="col-title">貼文標題</p>
@@ -26,13 +26,16 @@
           </span>
         </p>
         <div class="col-action">
-          <button type="button" class="btn-edit" v-if="article.isShow">編輯</button>
-          <button type="button" class="btn-del" @click="handleDeleteClick(article.id)" v-if="article.isShow">刪除</button>
+          <a type="button" class="btn-edit btn-action" v-if="article.isShow" 
+          :href="`${baseUrl}forumForm.html?id=${article.id}`"
+          >編輯</a>
+          <button type="button" class="btn-del btn-action" @click="handleDeleteClick(article.id)" v-if="article.isShow">刪除</button>
         </div>
       </div>
     </div>
     
   </div>
+  <div class="empty-state" v-else><p>目前沒有發文</p></div>
   <div class="t-footer" v-if="hasMore">
     <LoadMoreButton @click="showMore">顯示更多貼文</LoadMoreButton>
   </div>
@@ -95,10 +98,23 @@ export default {
 @use '@/assets/scss/var' as *;
 @use '@/assets/scss/mixin' as *;
 
-button {
+.btn-action {
   font-size: 16px;
-  &.btn-edit {color: map-get($color, secondary2 );}
-  &.btn-del {color: map-get($color, error );}
+  line-height: 16px;
+  font-weight: 600;
+  
+  &.btn-edit {
+    color: map-get($color, secondary2 );
+    &:hover{
+      color: lighten(map-get($color, secondary2 ), 10%);
+    }
+  }
+  &.btn-del {
+    color: map-get($color, error );
+    &:hover{
+        color: lighten(map-get($color, error ), 10%);
+    }
+  }
 }
 
 .my-article-table {
@@ -206,7 +222,15 @@ button {
     justify-content: end;
   }
 }
-
+.empty-state {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  padding: 40px 20px;
+  text-align: center;
+  color: map-get($color, neutral);
+  font-size: 16px;
+}
 .t-footer {
   margin-top: 32px;
   display: flex;
