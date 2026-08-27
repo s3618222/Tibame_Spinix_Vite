@@ -7,6 +7,7 @@ import Pagination from "@/components/pagination.vue";
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 import ProductList from "@/components/ProductList.vue";
+import { initCityDistrictSelector } from './citySelector.js';
 
 createApp(Header).mount("#headerApp");
 createApp(Footer).mount("#footerApp");
@@ -19,17 +20,16 @@ createApp(Pagination, {
 createApp(ProductList).mount("#exchangeApp");
 
 
+
+
 // == 篩選列 =====================================================
-const taiwanDistricts = {
-   '基隆市': ['仁愛區', '信義區', '中正區', '中山區', '安樂區', '暖暖區', '七堵區'],
-   '台北市': ['中正區', '大同區', '中山區', '松山區', '大安區', '萬華區', '信義區', '士林區', '北投區', '內湖區', '南港區', '文山區'],
-   '新北市': ['板橋區', '三重區', '中和區', '永和區', '新莊區', '新店區', '樹林區', '鶯歌區', '三峽區', '淡水區'],
-};
 
 const form = document.querySelector('#marketFilter form');
 const typeSelect = form.querySelector('[name="type"]');
 const selectCity = document.getElementById('select-city');
 const selectDistrict = document.getElementById('select-district');
+
+console.log(selectCity);
 
 let sortOrder = 'newest';
 
@@ -44,20 +44,7 @@ function broadcastFilters() {
    }));
 }
 
-selectCity.addEventListener('change', function () {
-   const city = selectCity.value;
-   const districts = taiwanDistricts[city] || []; // 問題1修正:city 為空字串時 fallback 成空陣列
-   selectDistrict.innerHTML = '<option value="">請選擇行政區</option>';
-
-   districts.forEach(district => {
-      const option = document.createElement('option');
-      option.value = district;
-      option.textContent = district;
-      selectDistrict.appendChild(option);
-   });
-
-   broadcastFilters();
-});
+initCityDistrictSelector(selectCity, selectDistrict, broadcastFilters);
 
 typeSelect.addEventListener('change', broadcastFilters);
 selectDistrict.addEventListener('change', broadcastFilters);
@@ -103,21 +90,21 @@ function fetchCurrentMember() {
          currentMember = null;
       }
 
-      console.log("目前登入會員：", currentMember);
+      // console.log("目前登入會員：", currentMember);
    });
 }
 
 const addExchange = document.querySelectorAll('.gotoaddChange');
 
-addExchange.forEach((item, index)=>{
+addExchange.forEach((item, index) => {
    // console.log(item);
-   item.addEventListener('click',function(e){
+   item.addEventListener('click', function (e) {
       e.preventDefault();
-      
-      if(currentMember === null){
+
+      if (currentMember === null) {
          window.alert('請先登入會員');
          window.location.href = `${import.meta.env.BASE_URL}signIn.html`;
-      }else{
+      } else {
          window.location.href = `addChange.html`;
       }
    })
@@ -125,3 +112,5 @@ addExchange.forEach((item, index)=>{
 
 
 fetchCurrentMember();
+
+

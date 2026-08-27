@@ -4,6 +4,7 @@ import { createApp } from "vue";
 import Header from "@/components/header.vue";
 import Footer from "@/components/footer.vue";
 import upload from "@/components/uploadImg.vue";
+import { initCityDistrictSelector } from './citySelector.js';
 
 createApp(Header, {
    solid: true
@@ -17,9 +18,13 @@ const phpBaseUrl =
       ? "http://localhost:8888/Spinix/php"
       : `${location.origin}/ckd101/g2/php`;
 
-// createApp(upload).mount('#uploadImgApp');
 const uploadImgVm = createApp(upload).mount('#uploadImgApp');
 window.photoUploadInstance = uploadImgVm;
+
+const selectCity = document.getElementById('select-city');
+const selectDistrict = document.getElementById('select-district');
+
+initCityDistrictSelector(selectCity, selectDistrict);
 
 // == 取消按鈕 ==========================================
 const btnReset = document.querySelector('.btnNoFill');
@@ -145,7 +150,7 @@ btnSubmit.addEventListener('click', (e) => {
          if (data.success) {
             alert('成功刊登');
             if (document.referrer && document.referrer.includes(window.location.host)) {
-               window.history.back();
+               location.href = "market.html";
             } else {
                window.location.href = 'homepage.html';
             }

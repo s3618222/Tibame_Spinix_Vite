@@ -1,7 +1,7 @@
 <template>
    <div class="card" @click="goToDetail">
       <div class="pic">
-         <img :src="image" :alt="title">
+         <img :src="'php/' + image" :alt="title">
       </div>
       <div class="card-info">
          <h4>{{ title }}</h4>
@@ -12,7 +12,6 @@
             </div>
             <p class="username">{{ username }}</p>
          </div>
-
          <div class="wrapper">
             <i class="fa-solid fa-calendar-days icon-style"></i>
             <p>
@@ -29,7 +28,7 @@
 
       <div class="card-footer">
          <p class="chip" :class="chipModifier">{{ state }}</p>
-
+         <p class="chip chip--state">{{ type }}</p> <!--  商品類別 -->
          <div class="card-buttons" @click.stop>
             <button
                v-for="btn in buttons"
@@ -50,6 +49,10 @@ const props = defineProps({
    post_id: {
       type: [String, Number],
       required: true
+   },
+   type: {
+      type: String,
+      required:true
    },
    title: {
       type: String,
@@ -102,6 +105,7 @@ const stateChipMap = {
    '申請中': 'chip--exchangeable',
    '已回覆': 'chip--state'
 };
+
 
 const chipModifier = computed(() => stateChipMap[props.state] || '');
 
