@@ -71,14 +71,14 @@
           v-else-if="appeal.status === 'CONFIRMED'"
           class="detail-text"
         >
-          經管理員審核，本次申訴內容經查證屬實，申訴成立。
+          經管理員審核，本次申訴內容經查證屬實，平台將依相關管理規範，針對違規情形進行後續處置。感謝您的回報與協助，一同維護良好的平台交流環境。
         </p>
         <!-- 申訴不成立時，才顯示完整回覆說明 -->
         <p
           v-else-if="appeal.status === 'REJECTED'"
           class="detail-text"
         >
-          {{ appeal.result || "經管理員審核，本次申訴未成立。" }}
+          {{ appeal.result || "經管理員審核，本次申訴內容經查證後，尚無足夠資訊認定有違反平台規範之情形，因此本次申訴不成立。感謝您的回報與理解，我們仍會持續維護平台良好的交流環境。" }}
         </p>
         <p class="result-date">審核時間：{{ formatDateTime(appeal.resultDate) }}</p>
         <p class="result-hint">如果對處置有疑問請聯絡我們，或撥打客服電話：0900-000-000</p>
