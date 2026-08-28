@@ -88,6 +88,7 @@
             <img
               :src="resolveEvidenceUrl(img)"
               alt="申訴佐證截圖"
+              @click="openPreview(img)"
             >
           </div>
         </div>
@@ -227,6 +228,26 @@
         返回列表
       </RouterLink>
     </div>
+
+    <!-- 證據截圖放大預覽燈箱 -->
+    <div
+      v-if="previewImage"
+      class="image-preview"
+      @click="closePreview"
+    >
+      <button
+        type="button"
+        class="image-preview-close"
+        @click.stop="closePreview"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <img
+        :src="previewImage"
+        alt="證據截圖預覽"
+        @click.stop
+      >
+    </div>
   </section>
 </template>
 
@@ -288,6 +309,15 @@
   // 證據截圖圖片 URL（比照 myAppealDetail.getEvidenceImageUrl）
   function resolveEvidenceUrl(path) {
     return `${phpBaseUrl}/${path}`;
+  }
+
+  // 證據截圖放大燈箱
+  const previewImage = ref(null);
+  function openPreview(img) {
+    previewImage.value = resolveEvidenceUrl(img);
+  }
+  function closePreview() {
+    previewImage.value = null;
   }
 
   // 被申訴內容的上下架狀態（is_show：1=上架、0=下架；PDO 可能回字串）
@@ -352,6 +382,19 @@
       // 需填寫處置說明
     if (!note.value.trim()) {
       alert("請填寫處置說明後再送出審核結果");
+      return;
+    }
+
+    // 送出前二次確認（此動作不可逆：成立會累計違規、可能停權，並依選擇下架內容）
+    let confirmMessage;
+    if (disposition.value === "reject") {
+      confirmMessage = "確定要「駁回申訴」嗎？\n內容維持上架、會員違規次數不變。";
+    } else if (contentAction.value === "remove") {
+      confirmMessage = "確定要「確認違規並下架內容」嗎？\n會員違規次數 +1（累計滿 3 次將停權 7 天），且該內容將被下架。";
+    } else {
+      confirmMessage = "確定要「確認違規並保留內容」嗎？\n會員違規次數 +1（累計滿 3 次將停權 7 天），內容維持上架。";
+    }
+    if (!window.confirm(confirmMessage)) {
       return;
     }
 
@@ -548,12 +591,47 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      cursor: pointer;
     }
   }
 
   .evidence-empty {
     font-size: map-get($fontSize, default);
     color: map-get($color, hint);
+  }
+
+  // 證據截圖放大燈箱
+  .image-preview {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+
+    background-color: rgba(0, 0, 0, 0.82);
+
+    img {
+      max-width: 90vw;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+  }
+
+  .image-preview-close {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    padding: 8px;
+
+    font-size: 24px;
+    color: map-get($color, white);
+    background: transparent;
+    border: none;
+    cursor: pointer;
   }
 
   // 待處理：處理面板
