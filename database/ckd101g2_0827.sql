@@ -112,20 +112,21 @@ CREATE TABLE `article` (
   `is_show` tinyint(1) NOT NULL DEFAULT '1' COMMENT '顯示狀態',
   `create_time` datetime NOT NULL COMMENT '發文時間',
   `pic` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '圖片',
-  `remove_reason` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '下架原因'
+  `remove_reason` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '下架原因',
+  `delete_type` enum('admin_removed','self_deleted') COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '下架/刪除來源'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='論壇貼文表';
 
 --
 -- 傾印資料表的資料 `article`
 --
 
-INSERT INTO `article` (`art_id`, `title`, `category`, `content`, `mem_id`, `is_show`, `create_time`, `pic`, `remove_reason`) VALUES
-(1, '2026年度大賽規章公告', 'announcement', '請所有參賽選手務必於期限內完成設備檢核...', 1, 1, '2026-08-01 09:00:00', NULL, NULL),
-(2, '【開箱】黃金版天翼戰神實拍', 'unboxing', '等了三個月終於從日本寄過來了...', 3, 1, '2026-08-05 14:20:00', 'article_pic_02.jpg', NULL),
-(3, '台北站賽程與交通資訊', 'event', '本次報到地點位於二樓多功能大廳...', 5, 1, '2026-08-08 10:00:00', 'article_pic_03.jpg', NULL),
-(4, '大家平常都怎麼保養軸心的？', 'chat', '最近發現我的軸心轉起來聲音怪怪的...', 6, 0, '2026-08-10 20:15:00', NULL, NULL),
-(5, '進階配裝：攻擊型 vs 平衡型分析', 'strategy', '這篇整理近期幾場對戰中的配裝心得...', 7, 1, '2026-08-12 22:40:00', NULL, NULL),
-(6, '新手發問：固鎖環要怎麼挑？', 'faq', '剛入坑想請教大家固鎖環選擇的原則...', 4, 0, '2026-08-13 11:05:00', NULL, '內容含廣告連結，經檢舉下架');
+INSERT INTO `article` (`art_id`, `title`, `category`, `content`, `mem_id`, `is_show`, `create_time`, `pic`, `remove_reason`, `delete_type`) VALUES
+(1, '2026年度大賽規章公告', 'announcement', '請所有參賽選手務必於期限內完成設備檢核...', 1, 1, '2026-08-01 09:00:00', NULL, NULL, NULL),
+(2, '【開箱】黃金版天翼戰神實拍', 'unboxing', '等了三個月終於從日本寄過來了...', 3, 1, '2026-08-05 14:20:00', 'article_pic_02.jpg', NULL, NULL),
+(3, '台北站賽程與交通資訊', 'event', '本次報到地點位於二樓多功能大廳...', 5, 1, '2026-08-08 10:00:00', 'article_pic_03.jpg', NULL, NULL),
+(4, '大家平常都怎麼保養軸心的？', 'chat', '最近發現我的軸心轉起來聲音怪怪的...', 6, 0, '2026-08-10 20:15:00', NULL, NULL, NULL),
+(5, '進階配裝：攻擊型 vs 平衡型分析', 'strategy', '這篇整理近期幾場對戰中的配裝心得...', 7, 1, '2026-08-12 22:40:00', NULL, NULL, NULL),
+(6, '新手發問：固鎖環要怎麼挑？', 'faq', '剛入坑想請教大家固鎖環選擇的原則...', 4, 0, '2026-08-13 11:05:00', NULL, '內容含廣告連結，經檢舉下架', 'admin_removed');
 
 -- --------------------------------------------------------
 
@@ -792,19 +793,21 @@ CREATE TABLE `message` (
   `content` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '留言內容',
   `create_time` datetime NOT NULL COMMENT '留言時間',
   `is_show` tinyint(1) NOT NULL DEFAULT '1' COMMENT '顯示狀態',
-  `pic` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '圖片'
+  `pic` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '圖片',
+  `remove_reason` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '下架原因',
+  `delete_type` enum('admin_removed','self_deleted') COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '下架/刪除來源'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='論壇留言表';
 
 --
 -- 傾印資料表的資料 `message`
 --
 
-INSERT INTO `message` (`msg_id`, `mem_id`, `art_id`, `content`, `create_time`, `is_show`, `pic`) VALUES
-(1, 2, 1, '推！這個規章講解得很清楚', '2026-08-01 10:30:00', 1, NULL),
-(2, 5, 2, '這顆真的稀有，羨慕！請問哪裡買的到類似的嗎', '2026-08-05 15:00:00', 1, 'message_pic_02.jpg'),
-(3, 1, 3, '請問交通接駁車幾點發車呢？', '2026-08-08 11:20:00', 1, NULL),
-(4, 8, 4, '我都用軟布沾一點潤滑油輕輕擦拭', '2026-08-10 21:00:00', 1, NULL),
-(5, 9, 5, '這種說法太片面了吧，內容根本亂寫', '2026-08-13 08:10:00', 0, NULL);
+INSERT INTO `message` (`msg_id`, `mem_id`, `art_id`, `content`, `create_time`, `is_show`, `pic`, `remove_reason`, `delete_type`) VALUES
+(1, 2, 1, '推！這個規章講解得很清楚', '2026-08-01 10:30:00', 1, NULL, NULL, NULL),
+(2, 5, 2, '這顆真的稀有，羨慕！請問哪裡買的到類似的嗎', '2026-08-05 15:00:00', 1, 'message_pic_02.jpg', NULL, NULL),
+(3, 1, 3, '請問交通接駁車幾點發車呢？', '2026-08-08 11:20:00', 1, NULL, NULL, NULL),
+(4, 8, 4, '我都用軟布沾一點潤滑油輕輕擦拭', '2026-08-10 21:00:00', 1, NULL, NULL, NULL),
+(5, 9, 5, '這種說法太片面了吧，內容根本亂寫', '2026-08-13 08:10:00', 0, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
