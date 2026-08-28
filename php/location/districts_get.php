@@ -36,7 +36,7 @@
       exit();
     }
 
-    $sql = "SELECT DISTRICT_ID, DISTRICT_NAME FROM DISTRICT WHERE CITY_ID = ? ORDER BY DISTRICT_ID ASC";
+    $sql = "SELECT DISTRICT_ID, DISTRICT_NAME FROM district WHERE CITY_ID = ? ORDER BY DISTRICT_ID ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$city_id]); //將city_id變數帶入上方sql指令中的 CITY_ID = ? 中
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
