@@ -125,13 +125,13 @@
 
         <!-- 處置內容 -->
         <div class="handle-field">
-          <label class="handle-field__label">處置內容</label>
+          <label class="handle-field__label">審核內容</label>
           <div class="disposition">
             <button
               type="button"
               class="disposition__chip"
               :class="{ active: disposition === 'confirm' }"
-              @click="disposition = 'confirm'"
+              @click="selectDisposition('confirm')"
             >
               確認違規
             </button>
@@ -139,16 +139,56 @@
               type="button"
               class="disposition__chip disposition__chip--reject"
               :class="{ active: disposition === 'reject' }"
-              @click="disposition = 'reject'"
+              @click="selectDisposition('reject')"
             >
               駁回申訴
             </button>
           </div>
         </div>
 
+        <!-- 內容處置：僅成立時出現，管理員自選保留/下架 -->
+        <div
+          v-if="disposition === 'confirm'"
+          class="handle-field"
+        >
+          <label class="handle-field__label">處置內容</label>
+          <div class="disposition">
+            <button
+              type="button"
+              class="disposition__chip"
+              :class="{ active: contentAction === 'remove' }"
+              @click="selectContentAction('remove')"
+            >
+              下架內容
+            </button>
+            <button
+              type="button"
+              class="disposition__chip disposition__chip--reject"
+              :class="{ active: contentAction === 'keep' }"
+              @click="selectContentAction('keep')"
+            >
+              保留內容
+            </button>
+          </div>
+        </div>
+
+        <!-- 下架原因：僅成立且選下架時出現、必填 -->
+        <div
+          v-if="disposition === 'confirm' && contentAction === 'remove'"
+          class="handle-field"
+        >
+          <label class="handle-field__label">下架原因</label>
+          <textarea
+            v-model="removeReason"
+            class="handle-field__textarea"
+            placeholder="請輸入下架原因"
+            required
+          ></textarea>
+        </div>
+
         <!-- 處理備註 -->
         <div class="handle-field">
-          <label class="handle-field__label">處置說明</label>
+          <label class="handle-field__label">審核說明</label>
           <p class="disposition-hint">
             {{ dispositionHint }}
           </p>
@@ -169,7 +209,7 @@
           送出處理結果
         </button>
         <p class="disposition__note">
-            確認違規後，將下架該內容，並累計違規次數 1 次；累計滿 3 次，會員將被停權 7 天。
+            確認違規後，會員將累計違規次數1次 ; 違規次數累計滿3次，將被停權7天。
         </p>
       </div>
     </template>
@@ -258,8 +298,25 @@
 
   // 處理面板表單狀態
   const handler = ref(adminOptions[0]);
-  const disposition = ref(""); // 'confirm' | 'reject'
+  const disposition = ref("");   // 'confirm' | 'reject'
+  const contentAction = ref(""); // 'keep' | 'remove'（僅成立時適用）
+  const removeReason = ref("");  // 選「下架」時的下架原因
   const note = ref("");
+
+  // 切換裁決結果時，重置「內容處置」與「下架原因」
+  function selectDisposition(value) {
+    disposition.value = value;
+    contentAction.value = "";
+    removeReason.value = "";
+  }
+
+  // 切換內容處置；非「下架」時清空下架原因
+  function selectContentAction(value) {
+    contentAction.value = value;
+    if (value !== "remove") {
+      removeReason.value = "";
+    }
+  }
 
   // 依管理員所選的審核結果，提示處置說明的撰寫對象與內容
   const dispositionHint = computed(() => {
@@ -280,6 +337,18 @@
       return;
     }
 
+    // 成立時需選擇內容處置（保留/下架）
+    if (disposition.value === "confirm" && !contentAction.value) {
+      alert("請選擇要保留或下架內容");
+      return;
+    }
+
+    // 選擇下架時，下架原因為必填
+    if (contentAction.value === "remove" && !removeReason.value.trim()) {
+      alert("請填寫下架原因後再送出");
+      return;
+    }
+
       // 需填寫處置說明
     if (!note.value.trim()) {
       alert("請填寫處置說明後再送出審核結果");
@@ -287,12 +356,14 @@
     }
 
     // 送出處理結果 → 寫回該筆申訴（狀態 / 處理管理員 / 回覆時間與內容）
-    // 註：違規次數+1、停權為之後步驟，本次只判定結果
+    // contentAction（保留/下架）、removeReason（下架原因）供後端處理；後端尚未串接前會被忽略
     try {
       const body = new URLSearchParams({
         sourceType: appeal.value.sourceType,
         id: appeal.value.id,
         disposition: disposition.value,
+        contentAction: contentAction.value,
+        removeReason: removeReason.value,
         note: note.value
       });
 

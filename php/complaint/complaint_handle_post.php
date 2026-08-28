@@ -1,9 +1,9 @@
 <?php
   // 後台「申訴管理」— 送出處理結果（管理員裁決寫回）
-  // 成立(confirm)：一個交易內完成 → 更新申訴為 CONFIRMED、被申訴人違規次數+1、下架該內容 is_show=0；
-  //                 違規累計達門檻(3)時，該功能自動停權(TEMP-RESTRICT) 7 天
+  // 成立(confirm)：一個交易內完成 → 更新申訴為 CONFIRMED、被申訴人違規次數+1、達門檻(3)自動停權(TEMP-RESTRICT)7天；
+  //                 並依 contentAction 決定是否下架內容(is_show=0)＋寫下架原因（論壇/交換寫 remove_reason、對戰寫 battle_manage_record）
   // 駁回(reject)：只更新申訴為 REJECTED，member 與內容上下架皆不變
-  // 延後：升級永久停權、停權到期自動恢復、remove_reason / battle_manage_record 記錄
+  // 延後：升級永久停權、停權到期自動恢復
 
   session_start();
 
@@ -30,6 +30,8 @@
   $appealId    = (int) ($_POST["id"] ?? 0);
   $disposition = $_POST["disposition"] ?? "";      // 'confirm' | 'reject'
   $note        = mb_substr(trim($_POST["note"] ?? ""), 0, 200); // responded_text 上限 200
+  $contentAction = $_POST["contentAction"] ?? "";                         // 'keep' | 'remove'（僅成立時）
+  $removeReason  = mb_substr(trim($_POST["removeReason"] ?? ""), 0, 255); // remove_reason / MANAGE_REASON 上限 255
 
   // 三種申訴表的欄位對應（白名單，避免用使用者字串拼表名/欄名）
   //   respondent：被申訴人欄位；vio：member 對應違規次數欄；targets：可能的下架目標表（fk 非空者才是實際目標）
@@ -61,8 +63,8 @@
       "suspendStatus" => "MARKET_STATUS",
       "suspendUntil"  => "MARKET_SUSPEND_UNTIL",
       "targets"    => [
-        ["fk" => "post_id", "table" => "exchange_post",    "pk" => "post_id", "show" => "is_show"],
-        ["fk" => "comm_id", "table" => "exchange_comment", "pk" => "comm_id", "show" => "is_show"]
+        ["fk" => "post_id", "table" => "exchange_post",    "pk" => "post_id", "show" => "is_show", "reasonCol" => "remove_reason"],
+        ["fk" => "comm_id", "table" => "exchange_comment", "pk" => "comm_id", "show" => "is_show", "reasonCol" => "remove_reason"]
       ]
     ],
     "forum" => [
@@ -77,8 +79,8 @@
       "suspendStatus" => "FORUM_STATUS",
       "suspendUntil"  => "FORUM_SUSPEND_UNTIL",
       "targets"    => [
-        ["fk" => "art_id", "table" => "article", "pk" => "art_id", "show" => "is_show"],
-        ["fk" => "msg_id", "table" => "message", "pk" => "msg_id", "show" => "is_show"]
+        ["fk" => "art_id", "table" => "article", "pk" => "art_id", "show" => "is_show", "reasonCol" => "remove_reason"],
+        ["fk" => "msg_id", "table" => "message", "pk" => "msg_id", "show" => "is_show", "reasonCol" => "remove_reason"]
       ]
     ]
   ];
@@ -101,6 +103,26 @@
       "message" => "參數錯誤"
     ], JSON_UNESCAPED_UNICODE);
     exit;
+  }
+
+  // 成立時需指定內容處置；選下架則須有下架原因
+  if ($disposition === "confirm") {
+    if (!in_array($contentAction, ["keep", "remove"], true)) {
+      http_response_code(400);
+      echo json_encode([
+        "success" => false,
+        "message" => "請選擇內容處置（保留/下架）"
+      ], JSON_UNESCAPED_UNICODE);
+      exit;
+    }
+    if ($contentAction === "remove" && $removeReason === "") {
+      http_response_code(400);
+      echo json_encode([
+        "success" => false,
+        "message" => "下架時請填寫下架原因"
+      ], JSON_UNESCAPED_UNICODE);
+      exit;
+    }
   }
 
   $m         = $map[$sourceType];
@@ -273,13 +295,28 @@
         }
       }
 
-      // 2-2. 下架對應內容（找外鍵非空的那個目標，只下架一個）
-      foreach ($m["targets"] as $t) {
-        $fkVal = $row[$t["fk"]] ?? null;
-        if (!empty($fkVal)) {
-          $downSql = "UPDATE {$t['table']} SET {$t['show']} = 0 WHERE {$t['pk']} = ?";
-          $pdo->prepare($downSql)->execute([(int) $fkVal]);
-          break;
+      // 2-2. 內容處置：只有選「下架」才下架內容並記錄下架原因
+      if ($contentAction === "remove") {
+        foreach ($m["targets"] as $t) {
+          $fkVal = $row[$t["fk"]] ?? null;
+          if (empty($fkVal)) {
+            continue;
+          }
+
+          if (isset($t["reasonCol"])) {
+            // 論壇/交換：內容表本身有 remove_reason，一併寫入下架原因
+            $downSql = "UPDATE {$t['table']} SET {$t['show']} = 0, {$t['reasonCol']} = ? WHERE {$t['pk']} = ?";
+            $pdo->prepare($downSql)->execute([$removeReason, (int) $fkVal]);
+          } else {
+            // 對戰：battle_record 無 remove_reason，改新增一筆管理處置紀錄
+            $pdo->prepare("UPDATE {$t['table']} SET {$t['show']} = 0 WHERE {$t['pk']} = ?")
+                ->execute([(int) $fkVal]);
+            $pdo->prepare("
+              INSERT INTO battle_manage_record (BATTLE_ID, ADMIN_ID, MANAGE_ACTION, MANAGE_REASON)
+              VALUES (?, ?, 'REMOVE', ?)
+            ")->execute([(int) $fkVal, $adminId, $removeReason]);
+          }
+          break; // 只處理一個對應目標
         }
       }
     }
