@@ -150,7 +150,7 @@ import {
   statusLabelMap,
   applyStatusLabelMap,
   replyExchange
-} from "@/data/mockExchangeData.js";
+} from "@/data/ExchangeData.js";
 // 分頁器
 import Pagination from "@/components/pagination.vue";
 

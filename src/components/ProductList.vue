@@ -23,9 +23,9 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import ProductCard from './productCard.vue';
-import { exchangeList, statusLabelMap , typeLabelMap} from '@/data/mockExchangeData.js';   //  改用共用資料
+import { exchangeList, statusLabelMap , typeLabelMap} from '@/data/ExchangeData.js';   //  改用共用資料
 
-const ExChangeInfo = ref(exchangeList);   // 不用自己重複寫一份
+const ExChangeInfo = ref([]);
 
 const currentFilters = ref({
    type: 'all',
@@ -38,7 +38,7 @@ function handleFilterChange(e) {
    currentFilters.value = e.detail;
 }
 
-onMounted(() => {
+onMounted( async () => {
    const form = document.querySelector('#marketFilter form');
    if (form) {
       const typeEl = form.querySelector('[name="type"]');
@@ -52,6 +52,8 @@ onMounted(() => {
       };
    }
    window.addEventListener('filter-change', handleFilterChange);
+
+   ExChangeInfo.value = await exchangeList();
 });
 
 onUnmounted(() => {

@@ -5,6 +5,7 @@ session_start();
 
 require_once("../common/cors.php");
 require_once("../common/connect_ckd101g2.php");
+require_once("../common/funcs.php");
 
 header("Content-Type: application/json; charset=utf-8");
 
@@ -35,6 +36,9 @@ if (!isset($_FILES["photos"]) || empty($_FILES["photos"]["name"][0])) {
    exit;
 }
 
+// 取得當前網址
+$getBaseUrl = getUploadBaseUrl();
+
 // ✅ 改動 2：設定上傳限制
 $maxFileSize = 2 * 1024 * 1024; // 單張最大 2MB
 $maxPhotoCount = 5; // 最多幾張，跟你 Vue 元件的 MAX_PHOTOS 對齊
@@ -57,6 +61,7 @@ if ($photoCount > $maxPhotoCount) {
 
 
 $uploadDir = __DIR__ . "/../uploads/articles/";
+
 
 // 防呆：確定資料夾存在，不存在就自動建立
 if (!is_dir($uploadDir)) {
@@ -130,7 +135,7 @@ for ($i = 0; $i < $photoCount; $i++) {
    }
 
    $uploadedFilePaths[] = $targetPath;
-   $exchangeImages[] = "uploads/articles/" . $newFileName; // 存進資料庫用的相對路徑
+   $exchangeImages[] = $getBaseUrl . $newFileName; // 存進資料庫用的相對路徑
 }
 
 
@@ -145,8 +150,8 @@ $stmt = $pdo->prepare($sql);
 $type = $_POST['type'] ?? '';
 $title = trim($_POST['title'] ?? '');
 $condition = $_POST['condition'] ?? '';
-$city_id = $_POST['city_id'] ?? '';
-$district_id = $_POST['district_id'] ?? '';
+$city_id = $_POST['city_id'] ?? null;
+$district_id = $_POST['district_id'] ?? null;
 $post_contact = trim($_POST['post_contact']  ?? '');
 $want_item = trim($_POST['want_item'] ?? '');
 $description = trim($_POST['description'] ?? '');

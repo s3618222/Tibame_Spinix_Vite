@@ -115,6 +115,7 @@
 <script>
 import Pagination from "@/components/pagination.vue";
 import { CATEGORY_LABELS } from "@/assets/js/utils/articleCategory.js";
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl";
 
 export default {
   name: "ForumManage",
@@ -197,7 +198,7 @@ export default {
 
   async created() {
     try {
-      const res = await fetch("http://localhost:8888/Spinix/php/forum/getForumManageList.php");
+      const res = await fetch(`${phpBaseUrl}/forum/getForumManageList.php`);
       const result = await res.json();
 
       if (result.success) {
