@@ -3,6 +3,7 @@
   // 成立(confirm)：一個交易內完成 → 更新申訴為 CONFIRMED、被申訴人違規次數+1、達門檻(3)自動停權(TEMP-RESTRICT)7天；
   //                 並依 contentAction 決定是否下架內容(is_show=0)＋寫下架原因（論壇/交換寫 remove_reason、對戰寫 battle_manage_record）
   // 駁回(reject)：只更新申訴為 REJECTED，member 與內容上下架皆不變
+  // 會員通知(三型別通用)：審核完成通知申訴人；成立通知被申訴人；觸發停權再通知被申訴人
   // 延後：升級永久停權、停權到期自動恢復
 
   session_start();
@@ -44,6 +45,7 @@
       "at"         => "RESPONDED_AT",
       "text"       => "RESPONDED_TEXT",
       "respondent"    => "RESPONDENT_MEM_ID",
+      "complainant"   => "COMPLAINANT_MEM_ID",
       "vio"           => "BATTLE_VIO_COUNTS",
       "suspendStatus" => "BATTLE_STATUS",
       "suspendUntil"  => "BATTLE_SUSPEND_UNTIL",
@@ -59,6 +61,7 @@
       "at"         => "responded_at",
       "text"       => "responded_text",
       "respondent"    => "respondent_mem_id",
+      "complainant"   => "complainant_mem_id",
       "vio"           => "EXCHANGE_VIO_COUNTS",
       "suspendStatus" => "MARKET_STATUS",
       "suspendUntil"  => "MARKET_SUSPEND_UNTIL",
@@ -75,6 +78,7 @@
       "at"         => "responded_at",
       "text"       => "responded_text",
       "respondent"    => "respondent_mem_id",
+      "complainant"   => "complainant_mem_id",
       "vio"           => "FORUM_VIO_COUNTS",
       "suspendStatus" => "FORUM_STATUS",
       "suspendUntil"  => "FORUM_SUSPEND_UNTIL",
@@ -94,6 +98,13 @@
   // 自動停權門檻與天數（違規累計達門檻 → 該功能停權 N 天）
   $suspendThreshold = 3;
   $suspendDays      = 7;
+
+  // 型別中文標籤（用於會員通知文案）
+  $typeLabel = [
+    "battle"   => "約戰",
+    "forum"    => "論壇",
+    "exchange" => "交換"
+  ];
 
   // 參數驗證
   if (!isset($map[$sourceType]) || $appealId <= 0 || !isset($statusMap[$disposition])) {
@@ -130,7 +141,7 @@
 
   // 先讀出被申訴人、狀態、各目標外鍵（值一律由後端取得，不信任前端）
   $fkCols     = array_column($m["targets"], "fk");
-  $selectCols = array_merge([$m["respondent"], $m["status"]], $fkCols);
+  $selectCols = array_merge([$m["respondent"], $m["complainant"], $m["status"]], $fkCols);
   $selectSql  = "SELECT " . implode(", ", $selectCols)
               . " FROM {$m['table']} WHERE {$m['pk']} = ? LIMIT 1 FOR UPDATE";
 
@@ -162,26 +173,6 @@
       exit;
     }
 
-    // ===== 約戰會員通知:取得申訴人ID START =====
-    $battleComplainantId = 0;
-    
-    if ($sourceType === "battle") {
-      $sql = "
-        SELECT COMPLAINANT_MEM_ID
-        FROM battle_appeal
-        WHERE BATTLE_APPEAL_ID = ?
-      ";
-
-      $stmt = $pdo->prepare($sql);
-      $stmt->execute([
-        $appealId
-      ]);
-
-      $battleComplainantId = (int) $stmt->fetchColumn();
-    }
-    // ===== 約戰會員通知:取得申訴人ID END =====
-    
-
     // 1. 更新申訴記錄
     $updSql = "
       UPDATE {$m['table']}
@@ -193,57 +184,35 @@
     ";
     $pdo->prepare($updSql)->execute([$newStatus, $adminId, $note, $appealId]);
 
-    //==== 約戰會員通知：申訴結果 START =====
-    if ($sourceType === "battle") {
-      //通知申訴人
-      $complainantNotification = "你提出的約戰申訴已完成審核，請至會員中心「我的申訴」查看處理結果。";
-      
-      if ($battleComplainantId > 0) {
-        $sql = "
-          INSERT INTO notification (
-            mem_id,
-            content,
-            is_read,
-            create_time
-          )
-          VALUES (?, ?, 0, NOW())
-        ";
+    //==== 會員通知：申訴結果（三型別通用）START =====
+    $label = $typeLabel[$sourceType];
 
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-          $battleComplainantId,
-          $complainantNotification
+    // 通知申訴人：審核已完成（不分成立/駁回都發）
+    $complainantId = (int) $row[$m["complainant"]];
+    if ($complainantId > 0) {
+      $pdo->prepare("
+        INSERT INTO notification (mem_id, content, is_read, create_time)
+        VALUES (?, ?, 0, NOW())
+      ")->execute([
+        $complainantId,
+        "你提出的{$label}申訴已完成審核，請至會員中心「我的申訴」查看處理結果。"
+      ]);
+    }
+
+    // 申訴成立 → 另外通知被申訴人
+    if ($newStatus === "CONFIRMED") {
+      $respondentNotifyId = (int) $row[$m["respondent"]];
+      if ($respondentNotifyId > 0) {
+        $pdo->prepare("
+          INSERT INTO notification (mem_id, content, is_read, create_time)
+          VALUES (?, ?, 0, NOW())
+        ")->execute([
+          $respondentNotifyId,
+          "你涉及的一筆{$label}申訴經管理員審核，已判定成立，請至會員中心「違規紀錄」查看處分說明。"
         ]);
       }
-
-      //申訴成立時，另外通知被申訴人
-      if ($newStatus === "CONFIRMED") {
-
-        $battleRespondentId = (int) $row[$m["respondent"]];
-
-        if ($battleRespondentId > 0) {
-
-          $respondentNotification = "你涉及的一筆約戰申訴經管理員審核，已判定成立，請至會員中心「違規紀錄」查看處分說明。";
-
-          $sql = "
-            INSERT INTO notification (
-              mem_id,
-              content,
-              is_read,
-              create_time
-            )
-            VALUES (?, ?, 0, NOW())
-          ";
-
-          $stmt = $pdo->prepare($sql);
-          $stmt->execute([
-            $battleRespondentId,
-            $respondentNotification
-          ]);
-        }
-      }
     }
-    //==== 約戰會員通知：申訴結果 END =====
+    //==== 會員通知：申訴結果 END =====
 
 
     // 2. 成立才有的副作用：違規次數+1、下架內容
@@ -271,27 +240,16 @@
           $stmt = $pdo->prepare($suspendSql);
           $stmt->execute([$respondentId]);
 
-          // ===== 約戰會員通知：功能停權 START =====
-          if ($sourceType === "battle" && $stmt->rowCount() > 0) {
-            // 停權通知
-            $suspendNotification = "你的約戰功能因累積違規紀錄已達停權門檻，系統將暫停該功能使用 7 天。";
-            $sql = "
-              INSERT INTO notification (
-                mem_id,
-                content,
-                is_read,
-                create_time
-              )
+          // ===== 會員通知：功能停權（三型別通用）=====
+          if ($stmt->rowCount() > 0) {
+            $pdo->prepare("
+              INSERT INTO notification (mem_id, content, is_read, create_time)
               VALUES (?, ?, 0, NOW())
-            ";
-
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
+            ")->execute([
               $respondentId,
-              $suspendNotification
+              "你的{$typeLabel[$sourceType]}功能因累積違規紀錄已達停權門檻，系統將暫停該功能使用 {$suspendDays} 天。"
             ]);
           }
-          // ===== 約戰會員通知：功能停權 END =====
         }
       }
 
