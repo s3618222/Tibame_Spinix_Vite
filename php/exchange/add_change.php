@@ -135,7 +135,7 @@ for ($i = 0; $i < $photoCount; $i++) {
    }
 
    $uploadedFilePaths[] = $targetPath;
-   $exchangeImages[] = $getBaseUrl . $newFileName; // 存進資料庫用的相對路徑
+   $exchangeImages[] = $getBaseUrl . "articles/" . $newFileName; // 存進資料庫用的相對路徑
 }
 
 
