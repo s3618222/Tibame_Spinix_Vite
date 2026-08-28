@@ -89,6 +89,7 @@
               <span v-if="comment.has_pending_appeal" class="status-badge status-badge--appeal">待審申訴</span>
             </div>
             <p class="comment-content">{{ comment.content }}</p>
+            <img v-if="comment.pic" :src="comment.pic" alt="留言圖片" class="comment-pic">
             <p v-if="showRemoveReason(comment)" class="remove-reason-text">下架原因：{{ comment.remove_reason }}</p>
           </div>
 
@@ -181,6 +182,7 @@ export default {
           author: { name: c.commenter_name, img: c.commenter_photo },
           createTime: c.create_time,
           content: c.content,
+          pic: c.pic,
           is_show: c.is_show,
           delete_type: c.delete_type,
           remove_reason: c.remove_reason,
@@ -620,7 +622,15 @@ export default {
   color: map-get($color, neutral);
   font-size: 13px;
 }
-
+.comment-pic {
+  max-width: 200px;
+  max-height: 200px;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+}
 .comment-content {
   margin: 0;
   color: map-get($color, secondary);

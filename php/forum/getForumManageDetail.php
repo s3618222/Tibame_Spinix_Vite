@@ -72,6 +72,7 @@
         SELECT
             message.msg_id,
             message.content,
+            message.pic,
             message.create_time,
             message.is_show,
             message.delete_type,
