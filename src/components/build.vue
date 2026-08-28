@@ -34,6 +34,7 @@
   import ActionGroup from "@/components/build/actionGroup.vue";
   import CategoryTabs from "@/components/build/categoryTabs.vue";
   import PartGrid from "@/components/build/partGrid.vue";
+  import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl.js";
 
   export default {
     name: "BuildView",
@@ -91,7 +92,7 @@
 
       async fetchParts() {
         try {
-          const res = await fetch("http://localhost:8888/Spinix/php/build/getParts.php");
+          const res = await fetch(`${phpBaseUrl}/build/getParts.php`);
           const result = await res.json();
 
           if (result.success) {
