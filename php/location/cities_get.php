@@ -24,12 +24,6 @@
 require_once("../common/cors.php");
 require_once("../common/connect_ckd101g2.php");
 
-  if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    $sql = "SELECT CITY_ID, CITY_NAME FROM city ORDER BY CITY_ID ASC";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 if ($_SERVER["REQUEST_METHOD"] == "OPTIONS") {
   exit();
 }
