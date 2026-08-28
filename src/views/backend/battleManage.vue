@@ -393,7 +393,7 @@
               <template v-if="selectedBattle.manageAction">
 
                 <div class="battle-handle-notice">
-                  <label>前次通知會員內容</label>
+                  <label>前次處置說明</label>
                   <textarea :value="selectedBattle.manageReason" disabled></textarea>
                 </div>
 
@@ -412,15 +412,19 @@
               <!-- 處置通知內容輸入 -->
               <div class="battle-handle-notice">
                 <label for="memberNotice">
-                  通知會員內容（將顯示給發起人）
+                  處置說明
                 </label>
 
                 <textarea 
                   id="memberNotice" 
                   v-model.trim="memberNotice" 
-                  placeholder="請輸入將通知會員的內容"
+                  placeholder="請輸入處置說明"
                   @input="memberNoticeError = ''" 
                 ></textarea>
+
+                <p class="battle-handle-hint">
+                  請記錄本次管理處置的原因，供後續管理查閱。
+                </p>
 
                 <!-- 錯誤提示文字 -->
                 <p v-if="memberNoticeError" class="battle-handle-error">
@@ -1848,6 +1852,12 @@ export default {
     background-color: #f7f5f3;
     color: #64748b;
     cursor: not-allowed;
+  }
+
+  .battle-handle-hint {
+    margin-inline: auto;
+    font-size: 14px;
+    color: #aaaaaa
   }
 
   //錯誤提示文字
