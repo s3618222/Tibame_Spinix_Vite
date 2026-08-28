@@ -261,35 +261,7 @@ export const exchangeList = [
    }
 ];
 */
-/*
-export const exchangeList = [
-   {
-      post_id: 'exc1',
-      mem_id: 999,
-      // comm_mem_id: '', // 申請會員編號，預設空值
-      exchange_comm_id: null,   // 改成存留言ID，尚未定案時是 null
-      type: 'ratchet',
-      product_img: 'BX-28.webp',
-      title: '魔導致尊',
-      description: '關於交換戰鬥陀螺這件事，我們都可能想錯了，交換戰鬥陀螺，是很多人每天都在做的事，但真正把它做出意義的人，寥寥可數。 當我們認真審視交換戰鬥陀螺這件事，會發現它所牽涉的，遠比表面看來複雜得多。',
-      want_item: '', // 想交換物品
-      headshot: 'public/spinix_member_test1.png',
-      name: 'Lone軍團長',
-      post_contact: '0909123456',
-      create_time: '2026-07-26',
-      city: '台北市',
-      district: '中正區',
-      status: 'available',
-      condition: 'new',
-      is_show: true, // true = 上架中，false = 已下架
-      is_exchanged: false, // 是否被交換
-      post_pic: [],
-      remove_reason: '' // 下架原因
-   }
-];
-*/
-//let res = await fetch(`${phpBaseUrl}/exchange/change_get.php`);
-//export const exchangeList = await res.json();  
+
 
 const phpBaseUrl =
    location.hostname === "localhost" ||
@@ -297,14 +269,36 @@ const phpBaseUrl =
       ? "http://localhost:8888/Spinix/php"
       : `${location.origin}/ckd101/g2/php`;
 
-async function getExchangItems() {
-   let res = await fetch(`${phpBaseUrl}/exchange/change_get.php`, {
-      method: 'GET',
-      credentials: 'include'
+// async function getExchangItems() {
+//    let res = await fetch(`${phpBaseUrl}/exchange/change_get.php`, {
+//       method: 'GET',
+//       credentials: 'include'
+//    });
+//    return await res.json();
+// }
+// export const exchangeList = await getExchangItems();
+
+// 顯示全部商品列表
+export async function exchangeList() {
+   let res = await fetch(`${phpBaseUrl}/exchange/get_Exchange.php`, {
+      method: "GET",
+      credentials: "include"
    });
+   if (!res.ok) throw new Error('取得清單失敗');
    return await res.json();
 }
-export const exchangeList = await getExchangItems();
+
+
+// 顯示單筆商品資料
+export async function getExchangeDetail(posdId) {
+   let res = await fetch(`${phpBaseUrl}/exchange/get_ExchangeDetail.php?id=${posdId}`, {
+      method: "GET",
+      credentials: "include"
+   });
+
+   if (!res.ok) throw new Error('取得詳細資料失敗');
+   return await res.json();
+}
 
 
 // 文章本身的狀態中文對照表（可交換／交換中／待確認／交換完成）

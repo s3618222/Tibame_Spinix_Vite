@@ -28,9 +28,6 @@ const form = document.querySelector('#marketFilter form');
 const typeSelect = form.querySelector('[name="type"]');
 const selectCity = document.getElementById('select-city');
 const selectDistrict = document.getElementById('select-district');
-
-console.log(selectCity);
-
 let sortOrder = 'newest';
 
 function broadcastFilters() {

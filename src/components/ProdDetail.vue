@@ -304,7 +304,7 @@
 import { ref, computed, reactive } from 'vue';
 import {useRoute} from 'vue-router';
 import prodMsgInfo from '@/components/prodMsgInfo.vue';
-import { exchangeList, fakeComments, statusLabelMap, typeLabelMap, conditionLabelMap } from '@/data/mockExchangeData';
+import { getExchangeDetail, fakeComments, statusLabelMap, typeLabelMap, conditionLabelMap } from '@/data/ExchangeData';
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import 'vue3-carousel/dist/carousel.css';
 import PhotoUploader from '@/components/uploadImg.vue';
@@ -367,6 +367,8 @@ const articleId = computed(() => {
   }
 });
 
+// console.log(articleId.value); // 回傳網址上的商品id
+
 const context = computed(() => {
   if (route) {
     return route.query.from || 'browse';
@@ -381,9 +383,18 @@ const context = computed(() => {
 const isAdmin = computed(() => context.value === 'backend');
 
 // 從 exchangeList 陣列中，找出 id 相符的那一筆資料
-const article = computed(() =>
-  exchangeList.find(item => item.post_id === articleId.value)
-);
+// const article = computed(() =>
+//   exchangeList.find(item => item.post_id === articleId.value)
+// );
+
+const article = ref(null);
+async function fetchArticle() {
+  const res = await getExchangeDetail(articleId.value);
+  article.value = res.data;
+}
+
+
+fetchArticle();
 
 
 // 是否為自己刊登的文章
@@ -476,13 +487,33 @@ const backLink = computed(() => backLinkMap[context.value] || 'market.html');
 
 
 // == 圖片輪播 ============================================
-const galleryImages = ref([
-  'CX02_01.webp',
-  'BX23_01.webp',
-  'BX_02.webp',
-  'CX13_01.webp',
-  'BX-28.webp'
-]);
+// const galleryImages = ref([
+//   'CX02_01.webp',
+//   'BX23_01.webp',
+//   'BX_02.webp',
+//   'CX13_01.webp',
+//   'BX-28.webp'
+// ]);
+const galleryImages = computed(()=>{
+  if(!article.value) return [];
+  const rawPics = [
+    article.value.post_pic1,
+    article.value.post_pic2,
+    article.value.post_pic3,
+    article.value.post_pic4,
+    article.value.post_pic5
+  ].filter(Boolean);
+
+   return rawPics.map(pic => `php/${pic}`); // 濾完之後，再統一加上前綴
+});
+
+
+// console.log(galleryImages);
+// console.log(article.post_pic1);
+
+// const galleryImages = ref(
+//   fetch().then().then()
+// );
 
 // == 編輯模式狀態 ==========================================
 const isEditing = ref(false);

@@ -94,7 +94,7 @@
 </template>
 <script setup>
    import { computed } from 'vue';
-   import { exchangeList, replyExchange, completeExchange } from '@/data/mockExchangeData.js';
+   import { exchangeList, replyExchange, completeExchange } from '@/data/ExchangeData.js';
    import ContactDrawer from '@/components/ContactDrawer.vue';
    import WarningBanner from '@/components/WarningBanner.vue';
    import StatusToggleButton from '@/components/StatusToggleButton.vue';

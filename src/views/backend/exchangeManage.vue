@@ -99,7 +99,7 @@
 
 <script>
 import Pagination from "@/components/pagination.vue";
-import { exchangeList, typeLabelMap, statusLabelMap } from "@/data/mockExchangeData";
+import { exchangeList, typeLabelMap, statusLabelMap } from "@/data/ExchangeData";
 
 export default {
    name: "ExchangeManage",
