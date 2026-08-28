@@ -21,6 +21,7 @@
       JOIN member ON message.mem_id = member.MEM_ID
       WHERE art_id = ?
       AND (message.is_show = 1 OR message.mem_id = ?)
+      AND (message.delete_type IS NULL OR message.delete_type != 'self_deleted')
       ";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id, $currentMemberId]);  // 記得加中括號

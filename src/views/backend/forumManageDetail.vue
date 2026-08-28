@@ -169,7 +169,7 @@ export default {
           category: CATEGORY_LABELS[a.category] || a.category,
           createTime: a.create_time,
           content: a.content,
-          is_show: a.is_show,
+          is_show: Number(a.is_show),
           delete_type: a.delete_type,
           remove_reason: a.remove_reason,
           has_pending_appeal: Number(a.has_pending_appeal) === 1,
@@ -182,7 +182,7 @@ export default {
           createTime: c.create_time,
           content: c.content,
           pic: c.pic,
-          is_show: c.is_show,
+          is_show: Number(c.is_show),
           delete_type: c.delete_type,
           remove_reason: c.remove_reason,
           has_pending_appeal: Number(c.has_pending_appeal) === 1

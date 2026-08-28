@@ -3,7 +3,7 @@
 
   require_once("../common/cors.php");
   require_once("../common/connect_ckd101g2.php");
-  require_once("../common/phpBaseUrl.php");
+  require_once("../common/funcs.php");
 
   header("Content-Type: application/json; charset=utf-8");
 
@@ -26,12 +26,12 @@
   }
 
   $fileName = time() . "_" . $_FILES["file"]["name"];  // 改掉原始檔名
-  $targetPath = "../uploads/articles/" . $fileName;
+  $targetPath = "../uploads/forumArts/" . $fileName;
 
   //判斷檔案有沒有上傳成功
   //第一個參數：來源路徑；第二個參數：目標路徑
   if(move_uploaded_file($_FILES["file"]["tmp_name"], $targetPath)){
-    $imageUrl = "{$phpBaseUrl}/uploads/articles/" . $fileName;
+    $imageUrl = getUploadBaseUrl() . "forumArts/" . $fileName;
     echo json_encode(["location" => $imageUrl]);
   }else{
     echo json_encode(["error" => "檔案上傳失敗"]);
