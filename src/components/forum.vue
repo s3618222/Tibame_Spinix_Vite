@@ -28,6 +28,7 @@ import ArticleList from "@/components/forum/articleList.vue";
 import { CATEGORY_LABELS } from '@/assets/js/utils/articleCategory.js';
 import Pagination from "@/components/pagination.vue";
 import LoadMoreButton from '@/components/LoadMoreButton.vue';
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl";
 
 export default {
   name: "ForumView",
@@ -126,7 +127,7 @@ export default {
   methods: {
     async fetchArticles(){
       try{
-        const res = await fetch("http://localhost:8888/Spinix/php/forum/getArticles.php");
+        const res = await fetch(`${phpBaseUrl}/forum/getArticles.php`);
         const result = await res.json();
 
         if(result.success){

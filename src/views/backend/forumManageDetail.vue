@@ -131,6 +131,7 @@
 <script>
 import ConfirmReasonModal from "@/components/common/ConfirmReasonModal.vue";
 import { CATEGORY_LABELS } from "@/assets/js/utils/articleCategory.js";
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl";
 
 export default {
   name: "ForumManageDetail",
@@ -155,7 +156,7 @@ export default {
 
     try {
       const res = await fetch(
-        `http://localhost:8888/Spinix/php/forum/getForumManageDetail.php?art_id=${articleId}`
+        `${phpBaseUrl}/forum/getForumManageDetail.php?art_id=${articleId}`
       );
       const result = await res.json();
 
@@ -256,7 +257,7 @@ export default {
 
       try {
         const res = await fetch(
-          "http://localhost:8888/Spinix/php/forum/adminUpdateArticleStatus.php",
+          `${phpBaseUrl}/forum/adminUpdateArticleStatus.php`,
           {
             method: "POST",
             body: formData
