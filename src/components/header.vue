@@ -51,7 +51,7 @@
             @click="openUserPanel"
           >
             <img 
-              :src="`${baseUrl}${currentMember.photo}`"
+              :src="getMemberAvatarUrl(currentMember.photo)"
               :alt="`${currentMember.name}的會員頭像`"
             >
           </div>
@@ -63,7 +63,7 @@
                 <div class="menu-user-info">
                   <div class="user-headshot">
                     <img 
-                      :src="`${baseUrl}${currentMember.photo}`"
+                      :src="getMemberAvatarUrl(currentMember.photo)"
                       :alt="`${currentMember.name}的會員頭像`"
                     >
                   </div>
@@ -246,6 +246,7 @@ export default {
       this.transitionName = panelName === "notice" ? "slide-left" : "slide-right";
       this.currentPanel = panelName;
     },
+
     fetchCurrentMember() { //取得當前是否有登入、登入者資訊
       fetch(`${phpBaseUrl}/member/currentMember_get.php`, {
         method: "GET",
@@ -275,6 +276,23 @@ export default {
             window.location.href = `${this.baseUrl}homepage.html`;
           }
         });
+    },
+    getMemberAvatarUrl(photo) { //判斷會員頭像路徑函式
+      // 沒有頭像時，使用平台預設頭像
+      if (!photo) {
+        return (
+          import.meta.env.BASE_URL +
+          "spinix_member_default.png"
+        );
+      }
+
+      // 會員自行上傳的動態頭像
+      if (photo.startsWith("uploads/member/")) {
+        return `${phpBaseUrl}/${photo}`;
+      }
+
+      // 原本放在 public 的靜態會員頭像
+      return import.meta.env.BASE_URL + photo;
     }
   },
 
