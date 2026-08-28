@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "OPTIONS") {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
-  $city_id = $_GET["CITY_ID"] ?? null; //抓取網址請求中的city_id參數，再依指定city_id，找出其底下的行政區
+  $city_id = $_GET["city_id"] ?? null; //抓取網址請求中的city_id參數，再依指定city_id，找出其底下的行政區
 
   //若前端請求未附上city_id就回傳錯誤
   if ($city_id === null) {

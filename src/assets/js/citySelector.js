@@ -18,7 +18,7 @@ export function fetchCities(selectCityEl) {
 }
 
 export function fetchDistricts(cityId, selectDistrictEl) {
-   return fetch(`${phpBaseUrl}/location/districts_get.php?CITY_ID=${cityId}`)
+   return fetch(`${phpBaseUrl}/location/districts_get.php?city_id=${cityId}`)
       .then(res => res.json())
       .then(data => {
          data.forEach(district => {
