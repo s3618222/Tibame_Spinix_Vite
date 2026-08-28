@@ -1,0 +1,13 @@
+@use "sass:map";
+@use "../var" as *;
+
+.page-backSignIn {
+  min-height: 100vh;
+  background-color: map.get($color, tertiary); // 米白頁面底色，與白色卡片形成層次
+
+  #backSignInApp {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+}
