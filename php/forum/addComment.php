@@ -3,7 +3,7 @@
 
   require_once("../common/cors.php");
   require_once("../common/connect_ckd101g2.php");
-  require_once("../common/phpBaseUrl.php");
+  require_once("../common/funcs.php");
 
   header("Content-Type: application/json; charset=utf-8");
 
@@ -36,7 +36,7 @@
     $targetPath = "../uploads/messages/" . $fileName;
 
     if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetPath)) {
-      $pic = "{$phpBaseUrl}/uploads/messages/" . $fileName;
+      $pic = getUploadBaseUrl() . "messages/" . $fileName;
     }
   }
 
