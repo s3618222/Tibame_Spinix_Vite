@@ -355,6 +355,19 @@
       return;
     }
 
+    // 送出前二次確認（此動作不可逆：成立會累計違規、可能停權，並依選擇下架內容）
+    let confirmMessage;
+    if (disposition.value === "reject") {
+      confirmMessage = "確定要「駁回申訴」嗎？\n內容維持上架、會員違規次數不變。";
+    } else if (contentAction.value === "remove") {
+      confirmMessage = "確定要「確認違規並下架內容」嗎？\n會員違規次數 +1（累計滿 3 次將停權 7 天），且該內容將被下架。";
+    } else {
+      confirmMessage = "確定要「確認違規並保留內容」嗎？\n會員違規次數 +1（累計滿 3 次將停權 7 天），內容維持上架。";
+    }
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
     // 送出處理結果 → 寫回該筆申訴（狀態 / 處理管理員 / 回覆時間與內容）
     // contentAction（保留/下架）、removeReason（下架原因）供後端處理；後端尚未串接前會被忽略
     try {
