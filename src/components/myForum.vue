@@ -42,6 +42,7 @@
 <script>
 import myComments from "@/components/member/forum/myComments.vue";
 import MyArticles from "@/components//member/forum/myArticles.vue";
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl";
 export default {
   name: "MyForum",
 
@@ -70,7 +71,7 @@ export default {
 
     async fetchMyArticles() {
       try {
-        const res = await fetch("http://localhost:8888/Spinix/php/forum/getMyArticles.php", {
+        const res = await fetch(`${phpBaseUrl}/forum/getMyArticles.php`, {
           method: "GET",
           credentials: "include"
         });
@@ -94,7 +95,7 @@ export default {
 
     async fetchMyComments() {
       try {
-        const res = await fetch("http://localhost:8888/Spinix/php/forum/getMyComments.php", {
+        const res = await fetch(`${phpBaseUrl}/forum/getMyComments.php`, {
           method: "GET",
           credentials: "include"
         });
@@ -121,7 +122,7 @@ export default {
         const formData = new FormData();
         formData.append("art_id", articleId);
 
-        const res = await fetch("http://localhost:8888/Spinix/php/forum/deleteArticle.php", {
+        const res = await fetch(`${phpBaseUrl}/forum/deleteArticle.php`, {
           method: "POST",
           credentials: "include",
           body: formData
@@ -144,7 +145,7 @@ export default {
         const formData = new FormData();
         formData.append("msg_id", messageId);
 
-        const res = await fetch("http://localhost:8888/Spinix/php/forum/deleteComment.php", {
+        const res = await fetch(`${phpBaseUrl}/forum/deleteComment.php`, {
           method: "POST",
           credentials: "include",
           body: formData
