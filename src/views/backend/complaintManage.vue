@@ -40,7 +40,7 @@
         <input
           v-model="searchText"
           type="text"
-          placeholder="申訴編號 / 申訴人 / 被申訴對象"
+          placeholder="申訴人 / 被申訴對象"
         >
       </div>
     </div>
@@ -49,7 +49,7 @@
     <div class="complaint-table">
       <!-- 表頭 -->
       <div class="complaint-table__caption">
-        <div class="col">申訴編號</div>
+        <!-- <div class="col">申訴編號</div> -->
         <div class="col">申訴人</div>
         <div class="col">被申訴對象</div>
         <div class="col">申訴類型</div>
@@ -65,7 +65,6 @@
         :key="`${row.sourceType}-${row.id}`"
         class="complaint-table__row"
       >
-        <div class="col col--id">#{{ row.id }}</div>
         <div class="col">{{ row.complainant }}</div>
         <div class="col">{{ row.respondent }}</div>
         <div class="col">{{ row.type }}</div>
@@ -165,7 +164,6 @@
       const matchType = typeFilter.value === "all" || item.type === typeFilter.value;
       const matchSearch =
         !keyword ||
-        String(item.id).toLowerCase().includes(keyword) ||
         item.complainant.toLowerCase().includes(keyword) ||
         item.respondent.toLowerCase().includes(keyword);
       return matchStatus && matchType && matchSearch;

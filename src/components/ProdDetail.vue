@@ -93,11 +93,11 @@
 
       <div class="user box-style">
         <div class="img-user">
-            <img :src="`./${article.headshot}`" alt="">
+            <img :src="`./${article.mem_photo}`" alt="">
           </div>
         <div class="user-info">
           <div class="info-header">
-            <p class="user-name">{{ article.name }}</p>
+            <p class="user-name">{{ article.mem_name }}</p>
             <a href="complaint.html" target="_blank">
               <i class="fa-solid fa-triangle-exclamation" v-if="!isOwner && !isAdmin"></i>
             </a>
@@ -146,7 +146,7 @@
       
       <!-- 被申訴時警告訊息 -->
       <WarningBanner
-        v-if="article.remove_reason !== ''"
+        v-if="article.remove_reason !== null  "
         title= "文章"
         :remove_reason = "article.remove_reason"
         :show_contact="isOwner"
@@ -313,8 +313,30 @@ import WarningBanner from '@/components/WarningBanner.vue';
 import StatusToggleButton from '@/components/StatusToggleButton.vue';
 import ConfirmReasonModal from '@/components/common/ConfirmReasonModal.vue';
 
-// 目前登入的測試會員（之後接後端時，改成從登入狀態拿）
-const currentUserId = 999;
+// 登入會員
+let currentUserId = ref(null);
+
+const phpBaseUrl =
+  location.hostname === "localhost" ||
+      location.hostname === "127.0.0.1"
+      ? "http://localhost:8888/Spinix/php"
+      : `${location.origin}/ckd101/g2/php`;
+
+function fetchCurrentMember() {
+  return fetch(`${phpBaseUrl}/member/currentMember_get.php`, {
+      credentials: "include"
+  }).then(res => res.json()).then(data => {
+
+      if (data.success && data.isLoggedIn) { //已有登入會員時
+        currentUserId.value = data.member.id;
+      } else { //未登入時
+        currentUserId.value = null;
+      }
+      // console.log("目前登入會員：", currentUserId.value);
+  });
+}
+
+fetchCurrentMember();
 
 // 讀取網址參數：product_detail.html?id=5&from=myPosts
 // const urlParams = new URLSearchParams(window.location.search);
@@ -357,7 +379,6 @@ const context = computed(() => {
 
 // 判斷是否從管理者畫面進來
 const isAdmin = computed(() => context.value === 'backend');
-// const isAdmin = false;
 
 // 從 exchangeList 陣列中，找出 id 相符的那一筆資料
 const article = computed(() =>
@@ -365,10 +386,17 @@ const article = computed(() =>
 );
 
 
+// 是否為自己刊登的文章
+const isOwner = computed(() => {
+  if (!article.value) return false;
+  return article.value.mem_id === currentUserId.value;
+});
+
+
 // 是否已經申請過（排除賣家自己）
 const alreadyApplied = computed(() => {
   if (!article.value || isOwner.value) return false;
-  return articleComments.value.some(c => c.mem_id === currentUserId);
+  return articleComments.value.some(c => c.mem_id === currentUserId.value);
 });
 
 // 開啟下架原因燈箱
@@ -405,7 +433,7 @@ function handleToggleCommentStatus({ commentId }) {
 }
 
 function handleConfirmRemove(reason) {
-  if (removeTarget.value?.type === 'article') {
+  if (removeTarget.value.type === 'article') {
     article.value.is_show = false;
     article.value.remove_reason = reason;
     window.alert('文章已下架！');
@@ -564,11 +592,7 @@ const sortedComments = computed(() => {
 
 const activeImageIndex = ref(0);
 
-// 是否為自己刊登的文章
-const isOwner = computed(() => {
-  if (!article.value) return false;
-  return article.value.mem_id === currentUserId;
-});
+
 
 
 // 留言表單燈箱
@@ -622,7 +646,7 @@ function handleSubmit() {
     return;
   }
 
-  console.log('送出交換提議：', { ...form });
+  // console.log('送出交換提議：', { ...form });
   // 之後這裡打 API，新增一筆 fakeComments（申請），articleId 用 article.value.id
 
   closeModal();
@@ -647,6 +671,7 @@ function handleSelectApplicant({ commentId }) {
   // 之後接後端：
   // await axios.patch(`/api/exchange/${article.value.post_id}/select`, { commentId });
 }
+
 
 
 </script>

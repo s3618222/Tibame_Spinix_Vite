@@ -36,6 +36,13 @@ function fetchCurrentMember() {
   });
 }
 
+//檢查目前登入會員是否可使用約戰功能 (是否沒被停權)
+function fetchBattleAccess() {
+  return fetch(`${phpBaseUrl}/battle/battle_access_get.php`, {
+    credentials: "include"
+  }).then(res => res.json());
+}
+
 //一進入頁面時，先抓取當前是否有登入與登入者資訊，再接著render卡片 (方便讓系統判斷，卡池中是否有登入會員自己發起的約戰)
 fetchCurrentMember()
   .then(() => {
@@ -1088,7 +1095,34 @@ battleCardList.addEventListener("click", e => {
   }
 
   const battleId = Number(applyBtn.dataset.battleId);
-  openApplyModal(battleId);
+
+  //已登入會員要申請加入前，需先確認其約戰功能是否受限
+  fetchBattleAccess().then(data => {
+    //取得API失敗時
+    if (!data.success) {
+      alert(data.message || "目前無法確認約戰功能狀態");
+      return;
+    }
+
+    //當約戰功能為受限狀態
+    if (!data.allowed) {
+
+      if (data.status === "TEMP-RESTRICT") { //暫時受限狀態
+        alert("你的約戰功能目前暫時受限，受限期間無法申請加入約戰。");
+
+      } else if (data.status === "PERMA-RESTRICT") { //永久停權
+        alert("你的約戰功能目前已被限制使用，無法申請加入約戰。");
+
+      } else {
+        alert("目前無法使用約戰功能。");
+      }
+
+      return;
+    }
+
+    //約戰功能正常時，才可開啟申請加入燈箱
+    openApplyModal(battleId);
+  });
 
 });
 
@@ -1518,6 +1552,7 @@ bottomSpintopBtn.addEventListener("click", () => {
 });
 
 // 要前往建立約戰分頁前，需先確認會員是否已登入
+// 附帶確認當前會員的約戰功能是否有被限制
 document.addEventListener("click", e => {
 
   // 判斷此次點擊是否來自頁面上的「建立邀約」連結
@@ -1528,7 +1563,10 @@ document.addEventListener("click", e => {
     return;
   }
 
-  // 未登入會員時，無法進入對戰配對頁
+  // 先停止 a標籤原先的跳轉預設行為，等登入狀態與約戰功能權限確認後，再前往建立約戰頁
+  e.preventDefault();
+
+  // 1.未登入會員時，無法進入對戰配對頁
   if (!currentMember) {
     e.preventDefault();
     alert("請先登入會員，再建立對戰邀約");
@@ -1536,4 +1574,37 @@ document.addEventListener("click", e => {
     // 跳轉登入頁
     window.location.href = `${import.meta.env.BASE_URL}signIn.html`;
   }
+
+  // 2.已登入後，確認該會員目前是否可使用約戰功能
+  fetchBattleAccess().then(data => {
+
+    // 串接API失敗時
+    if (!data.success) {
+      alert(data.message || "目前無法確認約戰功能狀態");
+      return;
+    }
+
+    // 當約戰功能目前為受限狀態
+    if (!data.allowed) {
+
+      if (data.status === "TEMP-RESTRICT") { //暫時受限
+
+        alert("你的約戰功能目前暫時受限，受限期間無法建立對戰邀約。");
+
+      } else if (data.status === "PERMA-RESTRICT") { //永久停權
+
+        alert("你的約戰功能目前已被限制使用，無法建立對戰邀約。");
+
+      } else {
+
+        alert("目前無法使用約戰功能。");
+      }
+
+      return;
+    }
+
+    // 登入狀態與約戰功能權限都正常時，才能進入建立約戰頁
+    window.location.href = `${import.meta.env.BASE_URL}createBattle.html`;
+  });
+
 });

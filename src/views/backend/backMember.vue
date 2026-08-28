@@ -21,7 +21,7 @@
           :to="{ name: 'backend-battle' }"
           class="back-nav-link"
         >
-          約戰專區
+          約戰管理
         </RouterLink>
 
         <RouterLink

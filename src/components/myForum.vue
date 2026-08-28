@@ -199,7 +199,7 @@ p {
   padding: 24px;
   background-color: #fff;
   width: 100%;
-  border: 1px solid map-get($color, warmGray );
+  // border: 1px solid map-get($color, warmGray );
   font-size: 14px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 

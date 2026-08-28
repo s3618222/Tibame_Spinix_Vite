@@ -7,10 +7,18 @@
     <!-- 篩選工具列 -->
     <div class="forum-manage-filter">
       <div class="filter-item">
-        <select v-model="filters.reportStatus">
-          <option value="">全部文章</option>
-          <option value="正常">正常</option>
-          <option value="遭檢舉">遭檢舉</option>
+        <select v-model="filters.showStatus">
+          <option value="">全部狀態</option>
+          <option value="visible">上架中</option>
+          <option value="admin_removed">已下架</option>
+          <option value="self_deleted">使用者已刪除</option>
+        </select>
+      </div>
+
+      <div class="filter-item">
+        <select v-model="filters.appealStatus">
+          <option value="">全部</option>
+          <option value="pending">僅顯示待審申訴</option>
         </select>
       </div>
 
@@ -47,7 +55,8 @@
           <div class="col col-title">文章標題</div>
           <div class="col col-author">作者</div>
           <div class="col col-time">發布時間</div>
-          <div class="col col-status">被檢舉狀態</div>
+          <div class="col col-status">文章狀態</div>
+          <div class="col col-appeal">待審申訴</div>
           <div class="col col-action">操作</div>
         </div>
 
@@ -63,10 +72,16 @@
             <div class="col col-status">
               <span
                 class="status-badge"
-                :class="article.reportStatus === '遭檢舉' ? 'status-badge--error' : 'status-badge--success'"
+                :class="getArticleStatusClass(article)"
               >
-                {{ article.reportStatus }}
+                {{ getArticleStatusText(article) }}
               </span>
+            </div>
+            <div class="col col-appeal">
+              <span v-if="article.has_pending_appeal" class="status-badge status-badge--appeal">
+                待審申訴
+              </span>
+              <span v-else>—</span>
             </div>
             <div class="col col-action">
               <RouterLink
@@ -99,6 +114,7 @@
 
 <script>
 import Pagination from "@/components/pagination.vue";
+import { CATEGORY_LABELS } from "@/assets/js/utils/articleCategory.js";
 
 export default {
   name: "ForumManage",
@@ -112,66 +128,18 @@ export default {
       currentPage: 1,
       pageSize: 5,
 
-      categoryOptions: ["公告", "零件搭配", "賽事討論"],
+      categoryOptions: Object.values(CATEGORY_LABELS),
 
       filters: {
-        reportStatus: "",
+        showStatus: "",
+        appealStatus: "",
         sortOrder: "newest",
         category: "",
         keyword: ""
       },
 
       // 論壇文章假資料
-      articles: [
-        {
-          id: 1,
-          category: "零件搭配",
-          title: "WX-01爆裂天龍最佳配重環測試報告",
-          author: "Blader_X",
-          createTime: "2026-05-12 14:30",
-          reportStatus: "正常"
-        },
-        {
-          id: 2,
-          category: "賽事討論",
-          title: "全國大賽初賽心得與戰術分享",
-          author: "SpinMaster99",
-          createTime: "2026-05-10 09:15",
-          reportStatus: "遭檢舉"
-        },
-        {
-          id: 3,
-          category: "零件搭配",
-          title: "新手推薦：高穩定性防禦型配置",
-          author: "NewbieGamer",
-          createTime: "2026-05-08 20:40",
-          reportStatus: "正常"
-        },
-        {
-          id: 4,
-          category: "公告",
-          title: "伺服器維護與版本更新說明 v2.4",
-          author: "SystemAdmin",
-          createTime: "2026-05-05 08:00",
-          reportStatus: "正常"
-        },
-        {
-          id: 5,
-          category: "賽事討論",
-          title: "關於裁判判定爭議的討論串",
-          author: "FairPlayer",
-          createTime: "2026-05-03 17:22",
-          reportStatus: "遭檢舉"
-        },
-        {
-          id: 6,
-          category: "公告",
-          title: "論壇發文規範與檢舉機制說明",
-          author: "SystemAdmin",
-          createTime: "2026-04-28 11:10",
-          reportStatus: "正常"
-        }
-      ]
+      articles: []
     };
   },
 
@@ -180,9 +148,15 @@ export default {
       const keyword = this.filters.keyword.trim().toLowerCase();
 
       const result = this.articles.filter(article => {
-        const matchStatus =
-          !this.filters.reportStatus ||
-          article.reportStatus === this.filters.reportStatus;
+        const matchShowStatus =
+          !this.filters.showStatus ||
+          (this.filters.showStatus === "visible"
+            ? article.is_show === 1
+            : article.is_show === 0 && article.delete_type === this.filters.showStatus);
+
+        const matchAppealStatus =
+          !this.filters.appealStatus ||
+          (this.filters.appealStatus === "pending" && article.has_pending_appeal === true);
 
         const matchCategory =
           !this.filters.category ||
@@ -193,7 +167,7 @@ export default {
           article.title.toLowerCase().includes(keyword) ||
           article.author.toLowerCase().includes(keyword);
 
-        return matchStatus && matchCategory && matchKeyword;
+        return matchShowStatus && matchAppealStatus && matchCategory && matchKeyword;
       });
 
       const sorted = [...result].sort((a, b) => {
@@ -221,12 +195,67 @@ export default {
     }
   },
 
+  async created() {
+    try {
+      const res = await fetch("http://localhost:8888/Spinix/php/forum/getForumManageList.php");
+      const result = await res.json();
+
+      if (result.success) {
+        this.articles = result.data.map(article => ({
+          id: article.art_id,
+          category: CATEGORY_LABELS[article.category] || article.category,
+          title: article.title,
+          author: article.author_name,
+          createTime: article.create_time,
+          is_show: article.is_show,
+          delete_type: article.delete_type,
+          has_pending_appeal: Number(article.has_pending_appeal) === 1
+        }));
+      } else {
+        alert(result.message);
+      }
+    } catch (err) {
+      console.error("取得文章列表失敗", err);
+      alert("取得文章列表失敗，請稍後再試");
+    }
+  },
+
   watch: {
     filters: {
       handler() {
         this.currentPage = 1;
       },
       deep: true
+    }
+  },
+
+  methods: {
+    // 依 is_show / delete_type 轉換成畫面顯示用的文章狀態文字
+    getArticleStatusText(article) {
+      if (article.is_show === 1) {
+        return "上架中";
+      }
+      if (article.delete_type === "admin_removed") {
+        return "已下架";
+      }
+      if (article.delete_type === "self_deleted") {
+        return "使用者已刪除";
+      }
+      return "";
+    },
+
+    // 依 is_show / delete_type 轉換成畫面顯示用的 badge class
+    getArticleStatusClass(article) {
+      if (article.is_show === 1) {
+        return "status-badge--success";
+      }
+      if (article.delete_type === "admin_removed") {
+        return "status-badge--error";
+      }
+      if (article.delete_type === "self_deleted") {
+        return "status-badge--muted";
+      }
+      return "";
     }
   }
 };
@@ -379,6 +408,24 @@ export default {
   padding: 4px 12px;
 }
 
+// 本頁面專屬的 status-badge modifier（_mixin.scss 沒有對應語意的既有樣式，
+// 故不動 _mixin.scss，改在此 scoped 樣式內新增，尺寸/形狀比照 .status-badge 本體）。
+
+// 灰階：使用者已自行刪除的文章，中性色取自 _var.scss 既有變數
+.status-badge--muted {
+  border-color: rgba(100, 116, 139, 0.4);
+  background-color: map-get($color, gray);
+  color: map-get($color, neutral);
+}
+
+// 橘黃色：待審申訴提醒，顏色取自 _var.scss 既有變數，刻意與 status-badge--error
+// 的紅色區隔，避免跟「已下架」狀態混淆
+.status-badge--appeal {
+  border-color: rgba(254, 201, 107, 0.75);
+  background-color: map-get($color, pending);
+  color: map-get($color, brown);
+}
+
 .col-title {
   flex: 1;
   min-width: 0;
@@ -400,6 +447,11 @@ export default {
 }
 
 .col-status {
+  width: 100px;
+  flex-shrink: 0;
+}
+
+.col-appeal {
   width: 100px;
   flex-shrink: 0;
 }

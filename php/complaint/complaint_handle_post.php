@@ -140,6 +140,26 @@
       exit;
     }
 
+    // ===== 約戰會員通知:取得申訴人ID START =====
+    $battleComplainantId = 0;
+    
+    if ($sourceType === "battle") {
+      $sql = "
+        SELECT COMPLAINANT_MEM_ID
+        FROM battle_appeal
+        WHERE BATTLE_APPEAL_ID = ?
+      ";
+
+      $stmt = $pdo->prepare($sql);
+      $stmt->execute([
+        $appealId
+      ]);
+
+      $battleComplainantId = (int) $stmt->fetchColumn();
+    }
+    // ===== 約戰會員通知:取得申訴人ID END =====
+    
+
     // 1. 更新申訴記錄
     $updSql = "
       UPDATE {$m['table']}
@@ -150,6 +170,59 @@
       WHERE {$m['pk']} = ?
     ";
     $pdo->prepare($updSql)->execute([$newStatus, $adminId, $note, $appealId]);
+
+    //==== 約戰會員通知：申訴結果 START =====
+    if ($sourceType === "battle") {
+      //通知申訴人
+      $complainantNotification = "你提出的約戰申訴已完成審核，請至會員中心「我的申訴」查看處理結果。";
+      
+      if ($battleComplainantId > 0) {
+        $sql = "
+          INSERT INTO notification (
+            mem_id,
+            content,
+            is_read,
+            create_time
+          )
+          VALUES (?, ?, 0, NOW())
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+          $battleComplainantId,
+          $complainantNotification
+        ]);
+      }
+
+      //申訴成立時，另外通知被申訴人
+      if ($newStatus === "CONFIRMED") {
+
+        $battleRespondentId = (int) $row[$m["respondent"]];
+
+        if ($battleRespondentId > 0) {
+
+          $respondentNotification = "你涉及的一筆約戰申訴經管理員審核，已判定成立，請至會員中心「違規紀錄」查看處分說明。";
+
+          $sql = "
+            INSERT INTO notification (
+              mem_id,
+              content,
+              is_read,
+              create_time
+            )
+            VALUES (?, ?, 0, NOW())
+          ";
+
+          $stmt = $pdo->prepare($sql);
+          $stmt->execute([
+            $battleRespondentId,
+            $respondentNotification
+          ]);
+        }
+      }
+    }
+    //==== 約戰會員通知：申訴結果 END =====
+
 
     // 2. 成立才有的副作用：違規次數+1、下架內容
     if ($disposition === "confirm") {
@@ -173,7 +246,30 @@
             WHERE MEM_ID = ?
               AND {$m['suspendStatus']} <> 'PERMA-RESTRICT'
           ";
-          $pdo->prepare($suspendSql)->execute([$respondentId]);
+          $stmt = $pdo->prepare($suspendSql);
+          $stmt->execute([$respondentId]);
+
+          // ===== 約戰會員通知：功能停權 START =====
+          if ($sourceType === "battle" && $stmt->rowCount() > 0) {
+            // 停權通知
+            $suspendNotification = "你的約戰功能因累積違規紀錄已達停權門檻，系統將暫停該功能使用 7 天。";
+            $sql = "
+              INSERT INTO notification (
+                mem_id,
+                content,
+                is_read,
+                create_time
+              )
+              VALUES (?, ?, 0, NOW())
+            ";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+              $respondentId,
+              $suspendNotification
+            ]);
+          }
+          // ===== 約戰會員通知：功能停權 END =====
         }
       }
 

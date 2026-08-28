@@ -88,18 +88,18 @@
 
       <div class="stats-grid">
         <div class="stat-item">
-          <p class="stat-label">參賽次數</p>
-          <p class="stat-number">12</p>
+          <p class="stat-label">約戰總場次</p>
+          <p class="stat-number">{{ battleStats.totalBattles }}</p>
           <div class="stat-bar"></div>
         </div>
         <div class="stat-item">
-          <p class="stat-label">勝場次數</p>
-          <p class="stat-number">3</p>
+          <p class="stat-label">競技場次</p>
+          <p class="stat-number">{{ battleStats.competitiveTotal }}</p>
           <div class="stat-bar"></div>
         </div>
         <div class="stat-item">
-          <p class="stat-label">勝率</p>
-          <p class="stat-number">25%</p>
+          <p class="stat-label">競技勝率</p>
+          <p class="stat-number">{{ battleStats.winRate }}</p>
           <div class="stat-bar"></div>
         </div>
       </div>
@@ -108,42 +108,85 @@
 </template>
 
 <script>
-export default {
-  name: "MyProfile",
+  export default {
+    name: "MyProfile",
 
-  data() {
-    return {
-      //帳戶資料假資料，先寫死
-      profile: {
-        avatar: "spinix_member_default.png",
-        account: "bill0714@gmail.com",
-        username: "陀螺戰神123",
-        phone: "0912345678",
-        landline: "",
-        birthYear: "1999",
-        birthMonth: "06",
-        birthDay: "06",
-        gender: "male" // "male" | "female" | "secret"
-      },
+    data() {
+      return {
+        //帳戶資料假資料，先寫死
+        profile: {
+          avatar: "spinix_member_default.png",
+          account: "bill0714@gmail.com",
+          username: "陀螺戰神123",
+          phone: "0912345678",
+          landline: "",
+          birthYear: "1999",
+          birthMonth: "06",
+          birthDay: "06",
+          gender: "male" // "male" | "female" | "secret"
+        },
 
-      genderOptions: [
-        { value: "male", label: "男" },
-        { value: "female", label: "女" },
-        { value: "secret", label: "保密" }
-      ]
-    };
-  },
+        genderOptions: [
+          { value: "male", label: "男" },
+          { value: "female", label: "女" },
+          { value: "secret", label: "保密" }
+        ],
 
-  computed: {
-    baseUrl() {
-      return import.meta.env.BASE_URL;
+        //當前會員約戰相關統計資料
+        battleStats: {
+          totalBattles: 0,
+          competitiveTotal: 0,
+          winRate: null
+        }
+      };
     },
 
-    passwordMask() {
-      return "*".repeat(9);
+    computed: {
+      phpBaseUrl() { //判斷目前php的執行環境，調整網址前綴
+        return (
+          location.hostname === "localhost" ||
+          location.hostname === "127.0.0.1"
+            ? "http://localhost:8888/Spinix/php"
+            : "/ckd101/g2/php"
+        );
+      },
+
+      baseUrl() {
+        return import.meta.env.BASE_URL;
+      },
+
+      passwordMask() {
+        return "*".repeat(9);
+      }
+    },
+
+    methods: {
+      async fetchBattleStats() { //串接取得會員約戰統計數據API
+        try {
+          const response = await fetch(`${this.phpBaseUrl}/member/my_battle_stats_get.php`, {
+            credentials: "include"
+          });
+
+          const data = await response.json();
+
+          if (!response.ok || !data.success) {
+            console.error(data.message);
+            return;
+          }
+
+          this.battleStats = data.stats;
+
+        } catch (error) {
+          console.error("取得約戰統計失敗：", error);
+        }
+      }
+    },
+
+    mounted() {
+      this.fetchBattleStats();
     }
-  }
-};
+
+  };
 </script>
 
 <style lang="scss" scoped>

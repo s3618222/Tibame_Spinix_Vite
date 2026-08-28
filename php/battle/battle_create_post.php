@@ -6,6 +6,7 @@
   require_once("../common/cors.php");
   require_once("../common/connect_ckd101g2.php");
   require_once("./battle_upload_config.php");
+  require_once("./battle_access_check.php");
 
   header("Content-Type: application/json; charset=utf-8");
 
@@ -31,6 +32,35 @@
     echo json_encode([
       "success" => false,
       "message" => "請先登入後再建立約戰"
+    ], JSON_UNESCAPED_UNICODE);
+
+    exit;
+  }
+
+  //取得當前登入會員的約戰功能使用權限
+  $battleAccess = checkBattleAccess($pdo, $memberId);
+
+  //約戰功能受到限制時，禁止建立新的對戰邀約
+  if (!$battleAccess["allowed"]) {
+
+    http_response_code(403);
+
+    if ($battleAccess["status"] === "TEMP-RESTRICT") {
+
+      $message ="你的約戰功能目前暫時受限，受限期間無法建立對戰邀約。";
+
+    } elseif ($battleAccess["status"] === "PERMA-RESTRICT") {
+
+      $message ="你的約戰功能目前已被限制使用，無法建立對戰邀約。";
+
+    } else {
+
+      $message ="目前無法使用約戰相關功能。";
+    }
+
+    echo json_encode([
+      "success" => false,
+      "message" => $message
     ], JSON_UNESCAPED_UNICODE);
 
     exit;

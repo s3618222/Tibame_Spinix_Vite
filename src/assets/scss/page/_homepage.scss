@@ -458,6 +458,78 @@
     }
   }
 
+  // ===== 04 交換市集動畫圖片 =====
+  .highlight__media--market {
+
+    // 768px以下：顯示原始完整圖片
+    .market-trade {
+      display: none;
+    }
+
+    .market-static {
+      display: block;
+      width: 100%;
+    }
+
+    // 769px以上：顯示交換動畫素材
+    @media (min-width: 769px) {
+
+      .market-static {
+        display: none;
+      }
+
+      .market-trade {
+        display: block;
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+      }
+
+      .market-top,
+      .market-case {
+        position: absolute;
+        display: block;
+        height: auto;
+
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      // 左上紅色陀螺
+      .market-top--red {
+        top: 8%;
+        left: 10%;
+        width: 20%;
+        z-index: 1;
+      }
+
+      // 右上藍色陀螺
+      .market-top--blue {
+        top: 8%;
+        right: 10%;
+        width: 20%;
+        z-index: 1;
+      }
+
+      // 左下收藏盒
+      .market-case--left {
+        left: 1%;
+        bottom: 10%;
+        width: 42%;
+        z-index: 0;
+        transform: scaleX(-1);
+      }
+
+      // 右下收藏盒
+      .market-case--right {
+        right: 1%;
+        bottom: 10%;
+        width: 42%;
+        z-index: 0;
+      }
+    }
+  }
+
   // ===== FEEL THE SPIRIT 影片區 =====
   .video-cta {
     display: flex;
