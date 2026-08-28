@@ -9,7 +9,7 @@
 
       <div class="history-header">
         <img
-          :src="`${baseUrl}${member.avatar}`"
+          :src="member.avatar"
           :alt="`${member.name} 的會員頭像`"
           class="history-avatar"
         >
