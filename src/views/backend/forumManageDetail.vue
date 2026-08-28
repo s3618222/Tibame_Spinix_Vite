@@ -208,7 +208,7 @@ export default {
     // 下架：需要填寫原因，打開 ConfirmReasonModal
     openRemoveArticleModal() {
       this.modalTitle = "請說明下架原因";
-      this.modalTarget = { type: "article", id: this.article.id, action: "remove" };
+      this.modalTarget = { type: "article", id: this.article.id, action: "REMOVE" };
       this.isModalOpen = true;
     },
 
@@ -219,13 +219,13 @@ export default {
       const confirmed = confirm("確定要恢復這篇文章的上架狀態嗎？");
       if (!confirmed) return;
 
-      this.modalTarget = { type: "article", id: this.article.id, action: "restore" };
+      this.modalTarget = { type: "article", id: this.article.id, action: "RESTORE" };
       this.handleConfirmAction("");
     },
 
     openRemoveCommentModal(comment) {
       this.modalTitle = "請說明下架原因";
-      this.modalTarget = { type: "comment", id: comment.id, action: "remove" };
+      this.modalTarget = { type: "comment", id: comment.id, action: "REMOVE" };
       this.isModalOpen = true;
     },
 
@@ -233,7 +233,7 @@ export default {
       const confirmed = confirm("確定要恢復這則留言的上架狀態嗎？");
       if (!confirmed) return;
 
-      this.modalTarget = { type: "comment", id: comment.id, action: "restore" };
+      this.modalTarget = { type: "comment", id: comment.id, action: "RESTORE" };
       this.handleConfirmAction("");
     },
 
@@ -241,8 +241,45 @@ export default {
       this.isModalOpen = false;
     },
 
-    handleConfirmAction(reason) {
-      console.log(reason, this.modalTarget);
+    async handleConfirmAction(reason) {
+      //物件的解構賦值語法，效果等同於
+      // const target = this.modalTarget;
+      // const type = target.type;
+      // const id = target.id;
+      // const action = target.action;
+      const { type, id, action } = this.modalTarget;
+
+      const formData = new FormData();
+      formData.append("art_id", id);
+      formData.append("action", action);
+      formData.append("reason", reason);
+
+      try {
+        const res = await fetch(
+          "http://localhost:8888/Spinix/php/forum/adminUpdateArticleStatus.php",
+          {
+            method: "POST",
+            body: formData
+          }
+        );
+        const result = await res.json();
+
+        if (result.success) {
+          // 直接操作本地陣列，不整包重新 fetch（比照你自己定案的模式）
+          if (type === "article") {
+            this.article.is_show = action === "REMOVE" ? 0 : 1;
+            this.article.delete_type = action === "REMOVE" ? "admin_removed" : null;
+            this.article.remove_reason = action === "REMOVE" ? reason : null;
+          }
+          alert(result.message);
+        } else {
+          alert(result.message);
+        }
+      } catch (err) {
+        console.error("處置失敗", err);
+        alert("處置失敗，請稍後再試");
+      }
+
       this.isModalOpen = false;
     },
 
