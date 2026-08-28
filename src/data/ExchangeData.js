@@ -269,15 +269,6 @@ const phpBaseUrl =
       ? "http://localhost:8888/Spinix/php"
       : `${location.origin}/ckd101/g2/php`;
 
-// async function getExchangItems() {
-//    let res = await fetch(`${phpBaseUrl}/exchange/change_get.php`, {
-//       method: 'GET',
-//       credentials: 'include'
-//    });
-//    return await res.json();
-// }
-// export const exchangeList = await getExchangItems();
-
 // 顯示全部商品列表
 export async function exchangeList() {
    let res = await fetch(`${phpBaseUrl}/exchange/get_Exchange.php`, {
