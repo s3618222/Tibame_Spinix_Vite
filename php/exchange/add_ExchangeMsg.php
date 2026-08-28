@@ -41,3 +41,7 @@ echo json_encode([
    "success" => true,
    "message" => "申請成功"
 ], JSON_UNESCAPED_UNICODE);
+
+
+$newCommentId = $pdo -> lastInsertId();
+
