@@ -249,7 +249,7 @@
       <form @submit.prevent="handleSubmit">
         <p class="form-title">留下您的交換提議與聯絡方式</p>
 
-        <div class="name form-label-style">
+        <!-- <div class="name form-label-style">
           <label for="name" class="label-title">您的暱稱</label>
           <input
             type="text"
@@ -258,7 +258,7 @@
             :class="{ '-isError': errors.name }"
             data-required
           >
-        </div>
+        </div> -->
 
         <div class="phone form-label-style">
           <label for="phone" class="label-title">聯絡方式</label>
@@ -665,10 +665,10 @@ function handleReset() {
 }
 
 function validateForm() {
-  errors.name = form.name.trim() === '';
+  // errors.name = form.name.trim() === '';
   errors.changeItem = form.changeItem.trim() === '';
   errors.phone = form.phone.trim() === '';
-  return !(errors.name || errors.changeItem || errors.phone);
+  return !( errors.changeItem || errors.phone);
 }
 
 function handleSubmit() {
