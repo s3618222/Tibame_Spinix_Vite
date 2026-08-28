@@ -165,7 +165,7 @@
         }
 
         if (this.selectedTarget === "back") {
-          window.location.href = `${this.URL_BASE}backMember.html`; //!!!後台登入頁還沒做，所以先直接進到後台頁面
+          window.location.href = `${this.URL_BASE}backSignIn.html`; //進後台登入頁
         }
       },
 
