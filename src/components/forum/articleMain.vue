@@ -15,7 +15,7 @@
         </div>
         <h1>{{ article.title }}</h1>
       </header>
-      <section class="body-article" v-html="article.content"></section>
+      <section class="body-article tinymce-content" v-html="article.content"></section>
       <footer class="footer-article" v-if="article.isShow !== false">
         <button type="button" @click="handleShare">
           <i class="fa-solid fa-share-nodes"></i>
@@ -82,6 +82,7 @@ import AuthorCard from '@/components/forum/authorCard.vue';
 <style lang="scss" scoped>
 @use '@/assets/scss/var' as *;
 @use '@/assets/scss/mixin' as *;
+@use '@/assets/scss/component/tinymceContent' as *;
 
 .article-main{
   padding: 16px;
@@ -177,59 +178,7 @@ import AuthorCard from '@/components/forum/authorCard.vue';
     order: initial;
   }
 
-  :deep(p) {
-    font-size: map-get($fontSize, default);
-    line-height: 1.6;
-    color: map-get($color, secondary);
-    margin: 0 0 16px;
-  }
-
-  :deep(h2) {
-    font-size: map-get($fontSize, h2);
-    font-weight: 700;
-    color: map-get($color, secondary);
-    margin: 24px 0 12px;
-  }
-
-  :deep(h3) {
-    font-size: map-get($fontSize, h3);
-    font-weight: 700;
-    color: map-get($color, secondary);
-    margin: 20px 0 10px;
-  }
-
-  :deep(h4) {
-    font-size: map-get($fontSize, h4);
-    font-weight: 700;
-    color: map-get($color, secondary);
-    margin: 16px 0 8px;
-  }
-
-  :deep(ul), :deep(ol) {
-    padding-left: 24px;
-    margin: 8px 0;
-  }
-
-  :deep(li) {
-    margin-bottom: 4px;
-    font-size: map-get($fontSize, default);
-    line-height: 1.6;
-  }
-
-  :deep(a) {
-    color: map-get($color, primary);
-    text-decoration: underline;
-  }
-
-  :deep(img) {
-    max-width: 100%;
-    max-height: 500px;
-    height: auto;
-    object-fit: contain;
-    border-radius: 8px;
-    margin: 12px auto;
-    display: block;
-  }
+  
 }
 
 .footer-article {
