@@ -250,14 +250,17 @@ export default {
       // const action = target.action;
       const { type, id, action } = this.modalTarget;
 
+      const apiUrl = type === "article" 
+      ? `${phpBaseUrl}/forum/adminUpdateArticleStatus.php` 
+      : `${phpBaseUrl}/forum/adminUpdateCommentStatus.php`;
+
       const formData = new FormData();
-      formData.append("art_id", id);
+      formData.append(type === "article" ? "art_id" : "msg_id", id);
       formData.append("action", action);
       formData.append("reason", reason);
 
       try {
-        const res = await fetch(
-          `${phpBaseUrl}/forum/adminUpdateArticleStatus.php`,
+        const res = await fetch( apiUrl,
           {
             method: "POST",
             body: formData
@@ -266,11 +269,18 @@ export default {
         const result = await res.json();
 
         if (result.success) {
-          // 直接操作本地陣列，不整包重新 fetch（比照你自己定案的模式）
           if (type === "article") {
             this.article.is_show = action === "REMOVE" ? 0 : 1;
             this.article.delete_type = action === "REMOVE" ? "admin_removed" : null;
             this.article.remove_reason = action === "REMOVE" ? reason : null;
+          }else {
+            // comments 的處置：找到 comments 陣列裡對應那筆，直接修改它的狀態
+            const target = this.comments.find(c => c.id === id);
+            if (target) {
+              target.is_show = action === "REMOVE" ? 0 : 1;
+              target.delete_type = action === "REMOVE" ? "admin_removed" : null;
+              target.remove_reason = action === "REMOVE" ? reason : null;
+            }
           }
           alert(result.message);
         } else {
