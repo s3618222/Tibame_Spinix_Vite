@@ -28,7 +28,7 @@
   }
 
   if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    $sql = "SELECT CITY_ID, CITY_NAME FROM CITY ORDER BY CITY_ID ASC";
+    $sql = "SELECT CITY_ID, CITY_NAME FROM city ORDER BY CITY_ID ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
