@@ -3,6 +3,7 @@
 
   require_once("../common/cors.php");
   require_once("../common/connect_ckd101g2.php");
+  require_once("../common/phpBaseUrl.php");
 
   header("Content-Type: application/json; charset=utf-8");
 
@@ -30,7 +31,7 @@
   //判斷檔案有沒有上傳成功
   //第一個參數：來源路徑；第二個參數：目標路徑
   if(move_uploaded_file($_FILES["file"]["tmp_name"], $targetPath)){
-    $imageUrl = "http://localhost:8888/Spinix/php/uploads/articles/" . $fileName;
+    $imageUrl = "{$phpBaseUrl}/uploads/articles/" . $fileName;
     echo json_encode(["location" => $imageUrl]);
   }else{
     echo json_encode(["error" => "檔案上傳失敗"]);
