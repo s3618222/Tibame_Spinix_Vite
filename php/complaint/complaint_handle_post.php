@@ -13,6 +13,9 @@
 
   header("Content-Type: application/json; charset=utf-8");
 
+  // 守衛：僅允許已登入的管理員存取
+  require_once("../common/admin_guard.php");
+
   // 僅允許 POST
   if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     http_response_code(405);
@@ -23,8 +26,8 @@
     exit;
   }
 
-  // 處理的管理員（沿用 battle_manage_post.php 慣例：登入 API 完成前先預設 key = admin_id、fallback 1）
-  $adminId = $_SESSION["admin_id"] ?? 1;
+  // 處理的管理員（守衛已保證登入，直接取實際登入者的 ADMIN_ID）
+  $adminId = $_SESSION["ADMIN_ID"];
 
   // 接收前端資料
   $sourceType  = $_POST["sourceType"] ?? "";
