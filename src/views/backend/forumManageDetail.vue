@@ -122,7 +122,6 @@
     <ConfirmReasonModal
       :visible="isModalOpen"
       :title="modalTitle"
-      :confirm-text="modalConfirmText"
       @cancel="closeModal"
       @confirm="handleConfirmAction"
     />
@@ -144,7 +143,6 @@ export default {
     return {
       isModalOpen: false,
       modalTitle: "請說明下架原因",
-      modalConfirmText: "確認下架",
       modalTarget: null, // { type: "article" | "comment", id, action: "remove" | "restore" }
 
       article: {},
@@ -207,32 +205,36 @@ export default {
         : `${baseUrl}spinix_member_default.png`;
     },
 
+    // 下架：需要填寫原因，打開 ConfirmReasonModal
     openRemoveArticleModal() {
       this.modalTitle = "請說明下架原因";
-      this.modalConfirmText = "確認下架";
       this.modalTarget = { type: "article", id: this.article.id, action: "remove" };
       this.isModalOpen = true;
     },
 
+    // 恢復上架：不需要填寫原因，改用原生 confirm()，不開 ConfirmReasonModal
+    // 注意順序：一定要先設定 modalTarget，再呼叫 handleConfirmAction，
+    // 否則 handleConfirmAction 裡讀到的會是舊資料
     openRestoreArticleModal() {
-      this.modalTitle = "請說明恢復上架原因";
-      this.modalConfirmText = "確認恢復";
+      const confirmed = confirm("確定要恢復這篇文章的上架狀態嗎？");
+      if (!confirmed) return;
+
       this.modalTarget = { type: "article", id: this.article.id, action: "restore" };
-      this.isModalOpen = true;
+      this.handleConfirmAction("");
     },
 
     openRemoveCommentModal(comment) {
       this.modalTitle = "請說明下架原因";
-      this.modalConfirmText = "確認下架";
       this.modalTarget = { type: "comment", id: comment.id, action: "remove" };
       this.isModalOpen = true;
     },
 
     openRestoreCommentModal(comment) {
-      this.modalTitle = "請說明恢復上架原因";
-      this.modalConfirmText = "確認恢復";
+      const confirmed = confirm("確定要恢復這則留言的上架狀態嗎？");
+      if (!confirmed) return;
+
       this.modalTarget = { type: "comment", id: comment.id, action: "restore" };
-      this.isModalOpen = true;
+      this.handleConfirmAction("");
     },
 
     closeModal() {
