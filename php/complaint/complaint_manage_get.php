@@ -10,7 +10,8 @@
 
   header("Content-Type: application/json; charset=utf-8");
 
-  // TODO: 之後補上「驗證管理員登入」的 session 檢查
+  // 守衛：僅允許已登入的管理員存取
+  require_once("../common/admin_guard.php");
 
   $sql = "
     /* 1. 對戰申訴 */

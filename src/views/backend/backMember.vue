@@ -85,8 +85,8 @@
           </button>
         <!-- nav右上管理員操作menu、登出 -->
         <div class="back-header-admin">
-          <span>管理員</span>
-          <button type="button">登出</button>
+          <span>{{ adminName || "管理員" }}</span>
+          <button type="button" @click="handleLogout">登出</button>
         </div>
       </header>
 
@@ -103,8 +103,60 @@
 
     data() {
       return {
-        isSidebarOpen: false
+        isSidebarOpen: false,
+        adminName: ""
       };
+    },
+
+    computed: {
+      baseUrl() {
+        return import.meta.env.BASE_URL;
+      },
+
+      // PHP API 路徑（比照 signInForm.vue）
+      phpBaseUrl() {
+        return (
+          location.hostname === "localhost" ||
+          location.hostname === "127.0.0.1"
+        )
+          ? "http://localhost:8888/Spinix/php"
+          : "/ckd101/g2/php";
+      }
+    },
+
+    created() {
+      // 守衛：後台載入時先確認是否已登入，未登入則導回登入頁
+      fetch(`${this.phpBaseUrl}/admin/admin_current_get.php`, {
+        credentials: "include"
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.isLoggedIn) {
+            this.adminName = data.admin.name;
+          } else {
+            window.location.href = `${this.baseUrl}backSignIn.html`;
+          }
+        })
+        .catch(() => {
+          // 無法確認登入狀態時，保守起見導回登入頁
+          window.location.href = `${this.baseUrl}backSignIn.html`;
+        });
+    },
+
+    methods: {
+      handleLogout() {
+        fetch(`${this.phpBaseUrl}/admin/admin_signout_post.php`, {
+          method: "POST",
+          credentials: "include"
+        })
+          .then(res => res.json())
+          .then(() => {
+            window.location.href = `${this.baseUrl}backSignIn.html`;
+          })
+          .catch(() => {
+            window.location.href = `${this.baseUrl}backSignIn.html`;
+          });
+      }
     }
   };
 </script>
