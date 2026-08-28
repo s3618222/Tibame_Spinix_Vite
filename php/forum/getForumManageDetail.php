@@ -35,11 +35,19 @@
             article.delete_type,
             article.remove_reason,
             member.MEM_NAME AS author_name,
+            member.MEM_PHOTO AS author_photo,
             EXISTS (
                 SELECT 1 FROM appeal_forum
                 WHERE appeal_forum.art_id = article.art_id
                   AND appeal_forum.af_status = 'PENDING'
-            ) AS has_pending_appeal
+            ) AS has_pending_appeal,
+            (
+                SELECT af_content FROM appeal_forum
+                WHERE appeal_forum.art_id = article.art_id
+                AND appeal_forum.af_status = 'PENDING'
+                ORDER BY create_time DESC
+                LIMIT 1
+            ) AS report_reason
         FROM article
         JOIN member ON article.mem_id = member.MEM_ID
         WHERE article.art_id = ?
@@ -69,6 +77,7 @@
             message.delete_type,
             message.remove_reason,
             member.MEM_NAME AS commenter_name,
+            member.MEM_PHOTO AS commenter_photo,
             EXISTS (
                 SELECT 1 FROM appeal_forum
                 WHERE appeal_forum.msg_id = message.msg_id
