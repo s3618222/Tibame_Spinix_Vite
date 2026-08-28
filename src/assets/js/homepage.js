@@ -196,9 +196,10 @@ mm.add("(min-width: 769px)", () => {
         //判斷內容是否為02、04區
         const isReverse = section.classList.contains("highlight--reverse");
         const isBuild = section.id === "build";
+        const isMarket = section.id === "market";
 
-        // 01、03、04才使用一般圖片動畫
-        if (!isBuild) {
+        // 01、03才使用一般圖片動畫
+        if (!isBuild && !isMarket) {
             gsap.fromTo(
                 media,
                 {
@@ -335,6 +336,89 @@ mm.add("(min-width: 769px)", () => {
     );
 
 });
+
+//04區交換收藏動畫
+mm.add("(min-width: 769px)", () => {
+
+    const marketSection = document.querySelector("#market");
+
+    const redTop = marketSection.querySelector(".market-top--red"); //左上紅色陀螺
+    const blueTop = marketSection.querySelector(".market-top--blue"); //右上藍色陀螺
+    const marketTrade = marketSection.querySelector(".market-trade");
+
+    const marketTl = gsap.timeline({
+        scrollTrigger: {
+            trigger: marketSection,
+            start: "top 65%",
+            toggleActions: "play none none reverse"
+
+
+        }
+    });
+
+    marketTl.fromTo(
+        redTop,
+        {
+            x: 0,
+            y: 0,
+            rotation: -6,
+            scale: 1
+        },
+        {
+            x: () => marketTrade.offsetWidth * 0.56,
+            y: () => marketTrade.offsetHeight * 0.44,
+            rotation: 12,
+            scale: 1,
+            duration: 1.5,
+            ease: "none"
+        },
+        0
+    );
+
+    // 最後稍微沉入收藏盒
+    marketTl.to(
+        redTop,
+        {
+            y: () => marketTrade.offsetHeight * 0.44 + 8,
+            scale: 0.9,
+            duration: 0.22,
+            ease: "none"
+        },
+        1.5
+    );
+
+    marketTl.fromTo(
+        blueTop,
+        {
+            x: 0,
+            y: 0,
+            rotation: 6,
+            scale: 1
+        },
+        {
+            x: () => marketTrade.offsetWidth * -0.56,
+            y: () => marketTrade.offsetHeight * 0.44,
+            rotation: -12,
+            scale: 1,
+            duration: 1.5,
+            ease: "none"
+        },
+        0
+    );
+
+    marketTl.to(
+        blueTop,
+        {
+            y: () => marketTrade.offsetHeight * 0.44 + 8,
+            scale: 0.9,
+            duration: 0.22,
+            ease: "none"
+        },
+        1.5
+    );
+
+});
+
 
 // ===== FEEL THE SPIRIT 背景動畫 =====
 gsap.fromTo(
