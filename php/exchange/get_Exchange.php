@@ -4,12 +4,6 @@ session_start();
 require_once("../common/cors.php");
 require_once("../common/connect_ckd101g2.php");
 
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-
 function getExchange($pdo, $postId = null, $params = [], $includeContact = false) {
    $sql = "SELECT 
    `post_id`,
@@ -22,10 +16,10 @@ function getExchange($pdo, $postId = null, $params = [], $includeContact = false
    `want_item`, 
    `condition`, 
    `status`, 
-   exchange_post.`CITY_ID`, 
+   exchange_post.`CITY_ID` AS city_id, 
    city.`CITY_NAME` AS city,
-   exchange_post.`DISTRICT_ID`,
-   district.`DISTRICT_NAME` as district ,
+   exchange_post.`DISTRICT_ID` AS district_id,
+   district.`DISTRICT_NAME` AS district ,
    `is_show`,
    DATE(`create_time`) AS `create_time`,
    `post_pic1`,

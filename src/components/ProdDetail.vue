@@ -504,7 +504,7 @@ const galleryImages = computed(()=>{
     article.value.post_pic5
   ].filter(Boolean);
 
-   return rawPics.map(pic => `php/${pic}`); // 濾完之後，再統一加上前綴
+   return rawPics.map(pic => `${pic}`); // 濾完之後，再統一加上前綴
 });
 
 

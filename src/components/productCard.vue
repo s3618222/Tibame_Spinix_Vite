@@ -1,7 +1,8 @@
 <template>
    <div class="card" @click="goToDetail">
       <div class="pic">
-         <img :src="'php/' + image" :alt="title">
+         <img :src="image" :alt="title">
+         <!-- 格式:https://tibamef2e.com/ckd101/g2/php/uploads/articles/exchange_ab8f43ded063f855.png -->
       </div>
       <div class="card-info">
          <h4>{{ title }}</h4>
