@@ -41,6 +41,8 @@
             登入
             <i class="fa-solid fa-arrow-right"></i>
           </button>
+
+          <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
         </div>
       </form>
     </main>
@@ -61,13 +63,52 @@ export default {
       formData: {
         account: "",
         password: ""
-      }
+      },
+      errorMsg: ""
     };
+  },
+
+  computed: {
+    baseUrl() {
+      return import.meta.env.BASE_URL;
+    },
+
+    // PHP API 路徑（比照 signInForm.vue）
+    phpBaseUrl() {
+      return (
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1"
+      )
+        ? "http://localhost:8888/Spinix/php"
+        : "/ckd101/g2/php";
+    }
   },
 
   methods: {
     handleSubmit() {
-      // TODO: 串接後台管理員登入 API（php/member/），比對 admin 資料表後導轉至 backMember.html
+      this.errorMsg = "";
+
+      const formData = new FormData();
+      formData.append("account", this.formData.account);
+      formData.append("password", this.formData.password);
+
+      fetch(`${this.phpBaseUrl}/admin/admin_signin_post.php`, {
+        method: "POST",
+        body: formData,
+        credentials: "include" // 帶上 Cookie，讓伺服器建立/辨識 Session
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            // 登入成功 → 導向後台管理主頁
+            window.location.href = `${this.baseUrl}backMember.html`;
+          } else {
+            this.errorMsg = data.message || "登入失敗";
+          }
+        })
+        .catch(() => {
+          this.errorMsg = "無法連線至伺服器，請稍後再試";
+        });
     }
   }
 };
@@ -201,6 +242,13 @@ export default {
   &:hover {
     background-color: darken(map.get($color, primary), 8%);
   }
+}
+
+.error {
+  margin-top: -8px;
+  text-align: center;
+  font-size: map.get($fontSize, hint);
+  color: map.get($color, error);
 }
 
 /* 版權列 */
