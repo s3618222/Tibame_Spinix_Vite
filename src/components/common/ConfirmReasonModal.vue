@@ -19,7 +19,7 @@
 
       <div class="confirm-reason-actions">
         <button type="button" class="btn-cancel" @click="handleCancel">取消</button>
-        <button type="button" class="btn-confirm" @click="handleConfirm">{{ confirmText }}</button>
+        <button type="button" class="btn-confirm" @click="handleConfirm">確認下架</button>
       </div>
     </div>
   </div>
@@ -37,10 +37,6 @@ export default {
     title: {
       type: String,
       default: "請說明原因"
-    },
-    confirmText: {
-      type: String,
-      default: "確認下架"
     }
   },
 
@@ -131,7 +127,7 @@ export default {
     width: 100%;
     min-height: 120px;
     padding: 12px;
-    resize: vertical;
+    resize: none;
 
     border: 1px solid map-get($color, warmGray);
     border-radius: 8px;
