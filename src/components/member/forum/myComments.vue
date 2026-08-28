@@ -11,6 +11,7 @@
       <div class="comment-card" v-for="comment in visibleComments" :key="comment.id">
         <p class="col-article">
           <a :href="`${baseUrl}forumArticle.html?id=${comment.articleId}`" target="_blank">{{ comment.articleTitle }}</a>
+          <span v-if="!comment.articleIsShow" class="article-removed-hint">（原文章已下架）</span>
         </p>
         <p class="col-content">{{ comment.content }}</p>
         <p class="col-date">{{ comment.date }}</p>
@@ -148,7 +149,11 @@ button {
       }
     }
   }
-
+  .article-removed-hint {
+    display: block;
+    color: map-get($color, neutral);
+    font-size: 12px;
+  }
   .col-content {
     grid-area: content;
     color: map-get($color, secondary2);

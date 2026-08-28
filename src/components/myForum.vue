@@ -107,7 +107,8 @@ export default {
             articleTitle: comment.title,
             content: comment.content,
             date: comment.create_time.split(" ")[0],
-            isShow: Number(comment.is_show) === 1
+            isShow: Number(comment.is_show) === 1,
+            articleIsShow: Number(comment.article_is_show) === 1
           }));
         }
       } catch (error) {
