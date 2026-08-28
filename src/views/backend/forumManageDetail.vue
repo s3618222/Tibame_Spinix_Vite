@@ -56,9 +56,7 @@
         </span>
       </div>
 
-      <div class="article-content">
-        <p v-for="(paragraph, index) in article.content" :key="index">{{ paragraph }}</p>
-      </div>
+      <div class="article-content tinymce-content" v-html="article.content"></div>
 
       <div v-if="article.has_pending_appeal" class="report-box">
         <h3 class="report-box-title">
@@ -123,6 +121,7 @@
     <ConfirmReasonModal
       :visible="isModalOpen"
       :title="modalTitle"
+      :confirm-text="modalConfirmText"
       @cancel="closeModal"
       @confirm="handleConfirmAction"
     />
@@ -131,6 +130,7 @@
 
 <script>
 import ConfirmReasonModal from "@/components/common/ConfirmReasonModal.vue";
+import { CATEGORY_LABELS } from "@/assets/js/utils/articleCategory.js";
 
 export default {
   name: "ForumManageDetail",
@@ -143,87 +143,56 @@ export default {
     return {
       isModalOpen: false,
       modalTitle: "請說明下架原因",
+      modalConfirmText: "確認下架",
       modalTarget: null, // { type: "article" | "comment", id, action: "remove" | "restore" }
 
-      // 文章詳情假資料
-      article: {
-        id: 1,
-        title: "WX-01爆裂天龍最佳配重環測試報告",
-        author: { name: "Blader_X", img: "" },
-        category: "零件搭配",
-        createTime: "2026-05-12 14:30",
-        content: [
-          "各位戰鬥陀螺好手們，今天來分享一下近期在競技場勝率極高的 WX-01 爆裂天龍 攻擊特化配裝。這套配置主打開局高爆發，適合喜歡速戰速決的玩家。",
-          "經過 50 場實測後整理出以下心得：核心配置為結晶輪盤 WX-01 爆裂天龍，搭配鐵盤 0 (Zero) 提供極致的重量與穩定性，軸心選用 X (Xtreme) 橡膠平底，爆發力最強但續航極差。",
-          "如果對戰對手是防禦特化型，建議搭配較重的固鎖環以提升抗撞擊能力，開局互撞時較不容易被直接彈飛出場。"
-        ],
-        // 本頁僅有單一 article 物件，同一時間只能呈現一種狀態組合，故先示範
-        // 「上架中 + 有待審申訴」這組最能驗證按鈕隱藏規則的組合。若要手動測試
-        // 其餘三種組合，可暫時替換下面四個欄位：
-        //   已下架（admin_removed）：is_show:0, delete_type:'admin_removed', remove_reason:'違反社群規範，經管理員審核下架', has_pending_appeal:false
-        //   使用者已刪除（self_deleted）：is_show:0, delete_type:'self_deleted', remove_reason:null, has_pending_appeal:false
-        //   上架中且無待審申訴：is_show:1, delete_type:null, remove_reason:null, has_pending_appeal:false
-        is_show: 1,
-        delete_type: null,
-        remove_reason: null,
-        has_pending_appeal: true,
-        reportReason: "這篇文章的測試數據疑似造假，圖片來源不明，且部分內容涉嫌置入廣告連結，請管理員協助查核。"
-      },
-
-      // 留言列表假資料
-      comments: [
-        {
-          id: 101,
-          author: { name: "打野戰神", img: "" },
-          createTime: "2026-05-12 15:38",
-          content: "這套配裝我實測過，爆發力真的很強，但續航確實偏弱，比賽後期容易被穩定型對手翻盤。",
-          is_show: 1,
-          delete_type: null,
-          remove_reason: null,
-          has_pending_appeal: false
-        },
-        {
-          id: 102,
-          author: { name: "陀螺新手阿翔", img: "" },
-          createTime: "2026-05-12 16:05",
-          content: "請問這篇文章的數據是自己測的嗎？感覺跟官方公佈的數值差很多，該不會是騙人的吧！！！",
-          is_show: 1,
-          delete_type: null,
-          remove_reason: null,
-          has_pending_appeal: true
-        },
-        {
-          id: 103,
-          author: { name: "配裝控", img: "" },
-          createTime: "2026-05-12 17:20",
-          content: "感謝分享，想請問防禦型配裝有推薦的固鎖環嗎？想搭配鐵盤試試看穩定度。",
-          is_show: 1,
-          delete_type: null,
-          remove_reason: null,
-          has_pending_appeal: false
-        },
-        {
-          id: 104,
-          author: { name: "收藏家A", img: "" },
-          createTime: "2026-05-13 09:12",
-          content: "這根本是抄襲隔壁論壇的文章，內容一模一樣，檢舉！",
-          is_show: 0,
-          delete_type: "admin_removed",
-          remove_reason: "內容重複張貼且涉及抄襲指控，經管理員審核後下架",
-          has_pending_appeal: false
-        },
-        {
-          id: 105,
-          author: { name: "匿名玩家", img: "" },
-          createTime: "2026-05-13 10:40",
-          content: "這篇分析我覺得太武斷了，附上我自己的實測影片連結給大家參考。",
-          is_show: 0,
-          delete_type: "self_deleted",
-          remove_reason: null,
-          has_pending_appeal: false
-        }
-      ]
+      article: {},
+      comments: []
     };
+  },
+
+  async created() {
+    const articleId = this.$route.params.id;
+
+    try {
+      const res = await fetch(
+        `http://localhost:8888/Spinix/php/forum/getForumManageDetail.php?art_id=${articleId}`
+      );
+      const result = await res.json();
+
+      if (result.success) {
+        const a = result.data.article;
+        this.article = {
+          id: a.art_id,
+          title: a.title,
+          author: { name: a.author_name, img: a.author_photo },
+          category: CATEGORY_LABELS[a.category] || a.category,
+          createTime: a.create_time,
+          content: a.content,
+          is_show: a.is_show,
+          delete_type: a.delete_type,
+          remove_reason: a.remove_reason,
+          has_pending_appeal: Number(a.has_pending_appeal) === 1,
+          reportReason: a.report_reason
+        };
+
+        this.comments = result.data.comments.map(c => ({
+          id: c.msg_id,
+          author: { name: c.commenter_name, img: c.commenter_photo },
+          createTime: c.create_time,
+          content: c.content,
+          is_show: c.is_show,
+          delete_type: c.delete_type,
+          remove_reason: c.remove_reason,
+          has_pending_appeal: Number(c.has_pending_appeal) === 1
+        }));
+      } else {
+        alert(result.message);
+      }
+    } catch (err) {
+      console.error("取得文章詳情失敗", err);
+      alert("取得文章詳情失敗，請稍後再試");
+    }
   },
 
   methods: {
@@ -238,24 +207,28 @@ export default {
 
     openRemoveArticleModal() {
       this.modalTitle = "請說明下架原因";
+      this.modalConfirmText = "確認下架";
       this.modalTarget = { type: "article", id: this.article.id, action: "remove" };
       this.isModalOpen = true;
     },
 
     openRestoreArticleModal() {
       this.modalTitle = "請說明恢復上架原因";
+      this.modalConfirmText = "確認恢復";
       this.modalTarget = { type: "article", id: this.article.id, action: "restore" };
       this.isModalOpen = true;
     },
 
     openRemoveCommentModal(comment) {
       this.modalTitle = "請說明下架原因";
+      this.modalConfirmText = "確認下架";
       this.modalTarget = { type: "comment", id: comment.id, action: "remove" };
       this.isModalOpen = true;
     },
 
     openRestoreCommentModal(comment) {
       this.modalTitle = "請說明恢復上架原因";
+      this.modalConfirmText = "確認恢復";
       this.modalTarget = { type: "comment", id: comment.id, action: "restore" };
       this.isModalOpen = true;
     },
@@ -315,6 +288,7 @@ export default {
 
 <style lang="scss" scoped>
 @use '@/assets/scss/var' as *;
+@use '@/assets/scss/component/tinymceContent' as *;
 
 .forum-detail {
   width: 100%;
@@ -481,13 +455,6 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 12px;
-
-  p {
-    margin: 0;
-    color: map-get($color, secondary);
-    font-size: 16px;
-    line-height: 1.8;
-  }
 }
 
 .report-box {

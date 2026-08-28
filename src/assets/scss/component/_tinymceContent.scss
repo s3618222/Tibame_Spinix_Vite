@@ -1,0 +1,60 @@
+@use '../var' as *;
+
+// 共用：TinyMCE 產生的文章內文樣式，任何用 v-html 渲染 article.content 的地方
+// 都套用這個 class，取代各自重複寫一份 :deep() 規則。
+// 目前使用位置：articleMain.vue（前台文章詳細頁）、forumManageDetail.vue（後台論壇管理）
+.tinymce-content {
+  :deep(p) {
+    font-size: map-get($fontSize, default);
+    line-height: 1.6;
+    color: map-get($color, secondary);
+    margin: 0 0 16px;
+  }
+
+  :deep(h2) {
+    font-size: map-get($fontSize, h2);
+    font-weight: 700;
+    color: map-get($color, secondary);
+    margin: 24px 0 12px;
+  }
+
+  :deep(h3) {
+    font-size: map-get($fontSize, h3);
+    font-weight: 700;
+    color: map-get($color, secondary);
+    margin: 20px 0 10px;
+  }
+
+  :deep(h4) {
+    font-size: map-get($fontSize, h4);
+    font-weight: 700;
+    color: map-get($color, secondary);
+    margin: 16px 0 8px;
+  }
+
+  :deep(ul), :deep(ol) {
+    padding-left: 24px;
+    margin: 8px 0;
+  }
+
+  :deep(li) {
+    margin-bottom: 4px;
+    font-size: map-get($fontSize, default);
+    line-height: 1.6;
+  }
+
+  :deep(a) {
+    color: map-get($color, primary);
+    text-decoration: underline;
+  }
+
+  :deep(img) {
+    max-width: 100%;
+    max-height: 500px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    margin: 12px auto;
+    display: block;
+  }
+}
