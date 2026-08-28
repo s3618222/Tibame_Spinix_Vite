@@ -147,6 +147,12 @@ function goToDetail() {
 <style lang="scss">
    @use '@/assets/scss/_var' as *;
 
+   .page-title {
+         color: #F29B00;
+         font-size: 26px;
+         font-weight: 900;
+      }
+
    .icon-style{
       display: none;
    }
@@ -187,6 +193,7 @@ function goToDetail() {
       .pic {
          border-radius: 10px;
          overflow: hidden;
+         border: 1px solid #dddddd;
 
          img {
             display: block;
