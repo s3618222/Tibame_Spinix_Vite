@@ -37,11 +37,32 @@ $content = $data['content'] ?? "";
 $comm_contact = $data['comm_contact'] ?? "";
 $stmt->execute([$ExchangeID, $memberId, $content, $comm_contact]);
 
+// 查詢新增的留言
+$newCommentId = $pdo->lastInsertId();
+
+$selectSql = "SELECT 
+   `comm_id`,
+   `post_id`,
+   exchange_comment.`mem_id`,
+   member.`mem_name` AS `name`,
+   member.`MEM_PHOTO` AS `headshot`,
+   `content`,
+   DATE(`create_time`) AS `create_time`,
+   `is_show`,
+   `remove_reason`,
+   `is_choose`,
+   `comm_contact` 
+   FROM `exchange_comment` 
+   JOIN member on exchange_comment.`mem_id` = member.`mem_id`
+   WHERE comm_id = ?
+   ";
+
+$selectStmt = $pdo->prepare($selectSql);
+$selectStmt->execute([$newCommentId]);
+$newComment = $selectStmt->fetch(PDO::FETCH_ASSOC);
+
 echo json_encode([
    "success" => true,
-   "message" => "申請成功"
+   "message" => "申請成功",
+   "data" => $newComment
 ], JSON_UNESCAPED_UNICODE);
-
-
-$newCommentId = $pdo -> lastInsertId();
-

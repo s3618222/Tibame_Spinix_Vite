@@ -1,6 +1,6 @@
 <template>
   <div class="form-label-style">
-    <label class="label-title">物品照片（最多 {{ MAX_PHOTOS }} 張）</label>
+    <label class="label-title">物品照片（請至少上傳1張，最多 {{ MAX_PHOTOS }} 張）</label>
 
     <div class="photo-grid">
       <div v-for="(photo, index) in photos" :key="photo.id" class="photo-tile">
@@ -116,6 +116,7 @@ defineExpose({
   border-radius: 2px;
   overflow: hidden;
   border: 1px solid #ddd;
+  background-color: #fff;
 
   &__img {
     width: 100%;

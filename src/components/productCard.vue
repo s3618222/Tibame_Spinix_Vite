@@ -166,7 +166,6 @@ function goToDetail() {
    .card {
       width: 100%;
       background-color: white;
-      padding: 12px;
       border: 1px solid #dddddd;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(20, 28, 38, 0.06);
@@ -204,7 +203,6 @@ function goToDetail() {
       }
 
       .pic {
-         border-radius: 10px;
          overflow: hidden;
          border: 1px solid #dddddd;
 
@@ -217,7 +215,7 @@ function goToDetail() {
       }
 
       .card-info {
-         padding-top: 16px;
+         padding: 16px 12px;
          display: flex;
          flex-direction: column;
          gap: 12px;
@@ -277,7 +275,7 @@ function goToDetail() {
          display: flex;
          align-items: center;
          justify-content: space-between;
-         margin-top: 16px;
+         padding: 0 12px 12px;
 
             .card-buttons {
                display: flex;

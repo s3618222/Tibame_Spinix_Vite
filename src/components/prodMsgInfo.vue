@@ -83,7 +83,7 @@
       <!-- 被申訴時警告訊息 -->
       <div>
          <WarningBanner
-            v-if="remove_reason !== '' && (isMyComment || isAdmin)"
+            v-if="remove_reason !== null  && (isMyComment || isAdmin)"
             title= "留言"
             :remove_reason = "remove_reason"
             :show_contact="isOwner"
