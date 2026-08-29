@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `admin` (
   `admin_id` int(10) UNSIGNED NOT NULL COMMENT '管理員ID',
   `account` varchar(50) NOT NULL COMMENT '登入帳號',
-  `password` varchar(50) NOT NULL COMMENT '密碼',
+  `password` varchar(255) NOT NULL COMMENT '密碼(bcrypt雜湊)',
   `name` varchar(50) NOT NULL COMMENT '管理員名稱',
   `create_time` datetime NOT NULL COMMENT '建立時間',
   `admin_type` enum('超級管理員','一般管理員') NOT NULL COMMENT '管理員類型',
@@ -42,7 +42,7 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`admin_id`, `account`, `password`, `name`, `create_time`, `admin_type`, `admin_state`) VALUES
-(1, 'admin1', '123456', 'admin1', '2026-08-18 12:12:08', '超級管理員', '在職');
+(1, 'admin1', '$2y$10$z1V1hHapvO9KPZAuKkuLVOfvEOYsldrnLLSjN96OBYUaFNdahDznW', 'admin1', '2026-08-18 12:12:08', '超級管理員', '在職');
 
 -- --------------------------------------------------------
 
