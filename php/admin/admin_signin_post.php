@@ -44,10 +44,10 @@
 
   $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  // 驗證密碼：本專案 admin 表密碼以明碼儲存，直接字串比對
+  // 驗證密碼：admin 表密碼以 bcrypt 雜湊儲存，用 password_verify 比對（比照前台會員登入）
   $isPasswordCorrect = false;
   if ($admin) {
-    $isPasswordCorrect = ($password === $admin["password"]);
+    $isPasswordCorrect = password_verify($password, $admin["password"]);
   }
 
   // 帳號不存在或密碼錯誤 → 登入失敗
