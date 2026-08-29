@@ -8,8 +8,8 @@
 
   header("Content-Type: application/json; charset=utf-8");
 
-  // 守衛：僅允許已登入的管理員存取
-  require_once("../common/admin_guard.php");
+  // 守衛：管理員帳號管理僅限超級管理員
+  require_once("../common/admin_guard_super.php");
 
   // 限定 POST
   if ($_SERVER["REQUEST_METHOD"] !== "POST") {
