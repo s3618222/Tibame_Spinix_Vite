@@ -157,26 +157,18 @@ export default {
         軸心: "Bit"
       },
 
+      categoryLabelMap: {
+        Blade: "戰刃",
+        Ratchet: "固鎖",
+        Bit: "軸心"
+      },
+
       statFields: [
         { key: "weight", label: "重量" },
         { key: "attack", label: "攻擊" },
         { key: "defense", label: "防禦" },
         { key: "stamina", label: "持久" }
       ],
-
-      // edit 模式假資料：模擬後端依 id 回傳的既有零件資料，目前只寫死 101 這一筆
-      mockPartsById: {
-        101: {
-          name: "Valkyrie Core",
-          category: "戰刃",
-          pic: "/build/blade/暴風天馬.png",
-          attack: 85,
-          defense: 40,
-          stamina: 60,
-          weight: 35,
-          is_show: true
-        }
-      },
 
       form: {}
     };
@@ -195,6 +187,12 @@ export default {
       // 本身已經是完整可用的網址，不需要、也不能再加 baseUrl
       if (this.form.pic.startsWith("blob:")) {
         return this.form.pic;
+      }
+
+      // uploads/beyblade/ 開頭代表這是已經上傳到伺服器的真實圖片，
+      // 要走 phpBaseUrl（伺服器路徑），不能走 baseUrl（前端 public 資料夾）
+      if (this.form.pic.startsWith("uploads/beyblade/")) {
+        return `${phpBaseUrl}/${this.form.pic}`;
       }
 
       return `${this.baseUrl}${this.form.pic}`;
@@ -225,15 +223,15 @@ export default {
     "$route.params.id": {
       immediate: true,
       handler(id) {
-        this.form = this.buildForm(id);
+        this.loadForm(id);
       }
     }
   },
 
   methods: {
-    buildForm(id) {
+    async loadForm(id) {
       if (!id) {
-        return {
+        this.form = {
           id: null,
           code: "",
           name: "",
@@ -245,15 +243,35 @@ export default {
           weight: 50,
           is_show: false
         };
+        return;
       }
 
-      const mock = this.mockPartsById[id] || this.mockPartsById[101];
+      try {
+        const res = await fetch(`${phpBaseUrl}/build/getBeyblade.php?beyblade_id=${id}`);
+        const result = await res.json();
 
-      return {
-        ...mock,
-        id: Number(id),
-        code: `#P-${id}`
-      };
+        if (result.success) {
+          const item = result.data;
+          this.form = {
+            id: item.beyblade_id,
+            code: `#P-${item.beyblade_id}`,
+            name: item.name,
+            category: this.categoryLabelMap[item.category] ?? item.category,
+            pic: item.pic,
+            attack: Number(item.attack),
+            defense: Number(item.defense),
+            stamina: Number(item.stamina),
+            weight: Number(item.weight),
+            is_show: Number(item.is_show) === 1
+          };
+        } else {
+          alert(result.message);
+          this.$router.push({ name: "backend-beyblade" });
+        }
+      } catch (error) {
+        console.error("取得零件資料失敗", error);
+        alert("取得零件資料失敗，請稍後再試");
+      }
     },
 
 
