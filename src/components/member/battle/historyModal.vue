@@ -9,7 +9,7 @@
 
       <div class="history-header">
         <img
-          :src="`${baseUrl}${member.avatar}`"
+          :src="member.avatar"
           :alt="`${member.name} 的會員頭像`"
           class="history-avatar"
         >
@@ -67,19 +67,30 @@
       <section class="history-review">
         <h4>近期約戰評價</h4>
         <div class="review-list">
-          <article v-for="review in member.reviews" :key="review.reviewId" class="review-item">
-            <div class="review-info">
-              <span class="reviewer-name">{{ review.reviewerName }}</span>
-              <span class="review-rating">
-                {{ review.rating }}
-                <span class="rating-star">★</span>
-              </span>
-            </div>
+          <!-- 沒有約戰評價時的顯示文字 -->
+          <div
+            v-if="member.reviews.length === 0"
+            class="review-empty"
+          >
+            <p>目前尚無約戰評價</p>
+          </div>
+          <!-- 有評價時，顯示評價列表 -->
+          <template v-else>
+            <article v-for="review in member.reviews" :key="review.reviewId" class="review-item">
+              <div class="review-info">
+                <span class="reviewer-name">{{ review.reviewerName }}</span>
+                <span class="review-rating">
+                  {{ review.rating }}
+                  <span class="rating-star">★</span>
+                </span>
+              </div>
 
-            <p class="review-content">{{ review.content }}</p>
+              <p class="review-content">{{ review.content }}</p>
 
-            <span class="review-date">{{ review.createdAt }}</span>
-          </article>
+              <span class="review-date">{{ review.createdAt }}</span>
+            </article>
+          </template>
+
         </div>
       </section>
 
@@ -195,6 +206,17 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+  }
+
+  //評價列表的空狀態文字
+  .review-empty {
+    padding: 24px 16px;
+    text-align: center;
+
+    p {
+      color: #aaaaaa;
+      font-size: 16px;
+    }
   }
 
   .member-stat {

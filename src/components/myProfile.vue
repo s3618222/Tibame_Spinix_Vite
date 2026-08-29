@@ -18,11 +18,48 @@
 
       <div class="account-body">
         <div class="avatar-block">
-          <img class="avatar" :src="baseUrl + profile.avatar" alt="使用者頭像" />
-          <button type="button" class="avatar-edit-link">
+          <img 
+            class="avatar" 
+            :src="avatarPreview || getMemberAvatarUrl(profile.avatar)" 
+            alt="使用者頭像" 
+          />
+          <button 
+            type="button" 
+            class="avatar-edit-link"
+            @click="$refs.avatarInput.click()"
+          >
             更換頭貼
             <i class="fa-regular fa-pen-to-square"></i>
           </button>
+          <input
+            ref="avatarInput"
+            type="file"
+            accept="image/jpeg,image/png"
+            hidden
+            @change="handleAvatarChange"
+          />
+
+          <!-- 有選新圖片時才出現操作按鈕 -->
+          <div
+            v-if="avatarFile"
+            class="avatar-confirm-actions"
+          >
+            <button
+              type="button"
+              class="cancel-avatar-btn"
+              @click="cancelAvatarChange"
+            >
+              取消
+            </button>
+
+            <button
+              type="button"
+              class="save-avatar-btn"
+              @click="uploadAvatar"
+            >
+              確認更新
+            </button>
+          </div>
         </div>
 
         <div class="account-form">
@@ -99,7 +136,7 @@
         </div>
         <div class="stat-item">
           <p class="stat-label">競技勝率</p>
-          <p class="stat-number">{{ battleStats.winRate }}</p>
+          <p class="stat-number">{{ battleStats.winRate ?? "-" }}</p>
           <div class="stat-bar"></div>
         </div>
       </div>
@@ -113,11 +150,14 @@
 
     data() {
       return {
+        avatarFile: null,
+        avatarPreview: "",
+        
         //帳戶資料假資料，先寫死
         profile: {
           avatar: "spinix_member_default.png",
-          account: "bill0714@gmail.com",
-          username: "陀螺戰神123",
+          account: "",
+          username: "",
           phone: "0912345678",
           landline: "",
           birthYear: "1999",
@@ -161,6 +201,153 @@
     },
 
     methods: {
+      handleAvatarChange(e) { //會員頭像上傳預覽
+        const file = e.target.files[0];
+
+        if(!file) {
+          return;
+        }
+
+        //限制圖片上傳格式
+        const allowedTypes = [
+          "image/jpeg",
+          "image/png"
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+          alert("會員頭像僅支援 JPG、PNG 格式");
+          e.target.value = "";
+          return;
+        }
+
+        //圖片最大限制2MB
+        const maxFileSize = 2 * 1024 * 1024;
+
+        if (file.size > maxFileSize) {
+          alert("會員頭像大小不可超過 2MB");
+          e.target.value = "";
+          return;
+        }
+
+        //儲存圖片檔，供後續上傳API使用
+        this.avatarFile = file;
+
+        //建立供瀏覽器預覽的網址
+        this.avatarPreview = URL.createObjectURL(file);
+      },
+
+      async uploadAvatar() { //串聯後端API，將會員上傳的頭像圖片傳回給後端
+
+        // 如果還沒有選新圖片，就不執行上傳
+        if (!this.avatarFile) {
+          alert("請先選擇要更換的會員頭像");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("avatar", this.avatarFile);
+
+        try {
+
+          const response = await fetch(`${this.phpBaseUrl}/member/member_avatar_update.php`, {
+            method: "POST",
+            credentials: "include",
+            body: formData
+          });
+
+          const data = await response.json();
+
+          // API 回傳失敗時
+          if (!response.ok || !data.success) {
+            alert(data.message || "會員頭像更新失敗");
+            return;
+          }
+
+          // 頭像上傳成功
+          alert(data.message);
+
+          // 將後端回傳的新頭像路徑，更新放入前端
+          this.profile.avatar = data.photo;
+
+          //新頭像更新放入前端後，就可以把原先的預覽圖清空
+          this.avatarPreview = "";
+
+          //清除原先等待被上傳的File
+          this.avatarFile = null;
+
+          // 同時清掉 file input，讓之後選同一張圖片也能再次觸發 change
+          if (this.$refs.avatarInput) {
+            this.$refs.avatarInput.value = "";
+          }
+
+          console.log("會員頭像更新成功：", data.photo);
+
+        } catch (error) {
+          
+          console.error("會員頭像更新失敗：", error);
+          alert("會員頭像更新失敗，請稍後再試");
+
+        }
+
+      },
+
+      getMemberAvatarUrl(photo) { //根據當前執行環境，判斷圖片路徑
+
+        // 當資料庫沒有頭像時，就使用平台預設圖
+        if (!photo) {
+          return (
+            this.baseUrl + "spinix_member_default.png"
+          );
+        }
+
+        // 當頭像為會員自行上傳的動態圖片
+        if (photo.startsWith("uploads/member/")) {
+          return `${this.phpBaseUrl}/${photo}`;
+        }
+
+        // 當頭像是原先放在public中的靜態預設圖
+        return this.baseUrl + photo;
+      },
+
+      cancelAvatarChange() { //取消頭像更新函式
+        // 清除目前建立的預覽網址
+        if (this.avatarPreview) {
+          URL.revokeObjectURL(this.avatarPreview);
+        }
+
+        // 清掉當前選擇的新圖片
+        this.avatarFile = null;
+        this.avatarPreview = "";
+
+        // 清空 input，讓之後即使重新選同一張圖也可以再次觸發 change
+        if (this.$refs.avatarInput) {
+          this.$refs.avatarInput.value = "";
+        }
+      },
+
+      async fetchCurrentMember() { //取得當前會員基本資料
+        try {
+          const response = await fetch(`${this.phpBaseUrl}/member/currentMember_get.php`, {
+            credentials: "include"
+          });
+
+          const data = await response.json();
+
+          if (!response.ok || !data.success || !data.isLoggedIn) {
+            console.error(data.message || "目前沒有登入會員");
+            return;
+          }
+
+          this.profile.avatar = data.member.photo || "spinix_member_default.png";
+          this.profile.account = data.member.account;
+          this.profile.username = data.member.name;
+          console.log("目前登入會員資料：", data.member);
+
+        } catch (error) {
+          console.error("取得會員資料失敗：", error);
+        }
+      },
+
       async fetchBattleStats() { //串接取得會員約戰統計數據API
         try {
           const response = await fetch(`${this.phpBaseUrl}/member/my_battle_stats_get.php`, {
@@ -183,6 +370,7 @@
     },
 
     mounted() {
+      this.fetchCurrentMember();
       this.fetchBattleStats();
     }
 
@@ -305,6 +493,56 @@
     font-size: 14px;
     color: map.get($color, secondary);
     cursor: pointer;
+  }
+
+  //確認、取消更新頭像按鈕
+  .avatar-confirm-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .save-avatar-btn,
+  .cancel-avatar-btn {
+    height: 36px;
+    padding: 0 12px;
+
+    border-radius: 6px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  // 確認更新：主要操作
+  .save-avatar-btn {
+    border: 1px solid #fec96b;
+
+    color: #141c26;
+    background-color: #fec96b;
+  }
+
+  .save-avatar-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  // 取消：次要操作
+  .cancel-avatar-btn {
+    border: 1px solid #141c26;
+
+    color: #141c26;
+    background-color: transparent;
+  }
+
+  .cancel-avatar-btn:hover {
+    background-color: rgba(20, 28, 38, 0.06);
   }
 
   .account-form {

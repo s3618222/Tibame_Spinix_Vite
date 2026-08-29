@@ -1,7 +1,8 @@
 <template>
    <div class="card" @click="goToDetail">
       <div class="pic">
-         <img :src="'php/' + image" :alt="title">
+         <img :src="image" :alt="title">
+         <!-- 格式:https://tibamef2e.com/ckd101/g2/php/uploads/articles/exchange_ab8f43ded063f855.png -->
       </div>
       <div class="card-info">
          <h4>{{ title }}</h4>
@@ -11,6 +12,10 @@
                <img :src="avatar" alt="">
             </div>
             <p class="username">{{ username }}</p>
+         </div>
+         <div class="wrapper">
+            <p class="chip chip--state">{{ condition }}</p>
+            <p class="chip chip--category">{{ type }}</p>
          </div>
          <div class="wrapper">
             <i class="fa-solid fa-calendar-days icon-style"></i>
@@ -25,10 +30,8 @@
             <p>{{ city }}<span>{{ district }}</span></p>
          </div>
       </div>
-
+      <p class="chip tag-pos" :class="chipModifier">{{ state }}</p>
       <div class="card-footer">
-         <p class="chip" :class="chipModifier">{{ state }}</p>
-         <p class="chip chip--state">{{ type }}</p> <!--  商品類別 -->
          <div class="card-buttons" @click.stop>
             <button
                v-for="btn in buttons"
@@ -67,6 +70,10 @@ const props = defineProps({
       default: '/spinix_member_default.png'
    },
    username: {
+      type: String,
+      required: true
+   },
+   condition:{
       type: String,
       required: true
    },
@@ -143,8 +150,14 @@ function goToDetail() {
 </script>
 
 
-<style lang="scss">
+<style lang="scss" scoped>
    @use '@/assets/scss/_var' as *;
+
+   .page-title {
+         color: #F29B00;
+         font-size: 26px;
+         font-weight: 900;
+      }
 
    .icon-style{
       display: none;
@@ -154,12 +167,19 @@ function goToDetail() {
       width: 100%;
       background-color: white;
       padding: 12px;
-      border: 1px solid map-get($color , tertiary);
+      border: 1px solid #dddddd;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(20, 28, 38, 0.06);
       height: fit-content;
       overflow: hidden;
       color: #141C26;
+      position: relative;
+
+      .tag-pos {
+         position: absolute;
+         top: 8px;
+         right: 8px;
+      }
 
       .wrapper {
          display: flex;
@@ -186,6 +206,7 @@ function goToDetail() {
       .pic {
          border-radius: 10px;
          overflow: hidden;
+         border: 1px solid #dddddd;
 
          img {
             display: block;
@@ -256,14 +277,15 @@ function goToDetail() {
          display: flex;
          align-items: center;
          justify-content: space-between;
-         margin-top: 12px;
+         margin-top: 16px;
 
             .card-buttons {
                display: flex;
+               width: 100%;
             }
 
             .btnNoFill {
-
+               width: 100%;
                &:hover{
                   border-color: map-get( $color, neutral);
                   background-color:  map-get( $color, neutral);;

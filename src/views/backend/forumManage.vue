@@ -115,6 +115,7 @@
 <script>
 import Pagination from "@/components/pagination.vue";
 import { CATEGORY_LABELS } from "@/assets/js/utils/articleCategory.js";
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl";
 
 export default {
   name: "ForumManage",
@@ -197,7 +198,7 @@ export default {
 
   async created() {
     try {
-      const res = await fetch("http://localhost:8888/Spinix/php/forum/getForumManageList.php");
+      const res = await fetch(`${phpBaseUrl}/forum/getForumManageList.php`);
       const result = await res.json();
 
       if (result.success) {
@@ -207,7 +208,7 @@ export default {
           title: article.title,
           author: article.author_name,
           createTime: article.create_time,
-          is_show: article.is_show,
+          is_show: Number(article.is_show),
           delete_type: article.delete_type,
           has_pending_appeal: Number(article.has_pending_appeal) === 1
         }));

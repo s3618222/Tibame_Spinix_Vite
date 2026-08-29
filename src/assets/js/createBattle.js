@@ -15,6 +15,8 @@ const phpBaseUrl =
     ? "http://localhost:8888/Spinix/php"
     : "/ckd101/g2/php";
 
+let currentMember = null;
+
 // 檢查使用者是否已登入會員，否則無法進入建立對戰頁
 function checkCreateBattleLogin() {
   fetch(`${phpBaseUrl}/member/currentMember_get.php`, {
@@ -26,6 +28,11 @@ function checkCreateBattleLogin() {
       window.location.href = `${import.meta.env.BASE_URL}signIn.html`;
       return;
     }
+
+    // 保存目前登入會員資料
+    currentMember = data.member;
+    console.log("目前建立約戰的會員：", currentMember);
+
   }).catch(error => {
     console.error("登入狀態確認失敗：", error);
   });
@@ -346,8 +353,42 @@ function updatePreviewCountdown() {
   }
 }
 
+// 預覽發起人頭像
+const previewHostAvatar = document.querySelector("#previewHostAvatar");
+// 預覽發起人名稱
+const previewHostName = document.querySelector("#previewHostName");
+
+// 會員頭像路徑判斷函式
+function getMemberAvatarUrl(photo) {
+
+  // 沒有頭像資料時，使用平台預設頭像
+  if (!photo) {
+    return (
+      import.meta.env.BASE_URL +
+      "spinix_member_default.png"
+    );
+  }
+
+  // 會員自己動態上傳的頭像
+  if (photo.startsWith("uploads/member/")) {
+    return `${phpBaseUrl}/${photo}`;
+  }
+
+  // 原本放在 public 裡的靜態會員頭像
+  return import.meta.env.BASE_URL + photo;
+}
+
 // 將使用者填寫好的邀約資料放進預覽卡
 function renderBattlePreview(battle) {
+
+  //發起人姓名與頭像
+  if (currentMember) {
+    previewHostAvatar.src = getMemberAvatarUrl(currentMember.photo);
+
+    previewHostAvatar.alt = `${currentMember.name}的會員頭像`;
+
+    previewHostName.textContent = currentMember.name;
+  }
 
   //封面圖設定
   previewCover.src = battle.coverImage;

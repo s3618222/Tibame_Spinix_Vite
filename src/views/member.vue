@@ -5,7 +5,11 @@
 
       <aside class="member-sidebar">
         <div class="sidebar-user">
-          <img class="sidebar-avatar" :src="baseUrl + currentUser.avatar" alt="使用者頭像" />
+          <img 
+            class="sidebar-avatar" 
+            :src="getMemberAvatarUrl(currentUser.avatar)" 
+            :alt="`${currentUser.username}的會員頭像`" 
+          />
           <p class="sidebar-username">{{ currentUser.username }}</p>
         </div>
 
@@ -47,10 +51,16 @@
 
     data() {
       return {
+        phpBaseUrl: //PHP執行環境判斷
+          location.hostname === "localhost" ||
+          location.hostname === "127.0.0.1"
+            ? "http://localhost:8888/Spinix/php"
+            : `${location.origin}/ckd101/g2/php`,
+
         //側邊選單頂部顯示的使用者資訊，先寫死假資料
         currentUser: {
           avatar: "spinix_member_default.png",
-          username: "陀螺戰神123"
+          username: ""
         },
 
         //側邊選單導覽項目設定
@@ -69,6 +79,55 @@
       baseUrl() {
         return import.meta.env.BASE_URL;
       }
+    },
+
+    methods: {
+      // 取得目前登入會員資料
+      async fetchCurrentMember() {
+        try {
+          const response = await fetch(`${this.phpBaseUrl}/member/currentMember_get.php`,{
+              credentials: "include"
+            }
+          );
+
+          const data = await response.json();
+
+          if (!response.ok || !data.success || !data.isLoggedIn) {
+            console.error(data.message || "目前沒有登入會員");
+            return;
+          }
+
+          // 將會員頭像與名稱放入側邊欄
+          this.currentUser.avatar = data.member.photo || "spinix_member_default.png";
+          this.currentUser.username = data.member.name;
+
+        } catch (error) {
+          console.error("取得目前會員資料失敗：", error);
+        }
+      },
+
+      // 取得會員頭像路徑函式
+      getMemberAvatarUrl(photo) {
+        // 沒有頭像時顯示預設圖
+        if (!photo) {
+          return (
+            import.meta.env.BASE_URL +
+            "spinix_member_default.png"
+          );
+        }
+
+        // 會員自行上傳的動態頭像
+        if (photo.startsWith("uploads/member/")) {
+          return `${this.phpBaseUrl}/${photo}`;
+        }
+
+        // public 裡原本的靜態頭像
+        return import.meta.env.BASE_URL + photo;
+      }
+    },
+
+    mounted() {
+      this.fetchCurrentMember();
     }
   };
 </script>

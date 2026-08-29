@@ -4,12 +4,6 @@ session_start();
 require_once("../common/cors.php");
 require_once("../common/connect_ckd101g2.php");
 
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-
 function getExchange($pdo, $postId = null, $params = [], $includeContact = false) {
    $sql = "SELECT 
    `post_id`,
@@ -22,10 +16,10 @@ function getExchange($pdo, $postId = null, $params = [], $includeContact = false
    `want_item`, 
    `condition`, 
    `status`, 
-   exchange_post.`CITY_ID`, 
+   exchange_post.`CITY_ID` AS city_id, 
    city.`CITY_NAME` AS city,
-   exchange_post.`DISTRICT_ID`,
-   district.`DISTRICT_NAME` as district ,
+   exchange_post.`DISTRICT_ID` AS district_id,
+   district.`DISTRICT_NAME` AS district ,
    `is_show`,
    DATE(`create_time`) AS `create_time`,
    `post_pic1`,
@@ -40,8 +34,6 @@ function getExchange($pdo, $postId = null, $params = [], $includeContact = false
       $sql .= " , `post_contact` ";
    }
 
-
-
    $sql .= "FROM `exchange_post` 
    join `member` on exchange_post.`mem_id` = member.`mem_id`
    JOIN `city` on exchange_post.`CITY_ID` = city.`CITY_ID`
@@ -51,12 +43,6 @@ function getExchange($pdo, $postId = null, $params = [], $includeContact = false
       $sql .= "  WHERE post_id = ?";
       $params[] = $postId;
    }
-
-
-
-   // if (!empty($params)) {
-   //    $stmt->execute($params);
-   // }
 
    $stmt = $pdo->prepare($sql);
    $stmt->execute($params);
@@ -81,18 +67,6 @@ function FormatExchangRow(array $row): array {
          $row[$field] = $row[$field] === null ? null : (string) $row[$field];
       }
    }
-
-   // $picFields  = ['post_pic1', 'post_pic2', 'post_pic3', 'post_pic4', 'post_pic5'];
-   // $pics  = [];
-
-   // foreach ($picFields  as $field) {
-   //    if (!empty($row[$field])) {
-   //       $pics[] = $row[$field];
-   //    }
-   //    unset($row[$field]);
-   // }
-
-   // $row['post_pic'] = $pics ;
 
    return $row;
 }

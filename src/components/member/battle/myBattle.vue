@@ -319,10 +319,20 @@
         },
 
         getMemberPhotoUrl(photoPath) { //處理約戰紀錄中的會員頭像路徑
+          // 沒有頭像時使用平台預設會員頭像
           if (!photoPath) {
-            return "";
+            return (
+              import.meta.env.BASE_URL +
+              "spinix_member_default.png"
+            );
           }
 
+          // 會員自行動態上傳的頭像
+          if (photoPath.startsWith("uploads/member/")) {
+            return `${this.phpBaseUrl}/${photoPath}`;
+          }
+
+          // 原本放在 public 的靜態會員頭像
           return `${import.meta.env.BASE_URL}${photoPath}`;
         },
 
@@ -377,7 +387,7 @@
             this.selectedMember = {
               memberId: Number(data.host.MEM_ID),
               name: data.host.MEM_NAME,
-              avatar: data.host.MEM_PHOTO,
+              avatar: this.getMemberPhotoUrl(data.host.MEM_PHOTO),
 
               // 約戰統計
               totalBattles: Number(data.host.TOTAL_BATTLES),

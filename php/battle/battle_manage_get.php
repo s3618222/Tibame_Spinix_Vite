@@ -3,6 +3,7 @@
 
   require_once("../common/cors.php");
   require_once("../common/connect_ckd101g2.php");
+  require_once("../common/admin_guard.php");
 
   require_once("./battle_status_sync.php");
 

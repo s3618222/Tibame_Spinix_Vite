@@ -6,6 +6,7 @@
 
   require_once("../common/cors.php");
   require_once("../common/connect_ckd101g2.php");
+  require_once("../common/admin_guard.php");
 
   header("Content-Type: application/json; charset=utf-8");
 
@@ -23,14 +24,7 @@
   }
 
   //取得當前登入管理員的ID
-  
-  /*
-  !!!目前先預設Session的key名稱是 admin_id，等登入 API 完成後，要記得換上真的實際 key名稱。
-  現階段先暫時使用資料庫中唯一的管理員 #1。
-  */
-  $adminId = $_SESSION["admin_id"] ?? 1;
-
-
+  $adminId = $_SESSION["ADMIN_ID"];
 
   //接收前端傳回的處置資料
   $battleId = (int) ($_POST["battle_id"] ?? 0); //約戰編號

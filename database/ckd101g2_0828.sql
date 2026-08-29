@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： localhost:8889
--- 產生時間： 2026-08-26 02:56:23
+-- 產生時間： 2026-08-28 12:02:24
 -- 伺服器版本： 5.7.24
 -- PHP 版本： 8.3.1
 
@@ -59,7 +59,7 @@ CREATE TABLE `appeal_exchange` (
   `admin_id` int(10) UNSIGNED DEFAULT NULL COMMENT '審核員ID',
   `ae_content` text NOT NULL COMMENT '申訴案件內容',
   `ae_status` enum('PENDING','CONFIRMED','REJECTED') NOT NULL DEFAULT 'PENDING' COMMENT '申訴案件狀態',
-  `create_time` datetime NOT NULL COMMENT '申訴時間',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '申訴時間',
   `ae_evidence` varchar(255) DEFAULT NULL COMMENT '證據截圖',
   `responded_at` datetime DEFAULT NULL COMMENT '管理員回覆時間',
   `responded_text` varchar(200) NOT NULL COMMENT '管理員回復內容'
@@ -688,7 +688,7 @@ CREATE TABLE `exchange_comment` (
   `post_id` int(11) NOT NULL COMMENT '回覆交換案件ID',
   `mem_id` int(10) UNSIGNED NOT NULL COMMENT '留言會員編號',
   `content` text NOT NULL COMMENT '回覆內容',
-  `create_time` datetime NOT NULL COMMENT '回復時間',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '回復時間',
   `is_show` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否顯示',
   `remove_reason` varchar(255) DEFAULT NULL COMMENT '被下架時，下架原因說明',
   `is_choose` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否被選擇',
@@ -729,7 +729,9 @@ CREATE TABLE `exchange_post` (
 --
 
 INSERT INTO `exchange_post` (`post_id`, `type`, `title`, `description`, `want_item`, `condition`, `status`, `is_show`, `create_time`, `post_pic1`, `post_pic2`, `post_pic3`, `post_pic4`, `post_pic5`, `remove_reason`, `mem_id`, `comm_id`, `CITY_ID`, `DISTRICT_ID`, `post_contact`) VALUES
-(11, 'beyblade', 'CX 系列 對戰陀螺 改裝版', '關於交換戰鬥陀螺這件事，我們都可能想錯了，交換戰鬥陀螺，是很多人每天都在做的事，但真正把它做出意義的人，寥寥可數。 當我們認真審視交換戰鬥陀螺這件事，會發現它所牽涉的，遠比表面看來複雜得多。', '絕版陀螺12345', 'good', 'available', 1, '2026-08-26 10:51:34', 'uploads/articles/exchange_6d60773583af0e1b.png', 'uploads/articles/exchange_daa5721a23b843ba.png', 'uploads/articles/exchange_6ea78e51a93aaa73.png', 'uploads/articles/exchange_09f56c55636ebdb7.png', 'uploads/articles/exchange_2a2964e577c87845.png', NULL, 1, NULL, 1, 1, '電話:090909090');
+(17, 'ratchet', 'fff', 'ff', 'fff', 'good', 'available', 1, '2026-08-28 15:26:43', 'http://localhost:8888/Spinix/php/uploads/articles/exchange_844f7a2ad0987089.png', NULL, NULL, NULL, NULL, NULL, 2, NULL, 10, 179, 'fff'),
+(18, 'ratchet', '123456', '1234567', '', 'good', 'available', 1, '2026-08-28 16:09:25', 'http://localhost:8888/Spinix/php/uploads/articles/exchange_3eecb5442fb130c2.png', NULL, NULL, NULL, NULL, NULL, 2, NULL, 9, 170, '123456'),
+(19, 'others', '測試商品1', '出售一顆保存良好的戰鬥陀螺，適合喜歡戰鬥陀螺、想收藏或準備參加約戰的玩家。陀螺整體功能正常，零件皆可正常組裝與使用，曾有實際對戰經驗，因此外觀可能會有些微正常使用痕跡，但不影響基本操作與對戰性能。\r\n這顆陀螺的特色是攻擊力表現不錯，適合喜歡主動進攻、追求快速結束戰鬥的玩家。旋轉時穩定度也有一定水準，可以依照不同對手更換零件進行調整，對於想嘗試不同配置的新手或已有一定經驗的玩家都很適合。', '222', 'good', 'available', 1, '2026-08-28 16:19:22', 'http://localhost:8888/Spinix/php/uploads/articles/exchange_bc5db4f9ea8b676d.jpg', 'http://localhost:8888/Spinix/php/uploads/articles/exchange_14fb3d8b39fd9e09.jpg', 'http://localhost:8888/Spinix/php/uploads/articles/exchange_0e35b54f33b17ab9.jpg', 'http://localhost:8888/Spinix/php/uploads/articles/exchange_d5e2f1673bb4cf40.png', 'http://localhost:8888/Spinix/php/uploads/articles/exchange_1a22c34dcba36f25.png', NULL, 1, NULL, 13, 236, '測試聯絡資訊:123456');
 
 -- --------------------------------------------------------
 
@@ -967,7 +969,7 @@ ALTER TABLE `admin`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `appeal_exchange`
 --
 ALTER TABLE `appeal_exchange`
-  MODIFY `ae_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '交換申訴ID', AUTO_INCREMENT=3;
+  MODIFY `ae_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '交換申訴ID';
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `appeal_forum`
@@ -1021,13 +1023,13 @@ ALTER TABLE `district`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `exchange_comment`
 --
 ALTER TABLE `exchange_comment`
-  MODIFY `comm_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '留言ID', AUTO_INCREMENT=3;
+  MODIFY `comm_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '留言ID';
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `exchange_post`
 --
 ALTER TABLE `exchange_post`
-  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '交換案件編號', AUTO_INCREMENT=12;
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '交換案件編號', AUTO_INCREMENT=20;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `member`

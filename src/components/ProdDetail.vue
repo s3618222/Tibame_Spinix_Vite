@@ -1,5 +1,5 @@
 <template>
-  <h1>{{ pageTitle }}</h1>
+  <h1 class="page-title">{{ pageTitle }}</h1>
   <a class="back-page" :href="backLink">返回</a>
 
   <div class="container" v-if="article">
@@ -248,25 +248,13 @@
 
       <form @submit.prevent="handleSubmit">
         <p class="form-title">留下您的交換提議與聯絡方式</p>
-
-        <div class="name form-label-style">
-          <label for="name" class="label-title">您的暱稱</label>
-          <input
-            type="text"
-            id="name"
-            v-model="form.name"
-            :class="{ '-isError': errors.name }"
-            data-required
-          >
-        </div>
-
-        <div class="phone form-label-style">
-          <label for="phone" class="label-title">聯絡方式</label>
+        <div class="comm_contact form-label-style">
+          <label for="comm_contact" class="label-title">聯絡方式</label>
           <input
             type="tel"
-            id="phone"
-            v-model="form.phone"
-            :class="{ '-isError': errors.phone }"
+            id="comm_contact"
+            v-model="form.comm_contact"
+            :class="{ '-isError': errors.comm_contact }"
             data-required
           >
         </div>
@@ -275,8 +263,8 @@
           <label for="change-item" class="label-title">想交換物品</label>
           <textarea
             id="change-item"
-            v-model="form.changeItem"
-            :class="{ '-isError': errors.changeItem }"
+            v-model="form.content"
+            :class="{ '-isError': errors.content }"
             data-required
           ></textarea>
         </div>
@@ -338,13 +326,6 @@ function fetchCurrentMember() {
 
 fetchCurrentMember();
 
-// 讀取網址參數：product_detail.html?id=5&from=myPosts
-// const urlParams = new URLSearchParams(window.location.search);
-
-// const articleId = urlParams.get('id'); 
-
-// const context = urlParams.get('from') || 'browse';
-
 
 // 嘗試取得 route,如果沒有 router 環境會是 undefined，不會報錯
 let route;
@@ -383,9 +364,6 @@ const context = computed(() => {
 const isAdmin = computed(() => context.value === 'backend');
 
 // 從 exchangeList 陣列中，找出 id 相符的那一筆資料
-// const article = computed(() =>
-//   exchangeList.find(item => item.post_id === articleId.value)
-// );
 
 const article = ref(null);
 async function fetchArticle() {
@@ -487,13 +465,6 @@ const backLink = computed(() => backLinkMap[context.value] || 'market.html');
 
 
 // == 圖片輪播 ============================================
-// const galleryImages = ref([
-//   'CX02_01.webp',
-//   'BX23_01.webp',
-//   'BX_02.webp',
-//   'CX13_01.webp',
-//   'BX-28.webp'
-// ]);
 const galleryImages = computed(()=>{
   if(!article.value) return [];
   const rawPics = [
@@ -504,16 +475,9 @@ const galleryImages = computed(()=>{
     article.value.post_pic5
   ].filter(Boolean);
 
-   return rawPics.map(pic => `php/${pic}`); // 濾完之後，再統一加上前綴
+   return rawPics.map(pic => `${pic}`); // 濾完之後，再統一加上前綴
 });
 
-
-// console.log(galleryImages);
-// console.log(article.post_pic1);
-
-// const galleryImages = ref(
-//   fetch().then().then()
-// );
 
 // == 編輯模式狀態 ==========================================
 const isEditing = ref(false);
@@ -624,19 +588,17 @@ const sortedComments = computed(() => {
 const activeImageIndex = ref(0);
 
 
-
+console.log("我是articleId:",articleId.value);
 
 // 留言表單燈箱
 const isModalOpen = ref(false);
 const form = reactive({
-  name: '',
-  changeItem: '',
-  phone: '',
+  content: '',
+  comm_contact: '',
 });
 const errors = reactive({
-  name: false,
-  changeItem: false,
-  phone: false
+  content: false,
+  comm_contact: false
 });
 
 function closeModal() {
@@ -644,16 +606,14 @@ function closeModal() {
 }
 
 function resetForm() {
-  form.name = '';
-  form.changeItem = '';
-  form.phone = '';
-  errors.name = false;
-  errors.changeItem = false;
-  errors.phone = false;
+  form.content = '';
+  form.comm_contact = '';
+  errors.content = false;
+  errors.comm_contact = false;
 }
 
 function handleReset() {
-  const hasContent = form.name || form.changeItem || form.phone;
+  const hasContent = form.content || form.comm_contact;
   if (!hasContent) {
     window.alert('請先填入資料');
     return;
@@ -665,16 +625,37 @@ function handleReset() {
 }
 
 function validateForm() {
-  errors.name = form.name.trim() === '';
-  errors.changeItem = form.changeItem.trim() === '';
-  errors.phone = form.phone.trim() === '';
-  return !(errors.name || errors.changeItem || errors.phone);
+  errors.content = form.content.trim() === '';
+  errors.comm_contact = form.comm_contact.trim() === '';
+  return !( errors.content || errors.comm_contact);
 }
 
-function handleSubmit() {
+async function handleSubmit() {
   if (!validateForm()) {
     window.alert('星號*為必填項目');
     return;
+  }
+
+  const payload = {
+    id: articleId.value,
+    comm_contact: form.comm_contact,
+    content: form.content
+  };
+
+  const res = await fetch(`${phpBaseUrl}/exchange/add_ExchangeMsg.php`,{
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }); 
+
+  const result = await res.json();
+
+
+  if(result.success){
+    closeModal();
+  }else{
+    alert(result.message || '送出失敗');
   }
 
   // console.log('送出交換提議：', { ...form });
@@ -1020,6 +1001,13 @@ p{
 
 // == 桌機 ================================================
 @media screen and (width >= 992px) {
+
+  .page-title {
+    color: #F29B00;
+    font-size: 26px;
+    font-weight: 900;
+  }
+  
   .next-page {
     padding: 12px 0 4px;
 

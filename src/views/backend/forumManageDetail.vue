@@ -89,6 +89,7 @@
               <span v-if="comment.has_pending_appeal" class="status-badge status-badge--appeal">待審申訴</span>
             </div>
             <p class="comment-content">{{ comment.content }}</p>
+            <img v-if="comment.pic" :src="comment.pic" alt="留言圖片" class="comment-pic">
             <p v-if="showRemoveReason(comment)" class="remove-reason-text">下架原因：{{ comment.remove_reason }}</p>
           </div>
 
@@ -121,7 +122,6 @@
     <ConfirmReasonModal
       :visible="isModalOpen"
       :title="modalTitle"
-      :confirm-text="modalConfirmText"
       @cancel="closeModal"
       @confirm="handleConfirmAction"
     />
@@ -131,6 +131,7 @@
 <script>
 import ConfirmReasonModal from "@/components/common/ConfirmReasonModal.vue";
 import { CATEGORY_LABELS } from "@/assets/js/utils/articleCategory.js";
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl";
 
 export default {
   name: "ForumManageDetail",
@@ -143,7 +144,6 @@ export default {
     return {
       isModalOpen: false,
       modalTitle: "請說明下架原因",
-      modalConfirmText: "確認下架",
       modalTarget: null, // { type: "article" | "comment", id, action: "remove" | "restore" }
 
       article: {},
@@ -156,7 +156,7 @@ export default {
 
     try {
       const res = await fetch(
-        `http://localhost:8888/Spinix/php/forum/getForumManageDetail.php?art_id=${articleId}`
+        `${phpBaseUrl}/forum/getForumManageDetail.php?art_id=${articleId}`
       );
       const result = await res.json();
 
@@ -169,7 +169,7 @@ export default {
           category: CATEGORY_LABELS[a.category] || a.category,
           createTime: a.create_time,
           content: a.content,
-          is_show: a.is_show,
+          is_show: Number(a.is_show),
           delete_type: a.delete_type,
           remove_reason: a.remove_reason,
           has_pending_appeal: Number(a.has_pending_appeal) === 1,
@@ -181,7 +181,8 @@ export default {
           author: { name: c.commenter_name, img: c.commenter_photo },
           createTime: c.create_time,
           content: c.content,
-          is_show: c.is_show,
+          pic: c.pic,
+          is_show: Number(c.is_show),
           delete_type: c.delete_type,
           remove_reason: c.remove_reason,
           has_pending_appeal: Number(c.has_pending_appeal) === 1
@@ -205,40 +206,91 @@ export default {
         : `${baseUrl}spinix_member_default.png`;
     },
 
+    // 下架：需要填寫原因，打開 ConfirmReasonModal
     openRemoveArticleModal() {
       this.modalTitle = "請說明下架原因";
-      this.modalConfirmText = "確認下架";
-      this.modalTarget = { type: "article", id: this.article.id, action: "remove" };
+      this.modalTarget = { type: "article", id: this.article.id, action: "REMOVE" };
       this.isModalOpen = true;
     },
 
+    // 恢復上架：不需要填寫原因，改用原生 confirm()，不開 ConfirmReasonModal
+    // 注意順序：一定要先設定 modalTarget，再呼叫 handleConfirmAction，
+    // 否則 handleConfirmAction 裡讀到的會是舊資料
     openRestoreArticleModal() {
-      this.modalTitle = "請說明恢復上架原因";
-      this.modalConfirmText = "確認恢復";
-      this.modalTarget = { type: "article", id: this.article.id, action: "restore" };
-      this.isModalOpen = true;
+      const confirmed = confirm("確定要恢復這篇文章的上架狀態嗎？");
+      if (!confirmed) return;
+
+      this.modalTarget = { type: "article", id: this.article.id, action: "RESTORE" };
+      this.handleConfirmAction("");
     },
 
     openRemoveCommentModal(comment) {
       this.modalTitle = "請說明下架原因";
-      this.modalConfirmText = "確認下架";
-      this.modalTarget = { type: "comment", id: comment.id, action: "remove" };
+      this.modalTarget = { type: "comment", id: comment.id, action: "REMOVE" };
       this.isModalOpen = true;
     },
 
     openRestoreCommentModal(comment) {
-      this.modalTitle = "請說明恢復上架原因";
-      this.modalConfirmText = "確認恢復";
-      this.modalTarget = { type: "comment", id: comment.id, action: "restore" };
-      this.isModalOpen = true;
+      const confirmed = confirm("確定要恢復這則留言的上架狀態嗎？");
+      if (!confirmed) return;
+
+      this.modalTarget = { type: "comment", id: comment.id, action: "RESTORE" };
+      this.handleConfirmAction("");
     },
 
     closeModal() {
       this.isModalOpen = false;
     },
 
-    handleConfirmAction(reason) {
-      console.log(reason, this.modalTarget);
+    async handleConfirmAction(reason) {
+      //物件的解構賦值語法，效果等同於
+      // const target = this.modalTarget;
+      // const type = target.type;
+      // const id = target.id;
+      // const action = target.action;
+      const { type, id, action } = this.modalTarget;
+
+      const apiUrl = type === "article" 
+      ? `${phpBaseUrl}/forum/adminUpdateArticleStatus.php` 
+      : `${phpBaseUrl}/forum/adminUpdateCommentStatus.php`;
+
+      const formData = new FormData();
+      formData.append(type === "article" ? "art_id" : "msg_id", id);
+      formData.append("action", action);
+      formData.append("reason", reason);
+
+      try {
+        const res = await fetch( apiUrl,
+          {
+            method: "POST",
+            body: formData
+          }
+        );
+        const result = await res.json();
+
+        if (result.success) {
+          if (type === "article") {
+            this.article.is_show = action === "REMOVE" ? 0 : 1;
+            this.article.delete_type = action === "REMOVE" ? "admin_removed" : null;
+            this.article.remove_reason = action === "REMOVE" ? reason : null;
+          }else {
+            // comments 的處置：找到 comments 陣列裡對應那筆，直接修改它的狀態
+            const target = this.comments.find(c => c.id === id);
+            if (target) {
+              target.is_show = action === "REMOVE" ? 0 : 1;
+              target.delete_type = action === "REMOVE" ? "admin_removed" : null;
+              target.remove_reason = action === "REMOVE" ? reason : null;
+            }
+          }
+          alert(result.message);
+        } else {
+          alert(result.message);
+        }
+      } catch (err) {
+        console.error("處置失敗", err);
+        alert("處置失敗，請稍後再試");
+      }
+
       this.isModalOpen = false;
     },
 
@@ -620,7 +672,15 @@ export default {
   color: map-get($color, neutral);
   font-size: 13px;
 }
-
+.comment-pic {
+  max-width: 200px;
+  max-height: 200px;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+}
 .comment-content {
   margin: 0;
   color: map-get($color, secondary);

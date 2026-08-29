@@ -62,6 +62,7 @@
 
 <script>
 import {CATEGORY_LABELS} from '@/assets/js/utils/articleCategory.js';
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl";
 export default {
   name: "forumForm",
 
@@ -124,7 +125,7 @@ export default {
   methods: {
     async checkLoginStatus() {
       try {
-        const res = await fetch("http://localhost:8888/Spinix/php/member/currentMember_get.php", {
+        const res = await fetch(`${phpBaseUrl}/member/currentMember_get.php`, {
           credentials: "include"
         });
         const result = await res.json();
@@ -145,7 +146,7 @@ export default {
 
     async fetchArticleData(id) {
       try {
-        const res = await fetch(`http://localhost:8888/Spinix/php/forum/getArticleById.php?id=${id}`, {
+        const res = await fetch(`${phpBaseUrl}/forum/getArticleById.php?id=${id}`, {
           credentials: "include"
         });
         const result = await res.json();
@@ -189,8 +190,8 @@ export default {
 
         //用變數apiUrl 決定要打哪支api
         const apiUrl = this.isEdit
-        ? "http://localhost:8888/Spinix/php/forum/updateArticle.php"
-        : "http://localhost:8888/Spinix/php/forum/addArticle.php";
+        ? `${phpBaseUrl}/forum/updateArticle.php`
+        : `${phpBaseUrl}/forum/addArticle.php`;
 
         if (this.isEdit) {
           formData.append("art_id", this.articleId);
@@ -252,7 +253,7 @@ export default {
           const formData = new FormData();
             formData.append("file", blobInfo.blob(), blobInfo.filename());
             
-            const res = await fetch("http://localhost:8888/Spinix/php/forum/uploadArticleImage.php", {
+            const res = await fetch(`${phpBaseUrl}/forum/uploadArticleImage.php`, {
               method: "POST",
               credentials: "include",
               body: formData

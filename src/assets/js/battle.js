@@ -569,6 +569,23 @@ function getBattleImageUrl(imagePath) {
   return import.meta.env.BASE_URL + imagePath;
 }
 
+// 會員頭像網址處理函式
+function getMemberAvatarUrl(photo) {
+
+  // 沒有頭像資料時，使用平台的預設頭像
+  if (!photo) {
+    return import.meta.env.BASE_URL + "spinix_member_default.png";
+  }
+
+  // 會員自己動態上傳的頭像
+  if (photo.startsWith("uploads/member/")) {
+    return `${phpBaseUrl}/${photo}`;
+  }
+
+  // 非動態上傳圖片時，就顯示原本放在 public 裡的靜態預設頭像
+  return import.meta.env.BASE_URL + photo;
+}
+
 //串接後端約戰資料api
 function fetchBattles() {
   fetch(`${phpBaseUrl}/battle/battle_get.php`).then(res => res.json()).then(data => {
@@ -699,7 +716,7 @@ function createBattleCard(battle) {
             >
               <img
                 class="host-avatar"
-                src="${import.meta.env.BASE_URL + battle.hostAvatar}"
+                src="${getMemberAvatarUrl(battle.hostAvatar)}"
                 alt=""
               >
               <span class="host-name">${battle.hostName}</span>
@@ -975,7 +992,7 @@ function formatReviewDate(dateString) {
 // 將發起人資料放入燈箱中
 function renderHostHistory(host) {
 
-  historyAvatar.src = import.meta.env.BASE_URL + host.avatar;
+  historyAvatar.src = getMemberAvatarUrl(host.avatar);
   historyAvatar.alt = `${host.name}的會員頭像`;
 
   historyHostName.textContent = host.name;
@@ -1158,7 +1175,7 @@ const applyContact = document.querySelector("#applyContact"); //參加人輸入�
 
 // 將對應邀約資訊放進申請燈箱
 function renderApplyModal(battle) {
-  applyAvatar.src = import.meta.env.BASE_URL + battle.hostAvatar;
+  applyAvatar.src = getMemberAvatarUrl(battle.hostAvatar);
   applyAvatar.alt = `${battle.hostName}的會員頭像`;
 
   applyBattleTitle.textContent = battle.title;

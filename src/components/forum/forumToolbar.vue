@@ -27,6 +27,8 @@
 </template>
 
 <script>
+  import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl";
+
   export default {
     name: "ForumToolbar",
 
@@ -52,7 +54,7 @@
     methods: {
       async handlePostClick() {
         try {
-          const res = await fetch("http://localhost:8888/Spinix/php/member/currentMember_get.php", {
+          const res = await fetch(`${phpBaseUrl}/member/currentMember_get.php`, {
             credentials: "include"
           });
           const result = await res.json();

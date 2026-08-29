@@ -21,7 +21,8 @@
     $sql = "
     SELECT 
       message.*,
-      article.title
+      article.title,
+      article.is_show AS article_is_show
     FROM message 
     JOIN article ON article.art_id = message.art_id
     WHERE message.mem_id = ?

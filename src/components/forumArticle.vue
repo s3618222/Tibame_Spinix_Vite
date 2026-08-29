@@ -29,6 +29,7 @@ import CommentForm from '@/components/forum/commentForm.vue';
 import CommentList from '@/components/forum/commentList.vue';
 import WarningBanner from '@/components/WarningBanner.vue';
 import { CATEGORY_LABELS } from '@/assets/js/utils/articleCategory.js';
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl";
 
 
 export default {
@@ -71,7 +72,7 @@ export default {
   methods: {
     async fetchArticle(){
       try{
-        const res = await fetch(`http://localhost:8888/Spinix/php/forum/getArticleById.php?id=${this.articleId}`, {credentials: "include"});
+        const res = await fetch(`${phpBaseUrl}/forum/getArticleById.php?id=${this.articleId}`, {credentials: "include"});
         const result = await res.json();
 
         if(result.success){
@@ -100,7 +101,7 @@ export default {
 
     async fetchComments(){
       try{
-        const res = await fetch(`http://localhost:8888/Spinix/php/forum/getComments.php?id=${this.articleId}`, {credentials: "include"});
+        const res = await fetch(`${phpBaseUrl}/forum/getComments.php?id=${this.articleId}`, {credentials: "include"});
         const result = await res.json();
         if (result.success) {
           this.comments = result.data.map((c, index) => ({
@@ -125,7 +126,7 @@ export default {
 
     async fetchCurrentMember(){
       try{
-        const res = await fetch("http://localhost:8888/Spinix/php/member/currentMember_get.php", {credentials: "include"});
+        const res = await fetch(`${phpBaseUrl}/member/currentMember_get.php`, {credentials: "include"});
         const result = await res.json();
 
         if (result.isLoggedIn) {
@@ -148,7 +149,7 @@ export default {
           formData.append("image", payload.image);
         }
 
-        const res = await fetch("http://localhost:8888/Spinix/php/forum/addComment.php", {
+        const res = await fetch(`${phpBaseUrl}/forum/addComment.php`, {
           method: "POST",
           credentials: "include",
           body: formData
