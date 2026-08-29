@@ -176,7 +176,7 @@ export default {
           );
           
           alert(data.message);
-          window.location.href = `${import.meta.env.BASE_URL}homepage.html`;
+          window.location.href = `${import.meta.env.BASE_URL}member.html#/appeal`;
 
         } catch (error) {
           console.error("送出約戰申訴失敗：", error);
