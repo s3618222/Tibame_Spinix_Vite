@@ -8,8 +8,8 @@
 
   header("Content-Type: application/json; charset=utf-8");
 
-  // 守衛：僅允許已登入的管理員存取
-  require_once("../common/admin_guard.php");
+  // 守衛：管理員帳號管理僅限超級管理員
+  require_once("../common/admin_guard_super.php");
 
   // 限定 POST
   if ($_SERVER["REQUEST_METHOD"] !== "POST") {
@@ -44,12 +44,23 @@
   }
 
   // 驗證：管理員存在
-  $check = $pdo->prepare("SELECT admin_id FROM admin WHERE admin_id = ?");
+  $check = $pdo->prepare("SELECT admin_type FROM admin WHERE admin_id = ?");
   $check->execute([$adminId]);
-  if (!$check->fetch()) {
+  $target = $check->fetch(PDO::FETCH_ASSOC);
+  if (!$target) {
     echo json_encode([
       "success" => false,
       "message" => "查無此管理員"
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+  }
+
+  // 防呆：超級管理員帳號不可被編輯
+  if ($target["admin_type"] === "超級管理員") {
+    http_response_code(403);
+    echo json_encode([
+      "success" => false,
+      "message" => "超級管理員帳號不可編輯"
     ], JSON_UNESCAPED_UNICODE);
     exit;
   }

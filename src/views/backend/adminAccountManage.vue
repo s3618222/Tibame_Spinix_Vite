@@ -43,7 +43,9 @@
           <div class="col col--type">{{ admin.type }}</div>
           <div class="col col--state">{{ admin.state }}</div>
           <div class="col col--action">
+            <!-- 防呆：超級管理員不可被編輯/重設密碼，隱藏操作鈕 -->
             <button
+              v-if="admin.type !== '超級管理員'"
               type="button"
               class="action-btn"
               @click="toggleMenu(admin.id)"
@@ -103,9 +105,12 @@
 
 <script setup>
   import { ref, onMounted } from "vue";
+  import { useRouter } from "vue-router";
   import AdminAddModal from "@/components/backend/admin/AdminAddModal.vue";
   import AdminEditModal from "@/components/backend/admin/AdminEditModal.vue";
   import AdminResetPasswordModal from "@/components/backend/admin/AdminResetPasswordModal.vue";
+
+  const router = useRouter();
 
   // PHP API 路徑（比照 complaintManage.vue）
   const phpBaseUrl =
@@ -131,7 +136,29 @@
     }
   }
 
-  onMounted(fetchAdmins);
+  // 權限守衛：僅超級管理員可進入此頁；非超管（或未登入）導回會員管理
+  async function ensureSuperAdmin() {
+    try {
+      const res = await fetch(`${phpBaseUrl}/admin/admin_current_get.php`, {
+        credentials: "include"
+      });
+      const data = await res.json();
+      if (!data.isLoggedIn || data.admin.type !== "超級管理員") {
+        router.replace({ name: "backend-member" });
+        return false;
+      }
+      return true;
+    } catch {
+      router.replace({ name: "backend-member" });
+      return false;
+    }
+  }
+
+  onMounted(async () => {
+    if (await ensureSuperAdmin()) {
+      fetchAdmins();
+    }
+  });
 
   // 列操作下拉
   const openMenuId = ref(null);
