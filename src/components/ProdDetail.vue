@@ -292,7 +292,6 @@
 import { ref, computed, reactive } from 'vue';
 import {useRoute} from 'vue-router';
 import prodMsgInfo from '@/components/prodMsgInfo.vue';
-// import { getExchangeDetail, fakeComments, statusLabelMap, typeLabelMap, conditionLabelMap } from '@/data/ExchangeData';
 import { getExchangeDetail, getComments, statusLabelMap, typeLabelMap, conditionLabelMap } from '@/data/ExchangeData';
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import 'vue3-carousel/dist/carousel.css';
@@ -510,10 +509,9 @@ function cancelEdit() {
     }
   });
   isEditing.value = false;
-  // 不需要清空 editForm，反正下次 startEdit 會重新帶入最新資料
 }
 
-function saveEdit() {
+async function saveEdit() {
   if (!editForm.title.trim()) {
     window.alert('物品名稱不能為空');
     return;
@@ -523,25 +521,41 @@ function saveEdit() {
     return;
   }
 
-  // 直接修改 exchangeList 裡對應那筆資料（因為是假資料，先用這種方式模擬儲存）
-  article.value.title = editForm.title;
-  article.value.type = editForm.type;
-  article.value.condition = editForm.condition;
-  article.value.description = editForm.description;
-  article.value.want_item = editForm.want_item;
 
   galleryImages.value = [...editForm.images];
   activeImageIndex.value = 0;
 
-  // 之後接後端時，這裡改成：
-  // await axios.put(`/api/exchange/${article.value.id}`, {
-  //   title: editForm.title,
-  //   description: editForm.description,
-  //   images: editForm.images
-  // });
+  const payload = {
+    post_id: articleId.value,
+    title : editForm.title,
+    type : editForm.type,
+    condition : editForm.condition,
+    description : editForm.description,
+    want_item : editForm.want_item
+  }
 
-  isEditing.value = false;
-  window.alert('商品資訊已更新！');
+  const res = await fetch(`${phpBaseUrl}/exchange/update_Exchange.php`,{
+    method: "PATCH",
+    credentials: "include",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  const result = await res.json();
+
+  if(result.success){
+    article.value.title = editForm.title;
+    article.value.type = editForm.type;
+    article.value.condition = editForm.condition;
+    article.value.description = editForm.description;
+    article.value.want_item = editForm.want_item;
+    isEditing.value = false;
+    alert('物品資訊已更新成功！');
+  }else{
+    alert(result.message || '更新失敗');
+  }
+
+  
 }
 
 // // 圖片上傳（假資料階段用本機預覽，之後接後端改成真正上傳）
@@ -563,12 +577,6 @@ const commentMode = computed(() => {
   if (context.value === 'myApplications') return 'applicant';
   return 'browse';
 });
-
-// 該文章留言列表
-// const articleComments = computed(() =>
-//   getComments.filter(comment => comment.post_id === articleId.value)
-  
-// );
 
 const articleComments = ref([]);
 
