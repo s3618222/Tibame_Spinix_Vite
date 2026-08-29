@@ -102,17 +102,36 @@
 </template>
 
 <script setup>
-  import { ref } from "vue";
+  import { ref, onMounted } from "vue";
   import AdminAddModal from "@/components/backend/admin/AdminAddModal.vue";
   import AdminEditModal from "@/components/backend/admin/AdminEditModal.vue";
   import AdminResetPasswordModal from "@/components/backend/admin/AdminResetPasswordModal.vue";
 
-  // 假資料（欄位命名對齊 DB admin 表語意，方便日後接 API）
-  const admins = ref([
-    { id: "01", account: "adminA", name: "管理員Ａ", createTime: "2026-3-10", type: "一般管理員", state: "在職" },
-    { id: "02", account: "adminB", name: "管理員B", createTime: "2026-2-10", type: "一般管理員", state: "離職" },
-    { id: "03", account: "adminC", name: "管理員C", createTime: "2026-1-10", type: "超級管理員", state: "在職" }
-  ]);
+  // PHP API 路徑（比照 complaintManage.vue）
+  const phpBaseUrl =
+    location.hostname === "localhost" || location.hostname === "127.0.0.1"
+      ? "http://localhost:8888/Spinix/php"
+      : "/ckd101/g2/php";
+
+  // 管理員清單（由後端載入）
+  const admins = ref([]);
+
+  // 取得管理員清單
+  async function fetchAdmins() {
+    try {
+      const res = await fetch(`${phpBaseUrl}/admin/admin_manage_get.php`, {
+        credentials: "include"
+      });
+      const data = await res.json();
+      if (data.success) {
+        admins.value = data.admins;
+      }
+    } catch {
+      // 讀取失敗時保持空清單
+    }
+  }
+
+  onMounted(fetchAdmins);
 
   // 列操作下拉
   const openMenuId = ref(null);
@@ -136,19 +155,67 @@
     selectedAdmin.value = {};
   }
 
-  function handleAdd(payload) {
-    // 尚未串接 API
-    console.log("新增管理員", payload);
+  // 共用：送出 FormData 到指定 API，成功回傳 data
+  async function postForm(url, fields) {
+    const formData = new FormData();
+    Object.entries(fields).forEach(([k, v]) => formData.append(k, v));
+
+    const res = await fetch(`${phpBaseUrl}${url}`, {
+      method: "POST",
+      body: formData,
+      credentials: "include"
+    });
+    return res.json();
   }
 
-  function handleEdit(payload) {
-    // 尚未串接 API
-    console.log("編輯管理員", payload);
+  async function handleAdd(payload) {
+    if (payload.password !== payload.confirmPassword) {
+      alert("兩次輸入的密碼不一致");
+      return;
+    }
+    try {
+      const data = await postForm("/admin/admin_create_post.php", {
+        account: payload.account,
+        name: payload.name,
+        password: payload.password,
+        confirmPassword: payload.confirmPassword
+      });
+      alert(data.message);
+      if (data.success) fetchAdmins();
+    } catch {
+      alert("無法連線至伺服器，請稍後再試");
+    }
   }
 
-  function handleReset(payload) {
-    // 尚未串接 API
-    console.log("重設密碼", payload);
+  async function handleEdit(payload) {
+    try {
+      const data = await postForm("/admin/admin_update_post.php", {
+        adminId: payload.adminId,
+        name: payload.name,
+        state: payload.state
+      });
+      alert(data.message);
+      if (data.success) fetchAdmins();
+    } catch {
+      alert("無法連線至伺服器，請稍後再試");
+    }
+  }
+
+  async function handleReset(payload) {
+    if (payload.password !== payload.confirmPassword) {
+      alert("兩次輸入的密碼不一致");
+      return;
+    }
+    try {
+      const data = await postForm("/admin/admin_reset_password_post.php", {
+        adminId: payload.adminId,
+        password: payload.password,
+        confirmPassword: payload.confirmPassword
+      });
+      alert(data.message);
+    } catch {
+      alert("無法連線至伺服器，請稍後再試");
+    }
   }
 </script>
 
