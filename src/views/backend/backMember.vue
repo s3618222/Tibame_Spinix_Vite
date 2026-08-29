@@ -53,6 +53,7 @@
         </RouterLink>
 
         <RouterLink
+          v-if="adminType === '超級管理員'"
           :to="{ name: 'backend-admin-account' }"
           class="back-nav-link"
         >
@@ -104,7 +105,8 @@
     data() {
       return {
         isSidebarOpen: false,
-        adminName: ""
+        adminName: "",
+        adminType: ""
       };
     },
 
@@ -133,6 +135,7 @@
         .then(data => {
           if (data.isLoggedIn) {
             this.adminName = data.admin.name;
+            this.adminType = data.admin.type;
           } else {
             window.location.href = `${this.baseUrl}backSignIn.html`;
           }
