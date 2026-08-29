@@ -363,12 +363,24 @@ const context = computed(() => {
 // 判斷是否從管理者畫面進來
 const isAdmin = computed(() => context.value === 'backend');
 
-// 從 exchangeList 陣列中，找出 id 相符的那一筆資料
+// 輪播圖陣列
+const galleryImages = ref([]);
 
+// 從 exchangeList 陣列中，找出 id 相符的那一筆資料
 const article = ref(null);
 async function fetchArticle() {
   const res = await getExchangeDetail(articleId.value);
   article.value = res.data;
+
+  const rawPics = [
+    article.value.post_pic1,
+    article.value.post_pic2,
+    article.value.post_pic3,
+    article.value.post_pic4,
+    article.value.post_pic5
+  ].filter(Boolean);
+
+  galleryImages.value = rawPics.map(pic => `${pic}`);
 }
 
 
@@ -465,28 +477,13 @@ const backLinkMap = {
 const backLink = computed(() => backLinkMap[context.value] || 'market.html');
 
 
-// == 圖片輪播 ============================================
-const galleryImages = computed(()=>{
-  if(!article.value) return [];
-  const rawPics = [
-    article.value.post_pic1,
-    article.value.post_pic2,
-    article.value.post_pic3,
-    article.value.post_pic4,
-    article.value.post_pic5
-  ].filter(Boolean);
-
-   return rawPics.map(pic => `${pic}`); // 濾完之後，再統一加上前綴
-});
-
-
 // == 編輯模式狀態 ==========================================
 const isEditing = ref(false);
 const editForm = reactive({
   title: '',
   description: '',
   want_item:'',
-  images: []   // 存編輯中的圖片網址（新上傳的會是 blob 網址）
+  images: []
 });
 
 function startEdit() {
@@ -516,46 +513,58 @@ async function saveEdit() {
     window.alert('物品名稱不能為空');
     return;
   }
-  if(!editForm.description.trim()){
+  if (!editForm.description.trim()) {
     window.alert('物品描述不能為空');
     return;
   }
 
+  // 把 editForm.images 拆成「原本的網址」跟「blob 預覽網址（代表新上傳的檔案）」
+  const existingUrls = editForm.images.filter(url => !url.startsWith('blob:'));
+  const blobUrls = editForm.images.filter(url => url.startsWith('blob:'));
 
-  galleryImages.value = [...editForm.images];
-  activeImageIndex.value = 0;
+  const formData = new FormData();
+  formData.append('post_id', articleId.value);
+  formData.append('title', editForm.title);
+  formData.append('type', editForm.type);
+  formData.append('condition', editForm.condition);
+  formData.append('description', editForm.description);
+  formData.append('want_item', editForm.want_item);
+  formData.append('existing_photos', JSON.stringify(existingUrls));
 
-  const payload = {
-    post_id: articleId.value,
-    title : editForm.title,
-    type : editForm.type,
-    condition : editForm.condition,
-    description : editForm.description,
-    want_item : editForm.want_item
+  // 把每個 blob 網址「轉換回」真正的檔案，才能上傳
+  for (const blobUrl of blobUrls) {
+    const blob = await (await fetch(blobUrl)).blob();
+    const file = new File([blob], `photo_${Date.now()}.jpg`, { type: blob.type });
+    formData.append('photos[]', file);
   }
 
-  const res = await fetch(`${phpBaseUrl}/exchange/update_Exchange.php`,{
-    method: "PATCH",
-    credentials: "include",
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+  const res = await fetch(`${phpBaseUrl}/exchange/update_Exchange.php`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData   // 不要加 Content-Type header
   });
 
   const result = await res.json();
 
-  if(result.success){
+  if (result.success) {
     article.value.title = editForm.title;
     article.value.type = editForm.type;
     article.value.condition = editForm.condition;
     article.value.description = editForm.description;
     article.value.want_item = editForm.want_item;
+
+    // 用後端回傳的最新圖片網址覆蓋畫面
+    galleryImages.value = result.data.images;
+    activeImageIndex.value = 0;
+
+    // 釋放這次用完的 blob 網址，避免記憶體洩漏
+    blobUrls.forEach(url => URL.revokeObjectURL(url));
+
     isEditing.value = false;
     alert('物品資訊已更新成功！');
-  }else{
+  } else {
     alert(result.message || '更新失敗');
   }
-
-  
 }
 
 // // 圖片上傳（假資料階段用本機預覽，之後接後端改成真正上傳）
