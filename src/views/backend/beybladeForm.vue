@@ -45,6 +45,13 @@
         <h3 class="form-section-title">零件圖片</h3>
 
         <div class="image-upload" @click="triggerFileSelect">
+          <input
+            ref="fileInput"
+            type="file"
+            accept="image/png"
+            class="file-input-hidden"
+            @change="handleFileChange"
+          >
           <div v-if="!form.pic" class="image-upload-empty">
             <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
             <p class="upload-text">點擊或拖拽上傳零件圖片 (PNG)</p>
@@ -136,12 +143,19 @@
 </template>
 
 <script>
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl.js";
 export default {
   name: "BeybladeForm",
 
   data() {
     return {
       baseUrl: import.meta.env.BASE_URL,
+      selectedFile: null, // 存放使用者實際選擇的檔案物件（File），送出表單時要用
+      categoryToEnglish: {
+        戰刃: "Blade",
+        固鎖: "Ratchet",
+        軸心: "Bit"
+      },
 
       statFields: [
         { key: "weight", label: "重量" },
@@ -175,7 +189,15 @@ export default {
     },
 
     resolvedPicUrl() {
-      return this.form.pic ? `${this.baseUrl}${this.form.pic}` : "";
+      if (!this.form.pic) return "";
+
+      // blob: 開頭代表是使用者剛選的本機檔案，URL.createObjectURL() 產生的網址
+      // 本身已經是完整可用的網址，不需要、也不能再加 baseUrl
+      if (this.form.pic.startsWith("blob:")) {
+        return this.form.pic;
+      }
+
+      return `${this.baseUrl}${this.form.pic}`;
     },
 
     publishLabel() {
@@ -250,7 +272,7 @@ export default {
     },
 
     triggerFileSelect() {
-      console.log("選擇檔案");
+      this.$refs.fileInput.click();
     },
 
     handleDelete() {
@@ -263,9 +285,58 @@ export default {
       console.log("刪除零件", this.form);
     },
 
-    handleSave() {
-      console.log(this.isEditMode ? "儲存修改" : "儲存並建立零件", this.form);
-    }
+    async handleSave() {
+      const formData = new FormData();
+
+      formData.append("name", this.form.name);
+      formData.append("category", this.categoryToEnglish[this.form.category]);
+      formData.append("attack", this.form.attack);
+      formData.append("defense", this.form.defense);
+      formData.append("stamina", this.form.stamina);
+      formData.append("weight", this.form.weight);
+      formData.append("is_show", this.form.is_show ? 1 : 0);
+
+      // 只有使用者真的選了新檔案，才附上圖片；
+      // 編輯模式下如果沒換圖，selectedFile 會是 null，這裡就不會 append，
+      // 後端 updateBeyblade.php 收不到 $_FILES["pic"]，會自動沿用資料庫原本的路徑
+      if (this.selectedFile) {
+        formData.append("pic", this.selectedFile);
+      }
+
+      const apiUrl = this.isEditMode
+        ? `${phpBaseUrl}/build/updateBeyblade.php`
+        : `${phpBaseUrl}/build/addBeyblade.php`;
+
+      if (this.isEditMode) {
+        formData.append("beyblade_id", this.form.id);
+      }
+
+      try {
+        const res = await fetch(apiUrl, {
+          method: "POST",
+          body: formData
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          alert(result.message);
+          this.$router.push({ name: "backend-beyblade" });
+        } else {
+          alert(result.message);
+        }
+      } catch (error) {
+        console.error("儲存零件失敗", error);
+        alert("儲存零件失敗，請稍後再試");
+      }
+    },
+
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      this.selectedFile = file;
+      this.form.pic = URL.createObjectURL(file); // 產生本機暫時預覽網址，讓使用者立刻看到選了什麼圖
+    },
   }
 };
 </script>
@@ -396,6 +467,9 @@ $actions-bar-height: 88px;
 }
 
 /* 零件圖片 */
+.file-input-hidden {
+  display: none;
+}
 .image-upload {
   width: 220px;
   height: 220px;
