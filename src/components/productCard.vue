@@ -204,7 +204,7 @@ function goToDetail() {
 
       .pic {
          overflow: hidden;
-         border: 1px solid #dddddd;
+         border-bottom: 1px solid #dddddd;
 
          img {
             display: block;
