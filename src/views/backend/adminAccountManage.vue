@@ -43,7 +43,9 @@
           <div class="col col--type">{{ admin.type }}</div>
           <div class="col col--state">{{ admin.state }}</div>
           <div class="col col--action">
+            <!-- 防呆：超級管理員不可被編輯/重設密碼，隱藏操作鈕 -->
             <button
+              v-if="admin.type !== '超級管理員'"
               type="button"
               class="action-btn"
               @click="toggleMenu(admin.id)"
