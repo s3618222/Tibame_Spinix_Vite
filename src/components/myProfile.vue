@@ -136,7 +136,7 @@
         </div>
         <div class="stat-item">
           <p class="stat-label">競技勝率</p>
-          <p class="stat-number">{{ battleStats.winRate }}</p>
+          <p class="stat-number">{{ battleStats.winRate ?? "-" }}</p>
           <div class="stat-bar"></div>
         </div>
       </div>
