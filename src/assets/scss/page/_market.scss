@@ -42,9 +42,9 @@
       gap: 1rem;
       padding-inline: 1rem;
 
-      h1 {
-         color: map-get($color, secondary2);
-         font-size: map-get($fontSize, h3);
+      .page-title {
+         color: #F29B00;
+         font-size: 26px;
          font-weight: 900;
       }
 

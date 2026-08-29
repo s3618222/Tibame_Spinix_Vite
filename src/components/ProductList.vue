@@ -13,6 +13,7 @@
          :district="item.district"
          :state="statusLabelMap[item.status]"
          :type="typeLabelMap[item.type]"
+         :condition="conditionLabelMap[item.condition]"
       />
       <p v-if="filteredCards.length === 0" class="empty-state">
          查無符合條件的商品
@@ -23,7 +24,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import ProductCard from './productCard.vue';
-import { exchangeList, statusLabelMap , typeLabelMap} from '@/data/ExchangeData.js';   //  改用共用資料
+import { exchangeList, statusLabelMap , typeLabelMap, conditionLabelMap} from '@/data/ExchangeData.js';   //  改用共用資料
 
 const ExChangeInfo = ref([]);
 

@@ -208,7 +208,7 @@ export default {
           title: article.title,
           author: article.author_name,
           createTime: article.create_time,
-          is_show: article.is_show,
+          is_show: Number(article.is_show),
           delete_type: article.delete_type,
           has_pending_appeal: Number(article.has_pending_appeal) === 1
         }));

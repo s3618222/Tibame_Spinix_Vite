@@ -24,12 +24,8 @@ if ($ExchangeID <= 0) {
 
 
 try {
-   // $sql = "SELECT * FROM exchange_post WHERE `post_id` = :id";
    $rows = getExchange($pdo, $ExchangeID);
    $prod = $rows[0] ?? null;
-   // $stmt = $pdo->prepare($sql);
-   // $stmt->execute(['id' => $ExchangeID]);
-   // $prod =$stmt -> fetch(PDO::FETCH_ASSOC);
 
    if ($prod) {
       // 成功找到商品
