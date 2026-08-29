@@ -281,13 +281,181 @@ export async function exchangeList() {
 
 
 // 顯示單筆商品資料
-export async function getExchangeDetail(posdId) {
-   let res = await fetch(`${phpBaseUrl}/exchange/get_ExchangeDetail.php?id=${posdId}`, {
+export async function getExchangeDetail(postId) {
+   let res = await fetch(`${phpBaseUrl}/exchange/get_ExchangeDetail.php?id=${postId}`, {
       method: "GET",
       credentials: "include"
    });
 
    if (!res.ok) throw new Error('取得詳細資料失敗');
+   return await res.json();
+}
+
+
+
+// ------------------------------------------------------------------
+// 留言＝申請交換
+// 一篇文章可以有多人留言（=多人提出申請），
+// 但賣家只會選其中一則留言作為交換對象
+// ------------------------------------------------------------------
+// fakeComments 的 applyStatus 改用上面四種值
+// export const fakeComments = [
+//    {
+//       comm_id: 1, // 留言ID
+//       post_id: 'exc1', // 回復交換案件文章ID
+//       mem_id: 103, // 留言會員ID
+//       headshot: 'spinix_member_test2.jpg',
+//       name: '我是申請交換會員',
+//       comm_contact: 'LINE:lineline1234',
+//       content: '我有一隻限量款可以交換喔',
+//       create_time: '2026-08-11',
+//       is_show: true, // true = 上架中，false = 已下架
+//       remove_reason: '', // 下架原因
+//       is_choose: false  // 是否被選擇，預設false
+//    },
+//    {
+//       comm_id: 2, // 留言ID
+//       post_id: 'exc2', // 回復交換案件文章ID
+//       mem_id: 104, // 留言會員ID
+//       headshot: 'spinix_member_default.png',
+//       name: '我是申請交換會員2',
+//       comm_contact: 'LINE:lineline1234',
+//       content: '我拿XXX跟你交換',
+//       create_time: '2026-08-19',
+//       is_show: true, // true = 上架中，false = 已下架
+//       remove_reason: '', // 下架原因
+//       is_choose: false  // 是否被選擇，預設false
+//    },
+//    {
+//       comm_id: 3, // 留言ID
+//       post_id: 'exc3', // 回復交換案件文章ID
+//       mem_id: 999, // 留言會員ID
+//       headshot: 'spinix_member_test3.png',
+//       name: '我是999申請交換會員3',
+//       comm_contact: 'LINE:lineline1234',
+//       content: '我拿AAA跟你交換',
+//       create_time: '2026-08-16',
+//       is_show: true, // true = 上架中，false = 已下架
+//       remove_reason: '', // 下架原因
+//       is_choose: true  // 是否被選擇，預設false
+//    },
+//    {
+//       comm_id: 4, // 留言ID
+//       post_id: 'exc3', // 回復交換案件文章ID
+//       mem_id: 101, // 留言會員ID
+//       headshot: 'sop02.png',
+//       name: '我是申請交換會員4',
+//       comm_contact: 'LINE:lineline1234',
+//       content: '我拿YYY跟你交換',
+//       create_time: '2026-07-21',
+//       is_show: true, // true = 上架中，false = 已下架
+//       remove_reason: '', // 下架原因
+//       is_choose: false  // 是否被選擇，預設false
+//    },
+//    {
+//       comm_id: 5, // 留言ID
+//       post_id: 'exc3', // 回復交換案件文章ID
+//       mem_id: 101, // 留言會員ID
+//       headshot: 'sop02.png',
+//       name: '我是申請交換會員5',
+//       comm_contact: 'LINE:lineline1234',
+//       content: '我拿ZZZ跟你交換',
+//       create_time: '2026-08-19',
+//       is_show: true, // true = 上架中，false = 已下架
+//       remove_reason: '', // 下架原因
+//       is_choose: false  // 是否被選擇，預設false
+//    },
+//    {
+//       comm_id: 6, // 留言ID
+//       post_id: 'exc4', // 回復交換案件文章ID
+//       mem_id: 104, // 留言會員ID
+//       headshot: 'sop02.png',
+//       name: '我是申請交換會員6',
+//       comm_contact: 'LINE:lineline1234',
+//       content: '我已被版主做選擇',
+//       create_time: '2026-08-19',
+//       is_show: true, // true = 上架中，false = 已下架
+//       remove_reason: '', // 下架原因
+//       is_choose: true  // 是否被選擇，預設false
+//    },
+//    {
+//       comm_id: 7, // 留言ID
+//       post_id: 'exc5', // 回復交換案件文章ID
+//       mem_id: 999, // 留言會員ID
+//       headshot: 'sop02.png',
+//       name: '我是999申請交換會員6',
+//       comm_contact: 'LINE:lineline1234',
+//       content: '6666666666666666',
+//       create_time: '2026-08-19',
+//       is_show: true, // true = 上架中，false = 已下架
+//       remove_reason: '', // 下架原因
+//       is_choose: true  // 是否被選擇，預設false
+//    },
+//    // 交換中案件
+//    {
+//       comm_id: 8, // 留言ID
+//       post_id: 'exc6', // 回復交換案件文章ID
+//       mem_id: 999, // 留言會員ID
+//       headshot: 'sop02.png',
+//       name: '我是999申請交換會員6',
+//       comm_contact: 'LINE:lineline1234',
+//       content: '6666666666666666',
+//       create_time: '2026-08-19',
+//       is_show: true, // true = 上架中，false = 已下架
+//       remove_reason: '', // 下架原因
+//       is_choose: true  // 是否被選擇，預設false
+//    },
+//    // 交換完成案件
+//    {
+//       comm_id: 9, // 留言ID
+//       post_id: 'exc7', // 回復交換案件文章ID
+//       mem_id: 999, // 留言會員ID
+//       headshot: 'sop02.png',
+//       name: '我是999申請交換會員6',
+//       comm_contact: 'LINE:lineline1234',
+//       content: '6666666666666666',
+//       create_time: '2026-08-19',
+//       is_show: true, // true = 上架中，false = 已下架
+//       remove_reason: '', // 下架原因
+//       is_choose: true  // 是否被選擇，預設false
+//    },
+//    // 以選擇，等待回覆
+//    {
+//       comm_id: 10, // 留言ID
+//       post_id: 'exc8', // 回復交換案件文章ID
+//       mem_id: 111, // 留言會員ID
+//       headshot: 'sop02.png',
+//       name: '我是111申請交換會員',
+//       comm_contact: 'LINE:lineline1234',
+//       content: '6666666666666666',
+//       create_time: '2026-08-19',
+//       is_show: true, // true = 上架中，false = 已下架
+//       remove_reason: '', // 下架原因
+//       is_choose: true  // 是否被選擇，預設false
+//    },
+//    // 被下架留言
+//    {
+//       comm_id: 11, // 留言ID
+//       post_id: 'exc9', // 回復交換案件文章ID
+//       mem_id: 999, // 留言會員ID
+//       headshot: 'sop02.png',
+//       name: 'testuser',
+//       comm_contact: 'LINE:lineline1234',
+//       content: '我是被下架留言',
+//       create_time: '2026-08-19',
+//       is_show: false, // true = 上架中，false = 已下架
+//       remove_reason: '有激烈言論，被下架', // 下架原因
+//       is_choose: false  // 是否被選擇，預設false
+//    }
+// ];
+
+export async function getComments(postId) {
+   let res = await fetch(`${phpBaseUrl}/exchange/get_ExchangeMsg.php?id=${postId}`, {
+      method: "GET",
+      credentials: "include"
+   });
+
+   if(!res.ok) throw new Error('取得留言失敗');
    return await res.json();
 }
 
@@ -315,161 +483,6 @@ export const conditionLabelMap = {
    good: '二手-良好',
    fair: '二手-有使用痕跡'
 };
-// ------------------------------------------------------------------
-// 留言＝申請交換
-// 一篇文章可以有多人留言（=多人提出申請），
-// 但賣家只會選其中一則留言作為交換對象
-// ------------------------------------------------------------------
-// fakeComments 的 applyStatus 改用上面四種值
-export const fakeComments = [
-   {
-      comm_id: 1, // 留言ID
-      post_id: 'exc1', // 回復交換案件文章ID
-      mem_id: 103, // 留言會員ID
-      headshot: 'spinix_member_test2.jpg',
-      name: '我是申請交換會員',
-      comm_contact: 'LINE:lineline1234',
-      content: '我有一隻限量款可以交換喔',
-      create_time: '2026-08-11',
-      is_show: true, // true = 上架中，false = 已下架
-      remove_reason: '', // 下架原因
-      is_choose: false  // 是否被選擇，預設false
-   },
-   {
-      comm_id: 2, // 留言ID
-      post_id: 'exc2', // 回復交換案件文章ID
-      mem_id: 104, // 留言會員ID
-      headshot: 'spinix_member_default.png',
-      name: '我是申請交換會員2',
-      comm_contact: 'LINE:lineline1234',
-      content: '我拿XXX跟你交換',
-      create_time: '2026-08-19',
-      is_show: true, // true = 上架中，false = 已下架
-      remove_reason: '', // 下架原因
-      is_choose: false  // 是否被選擇，預設false
-   },
-   {
-      comm_id: 3, // 留言ID
-      post_id: 'exc3', // 回復交換案件文章ID
-      mem_id: 999, // 留言會員ID
-      headshot: 'spinix_member_test3.png',
-      name: '我是999申請交換會員3',
-      comm_contact: 'LINE:lineline1234',
-      content: '我拿AAA跟你交換',
-      create_time: '2026-08-16',
-      is_show: true, // true = 上架中，false = 已下架
-      remove_reason: '', // 下架原因
-      is_choose: true  // 是否被選擇，預設false
-   },
-   {
-      comm_id: 4, // 留言ID
-      post_id: 'exc3', // 回復交換案件文章ID
-      mem_id: 101, // 留言會員ID
-      headshot: 'sop02.png',
-      name: '我是申請交換會員4',
-      comm_contact: 'LINE:lineline1234',
-      content: '我拿YYY跟你交換',
-      create_time: '2026-07-21',
-      is_show: true, // true = 上架中，false = 已下架
-      remove_reason: '', // 下架原因
-      is_choose: false  // 是否被選擇，預設false
-   },
-   {
-      comm_id: 5, // 留言ID
-      post_id: 'exc3', // 回復交換案件文章ID
-      mem_id: 101, // 留言會員ID
-      headshot: 'sop02.png',
-      name: '我是申請交換會員5',
-      comm_contact: 'LINE:lineline1234',
-      content: '我拿ZZZ跟你交換',
-      create_time: '2026-08-19',
-      is_show: true, // true = 上架中，false = 已下架
-      remove_reason: '', // 下架原因
-      is_choose: false  // 是否被選擇，預設false
-   },
-   {
-      comm_id: 6, // 留言ID
-      post_id: 'exc4', // 回復交換案件文章ID
-      mem_id: 104, // 留言會員ID
-      headshot: 'sop02.png',
-      name: '我是申請交換會員6',
-      comm_contact: 'LINE:lineline1234',
-      content: '我已被版主做選擇',
-      create_time: '2026-08-19',
-      is_show: true, // true = 上架中，false = 已下架
-      remove_reason: '', // 下架原因
-      is_choose: true  // 是否被選擇，預設false
-   },
-   {
-      comm_id: 7, // 留言ID
-      post_id: 'exc5', // 回復交換案件文章ID
-      mem_id: 999, // 留言會員ID
-      headshot: 'sop02.png',
-      name: '我是999申請交換會員6',
-      comm_contact: 'LINE:lineline1234',
-      content: '6666666666666666',
-      create_time: '2026-08-19',
-      is_show: true, // true = 上架中，false = 已下架
-      remove_reason: '', // 下架原因
-      is_choose: true  // 是否被選擇，預設false
-   },
-   // 交換中案件
-   {
-      comm_id: 8, // 留言ID
-      post_id: 'exc6', // 回復交換案件文章ID
-      mem_id: 999, // 留言會員ID
-      headshot: 'sop02.png',
-      name: '我是999申請交換會員6',
-      comm_contact: 'LINE:lineline1234',
-      content: '6666666666666666',
-      create_time: '2026-08-19',
-      is_show: true, // true = 上架中，false = 已下架
-      remove_reason: '', // 下架原因
-      is_choose: true  // 是否被選擇，預設false
-   },
-   // 交換完成案件
-   {
-      comm_id: 9, // 留言ID
-      post_id: 'exc7', // 回復交換案件文章ID
-      mem_id: 999, // 留言會員ID
-      headshot: 'sop02.png',
-      name: '我是999申請交換會員6',
-      comm_contact: 'LINE:lineline1234',
-      content: '6666666666666666',
-      create_time: '2026-08-19',
-      is_show: true, // true = 上架中，false = 已下架
-      remove_reason: '', // 下架原因
-      is_choose: true  // 是否被選擇，預設false
-   },
-   // 以選擇，等待回覆
-   {
-      comm_id: 10, // 留言ID
-      post_id: 'exc8', // 回復交換案件文章ID
-      mem_id: 111, // 留言會員ID
-      headshot: 'sop02.png',
-      name: '我是111申請交換會員',
-      comm_contact: 'LINE:lineline1234',
-      content: '6666666666666666',
-      create_time: '2026-08-19',
-      is_show: true, // true = 上架中，false = 已下架
-      remove_reason: '', // 下架原因
-      is_choose: true  // 是否被選擇，預設false
-   },
-   // 被下架留言
-   {
-      comm_id: 11, // 留言ID
-      post_id: 'exc9', // 回復交換案件文章ID
-      mem_id: 999, // 留言會員ID
-      headshot: 'sop02.png',
-      name: 'testuser',
-      comm_contact: 'LINE:lineline1234',
-      content: '我是被下架留言',
-      create_time: '2026-08-19',
-      is_show: false, // true = 上架中，false = 已下架
-      remove_reason: '有激烈言論，被下架', // 下架原因
-      is_choose: false  // 是否被選擇，預設false
-   }
-];
 // 「我提出的申請」用的狀態中文對照表（跟文章狀態脫鉤，是「我」這則申請的結果）
 export const applyStatusLabelMap = {
    available: '申請中',

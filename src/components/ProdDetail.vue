@@ -292,7 +292,8 @@
 import { ref, computed, reactive } from 'vue';
 import {useRoute} from 'vue-router';
 import prodMsgInfo from '@/components/prodMsgInfo.vue';
-import { getExchangeDetail, fakeComments, statusLabelMap, typeLabelMap, conditionLabelMap } from '@/data/ExchangeData';
+// import { getExchangeDetail, fakeComments, statusLabelMap, typeLabelMap, conditionLabelMap } from '@/data/ExchangeData';
+import { getExchangeDetail, getComments, statusLabelMap, typeLabelMap, conditionLabelMap } from '@/data/ExchangeData';
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import 'vue3-carousel/dist/carousel.css';
 import PhotoUploader from '@/components/uploadImg.vue';
@@ -385,6 +386,7 @@ const isOwner = computed(() => {
 // 是否已經申請過（排除賣家自己）
 const alreadyApplied = computed(() => {
   if (!article.value || isOwner.value) return false;
+  if (justApplied.value) return true;
   return articleComments.value.some(c => c.mem_id === currentUserId.value);
 });
 
@@ -562,22 +564,28 @@ const commentMode = computed(() => {
   return 'browse';
 });
 
-
 // 該文章留言列表
-const articleComments = computed(() =>
-  fakeComments.filter(comment => comment.post_id === articleId.value)
-);
+// const articleComments = computed(() =>
+//   getComments.filter(comment => comment.post_id === articleId.value)
+  
+// );
+
+const articleComments = ref([]);
+
+async function fetchComments() {
+  const res = await getComments(articleId.value);
+  articleComments.value = res.data;  
+}
+
+fetchComments();
 
 const sortOrder = ref('newest');
 const sortedComments = computed(() => {
-  const list = [...articleComments.value];
+  const list = Array.isArray(articleComments.value) ? [...articleComments.value] : [];
   list.sort((a, b) => {
-
-    // 被選中留言至頂
     if (a.is_choose !== b.is_choose) {
       return a.is_choose ? -1 : 1;
     }
-
     const diff = new Date(a.create_time) - new Date(b.create_time);
     return sortOrder.value === 'newest' ? -diff : diff;
   });
@@ -630,6 +638,8 @@ function validateForm() {
   return !( errors.content || errors.comm_contact);
 }
 
+const justApplied = ref(false);
+
 async function handleSubmit() {
   if (!validateForm()) {
     window.alert('星號*為必填項目');
@@ -650,10 +660,16 @@ async function handleSubmit() {
   }); 
 
   const result = await res.json();
-
+  console.log(result);
 
   if(result.success){
+    if(result.data){
+      articleComments.value.unshift(result.data);
+    }
+    justApplied.value = true;
+    window.alert('交換申請已成功送出！');
     closeModal();
+    resetForm();
   }else{
     alert(result.message || '送出失敗');
   }
@@ -661,9 +677,6 @@ async function handleSubmit() {
   // console.log('送出交換提議：', { ...form });
   // 之後這裡打 API，新增一筆 fakeComments（申請），articleId 用 article.value.id
 
-  closeModal();
-  resetForm();
-  window.alert('交換申請已成功送出！');
 }
 
 // 賣家選擇交換對象
@@ -936,6 +949,7 @@ p{
         border: 1px solid map-get($color, gray);
         overflow: hidden;
         border-radius: 4px;
+        background: #fff;
 
         img {
           width: 100%;
@@ -1096,6 +1110,7 @@ p{
           cursor: pointer;
           transition: border-color .15s ease;
           max-width: 74px;
+          background: #fff;
 
           img {
             width: 100%;
