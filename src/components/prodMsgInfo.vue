@@ -51,7 +51,7 @@
                class="btnNeutral"
                v-if="isOwner && !isChoose && articleStatus === 'available' && !isAdmin"
                type="button"
-               @click="$emit('select-applicant', { commentId: id })"
+               @click="$emit('select-applicant', { commentId: id, username: username })"
             >
                跟他交換
             </button>
