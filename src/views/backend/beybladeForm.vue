@@ -27,7 +27,7 @@
               v-model="form.name"
               placeholder="請輸入零件名稱..."
               :class="{ '-isError': fieldErrors.name || fieldErrors.nameTooLong }"
-              @input="fieldErrors.name = false"
+              @input="fieldErrors.name = false; fieldErrors.nameTooLong = false"
             >
           </div>
 
