@@ -449,13 +449,30 @@ export async function getExchangeDetail(postId) {
 //    }
 // ];
 
+
+
+
+
+// 取得文章中的留言
 export async function getComments(postId) {
    let res = await fetch(`${phpBaseUrl}/exchange/get_ExchangeMsg.php?id=${postId}`, {
       method: "GET",
       credentials: "include"
    });
 
-   if(!res.ok) throw new Error('取得留言失敗');
+   if (!res.ok) throw new Error('取得留言失敗');
+   return await res.json();
+}
+
+
+// 取得自己申請的留言
+export async function getMyComments() {
+   let res = await fetch(`${phpBaseUrl}/exchange/get_MyApplyComment.php`,{
+      method: "GET",
+      credentials: "include"
+   });
+
+   if (!res.ok) throw new Error('取的留言失敗');
    return await res.json();
 }
 

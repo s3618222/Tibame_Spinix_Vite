@@ -146,15 +146,7 @@
 <script>
 import StatusTabs from "./controlTabs.vue";
 import ProductCard from "./productCard.vue";
-// import {
-//   exchangeList,
-//   fakeComments,
-//   statusLabelMap,
-//   applyStatusLabelMap,
-//   replyExchange
-// } from "@/data/ExchangeData.js";
-
-import { exchangeList, getComments ,statusLabelMap, applyStatusLabelMap, replyExchange ,typeLabelMap ,conditionLabelMap } from '@/data/ExchangeData.js';
+import { exchangeList, getMyComments ,statusLabelMap, applyStatusLabelMap, replyExchange ,typeLabelMap ,conditionLabelMap } from '@/data/ExchangeData.js';
 // 分頁器
 import Pagination from "@/components/pagination.vue";
 
@@ -172,9 +164,7 @@ export default {
       currentStatus: "all",
       currentUserId: null,
       exchangeListData : [],
-      fakeComments : [],
-      statusLabelMap,
-      applyStatusLabelMap,
+      myCommentData : [],
       activeTab: 'myexchange',
       currentPage: 1,
       pageSize: 9,
@@ -206,7 +196,7 @@ export default {
         headshot: item.mem_photo,
         name: item.mem_name,
         product_img: item.post_pic1,
-        stateLabel: this.statusLabelMap[item.status] || '',
+        stateLabel: statusLabelMap[item.status] || '',
         typeLabel: typeLabelMap[item.type],
         conditionLabel: conditionLabelMap[item.condition]
       }));
@@ -214,19 +204,24 @@ export default {
 
     // 我提出的申請：從 fakeComments 篩「我留過言的」，再組合對應文章資訊
     myApplyList() {
-      if (!Array.isArray(this.fakeComments)) return [];   // 防呆
-      return this.fakeComments.filter(comment => comment.mem_id === this.currentUserId).map(comment => {
+      if (!Array.isArray(this.myCommentData)) return [];   // 防呆
+      return this.myCommentData.map(comment => {
         const article = this.exchangeListData.find(item => item.post_id === comment.post_id);
+
         if (!article) return;
 
         const isChosen = comment.is_choose === true;
-        const stateLabel = (article.status === 'available' || !isChosen) ? this.applyStatusLabelMap['available'] : this.applyStatusLabelMap[article.status];
+        const stateLabel = (article.status === 'available' || !isChosen) ? applyStatusLabelMap['available'] : applyStatusLabelMap[article.status];
 
         return {
           ...article,
           cardKey: `apply-${comment.comm_id}`,
           applyId: comment.comm_id,
-          status: article.status,
+          headshot: article.mem_photo,
+          name: article.mem_name,
+          typeLabel: typeLabelMap?.[article.type] || '',
+          conditionLabel: conditionLabelMap?.[article.condition] || '',
+          product_img: article.post_pic1,
           isChosen,
           stateLabel
         };
@@ -285,6 +280,7 @@ export default {
   async created(){
     await this.fetchCurrentMember();
     await this.fetchExchangeList();
+    await this.fetchComments();
   },
 
   methods: {
@@ -307,8 +303,15 @@ export default {
         const res = await exchangeList();
         this.exchangeListData = Array.isArray(res) ? res : [];
       }catch(err){
-        console.log('取得商品列表失敗:',err);
         this.exchangeListData = [];
+      }
+    },
+    async fetchComments(){
+      try{
+        const res = await getMyComments();
+        this.myCommentData = Array.isArray(res.data) ? res.data : [];
+      }catch(err){
+        this.myCommentData = [];
       }
     },
     handleReplyExchange(item) {
