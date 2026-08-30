@@ -247,7 +247,9 @@ export default {
       }
 
       try {
-        const res = await fetch(`${phpBaseUrl}/build/getBeyblade.php?beyblade_id=${id}`);
+        const res = await fetch(`${phpBaseUrl}/build/getBeyblade.php?beyblade_id=${id}`, {
+          credentials: "include"
+        });
         const result = await res.json();
 
         if (result.success) {
@@ -303,7 +305,8 @@ export default {
       try {
         const res = await fetch(`${phpBaseUrl}/build/deleteBeyblade.php`, {
           method: "POST",
-          body: formData
+          body: formData,
+          credentials: "include"
         });
         const result = await res.json();
 
@@ -348,7 +351,8 @@ export default {
       try {
         const res = await fetch(apiUrl, {
           method: "POST",
-          body: formData
+          body: formData,
+          credentials: "include"
         });
         const result = await res.json();
 

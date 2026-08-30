@@ -198,7 +198,9 @@ export default {
 
   async created() {
     try {
-      const res = await fetch(`${phpBaseUrl}/forum/getForumManageList.php`);
+      const res = await fetch(`${phpBaseUrl}/forum/getForumManageList.php`, {
+        credentials: "include"
+      });
       const result = await res.json();
 
       if (result.success) {

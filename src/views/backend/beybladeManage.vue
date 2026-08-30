@@ -192,7 +192,9 @@ export default {
 
   async created() {
     try {
-      const res = await fetch(`${phpBaseUrl}/build/getBeybladeManageList.php`);
+      const res = await fetch(`${phpBaseUrl}/build/getBeybladeManageList.php`, {
+        credentials: "include"
+      });
       const result = await res.json();
 
       if (result.success) {
