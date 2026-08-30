@@ -20,18 +20,23 @@
 
         <div class="form-row">
           <div class="form-field form-field--name">
-            <label for="partName">零件名稱</label>
+            <label for="partName">零件名稱 <span class="required-mark">*</span></label>
             <input
               id="partName"
               type="text"
               v-model="form.name"
               placeholder="請輸入零件名稱..."
+              :class="{ '-isError': fieldErrors.name || fieldErrors.nameTooLong }"
+              @input="fieldErrors.name = false"
             >
           </div>
 
           <div class="form-field form-field--category">
-            <label for="partCategory">部件類別</label>
-            <select id="partCategory" v-model="form.category">
+            <label for="partCategory">部件類別 <span class="required-mark">*</span></label>
+            <select id="partCategory" v-model="form.category"
+             :class="{ '-isError': fieldErrors.category }"
+              @change="fieldErrors.category = false">
+              <option value="" disabled selected hidden>請選擇類別</option>
               <option value="戰刃">戰刃</option>
               <option value="固鎖">固鎖</option>
               <option value="軸心">軸心</option>
@@ -42,9 +47,9 @@
 
       <!-- 零件圖片 -->
       <section class="form-section">
-        <h3 class="form-section-title">零件圖片</h3>
+        <h3 class="form-section-title">零件圖片<span class="required-mark">*</span></h3>
 
-        <div class="image-upload" @click="triggerFileSelect">
+        <div class="image-upload" :class="{ '-isError': fieldErrors.pic }" @click="triggerFileSelect">
           <input
             ref="fileInput"
             type="file"
@@ -55,7 +60,7 @@
           <div v-if="!form.pic" class="image-upload-empty">
             <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
             <p class="upload-text">點擊或拖拽上傳零件圖片 (PNG)</p>
-            <p class="upload-hint">建議尺寸 1024x1024px，檔案大小上限 5MB</p>
+            <p class="upload-hint">建議尺寸 512x512px，檔案大小上限 1MB</p>
           </div>
 
           <div v-else class="image-preview">
@@ -170,7 +175,14 @@ export default {
         { key: "stamina", label: "持久" }
       ],
 
-      form: {}
+      form: {},
+
+      fieldErrors: {
+        name: false,
+        nameTooLong: false, //超過100字
+        category: false,
+        pic: false
+      }
     };
   },
 
@@ -235,7 +247,7 @@ export default {
           id: null,
           code: "",
           name: "",
-          category: "戰刃",
+          category: "",
           pic: "",
           attack: 50,
           defense: 50,
@@ -322,7 +334,32 @@ export default {
       }
     },
 
+    validateForm() {
+      // 依序檢查，每個欄位各自判斷是否為空，結果分別記在 fieldErrors
+      this.fieldErrors.name = this.form.name.trim() === "";
+      this.fieldErrors.nameTooLong = this.form.name.trim() !== "" && this.form.name.length > 100;
+      this.fieldErrors.category = !this.form.category;
+
+      // 圖片：新增模式必填（沒有選檔案也沒有既有圖片路徑才算空/false）；
+      // 編輯模式選填，因為可能維持原圖不換，不能因為沒選新檔案就判定成錯誤
+      this.fieldErrors.pic = !this.isEditMode && !this.selectedFile && !this.form.pic;
+
+      // 箭頭函式，因為this.fieldErrors每個值都是布林值，透過.some()遍歷陣列，只要有遇到是true的，就會停止執行、回傳結果
+      const hasError = Object.values(this.fieldErrors).some(isError => isError);
+
+      if (this.fieldErrors.nameTooLong) {
+        alert("零件名稱不可超過 100 字");
+      } else if (hasError) {
+        alert("星號*為必填項目");
+      }
+
+      return !hasError;
+    },
+
     async handleSave() {
+      //validateForm的結果如果是false，代表確實有欄位沒填，handleSave後面就不執行了
+      if (!this.validateForm()) return;
+
       const formData = new FormData();
 
       formData.append("name", this.form.name);
@@ -374,7 +411,8 @@ export default {
 
       this.selectedFile = file;
       this.form.pic = URL.createObjectURL(file); // 產生本機暫時預覽網址，讓使用者立刻看到選了什麼圖
-    },
+      this.fieldErrors.pic = false;
+    }
   }
 };
 </script>
@@ -389,6 +427,15 @@ export default {
 // 不再佔用版面寬度，固定列改回貼齊畫面左緣。
 $sidebar-width: 168px;
 $actions-bar-height: 88px;
+
+.-isError {
+  border-color: map-get($color, error) !important;
+}
+
+.required-mark {
+  color: map-get($color, error);
+  // margin-left: 2px;
+}
 
 .beyblade-form-page {
   width: 100%;
@@ -509,6 +556,8 @@ $actions-bar-height: 88px;
   display: none;
 }
 .image-upload {
+  border: 2px solid transparent; // 新增這行，平常透明看不見，但邊框「存在」了
+  border-radius: 12px;
   width: 220px;
   height: 220px;
   cursor: pointer;
