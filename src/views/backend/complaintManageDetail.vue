@@ -107,23 +107,6 @@
       >
         <h2 class="panel__title">審核與處置</h2>
 
-        <!-- 處理人員 -->
-        <div class="handle-field">
-          <label class="handle-field__label">處理人員</label>
-          <div class="select-wrap">
-            <select v-model="handler">
-              <option
-                v-for="admin in adminOptions"
-                :key="admin"
-                :value="admin"
-              >
-                {{ admin }}
-              </option>
-            </select>
-            <i class="fa-solid fa-chevron-down"></i>
-          </div>
-        </div>
-
         <!-- 處置內容 -->
         <div class="handle-field">
           <label class="handle-field__label">審核內容</label>
@@ -276,7 +259,6 @@
     rejected: "駁回申訴"
   };
 
-  const adminOptions = ["管理員A", "管理員B"];
 
   // 從後台合併清單取回資料，依路由參數（sourceType + id）找出該筆
   const appeal = ref(null);
@@ -327,7 +309,6 @@
   }
 
   // 處理面板表單狀態
-  const handler = ref(adminOptions[0]);
   const disposition = ref("");   // 'confirm' | 'reject'
   const contentAction = ref(""); // 'keep' | 'remove'（僅成立時適用）
   const removeReason = ref("");  // 選「下架」時的下架原因
