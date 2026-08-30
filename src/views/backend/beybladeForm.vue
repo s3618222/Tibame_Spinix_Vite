@@ -293,14 +293,30 @@ export default {
       this.$refs.fileInput.click();
     },
 
-    handleDelete() {
-      const isConfirmed = confirm(`確定要刪除零件「${this.form.name}」嗎？`);
+    async handleDelete() {
+      const isConfirmed = confirm(`確定要刪除零件「${this.form.name}」嗎？此動作無法復原。`);
+      if (!isConfirmed) return;
 
-      if (!isConfirmed) {
-        return;
+      const formData = new FormData();
+      formData.append("beyblade_id", this.form.id);
+
+      try {
+        const res = await fetch(`${phpBaseUrl}/build/deleteBeyblade.php`, {
+          method: "POST",
+          body: formData
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          alert(result.message);
+          this.$router.push({ name: "backend-beyblade" });
+        } else {
+          alert(result.message);
+        }
+      } catch (error) {
+        console.error("刪除零件失敗", error);
+        alert("刪除零件失敗，請稍後再試");
       }
-
-      console.log("刪除零件", this.form);
     },
 
     async handleSave() {
