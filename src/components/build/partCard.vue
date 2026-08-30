@@ -3,7 +3,8 @@
     <button type="button" class="btn-info" @click.stop="toggleInfo">
       <i class="fa-solid fa-circle-info "></i>
     </button>
-    <img :src="imgUrl" :alt="part.name" class="card-img">
+    <img v-if="!imgFailed" :src="imgUrl" :alt="part.name" class="card-img" @error="imgFailed = true">
+    <i v-else class="fa-solid fa-image card-img-fallback"></i>
     <p class="card-name">{{part.name}}</p>
 
     <div 
@@ -50,7 +51,8 @@
 
     data(){
       return {
-        isInfoOpen: false
+        isInfoOpen: false,
+        imgFailed: false // 記錄這張圖片是否載入失敗（實體檔案不存在導致 404）
       }
     },
 
@@ -135,6 +137,16 @@
   .card-img {
     position: relative;
     aspect-ratio: 1 / 1;
+  }
+  
+  .card-img-fallback {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: map-get($color, hint);
   }
 
   .card-name {
