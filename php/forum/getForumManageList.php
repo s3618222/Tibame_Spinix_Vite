@@ -1,13 +1,10 @@
 <?php
-// getForumManageList.php
 // 後台「論壇管理」：取得所有文章列表(含上架/已下架/使用者自刪三種狀態、待審申訴提醒)
 // 對應前端頁面：forumManage.vue
 
-
-// ⚠️ 技術債：目前尚未加上管理員登入驗證，待同學的後台登入/角色驗證 API 完成後補上
-
 require_once("../common/cors.php");
-require_once("../common/connect_ckd101g2.php"); // 請自行核對實際檔名與路徑
+require_once("../common/connect_ckd101g2.php");
+require_once("../common/admin_guard.php");
 
 header("Content-Type: application/json; charset=utf-8");
 
@@ -58,8 +55,7 @@ try {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "取得文章列表失敗",
-        "error" => $e->getMessage() // 除錯用，測試通過後記得移除或改回固定訊息
+        "message" => "取得文章列表失敗"
     ], JSON_UNESCAPED_UNICODE);
 }
 ?>

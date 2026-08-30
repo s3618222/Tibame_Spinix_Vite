@@ -1,11 +1,10 @@
 <?php
 // 後台「陀螺圖庫管理」：編輯零件
 // 對應前端頁面：beybladeForm.vue（編輯模式）
-//
-// ⚠️ 技術債：目前尚未加上管理員登入驗證，待補上
 
 require_once("../common/cors.php");
 require_once("../common/connect_ckd101g2.php");
+require_once("../common/admin_guard.php");
 require_once("../common/funcs.php");
 
 header("Content-Type: application/json; charset=utf-8");
@@ -119,8 +118,7 @@ try {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "更新零件失敗",
-        "error" => $e->getMessage()
+        "message" => "更新零件失敗"
     ], JSON_UNESCAPED_UNICODE);
 }
 ?>

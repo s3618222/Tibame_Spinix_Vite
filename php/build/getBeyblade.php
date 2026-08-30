@@ -1,11 +1,10 @@
 <?php
 // 後台「陀螺圖庫管理」：取得單筆零件資料
 // 對應前端頁面：beybladeForm.vue（編輯模式，依 id 抓資料填入表單）
-//
-// ⚠️ 技術債：目前尚未加上管理員登入驗證，待補上
 
 require_once("../common/cors.php");
 require_once("../common/connect_ckd101g2.php");
+require_once("../common/admin_guard.php");
 
 header("Content-Type: application/json; charset=utf-8");
 
@@ -57,8 +56,7 @@ try {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "取得零件資料失敗",
-        "error" => $e->getMessage() // 除錯用，測試通過後記得移除或改回固定訊息
+        "message" => "取得零件資料失敗"
     ], JSON_UNESCAPED_UNICODE);
 }
 ?>

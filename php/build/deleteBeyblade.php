@@ -1,9 +1,6 @@
 <?php
-// deleteBeyblade.php
 // 後台「陀螺圖庫管理」：真正刪除零件（非軟刪除）
 // 對應前端頁面：beybladeForm.vue
-//
-// ⚠️ 技術債：目前尚未加上管理員登入驗證，待補上
 //
 // 設計決策：跟論壇文章/留言不同，零件是管理員自建維護的素材資料，不是使用者
 // 產生的內容，且已確認沒有任何其他資料表以外鍵引用 beyblade_id，因此走真正
@@ -12,6 +9,7 @@
 
 require_once("../common/cors.php");
 require_once("../common/connect_ckd101g2.php"); // 請自行核對實際檔名與路徑
+require_once("../common/admin_guard.php");
 
 header("Content-Type: application/json; charset=utf-8");
 
@@ -64,8 +62,7 @@ try {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "刪除零件失敗",
-        "error" => $e->getMessage() // 除錯用，測試通過後記得移除或改回固定訊息
+        "message" => "刪除零件失敗"
     ], JSON_UNESCAPED_UNICODE);
 }
 ?>

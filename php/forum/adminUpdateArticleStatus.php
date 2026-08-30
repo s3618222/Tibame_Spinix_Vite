@@ -1,14 +1,11 @@
 <?php
-// adminUpdateArticleStatus.php
 // 後台「論壇管理」：管理員對文章執行 REMOVE（下架）／RESTORE（恢復上架）
 // 對應前端頁面：forumManageDetail.vue
-//
-// ⚠️ 技術債：目前尚未加上管理員登入/角色驗證，待同學的後台登入驗證 API 完成後補上
-// （比照 getBattleManageList.php／getForumManageList.php／getForumManageDetail.php
-//  現階段的共同做法，先不擋，等同學角色驗證完成後統一補上）
+
 
 require_once("../common/cors.php");
 require_once("../common/connect_ckd101g2.php"); // 請自行核對實際檔名與路徑
+require_once("../common/admin_guard.php");
 
 header("Content-Type: application/json; charset=utf-8");
 
@@ -145,8 +142,7 @@ try {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "處置失敗",
-        "error" => $e->getMessage() // 除錯用，測試通過後記得移除或改回固定訊息
+        "message" => "處置失敗"
     ], JSON_UNESCAPED_UNICODE);
 }
 ?>
