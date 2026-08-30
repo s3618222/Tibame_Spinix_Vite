@@ -18,7 +18,7 @@
         <div class="form-group">
           <label>選擇文章類別<span class="required">*</span>
           </label>
-          <select v-model="formData.category" required>
+          <select v-model="formData.category" :class="{ '-isError': fieldErrors.category }" @change="fieldErrors.category = false">
             <option value="" disabled selected>請選擇文章類別...</option>
             <option v-for="opt in categoryOptions" :key="opt.id"  :value="opt.id">{{ opt.name }}</option>
           </select>
@@ -33,7 +33,7 @@
             type="text" 
             v-model="formData.title" 
             placeholder="請輸入文章標題..." 
-            required 
+            :class="{ '-isError': fieldErrors.title || fieldErrors.titleTooLong }" @input="fieldErrors.title = false; fieldErrors.titleTooLong = false"
           />
         </div>
 
@@ -42,7 +42,7 @@
           <label>文章內容
             <span class="required">*</span>
           </label>
-          <div class="custom-editor">
+          <div class="custom-editor" :class="{ '-isError': fieldErrors.content }">
             <textarea name="" id="default">{{ formData.content }}</textarea>
           </div>
         </div>
@@ -78,6 +78,13 @@ export default {
         category: "",
         title: "",
         content: ""
+      },
+
+      fieldErrors: {
+        category: false,
+        title: false,
+        titleTooLong: false,
+        content: false
       },
       tinymce_init: false,
       currentMemberId: null
@@ -174,13 +181,28 @@ export default {
       }
     },
 
+    validateForm(content) {
+      this.fieldErrors.category = !this.formData.category;
+      this.fieldErrors.title = this.formData.title.trim() === "";
+      this.fieldErrors.titleTooLong = this.formData.title.trim() !== "" && this.formData.title.length > 100;
+      this.fieldErrors.content = content.trim() === "";
+
+      const hasError = Object.values(this.fieldErrors).some(isError => isError);
+
+      if (this.fieldErrors.titleTooLong) {
+        alert("文章標題不可超過 100 字");
+      } else if (hasError) {
+        alert("星號*為必填項目");
+      }
+
+      return !hasError;
+    },
+
     async handleSubmit() {
       const content = tinymce.get('default').getContent(); // 取得使用者在tinymce裡寫的內容，tinymce預設會回傳字串，不可能是null，所以if條件不需針對null的情況
-      
-      if(content.trim() === ""){
-        alert("文章內容不可空白");
-        return;
-      }
+
+      // 先驗證表單，再往下走
+      if (!this.validateForm(content)) return;
 
       try{
         const formData = new FormData();
@@ -249,6 +271,14 @@ export default {
           a { color: #fec96b; text-decoration: underline; }
         `,
 
+        setup: (editor) => {
+          //on() 是 TinyMCE 提供的方法，意思是「監聽某個事件」
+          //'input' 事件,是 TinyMCE 自己定義的事件名稱,意思是 使用者在編輯器裡打字、內容有變動
+          editor.on('input', () => {
+            this.fieldErrors.content = false;
+          });
+        },
+
         images_upload_handler: async (blobInfo) => {
           const formData = new FormData();
             formData.append("file", blobInfo.blob(), blobInfo.filename());
@@ -277,6 +307,10 @@ export default {
 <style lang="scss" scoped>
 @use "sass:map";
 @use '@/assets/scss/var' as *;
+
+.-isError {
+  border-color: map-get($color, error) !important;
+}
 
 .forum-form-page {
   background-color: map-get($color, tertiary );
@@ -338,7 +372,7 @@ export default {
       width: 100%;
       padding: 12px 16px;
       border-radius: 8px;
-      // border: 1px solid #e2e8f0;
+      border: 1px solid transparent;
       background-color: map-get($color , tertiary );
       font-size: 15px;
       outline: none;
