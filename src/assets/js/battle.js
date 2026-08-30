@@ -1590,6 +1590,8 @@ document.addEventListener("click", e => {
 
     // 跳轉登入頁
     window.location.href = `${import.meta.env.BASE_URL}signIn.html`;
+
+    return; //防止本頁邏輯繼續往下執行
   }
 
   // 2.已登入後，確認該會員目前是否可使用約戰功能

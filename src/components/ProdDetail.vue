@@ -67,7 +67,7 @@
       
 
       <div class="tags form-label-style">
-        <span class="chip chip--exchangeable">{{ statusLabelMap[article.status] }}</span>
+        <span class="chip" :class="statusChipClass">{{ statusLabelMap[article.status] }}</span>
         <span class="chip chip--state" v-if="!isEditing">{{ conditionLabelMap[article.condition] }}</span>
         <select
           v-else
@@ -300,6 +300,18 @@ import ContactDrawer from '@/components/ContactDrawer.vue';
 import WarningBanner from '@/components/WarningBanner.vue';
 import StatusToggleButton from '@/components/StatusToggleButton.vue';
 import ConfirmReasonModal from '@/components/common/ConfirmReasonModal.vue';
+
+const statusColorMap = {
+  available: 'chip--exchangeable', 
+  exchanging: 'chip--category', 
+  pending: 'chip--state',
+  completed: 'chip--completed'
+};
+
+const statusChipClass = computed(() => {
+  if (!article.value) return '';
+  return statusColorMap[article.value.status] ?? '';
+});
 
 // 登入會員
 let currentUserId = ref(null);
@@ -541,7 +553,7 @@ async function saveEdit() {
   const res = await fetch(`${phpBaseUrl}/exchange/update_Exchange.php`, {
     method: 'POST',
     credentials: 'include',
-    body: formData   // 不要加 Content-Type header
+    body: formData
   });
 
   const result = await res.json();
@@ -567,35 +579,21 @@ async function saveEdit() {
   }
 }
 
-// // 圖片上傳（假資料階段用本機預覽，之後接後端改成真正上傳）
-// function handleImageUpload(event) {
-//   const files = Array.from(event.target.files);
-//   const newImageUrls = files.map(file => URL.createObjectURL(file));
-
-//   editForm.images = [...editForm.images, ...newImageUrls];
-
-//   // 讓輪播圖也同步顯示新上傳的圖片（因為 galleryImages 目前是寫死的 computed，
-//   // 這裡需要把它改成可變動的 ref，詳見下方調整）
-//   galleryImages.value = editForm.images;
-// }
-
-
-
 const commentMode = computed(() => {
   if (context.value === 'myPosts') return 'seller';
   if (context.value === 'myApplications') return 'applicant';
   return 'browse';
 });
 
+// == 留言列表 =============================================
 const articleComments = ref([]);
 
 async function fetchComments() {
   const res = await getComments(articleId.value);
   articleComments.value = res.data;  
 }
-
 fetchComments();
-
+// 時間排序
 const sortOrder = ref('newest');
 const sortedComments = computed(() => {
   const list = Array.isArray(articleComments.value) ? [...articleComments.value] : [];
@@ -697,21 +695,35 @@ async function handleSubmit() {
 }
 
 // 賣家選擇交換對象
-function handleSelectApplicant({ commentId }) {
-  const isConfirm = window.confirm('確定要選擇這位會員進行交換嗎？');
+async function handleSelectApplicant({ commentId , username}) {
+  const isConfirm = window.confirm(`確定要選擇「${username}」進行交換嗎？\n確認後將無法主動取消`);
   if (!isConfirm) return;
 
-  article.value.status = 'exchanging';
-  
+  const payload ={
+    post_id: articleId.value,
+    comm_id: commentId
+  }
 
-  articleComments.value.forEach(comment => {
-    comment.is_choose = comment.comm_id === commentId;
+  const res = await fetch(`${phpBaseUrl}/exchange/selectApplicant.php`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
   });
 
-  window.alert('已選擇交換對象，等待對方回覆!');
+  const result = await res.json();
 
-  // 之後接後端：
-  // await axios.patch(`/api/exchange/${article.value.post_id}/select`, { commentId });
+  if(result.success){
+    article.value.status = 'pending';
+    articleComments.value.forEach(comment => {
+      comment.is_choose = comment.comm_id === commentId;
+    });
+
+    window.alert('已選擇交換對象，等待對方回覆!');
+    
+  }else{
+    alert(result.message || '選擇失敗，請重新選擇');
+  }
 }
 
 

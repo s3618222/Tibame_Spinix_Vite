@@ -20,18 +20,23 @@
 
         <div class="form-row">
           <div class="form-field form-field--name">
-            <label for="partName">零件名稱</label>
+            <label for="partName">零件名稱 <span class="required-mark">*</span></label>
             <input
               id="partName"
               type="text"
               v-model="form.name"
               placeholder="請輸入零件名稱..."
+              :class="{ '-isError': fieldErrors.name || fieldErrors.nameTooLong }"
+              @input="fieldErrors.name = false; fieldErrors.nameTooLong = false"
             >
           </div>
 
           <div class="form-field form-field--category">
-            <label for="partCategory">部件類別</label>
-            <select id="partCategory" v-model="form.category">
+            <label for="partCategory">部件類別 <span class="required-mark">*</span></label>
+            <select id="partCategory" v-model="form.category"
+             :class="{ '-isError': fieldErrors.category }"
+              @change="fieldErrors.category = false">
+              <option value="" disabled selected hidden>請選擇類別</option>
               <option value="戰刃">戰刃</option>
               <option value="固鎖">固鎖</option>
               <option value="軸心">軸心</option>
@@ -42,13 +47,20 @@
 
       <!-- 零件圖片 -->
       <section class="form-section">
-        <h3 class="form-section-title">零件圖片</h3>
+        <h3 class="form-section-title">零件圖片<span class="required-mark">*</span></h3>
 
-        <div class="image-upload" @click="triggerFileSelect">
+        <div class="image-upload" :class="{ '-isError': fieldErrors.pic }" @click="triggerFileSelect">
+          <input
+            ref="fileInput"
+            type="file"
+            accept="image/png"
+            class="file-input-hidden"
+            @change="handleFileChange"
+          >
           <div v-if="!form.pic" class="image-upload-empty">
             <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
             <p class="upload-text">點擊或拖拽上傳零件圖片 (PNG)</p>
-            <p class="upload-hint">建議尺寸 1024x1024px，檔案大小上限 5MB</p>
+            <p class="upload-hint">建議尺寸 512x512px，檔案大小上限 1MB</p>
           </div>
 
           <div v-else class="image-preview">
@@ -136,12 +148,25 @@
 </template>
 
 <script>
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl.js";
 export default {
   name: "BeybladeForm",
 
   data() {
     return {
       baseUrl: import.meta.env.BASE_URL,
+      selectedFile: null, // 存放使用者實際選擇的檔案物件（File），送出表單時要用
+      categoryToEnglish: {
+        戰刃: "Blade",
+        固鎖: "Ratchet",
+        軸心: "Bit"
+      },
+
+      categoryLabelMap: {
+        Blade: "戰刃",
+        Ratchet: "固鎖",
+        Bit: "軸心"
+      },
 
       statFields: [
         { key: "weight", label: "重量" },
@@ -150,21 +175,14 @@ export default {
         { key: "stamina", label: "持久" }
       ],
 
-      // edit 模式假資料：模擬後端依 id 回傳的既有零件資料，目前只寫死 101 這一筆
-      mockPartsById: {
-        101: {
-          name: "Valkyrie Core",
-          category: "戰刃",
-          pic: "/build/blade/暴風天馬.png",
-          attack: 85,
-          defense: 40,
-          stamina: 60,
-          weight: 35,
-          is_show: true
-        }
-      },
+      form: {},
 
-      form: {}
+      fieldErrors: {
+        name: false,
+        nameTooLong: false, //超過100字
+        category: false,
+        pic: false
+      }
     };
   },
 
@@ -175,7 +193,21 @@ export default {
     },
 
     resolvedPicUrl() {
-      return this.form.pic ? `${this.baseUrl}${this.form.pic}` : "";
+      if (!this.form.pic) return "";
+
+      // blob: 開頭代表是使用者剛選的本機檔案，URL.createObjectURL() 產生的網址
+      // 本身已經是完整可用的網址，不需要、也不能再加 baseUrl
+      if (this.form.pic.startsWith("blob:")) {
+        return this.form.pic;
+      }
+
+      // uploads/beyblade/ 開頭代表這是已經上傳到伺服器的真實圖片，
+      // 要走 phpBaseUrl（伺服器路徑），不能走 baseUrl（前端 public 資料夾）
+      if (this.form.pic.startsWith("uploads/beyblade/")) {
+        return `${phpBaseUrl}/${this.form.pic}`;
+      }
+
+      return `${this.baseUrl}${this.form.pic}`;
     },
 
     publishLabel() {
@@ -203,19 +235,19 @@ export default {
     "$route.params.id": {
       immediate: true,
       handler(id) {
-        this.form = this.buildForm(id);
+        this.loadForm(id);
       }
     }
   },
 
   methods: {
-    buildForm(id) {
+    async loadForm(id) {
       if (!id) {
-        return {
+        this.form = {
           id: null,
           code: "",
           name: "",
-          category: "戰刃",
+          category: "",
           pic: "",
           attack: 50,
           defense: 50,
@@ -223,15 +255,37 @@ export default {
           weight: 50,
           is_show: false
         };
+        return;
       }
 
-      const mock = this.mockPartsById[id] || this.mockPartsById[101];
+      try {
+        const res = await fetch(`${phpBaseUrl}/build/getBeyblade.php?beyblade_id=${id}`, {
+          credentials: "include"
+        });
+        const result = await res.json();
 
-      return {
-        ...mock,
-        id: Number(id),
-        code: `#P-${id}`
-      };
+        if (result.success) {
+          const item = result.data;
+          this.form = {
+            id: item.beyblade_id,
+            code: `#P-${item.beyblade_id}`,
+            name: item.name,
+            category: this.categoryLabelMap[item.category] ?? item.category,
+            pic: item.pic,
+            attack: Number(item.attack),
+            defense: Number(item.defense),
+            stamina: Number(item.stamina),
+            weight: Number(item.weight),
+            is_show: Number(item.is_show) === 1
+          };
+        } else {
+          alert(result.message);
+          this.$router.push({ name: "backend-beyblade" });
+        }
+      } catch (error) {
+        console.error("取得零件資料失敗", error);
+        alert("取得零件資料失敗，請稍後再試");
+      }
     },
 
 
@@ -250,21 +304,114 @@ export default {
     },
 
     triggerFileSelect() {
-      console.log("選擇檔案");
+      this.$refs.fileInput.click();
     },
 
-    handleDelete() {
-      const isConfirmed = confirm(`確定要刪除零件「${this.form.name}」嗎？`);
+    async handleDelete() {
+      const isConfirmed = confirm(`確定要刪除零件「${this.form.name}」嗎？此動作無法復原。`);
+      if (!isConfirmed) return;
 
-      if (!isConfirmed) {
-        return;
+      const formData = new FormData();
+      formData.append("beyblade_id", this.form.id);
+
+      try {
+        const res = await fetch(`${phpBaseUrl}/build/deleteBeyblade.php`, {
+          method: "POST",
+          body: formData,
+          credentials: "include"
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          alert(result.message);
+          this.$router.push({ name: "backend-beyblade" });
+        } else {
+          alert(result.message);
+        }
+      } catch (error) {
+        console.error("刪除零件失敗", error);
+        alert("刪除零件失敗，請稍後再試");
+      }
+    },
+
+    validateForm() {
+      // 依序檢查，每個欄位各自判斷是否為空，結果分別記在 fieldErrors
+      this.fieldErrors.name = this.form.name.trim() === "";
+      this.fieldErrors.nameTooLong = this.form.name.trim() !== "" && this.form.name.length > 100;
+      this.fieldErrors.category = !this.form.category;
+
+      // 圖片：新增模式必填（沒有選檔案也沒有既有圖片路徑才算空/false）；
+      // 編輯模式選填，因為可能維持原圖不換，不能因為沒選新檔案就判定成錯誤
+      this.fieldErrors.pic = !this.isEditMode && !this.selectedFile && !this.form.pic;
+
+      // 箭頭函式，因為this.fieldErrors每個值都是布林值，透過.some()遍歷陣列，只要有遇到是true的，就會停止執行、回傳結果
+      const hasError = Object.values(this.fieldErrors).some(isError => isError);
+
+      if (this.fieldErrors.nameTooLong) {
+        alert("零件名稱不可超過 100 字");
+      } else if (hasError) {
+        alert("星號*為必填項目");
       }
 
-      console.log("刪除零件", this.form);
+      return !hasError;
     },
 
-    handleSave() {
-      console.log(this.isEditMode ? "儲存修改" : "儲存並建立零件", this.form);
+    async handleSave() {
+      //validateForm的結果如果是false，代表確實有欄位沒填，handleSave後面就不執行了
+      if (!this.validateForm()) return;
+
+      const formData = new FormData();
+
+      formData.append("name", this.form.name);
+      formData.append("category", this.categoryToEnglish[this.form.category]);
+      formData.append("attack", this.form.attack);
+      formData.append("defense", this.form.defense);
+      formData.append("stamina", this.form.stamina);
+      formData.append("weight", this.form.weight);
+      formData.append("is_show", this.form.is_show ? 1 : 0);
+
+      // 只有使用者真的選了新檔案，才附上圖片；
+      // 編輯模式下如果沒換圖，selectedFile 會是 null，這裡就不會 append，
+      // 後端 updateBeyblade.php 收不到 $_FILES["pic"]，會自動沿用資料庫原本的路徑
+      if (this.selectedFile) {
+        formData.append("pic", this.selectedFile);
+      }
+
+      const apiUrl = this.isEditMode
+        ? `${phpBaseUrl}/build/updateBeyblade.php`
+        : `${phpBaseUrl}/build/addBeyblade.php`;
+
+      if (this.isEditMode) {
+        formData.append("beyblade_id", this.form.id);
+      }
+
+      try {
+        const res = await fetch(apiUrl, {
+          method: "POST",
+          body: formData,
+          credentials: "include"
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          alert(result.message);
+          this.$router.push({ name: "backend-beyblade" });
+        } else {
+          alert(result.message);
+        }
+      } catch (error) {
+        console.error("儲存零件失敗", error);
+        alert("儲存零件失敗，請稍後再試");
+      }
+    },
+
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      this.selectedFile = file;
+      this.form.pic = URL.createObjectURL(file); // 產生本機暫時預覽網址，讓使用者立刻看到選了什麼圖
+      this.fieldErrors.pic = false;
     }
   }
 };
@@ -280,6 +427,15 @@ export default {
 // 不再佔用版面寬度，固定列改回貼齊畫面左緣。
 $sidebar-width: 168px;
 $actions-bar-height: 88px;
+
+.-isError {
+  border-color: map-get($color, error) !important;
+}
+
+.required-mark {
+  color: map-get($color, error);
+  // margin-left: 2px;
+}
 
 .beyblade-form-page {
   width: 100%;
@@ -396,7 +552,12 @@ $actions-bar-height: 88px;
 }
 
 /* 零件圖片 */
+.file-input-hidden {
+  display: none;
+}
 .image-upload {
+  border: 2px solid transparent; // 新增這行，平常透明看不見，但邊框「存在」了
+  border-radius: 12px;
   width: 220px;
   height: 220px;
   cursor: pointer;

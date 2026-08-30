@@ -50,6 +50,9 @@
       /* 對戰結果 */
       battle_record.WINNER,
 
+      /* 最新一筆待處理申訴 */
+      latest_pending_appeal.BATTLE_APPEAL_ID AS PENDING_APPEAL_ID,
+
       /* 最近一次管理處置資訊 */
       latest_manage.MANAGE_ACTION,
       latest_manage.MANAGE_REASON,
@@ -58,6 +61,23 @@
       latest_manage.CREATED_AT AS MANAGED_AT
 
     FROM battle_record
+
+    /* 取得該場約戰最新一筆「待處理」的申訴 */
+    LEFT JOIN battle_appeal AS latest_pending_appeal
+      ON latest_pending_appeal.BATTLE_APPEAL_ID = (
+        SELECT appeal.BATTLE_APPEAL_ID
+
+        FROM battle_appeal AS appeal
+
+        WHERE appeal.BATTLE_ID = battle_record.BATTLE_ID
+          AND appeal.APPEAL_STATUS = 'PENDING'
+
+        ORDER BY
+          appeal.CREATED_AT DESC,
+          appeal.BATTLE_APPEAL_ID DESC
+
+        LIMIT 1
+      )
 
     /* 取得該場約戰最新的管理處置紀錄 */
     LEFT JOIN battle_manage_record AS latest_manage

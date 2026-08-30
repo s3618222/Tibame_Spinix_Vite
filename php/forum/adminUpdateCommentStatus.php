@@ -2,15 +2,14 @@
 // 後台「論壇管理」：管理員對留言執行 REMOVE（下架）／RESTORE（恢復上架）
 // 對應前端頁面：forumManageDetail.vue
 //
-// ⚠️ 技術債：目前尚未加上管理員登入/角色驗證，待補上（同學的 admin_guard.php
-// 邏輯已經拿到，照「不建共用檔案、各自抄一份」的原則，之後手動加進來）
-//
+
 // 註：恢復上架（RESTORE）不需要填寫原因，與 adminUpdateArticleStatus.php
 // 保持對稱——申訴處理面板只有「確認違規」才要求填原因，
 // 恢復上架不用，因此不需要額外的歷史紀錄表存放 RESTORE 原因
 
 require_once("../common/cors.php");
 require_once("../common/connect_ckd101g2.php");
+require_once("../common/admin_guard.php");
 
 header("Content-Type: application/json; charset=utf-8");
 
@@ -141,8 +140,7 @@ try {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "處置失敗",
-        "error" => $e->getMessage() // 除錯用，測試通過後記得移除或改回固定訊息
+        "message" => "處置失敗"
     ], JSON_UNESCAPED_UNICODE);
 }
 ?>

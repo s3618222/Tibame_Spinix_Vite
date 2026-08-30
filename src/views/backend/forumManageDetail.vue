@@ -156,7 +156,10 @@ export default {
 
     try {
       const res = await fetch(
-        `${phpBaseUrl}/forum/getForumManageDetail.php?art_id=${articleId}`
+        `${phpBaseUrl}/forum/getForumManageDetail.php?art_id=${articleId}`,
+        {
+          credentials: "include"
+        }
       );
       const result = await res.json();
 
@@ -263,7 +266,8 @@ export default {
         const res = await fetch( apiUrl,
           {
             method: "POST",
-            body: formData
+            body: formData,
+            credentials: "include"
           }
         );
         const result = await res.json();

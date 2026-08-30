@@ -28,7 +28,7 @@ function getExchange($pdo, $postId = null, $params = [], $includeContact = false
    `post_pic4`,
    `post_pic5`, 
    `remove_reason`,
-   `comm_id`";
+   exchange_post.`comm_id`";
 
    if ($includeContact) {
       $sql .= " , `post_contact` ";

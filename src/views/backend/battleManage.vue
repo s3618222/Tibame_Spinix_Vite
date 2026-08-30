@@ -172,7 +172,20 @@
             <!-- 平台有資料時 -->
             <template v-else>
               <tr v-for="battle in paginatedBattles" :key="battle.battleId">
-                <td>{{ battle.title }}</td>
+                <td>
+                  <div class="battle-title-cell">
+                    <div
+                      v-if="battle.pendingAppealId"
+                      class="battle-appeal-alert"
+                    >
+                      <i class="fa-solid fa-circle-exclamation"></i>
+                      <span class="battle-appeal-tooltip">
+                        此約戰有相關申訴待處理
+                      </span>
+                    </div>
+                    <span>{{ battle.title }}</span>
+                  </div>
+                </td>
                 <td>{{ battle.hostName }}</td>
                 <td>{{ battle.cityLabel }}・{{ battle.district }}</td>
                 <td>{{ battle.battleDate }}</td>
@@ -247,6 +260,29 @@
 
       <!-- 詳情主要內容 -->
       <div v-if="selectedBattle" class="battle-detail-content">
+        <!-- 900px RWD時，顯示的待審申訴提醒文字 -->
+        <div
+          v-if="selectedBattle?.pendingAppealId"
+          class="battle-appeal-notice battle-appeal-notice--top"
+        >
+          <i class="fa-solid fa-circle-exclamation"></i>
+
+          <div class="battle-appeal-notice__content">
+            <p class="battle-appeal-notice__title">
+              此約戰有相關申訴待審核
+            </p>
+
+            <button
+              type="button"
+              class="battle-appeal-notice__link"
+              @click="goToAppealDetail"
+            >
+              前往申訴詳情
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
         <!-- 左側：公開約戰內容 -->
         <section class="battle-detail-public">
           <div class="battle-detail-section-title">
@@ -317,6 +353,29 @@
 
         <!-- 右側：聯絡資訊、勝者與管理處置 -->
         <div class="battle-detail-side">
+          
+          <!-- 有待審申訴時的提示文字 -->
+          <div
+            v-if="selectedBattle?.pendingAppealId"
+            class="battle-appeal-notice battle-appeal-notice--side"
+          >
+            <i class="fa-solid fa-circle-exclamation"></i>
+
+            <div class="battle-appeal-notice__content">
+              <p class="battle-appeal-notice__title">
+                此約戰有相關申訴待審核
+              </p>
+
+              <button 
+                type="button"
+                class="battle-appeal-notice__link"
+                @click="goToAppealDetail"
+              >
+                前往申訴詳情
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
 
           <!-- 雙方聯絡資訊 -->
           <section class="battle-detail-contact">
@@ -651,6 +710,15 @@ export default {
   },
 
   methods: {
+    goToAppealDetail() { //有待審申訴時，跳轉對應申訴詳情頁涵式
+      if (!this.selectedBattle?.pendingAppealId) {
+        return;
+      }
+
+      this.$router.push(`/complaint/battle/${this.selectedBattle.pendingAppealId}`);
+
+    },
+
     resetFilters() { //重置篩選條件函式
       this.filters.keyword = "";
       this.filters.mode = "";
@@ -730,6 +798,12 @@ export default {
             coverImage: battle.BATTLE_IMG,
 
             winner: battle.WINNER === null ? null : Number(battle.WINNER),
+
+            // 該約戰最新待審的申訴記錄ID
+            pendingAppealId:
+              battle.PENDING_APPEAL_ID === null
+                ? null
+                : Number(battle.PENDING_APPEAL_ID),
 
             // 最近一次管理處置資訊
             manageAction: battle.MANAGE_ACTION,
@@ -1462,6 +1536,58 @@ export default {
     color: #aaaaaa;
   }
 
+  //有待審申訴時的警示icon與文字
+  .battle-title-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .battle-appeal-alert {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .battle-appeal-alert > i {
+    color: #f59e0b;
+    font-size: 16px;
+  }
+
+  //hover時的提示文字
+  .battle-appeal-tooltip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+
+    width: max-content;
+    max-width: 220px;
+    padding: 7px 10px;
+
+    font-size: 13px;
+    line-height: 1.4;
+    color: #ffffff;
+
+    background-color: #141c26;
+    border-radius: 6px;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition:
+      opacity 0.2s ease,
+      visibility 0.2s ease;
+
+    z-index: 10;
+  }
+
+  .battle-appeal-alert:hover .battle-appeal-tooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+
   //燈箱內主要資訊
   .battle-detail-content {
     width: 100%;
@@ -1912,6 +2038,59 @@ export default {
     }
   }
 
+  //燈箱中，有待審申訴時的提示文字與連結
+  .battle-appeal-notice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 4px;
+  }
+
+  .battle-appeal-notice--top {
+    display: none;
+  }
+
+  .battle-appeal-notice > i {
+    margin-top: 2px;
+
+    color: #f59e0b;
+    font-size: 16px;
+  }
+
+  .battle-appeal-notice__content {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .battle-appeal-notice__title {
+    color: #141c26;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .battle-appeal-notice__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    width: fit-content;
+    padding: 0;
+
+    color: #b76a00;
+    font-size: 13px;
+    font-weight: 600;
+
+    background: none;
+    border: none;
+
+    cursor: pointer;
+  }
+
   //========================= RWD調整 ==================================
   @media screen and (max-width: 1024px) {
     .battle-manage-filter {
@@ -1952,6 +2131,23 @@ export default {
 
     .battle-detail-side {
       position: static;
+    }
+
+    .battle-appeal-notice__content {
+      justify-content: flex-start;
+      gap: 20px;
+      flex-wrap: wrap;
+
+      margin-block: 12px;
+    }
+
+    .battle-appeal-notice--side {
+      display: none;
+    }
+
+    .battle-appeal-notice--top {
+      display: flex;
+      grid-column: 1 / -1;
     }
   }
 
@@ -2114,6 +2310,19 @@ export default {
       align-items: start;
       gap: 4px;
     }
+
+    .battle-appeal-notice {
+      align-items: flex-start;
+      margin: 0px;
+    }
+
+    .battle-appeal-notice__content {
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+      gap: 12px;
+    }
+    
   }
 
 </style>

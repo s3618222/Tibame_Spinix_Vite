@@ -1,11 +1,10 @@
 <?php
   // 後台「論壇管理」：取得單篇文章完整內容 + 底下所有留言（各自獨立的待審申訴判斷）
   // 對應前端頁面：forumManageDetail.vue
-  //
-  // ⚠️ 技術債：目前尚未加上管理員登入/角色驗證，待同學的後台登入驗證 API 完成後補上
 
   require_once("../common/cors.php");
   require_once("../common/connect_ckd101g2.php"); // 請自行核對實際檔名與路徑
+  require_once("../common/admin_guard.php");
 
   header("Content-Type: application/json; charset=utf-8");
 
@@ -106,8 +105,7 @@
       http_response_code(500);
       echo json_encode([
           "success" => false,
-          "message" => "取得文章詳情失敗",
-          "error" => $e->getMessage() // 除錯用，測試通過後記得移除或改回固定訊息
+          "message" => "取得文章詳情失敗"
       ], JSON_UNESCAPED_UNICODE);
   }
 ?>

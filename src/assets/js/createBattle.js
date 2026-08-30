@@ -23,6 +23,7 @@ function checkCreateBattleLogin() {
     credentials: "include"
   }).then(res => res.json()).then(data => {
 
+    //未登入時，跳轉登入頁
     if (!data.success || !data.isLoggedIn) {
       alert("請先登入會員，再建立對戰邀約");
       window.location.href = `${import.meta.env.BASE_URL}signIn.html`;
@@ -32,9 +33,51 @@ function checkCreateBattleLogin() {
     // 保存目前登入會員資料
     currentMember = data.member;
     console.log("目前建立約戰的會員：", currentMember);
+    checkCreateBattleAccess(); //有登入時，進一步檢查約戰權限
 
   }).catch(error => {
     console.error("登入狀態確認失敗：", error);
+  });
+}
+
+// 檢查目前會員是否可使用約戰功能
+function checkCreateBattleAccess() {
+  fetch(`${phpBaseUrl}/battle/battle_access_get.php`, {
+    credentials: "include"
+  }).then(res => res.json()).then(data => {
+
+    //未能成功串接權限檢查API時，就先直接跳回約戰頁
+    if (!data.success) {
+      alert(
+        data.message ||
+        "目前無法確認約戰功能狀態"
+      );
+
+      window.location.href = `${import.meta.env.BASE_URL}battle.html`;
+
+      return;
+    }
+
+    if (!data.allowed) { //當目前會員的約戰權限受限時
+
+      if (data.status === "TEMP-RESTRICT") {
+        alert("你的約戰功能目前暫時受限，受限期間無法建立對戰邀約。");
+
+      } else if (data.status === "PERMA-RESTRICT") {
+        alert("你的約戰功能目前已被限制使用，無法建立對戰邀約。");
+
+      } else {
+        alert("目前無法使用約戰相關功能。");
+      }
+
+      window.location.href = `${import.meta.env.BASE_URL}battle.html`;
+
+      return;
+    }
+
+    console.log("會員約戰功能正常");
+  }).catch(error => {
+    console.error("約戰功能權限確認失敗：", error);
   });
 }
 

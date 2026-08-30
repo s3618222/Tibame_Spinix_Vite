@@ -122,6 +122,8 @@
           :district="item.district"
           :context="context"
           :state="item.stateLabel"
+          :type="item.typeLabel"
+          :condition="item.conditionLabel"
           @reply-exchange="handleReplyExchange"
       />
     </div>
@@ -144,13 +146,7 @@
 <script>
 import StatusTabs from "./controlTabs.vue";
 import ProductCard from "./productCard.vue";
-import {
-  exchangeList,
-  fakeComments,
-  statusLabelMap,
-  applyStatusLabelMap,
-  replyExchange
-} from "@/data/ExchangeData.js";
+import { exchangeList, getMyComments ,statusLabelMap, applyStatusLabelMap, replyExchange ,typeLabelMap ,conditionLabelMap } from '@/data/ExchangeData.js';
 // 分頁器
 import Pagination from "@/components/pagination.vue";
 
@@ -166,11 +162,9 @@ export default {
   data() {
     return {
       currentStatus: "all",
-      currentUserId: 999,
-      exchangeList,
-      fakeComments,
-      statusLabelMap,
-      applyStatusLabelMap,
+      currentUserId: null,
+      exchangeListData : [],
+      myCommentData : [],
       activeTab: 'myexchange',
       currentPage: 1,
       pageSize: 9,
@@ -195,36 +189,43 @@ export default {
 
     // 我刊登的交換：直接從 exchangeList 篩自己刊登的文章
     myExchangeList() {
-      return this.exchangeList
-        .filter(item => item.mem_id === this.currentUserId)
-        .map(item => ({
-          ...item,
-          cardKey: `post-${item.post_id}`,
-          stateLabel: this.statusLabelMap[item.status] || ''
-        }));
+      if (!Array.isArray(this.exchangeListData)) return [];   // 防呆
+      return this.exchangeListData.filter(item => item.mem_id === this.currentUserId).map(item => ({
+        ...item,
+        cardKey: `post-${item.post_id}`,
+        headshot: item.mem_photo,
+        name: item.mem_name,
+        product_img: item.post_pic1,
+        stateLabel: statusLabelMap[item.status] || '',
+        typeLabel: typeLabelMap[item.type],
+        conditionLabel: conditionLabelMap[item.condition]
+      }));
     },
 
     // 我提出的申請：從 fakeComments 篩「我留過言的」，再組合對應文章資訊
     myApplyList() {
-      return this.fakeComments
-        .filter(comment => comment.mem_id === this.currentUserId)
-        .map(comment => {
-          const article = this.exchangeList.find(item => item.post_id === comment.post_id);
-          if(!article) return;
-  
-          const isChosen = comment.is_choose === true;
+      if (!Array.isArray(this.myCommentData)) return [];   // 防呆
+      return this.myCommentData.map(comment => {
+        const article = this.exchangeListData.find(item => item.post_id === comment.post_id);
 
-          const stateLabel = (article.status === 'available' || !isChosen) ? this.applyStatusLabelMap['available'] : this.applyStatusLabelMap[article.status];
+        if (!article) return;
 
-          return {
-            ...article,
-            cardKey: `apply-${comment.comm_id}`,
-            applyId: comment.comm_id,
-            status: article.status, // 用「我這則申請」的狀態，取代文章原本狀態
-            isChosen,
-            stateLabel
-          };
-        }).filter(Boolean);
+        const isChosen = comment.is_choose === true;
+        const stateLabel = (article.status === 'available' || !isChosen) ? applyStatusLabelMap['available'] : applyStatusLabelMap[article.status];
+
+        return {
+          ...article,
+          cardKey: `apply-${comment.comm_id}`,
+          applyId: comment.comm_id,
+          headshot: article.mem_photo,
+          name: article.mem_name,
+          typeLabel: typeLabelMap?.[article.type] || '',
+          conditionLabel: conditionLabelMap?.[article.condition] || '',
+          product_img: article.post_pic1,
+          isChosen,
+          stateLabel
+        };
+      }).filter(Boolean);
     },
 
     // 依目前分頁，決定要用哪份清單
@@ -276,15 +277,50 @@ export default {
 
     
   },
+  async created(){
+    await this.fetchCurrentMember();
+    await this.fetchExchangeList();
+    await this.fetchComments();
+  },
 
   methods: {
+  
+    async fetchCurrentMember() {
+      const phpBaseUrl =
+        location.hostname === "localhost" || location.hostname === "127.0.0.1"
+        ? "http://localhost:8888/Spinix/php"
+        : `${location.origin}/ckd101/g2/php`;
+      const res = await fetch(`${phpBaseUrl}/member/currentMember_get.php`,{
+        credentials: "include" 
+      });
+      const result = await res.json();
+
+      this.currentUserId = result.success && result.isLoggedIn  ? result.member.id : null ;
+    },
+
+    async fetchExchangeList(){
+      try{
+        const res = await exchangeList();
+        this.exchangeListData = Array.isArray(res) ? res : [];
+      }catch(err){
+        this.exchangeListData = [];
+      }
+    },
+    async fetchComments(){
+      try{
+        const res = await getMyComments();
+        this.myCommentData = Array.isArray(res.data) ? res.data : [];
+      }catch(err){
+        this.myCommentData = [];
+      }
+    },
     handleReplyExchange(item) {
-      replyExchange(this.exchangeList, {
+      replyExchange(this.exchangeListData, {
         postId: item.post_id,
         applyId: item.applyId,
-        posterName: item.username   // 這裡的 item.username 本來就是發文者
-  });
-}
+        posterName: item.username
+      });
+    }
   }
 };
 </script>

@@ -6,18 +6,12 @@ require_once("../common/funcs.php");
 session_start();
 $memberId = $_SESSION["MEM_ID"] ?? null;
 
-if (!$memberId) {
-   echo json_encode(['success' => false, 'message' => '請先登入'], JSON_UNESCAPED_UNICODE);
-   exit;
-}
-
 $postId = (int)($_POST['post_id'] ?? 0);
 $title = $_POST['title'] ?? '';
 $type = $_POST['type'] ?? '';
 $condition = $_POST['condition'] ?? '';
 $description = $_POST['description'] ?? '';
 $wantItem = $_POST['want_item'] ?? '';
-
 $existingPhotos = json_decode($_POST['existing_photos'] ?? '[]', true);
 if (!is_array($existingPhotos)) {
    $existingPhotos = [];
