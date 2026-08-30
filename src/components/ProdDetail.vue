@@ -67,7 +67,7 @@
       
 
       <div class="tags form-label-style">
-        <span class="chip chip--exchangeable">{{ statusLabelMap[article.status] }}</span>
+        <span class="chip" :class="statusChipClass">{{ statusLabelMap[article.status] }}</span>
         <span class="chip chip--state" v-if="!isEditing">{{ conditionLabelMap[article.condition] }}</span>
         <select
           v-else
@@ -292,7 +292,7 @@
 import { ref, computed, reactive } from 'vue';
 import {useRoute} from 'vue-router';
 import prodMsgInfo from '@/components/prodMsgInfo.vue';
-import { getExchangeDetail, fakeComments, statusLabelMap, typeLabelMap, conditionLabelMap } from '@/data/ExchangeData';
+import { getExchangeDetail, getComments, statusLabelMap, typeLabelMap, conditionLabelMap } from '@/data/ExchangeData';
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import 'vue3-carousel/dist/carousel.css';
 import PhotoUploader from '@/components/uploadImg.vue';
@@ -300,6 +300,18 @@ import ContactDrawer from '@/components/ContactDrawer.vue';
 import WarningBanner from '@/components/WarningBanner.vue';
 import StatusToggleButton from '@/components/StatusToggleButton.vue';
 import ConfirmReasonModal from '@/components/common/ConfirmReasonModal.vue';
+
+const statusColorMap = {
+  available: 'chip--exchangeable', 
+  exchanging: 'chip--category', 
+  pending: 'chip--state',
+  completed: 'chip--completed'
+};
+
+const statusChipClass = computed(() => {
+  if (!article.value) return '';
+  return statusColorMap[article.value.status] ?? '';
+});
 
 // 登入會員
 let currentUserId = ref(null);
@@ -363,12 +375,24 @@ const context = computed(() => {
 // 判斷是否從管理者畫面進來
 const isAdmin = computed(() => context.value === 'backend');
 
-// 從 exchangeList 陣列中，找出 id 相符的那一筆資料
+// 輪播圖陣列
+const galleryImages = ref([]);
 
+// 從 exchangeList 陣列中，找出 id 相符的那一筆資料
 const article = ref(null);
 async function fetchArticle() {
   const res = await getExchangeDetail(articleId.value);
   article.value = res.data;
+
+  const rawPics = [
+    article.value.post_pic1,
+    article.value.post_pic2,
+    article.value.post_pic3,
+    article.value.post_pic4,
+    article.value.post_pic5
+  ].filter(Boolean);
+
+  galleryImages.value = rawPics.map(pic => `${pic}`);
 }
 
 
@@ -385,6 +409,7 @@ const isOwner = computed(() => {
 // 是否已經申請過（排除賣家自己）
 const alreadyApplied = computed(() => {
   if (!article.value || isOwner.value) return false;
+  if (justApplied.value) return true;
   return articleComments.value.some(c => c.mem_id === currentUserId.value);
 });
 
@@ -464,28 +489,13 @@ const backLinkMap = {
 const backLink = computed(() => backLinkMap[context.value] || 'market.html');
 
 
-// == 圖片輪播 ============================================
-const galleryImages = computed(()=>{
-  if(!article.value) return [];
-  const rawPics = [
-    article.value.post_pic1,
-    article.value.post_pic2,
-    article.value.post_pic3,
-    article.value.post_pic4,
-    article.value.post_pic5
-  ].filter(Boolean);
-
-   return rawPics.map(pic => `${pic}`); // 濾完之後，再統一加上前綴
-});
-
-
 // == 編輯模式狀態 ==========================================
 const isEditing = ref(false);
 const editForm = reactive({
   title: '',
   description: '',
   want_item:'',
-  images: []   // 存編輯中的圖片網址（新上傳的會是 blob 網址）
+  images: []
 });
 
 function startEdit() {
@@ -508,53 +518,66 @@ function cancelEdit() {
     }
   });
   isEditing.value = false;
-  // 不需要清空 editForm，反正下次 startEdit 會重新帶入最新資料
 }
 
-function saveEdit() {
+async function saveEdit() {
   if (!editForm.title.trim()) {
     window.alert('物品名稱不能為空');
     return;
   }
-  if(!editForm.description.trim()){
+  if (!editForm.description.trim()) {
     window.alert('物品描述不能為空');
     return;
   }
 
-  // 直接修改 exchangeList 裡對應那筆資料（因為是假資料，先用這種方式模擬儲存）
-  article.value.title = editForm.title;
-  article.value.type = editForm.type;
-  article.value.condition = editForm.condition;
-  article.value.description = editForm.description;
-  article.value.want_item = editForm.want_item;
+  // 把 editForm.images 拆成「原本的網址」跟「blob 預覽網址（代表新上傳的檔案）」
+  const existingUrls = editForm.images.filter(url => !url.startsWith('blob:'));
+  const blobUrls = editForm.images.filter(url => url.startsWith('blob:'));
 
-  galleryImages.value = [...editForm.images];
-  activeImageIndex.value = 0;
+  const formData = new FormData();
+  formData.append('post_id', articleId.value);
+  formData.append('title', editForm.title);
+  formData.append('type', editForm.type);
+  formData.append('condition', editForm.condition);
+  formData.append('description', editForm.description);
+  formData.append('want_item', editForm.want_item);
+  formData.append('existing_photos', JSON.stringify(existingUrls));
 
-  // 之後接後端時，這裡改成：
-  // await axios.put(`/api/exchange/${article.value.id}`, {
-  //   title: editForm.title,
-  //   description: editForm.description,
-  //   images: editForm.images
-  // });
+  // 把每個 blob 網址「轉換回」真正的檔案，才能上傳
+  for (const blobUrl of blobUrls) {
+    const blob = await (await fetch(blobUrl)).blob();
+    const file = new File([blob], `photo_${Date.now()}.jpg`, { type: blob.type });
+    formData.append('photos[]', file);
+  }
 
-  isEditing.value = false;
-  window.alert('商品資訊已更新！');
+  const res = await fetch(`${phpBaseUrl}/exchange/update_Exchange.php`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData
+  });
+
+  const result = await res.json();
+
+  if (result.success) {
+    article.value.title = editForm.title;
+    article.value.type = editForm.type;
+    article.value.condition = editForm.condition;
+    article.value.description = editForm.description;
+    article.value.want_item = editForm.want_item;
+
+    // 用後端回傳的最新圖片網址覆蓋畫面
+    galleryImages.value = result.data.images;
+    activeImageIndex.value = 0;
+
+    // 釋放這次用完的 blob 網址，避免記憶體洩漏
+    blobUrls.forEach(url => URL.revokeObjectURL(url));
+
+    isEditing.value = false;
+    alert('物品資訊已更新成功！');
+  } else {
+    alert(result.message || '更新失敗');
+  }
 }
-
-// // 圖片上傳（假資料階段用本機預覽，之後接後端改成真正上傳）
-// function handleImageUpload(event) {
-//   const files = Array.from(event.target.files);
-//   const newImageUrls = files.map(file => URL.createObjectURL(file));
-
-//   editForm.images = [...editForm.images, ...newImageUrls];
-
-//   // 讓輪播圖也同步顯示新上傳的圖片（因為 galleryImages 目前是寫死的 computed，
-//   // 這裡需要把它改成可變動的 ref，詳見下方調整）
-//   galleryImages.value = editForm.images;
-// }
-
-
 
 const commentMode = computed(() => {
   if (context.value === 'myPosts') return 'seller';
@@ -562,22 +585,22 @@ const commentMode = computed(() => {
   return 'browse';
 });
 
+// == 留言列表 =============================================
+const articleComments = ref([]);
 
-// 該文章留言列表
-const articleComments = computed(() =>
-  fakeComments.filter(comment => comment.post_id === articleId.value)
-);
-
+async function fetchComments() {
+  const res = await getComments(articleId.value);
+  articleComments.value = res.data;  
+}
+fetchComments();
+// 時間排序
 const sortOrder = ref('newest');
 const sortedComments = computed(() => {
-  const list = [...articleComments.value];
+  const list = Array.isArray(articleComments.value) ? [...articleComments.value] : [];
   list.sort((a, b) => {
-
-    // 被選中留言至頂
     if (a.is_choose !== b.is_choose) {
       return a.is_choose ? -1 : 1;
     }
-
     const diff = new Date(a.create_time) - new Date(b.create_time);
     return sortOrder.value === 'newest' ? -diff : diff;
   });
@@ -630,6 +653,8 @@ function validateForm() {
   return !( errors.content || errors.comm_contact);
 }
 
+const justApplied = ref(false);
+
 async function handleSubmit() {
   if (!validateForm()) {
     window.alert('星號*為必填項目');
@@ -650,10 +675,16 @@ async function handleSubmit() {
   }); 
 
   const result = await res.json();
-
+  console.log(result);
 
   if(result.success){
+    if(result.data){
+      articleComments.value.unshift(result.data);
+    }
+    justApplied.value = true;
+    window.alert('交換申請已成功送出！');
     closeModal();
+    resetForm();
   }else{
     alert(result.message || '送出失敗');
   }
@@ -661,27 +692,38 @@ async function handleSubmit() {
   // console.log('送出交換提議：', { ...form });
   // 之後這裡打 API，新增一筆 fakeComments（申請），articleId 用 article.value.id
 
-  closeModal();
-  resetForm();
-  window.alert('交換申請已成功送出！');
 }
 
 // 賣家選擇交換對象
-function handleSelectApplicant({ commentId }) {
-  const isConfirm = window.confirm('確定要選擇這位會員進行交換嗎？');
+async function handleSelectApplicant({ commentId , username}) {
+  const isConfirm = window.confirm(`確定要選擇「${username}」進行交換嗎？\n確認後將無法主動取消`);
   if (!isConfirm) return;
 
-  article.value.status = 'exchanging';
-  
+  const payload ={
+    post_id: articleId.value,
+    comm_id: commentId
+  }
 
-  articleComments.value.forEach(comment => {
-    comment.is_choose = comment.comm_id === commentId;
+  const res = await fetch(`${phpBaseUrl}/exchange/selectApplicant.php`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
   });
 
-  window.alert('已選擇交換對象，等待對方回覆!');
+  const result = await res.json();
 
-  // 之後接後端：
-  // await axios.patch(`/api/exchange/${article.value.post_id}/select`, { commentId });
+  if(result.success){
+    article.value.status = 'pending';
+    articleComments.value.forEach(comment => {
+      comment.is_choose = comment.comm_id === commentId;
+    });
+
+    window.alert('已選擇交換對象，等待對方回覆!');
+    
+  }else{
+    alert(result.message || '選擇失敗，請重新選擇');
+  }
 }
 
 
@@ -936,6 +978,7 @@ p{
         border: 1px solid map-get($color, gray);
         overflow: hidden;
         border-radius: 4px;
+        background: #fff;
 
         img {
           width: 100%;
@@ -1096,6 +1139,7 @@ p{
           cursor: pointer;
           transition: border-color .15s ease;
           max-width: 74px;
+          background: #fff;
 
           img {
             width: 100%;

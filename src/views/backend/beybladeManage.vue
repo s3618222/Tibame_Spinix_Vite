@@ -56,7 +56,8 @@
             <div class="col col-id">{{ part.code }}</div>
             <div class="col col-preview">
               <div class="beyblade-thumb" :class="{ 'beyblade-thumb--disabled': !part.is_show }">
-                <img :src="`${baseUrl}${part.pic}`" :alt="part.name">
+                <img v-if="getBeybladeImageUrl(part.pic)" :src="getBeybladeImageUrl(part.pic)" :alt="part.name">
+                <i v-else class="fa-solid fa-image" aria-hidden="true"></i>
               </div>
             </div>
             <div class="col col-name">{{ part.name }}</div>
@@ -104,6 +105,7 @@
 
 <script>
 import Pagination from "@/components/pagination.vue";
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl.js";
 
 export default {
   name: "BeybladeManage",
@@ -119,7 +121,11 @@ export default {
       currentPage: 1,
       pageSize: 5,
 
-      categoryOptions: ["戰刃", "固鎖", "軸心"],
+      categoryLabelMap: {
+        Blade: "戰刃",
+        Ratchet: "固鎖",
+        Bit: "軸心"
+      },
 
       filters: {
         keyword: "",
@@ -127,109 +133,7 @@ export default {
         status: ""
       },
 
-      // 陀螺零件假資料
-      parts: [
-        {
-          id: 1,
-          code: "#P-101",
-          name: "暴風天馬",
-          category: "戰刃",
-          attack: 85,
-          defense: 40,
-          pic: "/build/blade/暴風天馬.png",
-          is_show: true
-        },
-        {
-          id: 2,
-          code: "#P-102",
-          name: "蒼龍神劍",
-          category: "戰刃",
-          attack: 78,
-          defense: 55,
-          pic: "/build/blade/蒼龍神劍.png",
-          is_show: true
-        },
-        {
-          id: 3,
-          code: "#P-103",
-          name: "玄冥戰甲",
-          category: "戰刃",
-          attack: 60,
-          defense: 88,
-          pic: "/build/blade/玄冥戰甲.png",
-          is_show: false
-        },
-        {
-          id: 4,
-          code: "#P-104",
-          name: "BX-50 固定環",
-          category: "固鎖",
-          attack: 45,
-          defense: 70,
-          pic: "/build/ratchet/BX-50-04.png",
-          is_show: true
-        },
-        {
-          id: 5,
-          code: "#P-105",
-          name: "CX-17 固定環",
-          category: "固鎖",
-          attack: 50,
-          defense: 65,
-          pic: "/build/ratchet/CX-17-01.png",
-          is_show: true
-        },
-        {
-          id: 6,
-          code: "#P-106",
-          name: "UX-21 固定環",
-          category: "固鎖",
-          attack: 55,
-          defense: 60,
-          pic: "/build/ratchet/UX-21-02.png",
-          is_show: false
-        },
-        {
-          id: 7,
-          code: "#P-107",
-          name: "Xtreme 軸心",
-          category: "軸心",
-          attack: 98,
-          defense: 15,
-          pic: "/build/bit/UX-20.png",
-          is_show: true
-        },
-        {
-          id: 8,
-          code: "#P-108",
-          name: "Ball 軸心",
-          category: "軸心",
-          attack: 30,
-          defense: 92,
-          pic: "/build/bit/BX-50-01.png",
-          is_show: true
-        },
-        {
-          id: 9,
-          code: "#P-109",
-          name: "鳳凰翔羽",
-          category: "戰刃",
-          attack: 82,
-          defense: 48,
-          pic: "/build/blade/鳳凰翔羽.png",
-          is_show: true
-        },
-        {
-          id: 10,
-          code: "#P-110",
-          name: "Gear 軸心",
-          category: "軸心",
-          attack: 70,
-          defense: 50,
-          pic: "/build/bit/BXG-57-02.png",
-          is_show: false
-        }
-      ]
+      parts: []
     };
   },
 
@@ -269,6 +173,11 @@ export default {
 
     displayRangeEnd() {
       return Math.min(this.currentPage * this.pageSize, this.filteredParts.length);
+    },
+
+    categoryOptions() {
+      //Object.values：把一個物件裡所有的「值」抓出來,轉換成一個真正的陣列
+      return Object.values(this.categoryLabelMap);
     }
   },
 
@@ -278,6 +187,33 @@ export default {
         this.currentPage = 1;
       },
       deep: true
+    }
+  },
+
+  async created() {
+    try {
+      const res = await fetch(`${phpBaseUrl}/build/getBeybladeManageList.php`, {
+        credentials: "include"
+      });
+      const result = await res.json();
+
+      if (result.success) {
+        this.parts = result.data.map(item => ({
+          id: item.beyblade_id,
+          code: `#P-${item.beyblade_id}`,
+          name: item.name,
+          category: this.categoryLabelMap[item.category] ?? item.category,
+          attack: Number(item.attack),
+          defense: Number(item.defense),
+          pic: item.pic,
+          is_show: Number(item.is_show)
+        }));
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      console.error("零件列表載入失敗", error);
+      alert("零件列表載入失敗，請稍後再試");
     }
   },
 
@@ -294,7 +230,17 @@ export default {
 
     handleAddPart() {
       this.$router.push({ name: "backend-beyblade-new" });
-    }
+    },
+
+    getBeybladeImageUrl(pic) {
+      if (!pic) {
+        return null;
+      }
+      if (pic.startsWith("uploads/beyblade/")) {
+        return `${phpBaseUrl}/${pic}`;
+      }
+      return this.baseUrl + pic;
+    },
   }
 };
 </script>
@@ -529,11 +475,20 @@ export default {
 
   background-color: #efedeb;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   img {
     width: 100%;
     height: 100%;
     display: block;
     object-fit: cover;
+  }
+
+  i {
+    font-size: 20px;
+    color: map-get($color, neutral);
   }
 
   // 已停用零件：縮圖灰階降飽和 + 80% 透明度
