@@ -124,6 +124,7 @@
           :state="item.stateLabel"
           :type="item.typeLabel"
           :condition="item.conditionLabel"
+          :applyId="item.applyId"
           @reply-exchange="handleReplyExchange"
       />
     </div>
@@ -314,12 +315,15 @@ export default {
         this.myCommentData = [];
       }
     },
-    handleReplyExchange(item) {
-      replyExchange(this.exchangeListData, {
-        postId: item.post_id,
-        applyId: item.applyId,
-        posterName: item.username
-      });
+    async handleReplyExchange({ applyId, posterName }) {
+
+
+      const success = await replyExchange({applyId: applyId,posterName});
+
+      if(success){
+        await this.fetchExchangeList();   // 補上這行：重新抓文章列表，狀態變化的真正來源
+        await this.fetchComments();
+      }
     }
   }
 };

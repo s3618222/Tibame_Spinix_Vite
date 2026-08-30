@@ -26,7 +26,7 @@ $stmt->execute([$post_id]);
 $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 function FormatExchangRow(array $row): array {
-   $boolFieles = ['is_show'];
+   $boolFieles = ['is_show', 'is_choose'];
    $stringFields = ['post_id'];
 
    foreach ($boolFieles as $field) {

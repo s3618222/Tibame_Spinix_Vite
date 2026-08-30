@@ -218,13 +218,14 @@
               :isChoose="comment.is_choose"
               :articleStatus="article.status"
               :postId="article.post_id"
-              :posterName="article.name"
+              :posterName="article.mem_name"
               :contact="comment.comm_contact"
               :remove_reason="comment.remove_reason"
               :isShow="comment.is_show"
               :isAdmin="isAdmin"
               @select-applicant="handleSelectApplicant"
               @toggle-comment-status="handleToggleCommentStatus"
+              @reply-confirmed="handleReplyConfirmed"
             />
           </ul>
           <p v-if="!sortedComments.length" class="empty-state">這裡還很安靜，成為第一個提出交換的人吧！</p>
@@ -332,7 +333,6 @@ function fetchCurrentMember() {
       } else { //未登入時
         currentUserId.value = null;
       }
-      // console.log("目前登入會員：", currentUserId.value);
   });
 }
 
@@ -347,7 +347,9 @@ try {
   route = null;
 }
 
-
+async function handleReplyConfirmed() {
+  await fetchArticle();
+}
 
 const articleId = computed(() => {
   if (route) {
@@ -688,9 +690,6 @@ async function handleSubmit() {
   }else{
     alert(result.message || '送出失敗');
   }
-
-  // console.log('送出交換提議：', { ...form });
-  // 之後這裡打 API，新增一筆 fakeComments（申請），articleId 用 article.value.id
 
 }
 
