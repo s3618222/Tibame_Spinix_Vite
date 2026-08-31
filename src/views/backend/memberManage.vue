@@ -17,9 +17,9 @@
       <div class="filter-search">
         <i class="fa-solid fa-magnifying-glass"></i>
         <input
-          v-model="searchId"
+          v-model="searchName"
           type="text"
-          placeholder="搜尋會員ID"
+          placeholder="搜尋會員名稱"
         >
       </div>
     </div>
@@ -40,7 +40,7 @@
 
         <!-- 資料列 -->
         <div
-          v-for="member in members"
+          v-for="member in pagedMembers"
           :key="member.id"
           class="member-table__row"
         >
@@ -48,18 +48,17 @@
           <div class="col col--name">{{ member.name }}</div>
           <div class="col col--account">{{ member.account }}</div>
           <div class="col col--status">
-            <MemberStatusPill :status="member.battleStatus" />
+            <MemberStatusPill :status="member.battleStatus"/>
           </div>
           <div class="col col--status">
-            <MemberStatusPill :status="member.forumStatus" />
+            <MemberStatusPill :status="member.forumStatus"/>
           </div>
           <div class="col col--status">
-            <MemberStatusPill :status="member.marketStatus" />
+            <MemberStatusPill :status="member.marketStatus"/>
           </div>
           <div class="col col--action">
             <button
               type="button"
-              class="action-btn"
               @click="toggleMenu(member.id)"
             >
               <i class="fa-solid fa-ellipsis-vertical"></i>
@@ -119,34 +118,73 @@
 </template>
 
 <script setup>
-  import { ref } from "vue";
+  import { ref, computed, watch, onMounted } from "vue";
   import MemberStatusPill from "@/components/backend/member/MemberStatusPill.vue";
   import SuspendModal from "@/components/backend/member/SuspendModal.vue";
   import RestoreModal from "@/components/backend/member/RestoreModal.vue";
   import Pagination from "@/components/pagination.vue";
 
-  // 假資料（欄位命名對齊 DB member 表語意，方便日後接 API）
-  const members = ref([
-    { id: 1234, name: "大爆殺神", account: "killer@gmail.com", battleStatus: "normal", forumStatus: "normal", marketStatus: "restricted", marketUntil: "2026/9/12" },
-    { id: 1235, name: "旋風小子", account: "spin@gmail.com", battleStatus: "normal", forumStatus: "normal", marketStatus: "normal" },
-    { id: 1236, name: "陀螺王", account: "king@gmail.com", battleStatus: "normal", forumStatus: "normal", marketStatus: "normal" },
-    { id: 1237, name: "無敵鐵金剛", account: "iron@gmail.com", battleStatus: "normal", forumStatus: "normal", marketStatus: "normal" },
-    { id: 1238, name: "閃電俠", account: "flash@gmail.com", battleStatus: "restricted", battleUntil: "2026/8/31", forumStatus: "normal", marketStatus: "normal" },
-    { id: 1239, name: "小小兵", account: "minion@gmail.com", battleStatus: "normal", forumStatus: "restricted", forumUntil: "2026/9/5", marketStatus: "normal" },
-    { id: 1240, name: "戰鬥陀螺", account: "beyblade@gmail.com", battleStatus: "normal", forumStatus: "normal", marketStatus: "normal" },
-    { id: 1241, name: "旋轉大師", account: "master@gmail.com", battleStatus: "normal", forumStatus: "normal", marketStatus: "normal" },
-    { id: 1242, name: "暴走族", account: "runaway@gmail.com", battleStatus: "normal", forumStatus: "normal", marketStatus: "normal" },
-    { id: 1243, name: "金屬狂潮", account: "metal@gmail.com", battleStatus: "normal", forumStatus: "normal", marketStatus: "normal" }
-  ]);
+  // PHP API 路徑（比照其他後台頁）
+  const phpBaseUrl =
+    location.hostname === "localhost" || location.hostname === "127.0.0.1"
+      ? "http://localhost:8888/Spinix/php"
+      : "/ckd101/g2/php";
 
-  // 篩選 / 搜尋（純外觀，尚未做實際過濾）
+  // 會員清單（由後端載入）
+  const members = ref([]);
+
+  async function fetchMembers() {
+    try {
+      const res = await fetch(`${phpBaseUrl}/member/member_manage_get.php`, {
+        credentials: "include"
+      });
+      const data = await res.json();
+      if (data.success) {
+        members.value = data.members;
+      }
+    } catch {
+      // 讀取失敗時保持空清單
+    }
+  }
+
+  onMounted(fetchMembers);
+
+  // 篩選 / 搜尋
   const filterType = ref("all");
-  const searchId = ref("");
+  const searchName = ref("");
 
-  // 分頁（純外觀，尚未串接 API）
+  // 依篩選（所有 / 已停權）+ 搜尋會員名稱過濾
+  const filteredMembers = computed(() => {
+    return members.value.filter((m) => {
+      // 已停權：三種權限任一為受限
+      if (filterType.value === "suspended") {
+        const suspended =
+          m.battleStatus === "restricted" ||
+          m.forumStatus === "restricted" ||
+          m.marketStatus === "restricted";
+        if (!suspended) return false;
+      }
+      // 搜尋會員名稱（不分大小寫、字串包含）
+      const keyword = searchName.value.trim().toLowerCase();
+      if (keyword && !m.name.toLowerCase().includes(keyword)) return false;
+      return true;
+    });
+  });
+
+  // 分頁
   const currentPage = ref(1);
   const pageSize = ref(10);
-  const total = ref(30); // 假資料總筆數，接 API 後改為真實總數
+  const total = computed(() => filteredMembers.value.length);
+
+  const pagedMembers = computed(() => {
+    const start = (currentPage.value - 1) * pageSize.value;
+    return filteredMembers.value.slice(start, start + pageSize.value);
+  });
+
+  // 切換篩選 / 搜尋時回到第 1 頁
+  watch([filterType, searchName], () => {
+    currentPage.value = 1;
+  });
 
   // 列操作下拉
   const openMenuId = ref(null);
