@@ -84,54 +84,49 @@ export const applyStatusLabelMap = {
 };
 
 // 回覆確認
-export async function replyExchange({ applyId, posterName }) {
-   const isConfirm = window.confirm(
-      `${posterName}對你的交換提議有興趣!\n是否確認交換?按下確認後將可以查看雙方的聯絡資訊`
-   );
+// export async function handleConfirmExchange() {
+//    const isConfirm = window.confirm(
+//       `${posterName}對你的交換提議有興趣!\n是否確認交換?按下確認後將可以查看雙方的聯絡資訊`
+//    );
 
-   if (!isConfirm) return;
+//    if (!isConfirm) return;
 
-   const payload = {
-      comm_id: applyId
-   };
+//    const payload = { comm_id: props.id };
 
+//    try {
+//       const res = await fetch(`${phpBaseUrl}/exchange/replyToConfirm.php`, {
+//          method: "PATCH",
+//          credentials: "include",
+//          headers: { 'Content-Type': 'application/json' },
+//          body: JSON.stringify(payload)
+//       });
 
-   try {
-      const res = await fetch(`${phpBaseUrl}/exchange/replyToConfirm.php`, {
-         method: "PATCH",
-         credentials: "include",
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify(payload)
-      });
+//       const result = await res.json();
 
-      const result = await res.json();
-
-      if (result.success) {
-         alert('確認成功!現在可以查看對方的聯絡資訊了');
-         return true;
-      } else {
-         alert(result.message || '確認失敗');
-         return false;
-      }
-   } catch (err) {
-      alert('系統發生錯誤，請稍後再試');
-      return false;
-   }
+//       if (result.success) {
+//          alert('確認成功!現在可以查看對方的聯絡資訊了');
+//          emit('reply-confirmed');
+//       } else {
+//          alert(result.message || '確認失敗');
+//       }
+//    } catch (err) {
+//       alert('系統發生錯誤，請稍後再試');
+//    }
 
 
-}
+// }
 
-export function completeExchange(exchangeList, { postId }) {
-   const targetArticle = exchangeList.find(article => article.post_id === postId);
-   if (targetArticle) {
-      targetArticle.status = 'completed';
-   }
-}
+// export function completeExchange(exchangeList, { postId }) {
+//    const targetArticle = exchangeList.find(article => article.post_id === postId);
+//    if (targetArticle) {
+//       targetArticle.status = 'completed';
+//    }
+// }
 
-export function cancelExchange(exchangeList, { postId }) {
-   const targetArticle = exchangeList.find(article => article.post_id === postId);
-   if (targetArticle) {
-      targetArticle.status = 'available';
-      targetArticle.exchange_comm_id = null;
-   }
-}
+// export function cancelExchange(exchangeList, { postId }) {
+//    const targetArticle = exchangeList.find(article => article.post_id === postId);
+//    if (targetArticle) {
+//       targetArticle.status = 'available';
+//       targetArticle.exchange_comm_id = null;
+//    }
+// }

@@ -350,6 +350,7 @@ try {
 
 async function handleReplyConfirmed() {
   await fetchArticle();
+  await fetchComments();
 }
 
 const articleId = computed(() => {

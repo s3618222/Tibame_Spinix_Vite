@@ -42,14 +42,14 @@
           <p class="form-block__hint">※ 此停權原因將以系統通知形式發送給該會員</p>
           <textarea
             v-model="reason"
-            maxlength="30"
+            maxlength="50"
             class="form-block__textarea"
-            placeholder="輸入違規詳情（30 字內）"
+            placeholder="輸入違規詳情（50 字內）"
           ></textarea>
           <span
             class="form-block__count"
-            :class="{ 'form-block__count--max': reason.length >= 30 }"
-          >{{ reason.length }} / 30</span>
+            :class="{ 'form-block__count--max': reason.length >= 50 }"
+          >{{ reason.length }} / 50</span>
         </div>
 
         <!-- 停權處分 -->

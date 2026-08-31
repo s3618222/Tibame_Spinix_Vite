@@ -44,6 +44,7 @@ export default {
 @use '@/assets/scss/mixin' as *;
 
 .author-card {
+  width: 100%;
   background-color: white;
   display: flex;
   gap: 12px;
@@ -61,6 +62,23 @@ export default {
   .txt-box {
     display: flex;
     align-items: center; gap: 8px;
+    width: 100%;
+    min-width: 0;
+
+    .name-writer {
+      min-width: 0;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 16px;
+      min-height: 18px;
+      max-width: 80%;
+    }
+
+    .score-writer {
+      flex-shrink: 0;
+    }
   }
 }
 
