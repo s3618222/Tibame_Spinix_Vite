@@ -125,8 +125,9 @@
           :type="item.typeLabel"
           :condition="item.conditionLabel"
           :applyId="item.applyId"
-          @reply-exchange="handleReplyExchange"
-      />
+          @confirm-exchange="handleConfirmExchange"
+          @reject-exchange="handleRejectExchange"
+        />
     </div>
 
     <p v-else class="empty-msg">目前沒有符合的紀錄</p>
@@ -147,7 +148,7 @@
 <script>
 import StatusTabs from "./controlTabs.vue";
 import ProductCard from "./productCard.vue";
-import { exchangeList, getMyComments ,statusLabelMap, applyStatusLabelMap, replyExchange ,typeLabelMap ,conditionLabelMap } from '@/data/ExchangeData.js';
+import { exchangeList, getMyComments ,statusLabelMap, applyStatusLabelMap, typeLabelMap ,conditionLabelMap } from '@/data/ExchangeData.js';
 // 分頁器
 import Pagination from "@/components/pagination.vue";
 
@@ -169,6 +170,10 @@ export default {
       activeTab: 'myexchange',
       currentPage: 1,
       pageSize: 9,
+      phpBaseUrl :
+        location.hostname === "localhost" || location.hostname === "127.0.0.1"
+        ? "http://localhost:8888/Spinix/php"
+        : `${location.origin}/ckd101/g2/php`
     };
   },
 
@@ -287,11 +292,8 @@ export default {
   methods: {
   
     async fetchCurrentMember() {
-      const phpBaseUrl =
-        location.hostname === "localhost" || location.hostname === "127.0.0.1"
-        ? "http://localhost:8888/Spinix/php"
-        : `${location.origin}/ckd101/g2/php`;
-      const res = await fetch(`${phpBaseUrl}/member/currentMember_get.php`,{
+      
+      const res = await fetch(`${this.phpBaseUrl}/member/currentMember_get.php`,{
         credentials: "include" 
       });
       const result = await res.json();
@@ -315,14 +317,52 @@ export default {
         this.myCommentData = [];
       }
     },
-    async handleReplyExchange({ applyId, posterName }) {
+    async handleConfirmExchange({ applyId }) {
+      try {
+        const res = await fetch(`${this.phpBaseUrl}/exchange/replyToConfirm.php`, {
+          method: "PATCH",
+          credentials: "include",
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ comm_id: applyId })
+        });
 
+        const result = await res.json();
 
-      const success = await replyExchange({applyId: applyId,posterName});
+        if (result.success) {
+          alert('確認成功!現在可以查看對方的聯絡資訊了');
+          await this.fetchExchangeList();
+          await this.fetchComments();
+        } else {
+          alert(result.message || '確認失敗');
+        }
+      } catch (err) {
+        alert('系統發生錯誤，請稍後再試');
+      }
+    },
 
-      if(success){
-        await this.fetchExchangeList();   // 補上這行：重新抓文章列表，狀態變化的真正來源
-        await this.fetchComments();
+    async handleRejectExchange({ postId }) {
+      const isConfirm = window.confirm('確定要拒絕這個交換邀請嗎？');
+      if (!isConfirm) return;
+
+      try {
+        const res = await fetch(`${this.phpBaseUrl}/exchange/CompleteExchange.php`, {
+          method: "PATCH",
+          credentials: "include",
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ postId, action: 'cancel' })
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          alert('已拒絕交換邀請');
+          await this.fetchExchangeList();
+          await this.fetchComments();
+        } else {
+          alert(result.message || '操作失敗，請稍後再試');
+        }
+      } catch (err) {
+        alert('系統發生錯誤，請稍後再試');
       }
     }
   }
