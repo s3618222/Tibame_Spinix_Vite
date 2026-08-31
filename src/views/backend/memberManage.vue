@@ -239,9 +239,29 @@
     }
   }
 
-  function handleRestore(payload) {
-    // 尚未串接 API
-    console.log("恢復權限", payload);
+  async function handleRestore(payload) {
+    // 前端驗證：至少一項要恢復的權限
+    if (!payload.scopes || payload.scopes.length === 0) {
+      alert("請至少選擇一項要恢復的權限");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("memberId", payload.memberId);
+      formData.append("scopes", payload.scopes.join(","));
+
+      const res = await fetch(`${phpBaseUrl}/member/member_restore_post.php`, {
+        method: "POST",
+        body: formData,
+        credentials: "include"
+      });
+      const data = await res.json();
+      alert(data.message);
+      if (data.success) fetchMembers();
+    } catch {
+      alert("無法連線至伺服器，請稍後再試");
+    }
   }
 </script>
 
