@@ -6,16 +6,28 @@
       </div>
 
       <div class="signup-body">
-        <!-- 帳號區 -->
-        <div class="form-section">
+        <!-- 步驟進度 -->
+        <div class="steps">
+          <div class="steps__item" :class="{ 'is-active': currentStep >= 1 }">
+            <span class="steps__num">1</span>
+            <p class="steps__label">帳號密碼</p>
+          </div>
+          <div class="steps__line" :class="{ 'is-active': currentStep >= 2 }"></div>
+          <div class="steps__item" :class="{ 'is-active': currentStep >= 2 }">
+            <span class="steps__num">2</span>
+            <p class="steps__label">個人資料</p>
+          </div>
+        </div>
+
+        <!-- ===== Step 1：帳號 / 密碼 ===== -->
+        <div v-if="currentStep === 1" class="form-section">
           <div class="form-group">
             <label for="signUpAccount">帳號</label>
             <input
               id="signUpAccount"
               type="email"
               v-model="formData.account"
-              placeholder="輸入帳號"
-              required
+              placeholder="輸入帳號（Email）"
             />
           </div>
 
@@ -26,7 +38,6 @@
               type="password"
               v-model="formData.password"
               placeholder="輸入密碼"
-              required
             />
           </div>
 
@@ -37,15 +48,23 @@
               type="password"
               v-model="formData.confirmPassword"
               placeholder="確認密碼"
-              required
             />
           </div>
+
+          <p v-if="stepError" class="error">{{ stepError }}</p>
+
+          <button type="button" class="btn-signup" @click="goNext">
+            下一步
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+
+          <p class="signin-hint">
+            已經有帳號？<a :href="`${baseUrl}signIn.html`">返回登入</a>
+          </p>
         </div>
 
-        <!-- 基本資料填寫 -->
-        <div class="form-section">
-          <h2 class="section-title">基本資料填寫</h2>
-
+        <!-- ===== Step 2：個人資料（+ 未滿18 緊急聯絡人）===== -->
+        <div v-else class="form-section">
           <div class="form-group">
             <label for="signUpName">使用者名稱</label>
             <input
@@ -86,50 +105,56 @@
               Spinix 為玩家交流平台。若您未滿 18 歲，建議參與任何線下約戰、交流或交換活動時，由家長、監護人或其他成年家屬陪同，以確保活動安全。
             </p>
           </div>
-        </div>
 
-        <!-- 緊急聯絡人資訊 -->
-        <div class="emergency">
-          <h2 class="section-title">
-            緊急聯絡人資訊 <span class="section-title__note">(未滿 18 歲必填)</span>
-          </h2>
+          <!-- 緊急聯絡人資訊：偵測到未滿 18 歲才展開 -->
+          <transition name="reveal">
+            <div v-if="isMinor" class="emergency">
+              <h2 class="section-title">
+                緊急聯絡人資訊 <span class="section-title__note">(未滿 18 歲必填)</span>
+              </h2>
 
-          <div class="form-group">
-            <label for="signUpRepName">緊急聯絡人姓名</label>
-            <input
-              id="signUpRepName"
-              type="text"
-              v-model="formData.repName"
-              placeholder="輸入緊急聯絡人姓名"
-            />
-          </div>
+              <div class="form-group">
+                <label for="signUpRepName">緊急聯絡人姓名</label>
+                <input
+                  id="signUpRepName"
+                  type="text"
+                  v-model="formData.repName"
+                  placeholder="輸入緊急聯絡人姓名"
+                  :required="isMinor"
+                />
+              </div>
 
-          <div class="form-group">
-            <label for="signUpRepRelation">關係</label>
-            <div class="select-wrap">
-              <select id="signUpRepRelation" v-model="formData.repRelation">
-                <option value="" disabled>選擇與緊急聯絡人之關係</option>
-                <option value="FATHER">父親</option>
-                <option value="MOTHER">母親</option>
-                <option value="OTHER">其他</option>
-              </select>
-              <i class="fa-solid fa-chevron-down"></i>
+              <div class="form-group">
+                <label for="signUpRepRelation">關係</label>
+                <div class="select-wrap">
+                  <select
+                    id="signUpRepRelation"
+                    v-model="formData.repRelation"
+                    :required="isMinor"
+                  >
+                    <option value="" disabled>選擇與緊急聯絡人之關係</option>
+                    <option value="FATHER">父親</option>
+                    <option value="MOTHER">母親</option>
+                    <option value="OTHER">其他</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="signUpRepPhone">緊急聯絡人電話</label>
+                <input
+                  id="signUpRepPhone"
+                  type="tel"
+                  v-model="formData.repPhone"
+                  placeholder="輸入緊急聯絡人電話"
+                  :required="isMinor"
+                />
+              </div>
             </div>
-          </div>
+          </transition>
 
-          <div class="form-group">
-            <label for="signUpRepPhone">緊急聯絡人電話</label>
-            <input
-              id="signUpRepPhone"
-              type="tel"
-              v-model="formData.repPhone"
-              placeholder="輸入緊急聯絡人電話"
-            />
-          </div>
-        </div>
-
-        <!-- 送出區 -->
-        <div class="signup-submit">
+          <!-- 條款 -->
           <label class="terms">
             <input type="checkbox" v-model="formData.agreeTerms" />
             <span>
@@ -137,15 +162,20 @@
             </span>
           </label>
 
-          <button type="submit" class="btn-signup">
-            註冊
-            <i class="fa-solid fa-arrow-right"></i>
-          </button>
-        </div>
+          <p v-if="stepError" class="error">{{ stepError }}</p>
 
-        <p class="signin-hint">
-          已經有帳號？<a :href="`${baseUrl}signIn.html`">返回登入</a>
-        </p>
+          <!-- 上一步 / 註冊 -->
+          <div class="step-nav">
+            <button type="button" class="btn-back" @click="goBack">
+              <i class="fa-solid fa-arrow-left"></i>
+              上一步
+            </button>
+            <button type="submit" class="btn-signup">
+              註冊
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </form>
   </div>
@@ -157,6 +187,8 @@ export default {
 
   data() {
     return {
+      currentStep: 1,
+      stepError: "",
       formData: {
         account: "",
         password: "",
@@ -175,12 +207,64 @@ export default {
   computed: {
     baseUrl() {
       return import.meta.env.BASE_URL;
+    },
+
+    // 依生日換算是否未滿 18 歲（觸發緊急聯絡人區塊）
+    isMinor() {
+      if (!this.formData.birth) return false;
+
+      const birth = new Date(this.formData.birth);
+      if (Number.isNaN(birth.getTime())) return false;
+
+      const today = new Date();
+      let age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--;
+      }
+      return age < 18;
     }
   },
 
   methods: {
+    // Step 1 → Step 2：前端輕量預檢（email 格式、密碼一致），唯一性留給後端
+    goNext() {
+      this.stepError = "";
+
+      if (!this.formData.account || !this.formData.password || !this.formData.confirmPassword) {
+        this.stepError = "請填寫帳號與密碼";
+        return;
+      }
+
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(this.formData.account)) {
+        this.stepError = "帳號需為有效的 Email";
+        return;
+      }
+
+      if (this.formData.password !== this.formData.confirmPassword) {
+        this.stepError = "兩次輸入的密碼不一致";
+        return;
+      }
+
+      this.currentStep = 2;
+    },
+
+    goBack() {
+      this.stepError = "";
+      this.currentStep = 1;
+    },
+
     handleSubmit() {
-      // TODO: 串接註冊 API（php/member/），含帳號唯一性、密碼一致、未滿18必填等驗證後導轉
+      this.stepError = "";
+
+      if (!this.formData.agreeTerms) {
+        this.stepError = "請先同意服務條款與隱私權政策";
+        return;
+      }
+
+      // TODO: 串接註冊 API（php/member/signUp_post.php），含帳號唯一性、
+      //       未滿18緊急聯絡人必填等後端驗證，成功後導回 signIn.html
     }
   }
 };
@@ -226,6 +310,64 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+/* 步驟進度 */
+.steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: map.get($color, gray);
+    color: map.get($color, white);
+    font-size: map.get($fontSize, default);
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+
+  &__label {
+    font-size: map.get($fontSize, hint);
+    color: map.get($color, hint);
+    transition: color 0.2s ease;
+  }
+
+  &__line {
+    width: 64px;
+    height: 2px;
+    margin-bottom: 22px; // 對齊圓點中心
+    background-color: map.get($color, gray);
+    transition: background-color 0.2s ease;
+
+    &.is-active {
+      background-color: map.get($color, primary);
+    }
+  }
+
+  &__item.is-active {
+    .steps__num {
+      background-color: map.get($color, primary);
+      color: map.get($color, secondary);
+    }
+
+    .steps__label {
+      color: map.get($color, secondary);
+    }
+  }
 }
 
 .form-section {
@@ -340,11 +482,16 @@ export default {
   border: 1px solid map.get($color, black);
 }
 
-/* 送出區 */
-.signup-submit {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+/* 緊急聯絡人展開過渡 */
+.reveal-enter-active,
+.reveal-leave-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.reveal-enter-from,
+.reveal-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
 .terms {
@@ -370,7 +517,34 @@ export default {
   }
 }
 
+/* 上一步 / 註冊 按鈕列 */
+.step-nav {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+
+  border: 1px solid map.get($color, secondary);
+  background-color: map.get($color, white);
+  color: map.get($color, secondary);
+  font-size: map.get($fontSize, h4);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: map.get($color, gray);
+  }
+}
+
 .btn-signup {
+  flex: 1;
   width: 100%;
   padding: 12px;
   display: flex;
@@ -388,6 +562,12 @@ export default {
   &:hover {
     background-color: darken(map.get($color, primary), 8%);
   }
+}
+
+.error {
+  text-align: center;
+  font-size: map.get($fontSize, hint);
+  color: map.get($color, error);
 }
 
 .signin-hint {
