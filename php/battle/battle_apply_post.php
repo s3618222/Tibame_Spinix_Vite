@@ -242,7 +242,7 @@
     $applicant = $stmt->fetch(PDO::FETCH_ASSOC);
 
     //通知內容
-    $notificationContent = $applicant["MEM_NAME"] . " 已申請加入你的約戰「" . $battle["BATTLE_TITLE"] . "」";
+    $notificationContent = $applicant["MEM_NAME"] . " 已申請加入您的約戰「" . $battle["BATTLE_TITLE"] . "」";
 
     //將通知訊息放進notification資料表
     $sql = "

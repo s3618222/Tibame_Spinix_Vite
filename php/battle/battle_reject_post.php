@@ -167,7 +167,7 @@
     $notificationMemberId = (int) $battle["PARTICIPANT_ID"];
 
     //通知內容
-    $notificationContent = "你的約戰申請「" . $battle["BATTLE_TITLE"] . "」已被 " . $initiator["MEM_NAME"] . " 拒絕";
+    $notificationContent = "您的約戰申請「" . $battle["BATTLE_TITLE"] . "」已被 " . $initiator["MEM_NAME"] . " 拒絕";
 
     //新增通知至notification表格
     $sql = "
