@@ -22,6 +22,7 @@
         <!-- 管理員狀態 -->
         <div class="form-field">
           <label class="form-field__label">管理員狀態</label>
+           <span class="form-field__hint">管理員設為離職後，將停權並不再登入</span>
           <div class="form-field__select">
             <select v-model="state">
               <option value="在職">在職</option>
@@ -195,6 +196,13 @@
         font-size: 14px;
       }
     }
+  }
+
+  .form-field__hint{
+    display: block;
+    font-size: map-get($fontSize, hint);
+    color: map-get($color, hint);
+    padding: .5rem 0;
   }
 
   .admin-form__buttons {
