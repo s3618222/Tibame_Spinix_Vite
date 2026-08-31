@@ -23,7 +23,7 @@
         :show_contact="true"
       />
       <div class="comment-footer" v-if="isArticleShow && !isCommentAuthor && comment.isShow !== false">
-        <a :href="`${baseURL}complaint.html`" type="button">
+        <a :href="complaintUrl" type="button">
           <i class="fa-regular fa-flag"></i>
           <span>檢舉</span>
         </a>
@@ -68,9 +68,13 @@ import WarningBanner from '@/components/WarningBanner.vue';
     },
 
     computed: {
-  isCommentAuthor() {
-    return this.currentMemberId !== null
-      && Number(this.currentMemberId) === Number(this.comment.memId);
+      isCommentAuthor() {
+        return this.currentMemberId !== null
+        && Number(this.currentMemberId) === Number(this.comment.memId);
+      },
+
+      complaintUrl() {
+        return `${this.baseURL}complaint.html?type=forum&msg_id=${this.comment.id}`;
       }
     }
   }

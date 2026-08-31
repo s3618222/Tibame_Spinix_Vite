@@ -8,7 +8,7 @@
           <div class="form-group form-group--type">
             <label for="complaintType">申訴類型</label>
             <div class="select-wrap">
-              <select id="complaintType" v-model="formData.type" :disabled="isBattleSource">
+              <select id="complaintType" v-model="formData.type" :disabled="isBattleSource || isForumSource">
                 <option v-for="option in typeOptions" :key="option" :value="option">
                   {{ option }}
                 </option>
@@ -23,7 +23,7 @@
               id="complaintTarget"
               type="text"
               v-model="formData.target"
-              :disabled="isBattleSource"
+              :disabled="isBattleSource || isForumSource"
               required
             />
           </div>
@@ -35,7 +35,7 @@
             id="complaintTitle"
             type="text"
             v-model="formData.title"
-            :disabled="isBattleSource"
+            :disabled="isBattleSource || isForumSource"
             required
           />
         </div>
@@ -103,6 +103,7 @@
 <script>
 //導入約戰申訴初始化資料API模組
 import { fetchBattleComplaintContext, submitBattleComplaint } from "@/assets/js/complaint/battleComplaint.js";
+import { fetchForumComplaintContext, submitForumComplaint } from "@/assets/js/complaint/forumComplaint.js";
 
 const MAX_IMAGES = 5;
 
@@ -121,7 +122,9 @@ export default {
       images: [],
       maxImages: MAX_IMAGES,
 
-      battleId: null
+      battleId: null,
+      artId: null,
+      msgId: null
     };
   },
 
@@ -130,6 +133,12 @@ export default {
       const query = new URLSearchParams(window.location.search);
 
       return query.get("type") === "battle";
+    },
+
+    isForumSource() {
+      const query = new URLSearchParams(window.location.search);
+
+      return query.get("type") === "forum";
     }
   },
 
@@ -187,6 +196,27 @@ export default {
 
       }
 
+      //論壇申訴
+      if (this.isForumSource) {
+        try {
+          const data = await submitForumComplaint(
+            this.artId,
+            this.msgId,
+            this.formData.description,
+            this.images
+          );
+
+          alert(data.message);
+          window.location.href = `${import.meta.env.BASE_URL}member.html#/appeal`;
+
+        } catch (error) {
+          console.error("送出論壇申訴失敗：", error);
+          alert(error.message);
+
+          return;
+        }
+      }
+
     },
 
     handleCancel() {
@@ -228,12 +258,43 @@ export default {
       }
 
 
+    },
+
+    async initForumSource() {
+      const query = new URLSearchParams(window.location.search);
+      const type = query.get("type");
+
+      if (type !== "forum") {
+        return;
+      }
+
+      const artId = query.get("art_id");
+      const msgId = query.get("msg_id");
+
+      if (!artId && !msgId) {
+        alert("缺少有效的檢舉目標");
+        return;
+      }
+
+      this.artId = artId ? Number(artId) : null;
+      this.msgId = msgId ? Number(msgId) : null;
+
+      try {
+        const data = await fetchForumComplaintContext(this.artId, this.msgId);
+
+        this.formData.type = "論壇內容";
+        this.formData.target = data.respondentName;
+        this.formData.title = data.title;
+      } catch (error) {
+        console.error("取得論壇申訴資料失敗：", error);
+        alert(error.message);
+      }
     }
   },
 
   mounted() {
     this.initBattleSource(); //載入申訴頁面時，讀取屬於約戰申訴的對應申訴資料
-
+    this.initForumSource();
   },
 };
 </script>

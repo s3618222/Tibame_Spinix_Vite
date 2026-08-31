@@ -83,6 +83,7 @@ export default {
             img: articleData.author_photo
           };
           this.article = {
+            id: articleData.art_id,
             title: articleData.title,
             content: articleData.content,
             category: CATEGORY_LABELS[articleData.category] ?? articleData.category,

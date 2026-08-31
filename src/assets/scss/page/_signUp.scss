@@ -1,0 +1,15 @@
+@use "sass:map";
+@use "../var" as *;
+
+.page-signUp {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: 88px; // 固定 header 高度
+  background-color: map.get($color, white);
+
+  #signUpApp {
+    flex: 1;
+    display: flex;
+  }
+}
