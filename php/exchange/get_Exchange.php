@@ -46,7 +46,6 @@ function getExchange($pdo, $postId = null, $params = [], $includeContact = false
 
    $stmt = $pdo->prepare($sql);
    $stmt->execute($params);
-   // echo json_encode($data, JSON_UNESCAPED_UNICODE);
    return array_map('FormatExchangRow', $stmt->fetchAll(PDO::FETCH_ASSOC));
 }
 

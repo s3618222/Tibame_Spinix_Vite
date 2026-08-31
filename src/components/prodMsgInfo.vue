@@ -99,7 +99,7 @@
    import WarningBanner from '@/components/WarningBanner.vue';
    import StatusToggleButton from '@/components/StatusToggleButton.vue';
 
-   defineEmits(['select-applicant', 'toggle-comment-status']);
+   const emit = defineEmits(['select-applicant', 'toggle-comment-status' , 'reply-confirmed']);
 
    const props = defineProps({
       id: { type: [String, Number], required: true },
@@ -121,12 +121,17 @@
 
    const statusClass = computed(() => (props.isChoose ? 'li--selected' : ''));
 
-   function handleReplyExchange() {
-      replyExchange(exchangeList, {
-         postId: props.postId,
+   async function handleReplyExchange() {
+
+
+      const success = await replyExchange({
          applyId: props.id,
          posterName: props.posterName
-      })
+      });
+
+      if(success){
+         emit('reply-confirmed');
+      }
    }
 
    function handleCompleteExchange() {

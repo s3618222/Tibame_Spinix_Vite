@@ -69,7 +69,7 @@ const props = defineProps({
       type: String,
       default: '/spinix_member_default.png'
    },
-   username: {
+   username: { // 發文者的會員名稱
       type: String,
       required: true
    },
@@ -98,6 +98,10 @@ const props = defineProps({
    context: {
       type: String,
       default: 'browse'
+   },
+   applyId:{
+      type:[String, Number],
+      default: null
    }
 });
 
@@ -137,7 +141,10 @@ function handleBtnClick(btn) {
       return;
    }
 
-   emit(btn.action, { id: props.post_id, title: props.title,username:props.username });
+   emit(btn.action, { 
+      
+      applyId: props.applyId, 
+      posterName:props.username });
 }
 
 function goToDetail() {

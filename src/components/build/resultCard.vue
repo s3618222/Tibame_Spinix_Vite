@@ -8,12 +8,20 @@
       <div class="part-item" v-for="slot in partSlots" :key="slot.category">
         <div class="part-img-box">
           <img src="/build/background-circle.png" alt="" class="bg-ring">
+          <!-- 有選圖 + 圖片載入成功 =>顯示零件圖 -->
           <img
-            v-if="selectedParts[slot.category]"
+            v-if="selectedParts[slot.category] && !imgFailedMap[slot.category]"
             :src="imgUrl(selectedParts[slot.category])"
             alt=""
             class="preview-pic"
+            @error="imgFailedMap[slot.category] = true"
           >
+          <!-- 有選圖 + 圖片載入失敗 => 顯示icon圖示 -->
+          <i
+            v-else-if="selectedParts[slot.category] && imgFailedMap[slot.category]"
+            class="fa-solid fa-image preview-fallback"
+          ></i>
+          <!-- 都沒選 => 顯示零件類別名稱 -->
           <span v-else class="preview-placeholder">{{ slot.label }}</span>
         </div>
         <div class="part-txt">
@@ -74,7 +82,8 @@ export default {
         { category: 'blade', label: '戰刃' },
         { category: 'ratchet', label: '固鎖' },
         { category: 'bit', label: '軸心' }
-      ]
+      ],
+      imgFailedMap: {} // { blade: true/false, ratchet: ..., bit: ... }
     }
   },
 
@@ -189,6 +198,13 @@ img {
         z-index: 2;
         width: 60%;
         height: 60%;
+      }
+
+      .preview-fallback {
+        position: relative;
+        z-index: 2;
+        font-size: 40px;
+        color: rgba(255, 255, 255, 0.6);
       }
 
       .preview-placeholder {
