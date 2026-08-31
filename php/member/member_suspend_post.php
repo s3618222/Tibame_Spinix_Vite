@@ -33,7 +33,7 @@
   // 取得前端資料
   $memberId = (int) ($_POST["memberId"] ?? 0);
   $scopes   = array_filter(array_map("trim", explode(",", $_POST["scopes"] ?? "")));
-  $reason   = mb_substr(trim($_POST["reason"] ?? ""), 0, 30);
+  $reason   = mb_substr(trim($_POST["reason"] ?? ""), 0, 50);
   $duration = $_POST["duration"] ?? "";
 
   // 驗證：範圍非空且皆合法
