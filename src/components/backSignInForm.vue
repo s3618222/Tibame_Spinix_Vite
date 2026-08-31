@@ -28,13 +28,23 @@
 
           <div class="form-group">
             <label for="backSignInPassword">密碼</label>
-            <input
-              id="backSignInPassword"
-              type="password"
-              v-model="formData.password"
-              placeholder="輸入密碼"
-              required
-            />
+            <div class="password-input">
+              <input
+                id="backSignInPassword"
+                :type="showPassword ? 'text' : 'password'"
+                v-model="formData.password"
+                placeholder="輸入密碼"
+                required
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                @click="togglePassword"
+                :aria-label="showPassword ? '隱藏密碼' : '顯示密碼'"
+              >
+                <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+              </button>
+            </div>
           </div>
 
           <button type="submit" class="btn-login">
@@ -64,6 +74,7 @@ export default {
         account: "",
         password: ""
       },
+      showPassword: false,
       errorMsg: ""
     };
   },
@@ -85,6 +96,10 @@ export default {
   },
 
   methods: {
+    togglePassword() {
+      this.showPassword = !this.showPassword;
+    },
+
     handleSubmit() {
       this.errorMsg = "";
 
@@ -221,6 +236,23 @@ export default {
     &:focus {
       border-color: map.get($color, secondary2);
     }
+  }
+}
+
+.password-input {
+  position: relative;
+
+  input {
+    padding-right: 41px; // 留給眼睛 icon 的空間
+  }
+
+  .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 13px;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: map.get($color, neutral);
   }
 }
 
