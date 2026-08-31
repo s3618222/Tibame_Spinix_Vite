@@ -4,21 +4,22 @@ require_once("../common/connect_ckd101g2.php");
 
 $post_id = $_GET['id'] ?? '';
 $sql = "SELECT 
-   `comm_id`,
-   `post_id`,
+   exchange_comment.`comm_id`,
+   exchange_comment.`post_id`,
    exchange_comment.`mem_id`,
    member.`mem_name` AS `name`,
    member.`MEM_PHOTO` AS `headshot`,
    `content`,
-   DATE(`create_time`) AS `create_time`,
-   `is_show`,
-   `remove_reason`,
+   DATE(exchange_comment.`create_time`) AS `create_time`,
+   exchange_comment.`is_show`,
+   exchange_comment.`remove_reason`,
    `is_choose`,
-   `comm_contact` 
+   `comm_contact` AS `contact`,
+   exchange_post.`status` AS `post_status`
    FROM `exchange_comment` 
    JOIN member on exchange_comment.`mem_id` = member.`mem_id`
-   WHERE post_id = ?
-   ORDER BY `create_time` DESC
+   JOIN exchange_post on exchange_comment.`post_id` = exchange_post.`post_id`
+   WHERE exchange_comment.`post_id` = ?
    ";
 
 $stmt = $pdo->prepare($sql);
@@ -41,6 +42,16 @@ function FormatExchangRow(array $row): array {
       }
    }
 
+   $isAgreed = !empty($row['is_choose']) && ($row['post_status'] === 'exchanging');
+   if (!$isAgreed) {
+      unset($row['contact']);
+   }
+
+   if (empty($row['remove_reason'])) {
+      unset($row['remove_reason']);
+   }
+
+   unset($row['post_status']);
    return $row;
 }
 

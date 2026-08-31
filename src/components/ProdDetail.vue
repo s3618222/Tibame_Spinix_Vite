@@ -219,7 +219,7 @@
               :articleStatus="article.status"
               :postId="article.post_id"
               :posterName="article.mem_name"
-              :contact="comment.comm_contact"
+              :contact="comment.contact"
               :remove_reason="comment.remove_reason"
               :isShow="comment.is_show"
               :isAdmin="isAdmin"

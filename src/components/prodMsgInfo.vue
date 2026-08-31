@@ -25,8 +25,8 @@
                   >
                   <div class="drawer-item">
                      <ContactDrawer
-                     :contact="contact"
-                     :show="articleStatus === 'exchanging'"
+                     :contact="props.contact"
+                     :show="props.articleStatus === 'exchanging' && props.isChoose"
                   />
                   </div>
                   <div v-if="props.isOwner && props.isChoose && props.articleStatus === 'exchanging' && !isAdmin" class="exchange-actions">
