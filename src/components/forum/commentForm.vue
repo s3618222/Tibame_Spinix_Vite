@@ -98,9 +98,9 @@
   background-color: #fff;
   box-shadow: 3px 3px 8px 3px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
-  height: 200px;
   width: 100%;
-  // height: 100%;
+  padding: 16px 16px;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -108,14 +108,14 @@
 
 a.login-area {
   display: inline-flex;
-  width: 95%;
-  height: 85%;
+  width: 100%;
 
   justify-content: center;
   align-items: center;
   background-color: map-get($color, tertiary );
   text-align: center;
   border-radius: 12px;
+  padding: 28px 20px;
 }
 
 .login-form {

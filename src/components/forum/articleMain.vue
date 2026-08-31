@@ -21,7 +21,7 @@
           <i class="fa-solid fa-share-nodes"></i>
           <span>分享</span>
         </button>
-        <a v-if="!isAuthor" :href="`${baseURL}complaint.html`" type="button">
+        <a v-if="!isAuthor" :href="complaintUrl" type="button">
           <i class="fa-regular fa-flag"></i>
           <span>檢舉</span>
         </a>
@@ -72,6 +72,12 @@ import AuthorCard from '@/components/forum/authorCard.vue';
         } catch (error) {
           console.error("複製連結失敗", error);
         }
+      }
+    },
+
+    computed: {
+      complaintUrl() {
+        return `${this.baseURL}complaint.html?type=forum&art_id=${this.article.id}`;
       }
     }
   }
