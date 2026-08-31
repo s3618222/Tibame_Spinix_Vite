@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： localhost:8889
--- 產生時間： 2026-08-28 12:02:24
+-- 產生時間： 2026-08-31 03:20:39
 -- 伺服器版本： 5.7.24
 -- PHP 版本： 8.3.1
 
@@ -723,15 +723,6 @@ CREATE TABLE `exchange_post` (
   `DISTRICT_ID` int(10) UNSIGNED NOT NULL COMMENT '行政區',
   `post_contact` varchar(50) NOT NULL COMMENT '發起交換人的聯絡資訊'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- 傾印資料表的資料 `exchange_post`
---
-
-INSERT INTO `exchange_post` (`post_id`, `type`, `title`, `description`, `want_item`, `condition`, `status`, `is_show`, `create_time`, `post_pic1`, `post_pic2`, `post_pic3`, `post_pic4`, `post_pic5`, `remove_reason`, `mem_id`, `comm_id`, `CITY_ID`, `DISTRICT_ID`, `post_contact`) VALUES
-(17, 'ratchet', 'fff', 'ff', 'fff', 'good', 'available', 1, '2026-08-28 15:26:43', 'http://localhost:8888/Spinix/php/uploads/articles/exchange_844f7a2ad0987089.png', NULL, NULL, NULL, NULL, NULL, 2, NULL, 10, 179, 'fff'),
-(18, 'ratchet', '123456', '1234567', '', 'good', 'available', 1, '2026-08-28 16:09:25', 'http://localhost:8888/Spinix/php/uploads/articles/exchange_3eecb5442fb130c2.png', NULL, NULL, NULL, NULL, NULL, 2, NULL, 9, 170, '123456'),
-(19, 'others', '測試商品1', '出售一顆保存良好的戰鬥陀螺，適合喜歡戰鬥陀螺、想收藏或準備參加約戰的玩家。陀螺整體功能正常，零件皆可正常組裝與使用，曾有實際對戰經驗，因此外觀可能會有些微正常使用痕跡，但不影響基本操作與對戰性能。\r\n這顆陀螺的特色是攻擊力表現不錯，適合喜歡主動進攻、追求快速結束戰鬥的玩家。旋轉時穩定度也有一定水準，可以依照不同對手更換零件進行調整，對於想嘗試不同配置的新手或已有一定經驗的玩家都很適合。', '222', 'good', 'available', 1, '2026-08-28 16:19:22', 'http://localhost:8888/Spinix/php/uploads/articles/exchange_bc5db4f9ea8b676d.jpg', 'http://localhost:8888/Spinix/php/uploads/articles/exchange_14fb3d8b39fd9e09.jpg', 'http://localhost:8888/Spinix/php/uploads/articles/exchange_0e35b54f33b17ab9.jpg', 'http://localhost:8888/Spinix/php/uploads/articles/exchange_d5e2f1673bb4cf40.png', 'http://localhost:8888/Spinix/php/uploads/articles/exchange_1a22c34dcba36f25.png', NULL, 1, NULL, 13, 236, '測試聯絡資訊:123456');
 
 -- --------------------------------------------------------
 

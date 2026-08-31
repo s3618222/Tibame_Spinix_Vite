@@ -29,7 +29,8 @@
                      :show="props.articleStatus === 'exchanging' && props.isChoose"
                   />
                   </div>
-                  <div v-if="props.isOwner && props.isChoose && props.articleStatus === 'exchanging' && !isAdmin" class="exchange-actions">
+                  <div v-if="props.isOwner && props.isChoose && props.articleStatus === 'exchanging' && !isAdmin"
+                     class="exchange-actions">
                      <button 
                         class="btnFill"
                         @click="handleCompleteExchange">
@@ -55,10 +56,7 @@
             >
                跟他交換
             </button>
-            <p
-               class="--chosen"
-               v-if="isOwner && isChoose && !isAdmin && articleStatus === 'pending'"
-            >等待對方回覆中</p>
+            <p class="--chosen" v-if="isOwner && isChoose && !isAdmin && articleStatus === 'pending'">等待對方回覆中</p>
 
             <div v-if="isMyComment && isChoose && articleStatus === 'pending' && !isAdmin" class="selected-notice">
                <p class="--chosen">恭喜你被選中了！<br>快回覆對方，一起完成交換吧!</p>
@@ -67,6 +65,8 @@
                   回覆邀請
                </button>
             </div>
+
+            <p class="--chosen" v-if=" isChoose && !isAdmin && articleStatus === 'completed' && (isOwner ||isMyComment)">交換成功!</p>
          </div>
          <!-- 上下架按鈕(管理員畫面) -->
          <div class="btn-statusToggle">
@@ -99,7 +99,12 @@
    import WarningBanner from '@/components/WarningBanner.vue';
    import StatusToggleButton from '@/components/StatusToggleButton.vue';
 
-   const emit = defineEmits(['select-applicant', 'toggle-comment-status' , 'reply-confirmed']);
+   const emit = defineEmits(['select-applicant', 'toggle-comment-status' , 'reply-confirmed','exchange-completed']);
+   const phpBaseUrl =
+   location.hostname === "localhost" ||
+      location.hostname === "127.0.0.1"
+      ? "http://localhost:8888/Spinix/php"
+      : `${location.origin}/ckd101/g2/php`;
 
    const props = defineProps({
       id: { type: [String, Number], required: true },
@@ -134,16 +139,36 @@
       }
    }
 
-   function handleCompleteExchange() {
+   async function handleCompleteExchange() {
    // props.username 就是這則留言的申請人，不用反查
-   const isConfirm = window.confirm(
-      `確定要完成與「${props.username}」的交換嗎？\n交換物品：「${props.msgtxt}」\n確定後無法復原。`
-   );
+      const isConfirm = window.confirm(
+         `確定要完成與「${props.username}」的交換嗎？\n交換物品：「${props.msgtxt}」\n確定後無法復原。`
+      );
+      if(!isConfirm) return;
 
-   if (isConfirm) {
-      completeExchange(exchangeList, { postId: props.postId });
-      window.alert('交換已完成！');
-   }
+      const payload = {
+         postId: props.postId
+      };
+
+      try{
+         const res = await fetch(`${phpBaseUrl}/exchange/CompleteExchange.php`, {
+            method: "PATCH",
+            credentials: "include",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+         });
+
+         const result = await res.json();
+
+         if(result.success){
+            alert('交換已完成');
+            emit('exchange-completed'); 
+            return true;
+         }
+      }catch(err){
+         alert('系統發生錯誤，請稍後再試');
+         return false;
+      }
    }
 
    function handleCancelExchange() {
@@ -209,6 +234,7 @@
       display: flex;
       flex-direction: column;
       padding-bottom: 8px;
+      
    }
 
    .msg-wrapper{
@@ -244,9 +270,9 @@
       .msg-content {
          width: 100%;
          display: flex;
-         flex-direction: column;
-         align-items: start;
+         align-items: center;
          gap: 12px;
+         justify-content: space-between;
 
 
          .user-info {
@@ -278,7 +304,7 @@
          
          .msg-content{
             flex-direction: row;
-            align-items: start;
+            align-items: center;
 
             .user-info{
                flex: 1;

@@ -47,10 +47,6 @@ function FormatExchangRow(array $row): array {
       unset($row['contact']);
    }
 
-   if (empty($row['remove_reason'])) {
-      unset($row['remove_reason']);
-   }
-
    unset($row['post_status']);
    return $row;
 }

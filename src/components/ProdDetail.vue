@@ -226,6 +226,7 @@
               @select-applicant="handleSelectApplicant"
               @toggle-comment-status="handleToggleCommentStatus"
               @reply-confirmed="handleReplyConfirmed"
+              @exchange-completed="handleReplyConfirmed"
             />
           </ul>
           <p v-if="!sortedComments.length" class="empty-state">這裡還很安靜，成為第一個提出交換的人吧！</p>
