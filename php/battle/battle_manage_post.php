@@ -215,15 +215,16 @@
     //依照管理員操作，產生對應的會員通知內容
     if ($action === "REMOVE") {
       $notificationContent =
-        "你發起的約戰「" .
+        " 您發起的約戰「" .
         $battle["BATTLE_TITLE"] .
-        "」，因內容不符合平台管理規範，已進行下架處置。";
+        "」經管理員審核，因不符平台規範，目前已下架。" .
+        "原因說明：" . $reason . "若有任何疑問，歡迎聯繫 contact@spinix.com.tw";
 
     } else {
       $notificationContent =
-        "你發起的約戰「" .
+        "您發起的約戰「" .
         $battle["BATTLE_TITLE"] .
-        "」經管理員重新審核後，已恢復上架。";
+        "」經管理員重新審核，已恢復上架。" . "原因說明：" . $reason . "若有任何疑問，歡迎聯繫 contact@spinix.com.tw";
     }
 
 
