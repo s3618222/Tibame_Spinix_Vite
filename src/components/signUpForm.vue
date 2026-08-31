@@ -73,9 +73,9 @@
 
           <p v-if="stepError" class="error">{{ stepError }}</p>
 
-          <button type="button" class="btn-signup" @click="goNext">
-            下一步
-            <i class="fa-solid fa-arrow-right"></i>
+          <button type="button" class="btn-signup" :disabled="checking" @click="goNext">
+            {{ checking ? "檢查中…" : "下一步" }}
+            <i v-if="!checking" class="fa-solid fa-arrow-right"></i>
           </button>
 
           <p class="signin-hint">
@@ -209,6 +209,7 @@ export default {
     return {
       currentStep: 1,
       stepError: "",
+      checking: false,
       showPassword: false,
       showConfirm: false,
       formData: {
@@ -259,8 +260,8 @@ export default {
   },
 
   methods: {
-    // Step 1 → Step 2：前端輕量預檢（email 格式、密碼一致），唯一性留給後端
-    goNext() {
+    // Step 1 → Step 2：前端同步預檢（email 格式、密碼一致）+ 向後端查帳號是否已被註冊
+    async goNext() {
       this.stepError = "";
 
       if (!this.formData.account || !this.formData.password || !this.formData.confirmPassword) {
@@ -279,7 +280,27 @@ export default {
         return;
       }
 
-      this.currentStep = 2;
+      // 帳號重複檢查（後端仍會在最後送出時再驗一次）
+      this.checking = true;
+      try {
+        const res = await fetch(
+          `${this.phpBaseUrl}/member/account_check_get.php?account=${encodeURIComponent(this.formData.account)}`,
+          { credentials: "include" }
+        );
+        const data = await res.json();
+
+        if (data.success && data.available) {
+          this.currentStep = 2;
+        } else if (data.success && !data.available) {
+          this.stepError = "此帳號已被註冊";
+        } else {
+          this.stepError = data.message || "帳號檢查失敗";
+        }
+      } catch {
+        this.stepError = "無法連線至伺服器，請稍後再試";
+      } finally {
+        this.checking = false;
+      }
     },
 
     goBack() {
@@ -638,6 +659,11 @@ export default {
 
   &:hover {
     background-color: darken(map.get($color, primary), 8%);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
 }
 
