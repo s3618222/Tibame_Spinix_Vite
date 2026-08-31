@@ -231,6 +231,16 @@ export default {
       return import.meta.env.BASE_URL;
     },
 
+    // PHP API 路徑（比照 signInForm.vue）
+    phpBaseUrl() {
+      return (
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1"
+      )
+        ? "http://localhost:8888/Spinix/php"
+        : "/ckd101/g2/php";
+    },
+
     // 依生日換算是否未滿 18 歲（觸發緊急聯絡人區塊）
     isMinor() {
       if (!this.formData.birth) return false;
@@ -285,8 +295,34 @@ export default {
         return;
       }
 
-      // TODO: 串接註冊 API（php/member/signUp_post.php），含帳號唯一性、
-      //       未滿18緊急聯絡人必填等後端驗證，成功後導回 signIn.html
+      const payload = new FormData();
+      payload.append("account", this.formData.account);
+      payload.append("password", this.formData.password);
+      payload.append("confirmPassword", this.formData.confirmPassword);
+      payload.append("name", this.formData.name);
+      payload.append("gender", this.formData.gender);
+      payload.append("birth", this.formData.birth);
+      payload.append("repName", this.formData.repName);
+      payload.append("repRelation", this.formData.repRelation);
+      payload.append("repPhone", this.formData.repPhone);
+
+      fetch(`${this.phpBaseUrl}/member/signUp_post.php`, {
+        method: "POST",
+        body: payload,
+        credentials: "include"
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert("註冊成功，請登入");
+            window.location.href = `${this.baseUrl}signIn.html`;
+          } else {
+            this.stepError = data.message || "註冊失敗";
+          }
+        })
+        .catch(() => {
+          this.stepError = "無法連線至伺服器，請稍後再試";
+        });
     }
   }
 };
