@@ -2,12 +2,14 @@
   <div class="forum-page">
     <div class="forum-container">
       <div class="title">
-        <h1>Spinix 論壇</h1>
+        <h1>Spinix 社群</h1>
         <p>與全台陀螺好手交流戰術、分享零件配置與最新賽事心得。</p>
       </div>
 
-      <ForumToolbar :search-keyword="searchKeyword" :sort-by="sortBy" @search="updateSearch" @sort="updateSort"/>
-      <CategoryTabs :current-tab="currentTab" @change-tab="switchTab"/>
+      <div ref="toolbarArea">
+        <ForumToolbar :search-keyword="searchKeyword" :sort-by="sortBy" @search="updateSearch" @sort="updateSort"/>
+        <CategoryTabs :current-tab="currentTab" @change-tab="switchTab"/>
+      </div>
       <ArticleList :article-list="articlesToShow"/>
       <div class="pagination-wrap" v-if="!isMobile && displayArticles.length > 0">
         <Pagination v-model:current-page="currentPage" :page-size="6" :total="displayArticles.length" />
@@ -15,6 +17,7 @@
       <div class="load-more-wrap" v-if="isMobile && hasMoreMobile">
         <LoadMoreButton @click="mobileVisibleCount += 6">顯示更多文章</LoadMoreButton>
       </div>
+      <BackToTop :is-mobile="isMobile" :target-el="toolbarAreaEl" />
 
     </div>
   </div>
@@ -29,6 +32,7 @@ import { CATEGORY_LABELS } from '@/assets/js/utils/articleCategory.js';
 import Pagination from "@/components/pagination.vue";
 import LoadMoreButton from '@/components/LoadMoreButton.vue';
 import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl";
+import BackToTop from "@/components/common/BackToTop.vue";
 
 export default {
   name: "ForumView",
@@ -42,7 +46,8 @@ export default {
       allArticles: [],
       currentPage: 1,
       isMobile: false,
-      mobileVisibleCount: 6
+      mobileVisibleCount: 6,
+      toolbarAreaEl: null // 存放 toolbarArea 這個 DOM 元素
     }
   },
 
@@ -54,6 +59,7 @@ export default {
     this.checkIsMobile();
     // 只要視窗寬度有改變，就會重新確認當下是否為手機版斷點
     window.addEventListener('resize', this.checkIsMobile);
+    this.toolbarAreaEl = this.$refs.toolbarArea; // mounted() 之後 $refs 才抓得到真實 DOM
   },
 
   beforeUnmount(){
@@ -66,7 +72,8 @@ export default {
     CategoryTabs,
     ArticleList,
     Pagination,
-    LoadMoreButton
+    LoadMoreButton,
+    BackToTop
   },
 
   computed: {
