@@ -33,22 +33,42 @@
 
           <div class="form-group">
             <label for="signUpPassword">密碼</label>
-            <input
-              id="signUpPassword"
-              type="password"
-              v-model="formData.password"
-              placeholder="輸入密碼"
-            />
+            <div class="password-input">
+              <input
+                id="signUpPassword"
+                :type="showPassword ? 'text' : 'password'"
+                v-model="formData.password"
+                placeholder="輸入密碼"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                @click="showPassword = !showPassword"
+                :aria-label="showPassword ? '隱藏密碼' : '顯示密碼'"
+              >
+                <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+              </button>
+            </div>
           </div>
 
           <div class="form-group">
             <label for="signUpConfirm">確認密碼</label>
-            <input
-              id="signUpConfirm"
-              type="password"
-              v-model="formData.confirmPassword"
-              placeholder="確認密碼"
-            />
+            <div class="password-input">
+              <input
+                id="signUpConfirm"
+                :type="showConfirm ? 'text' : 'password'"
+                v-model="formData.confirmPassword"
+                placeholder="確認密碼"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                @click="showConfirm = !showConfirm"
+                :aria-label="showConfirm ? '隱藏密碼' : '顯示密碼'"
+              >
+                <i :class="showConfirm ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+              </button>
+            </div>
           </div>
 
           <p v-if="stepError" class="error">{{ stepError }}</p>
@@ -189,6 +209,8 @@ export default {
     return {
       currentStep: 1,
       stepError: "",
+      showPassword: false,
+      showConfirm: false,
       formData: {
         account: "",
         password: "",
@@ -414,6 +436,25 @@ export default {
     &:focus {
       border-color: map.get($color, secondary2);
     }
+  }
+}
+
+/* 密碼欄位（帶眼睛切換） */
+.password-input {
+  position: relative;
+
+  input {
+    padding-right: 41px; // 留給眼睛 icon 的空間
+  }
+
+  .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 13px;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: map.get($color, neutral);
+    cursor: pointer;
   }
 }
 
