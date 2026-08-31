@@ -39,11 +39,17 @@
         <!-- 停權處置原因 -->
         <div class="form-block">
           <p class="form-block__title">停權處置原因</p>
+          <p class="form-block__hint">※ 此停權原因將以系統通知形式發送給該會員</p>
           <textarea
             v-model="reason"
+            maxlength="30"
             class="form-block__textarea"
-            placeholder="輸入違規詳情"
+            placeholder="輸入違規詳情（30 字內）"
           ></textarea>
+          <span
+            class="form-block__count"
+            :class="{ 'form-block__count--max': reason.length >= 30 }"
+          >{{ reason.length }} / 30</span>
         </div>
 
         <!-- 停權處分 -->
@@ -168,6 +174,7 @@
   .action-form__header {
     height: 131px;
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
 
@@ -198,6 +205,21 @@
       font-size: map-get($fontSize, h4);
       font-weight: 500;
       color: map-get($color, secondary);
+    }
+
+    &__hint {
+      font-size: map-get($fontSize, hint);
+      color: map-get($color, neutral);
+    }
+
+    &__count {
+      align-self: flex-end;
+      font-size: map-get($fontSize, hint);
+      color: map-get($color, hint);
+
+      &--max {
+        color: map-get($color, error);
+      }
     }
 
     &__textarea {
