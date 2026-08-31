@@ -35,6 +35,7 @@
 <script>
 import { getRelativeTime } from "@/assets/js/utils/formatRelativeTime.js";
 import { stripHtmlTags } from "@/assets/js/utils/stripHtmlTags.js";
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl.js";
 
 export default {
   name: "ArticleCard",
@@ -49,13 +50,18 @@ export default {
 
   computed: {
     imgURL() {
-      const baseUrl = import.meta.env.BASE_URL;
       return `${baseUrl}${this.article.image.replace(/^\//, '')}`;
     },
     avatarUrl() {
-      return this.article.imgWriter
-        ? `${this.baseUrl}${this.article.imgWriter}`
-        : `${this.baseUrl}spinix_member_default.png`;
+      if (!this.article.imgWriter) {
+        return `${this.baseUrl}spinix_member_default.png`;
+      }
+
+      if (this.article.imgWriter.startsWith("uploads/member/")) {
+        return `${phpBaseUrl}/${this.article.imgWriter}`;
+      }
+
+      return `${this.baseUrl}${this.article.imgWriter}`;
     },
     relativeTime() {
       return getRelativeTime(this.article.createTime);
