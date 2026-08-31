@@ -208,9 +208,35 @@
     selectedMember.value = {};
   }
 
-  function handleSuspend(payload) {
-    // 尚未串接 API
-    console.log("停權處置", payload);
+  async function handleSuspend(payload) {
+    // 前端驗證：至少一項範圍、原因必填
+    if (!payload.scopes || payload.scopes.length === 0) {
+      alert("請至少選擇一項停權範圍");
+      return;
+    }
+    if (!payload.reason || !payload.reason.trim()) {
+      alert("請填寫停權原因");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("memberId", payload.memberId);
+      formData.append("scopes", payload.scopes.join(","));
+      formData.append("reason", payload.reason);
+      formData.append("duration", payload.duration);
+
+      const res = await fetch(`${phpBaseUrl}/member/member_suspend_post.php`, {
+        method: "POST",
+        body: formData,
+        credentials: "include"
+      });
+      const data = await res.json();
+      alert(data.message);
+      if (data.success) fetchMembers();
+    } catch {
+      alert("無法連線至伺服器，請稍後再試");
+    }
   }
 
   function handleRestore(payload) {
