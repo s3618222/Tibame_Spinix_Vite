@@ -10,25 +10,32 @@
 </template>
 
 <script>
-  export default {
-    name: "AuthorCard",
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl.js";
+export default {
+  name: "AuthorCard",
 
-    props: {
-      writer: {
-        type: Object,
-        default: () => ({})
-      }
-    },
+  props: {
+    writer: {
+      type: Object,
+      default: () => ({})
+    }
+  },
 
-    computed: {
-      avatarUrl() {
-        const baseUrl = import.meta.env.BASE_URL;
-        return this.writer.img
-          ? `${baseUrl}${this.writer.img}`
-          : `${baseUrl}spinix_member_default.png`;
+  computed: {
+    avatarUrl() {
+      const baseUrl = import.meta.env.BASE_URL;
+      if (!this.writer.img) {
+        return `${baseUrl}spinix_member_default.png`;
       }
+
+      if (this.writer.img.startsWith("uploads/member/")) {
+        return `${phpBaseUrl}/${this.writer.img}`;
+      }
+
+      return `${baseUrl}${this.writer.img}`;
     }
   }
+}
 
 </script>
 
