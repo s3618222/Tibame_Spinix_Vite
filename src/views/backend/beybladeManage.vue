@@ -56,7 +56,10 @@
             <div class="col col-id">{{ part.code }}</div>
             <div class="col col-preview">
               <div class="beyblade-thumb" :class="{ 'beyblade-thumb--disabled': !part.is_show }">
-                <img v-if="getBeybladeImageUrl(part.pic)" :src="getBeybladeImageUrl(part.pic)" :alt="part.name">
+                <img v-if="getBeybladeImageUrl(part.pic) && !imgFailedMap[part.id]"
+                :src="getBeybladeImageUrl(part.pic)" 
+                :alt="part.name"
+                @error="imgFailedMap[part.id] = true">
                 <i v-else class="fa-solid fa-image" aria-hidden="true"></i>
               </div>
             </div>
@@ -133,7 +136,9 @@ export default {
         status: ""
       },
 
-      parts: []
+      parts: [],
+
+      imgFailedMap: {}
     };
   },
 
