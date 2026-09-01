@@ -55,7 +55,9 @@
       MEM_ID,
       MEM_ACCOUNT,
       MEM_NAME,
-      MEM_PHOTO
+      MEM_PHOTO,
+      MEM_GENDER,
+      MEM_BIRTH
     FROM member
     WHERE MEM_ID = ?
   ";
@@ -85,7 +87,9 @@
         "id" => $member["MEM_ID"],
         "account" => $member["MEM_ACCOUNT"],
         "name" => $member["MEM_NAME"],
-        "photo" => $member["MEM_PHOTO"]
+        "photo" => $member["MEM_PHOTO"],
+        "gender" => $member["MEM_GENDER"], // MALE / FEMALE
+        "birth" => $member["MEM_BIRTH"]    // "Y-m-d"
     ]
   ], JSON_UNESCAPED_UNICODE);
 ?>
