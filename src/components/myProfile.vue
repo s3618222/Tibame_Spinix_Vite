@@ -83,17 +83,6 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label>手機號碼</label>
-              <div class="readonly-box">{{ profile.phone }}</div>
-            </div>
-            <div class="form-group">
-              <label>市話(選填)</label>
-              <div class="readonly-box">{{ profile.landline || "—" }}</div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
               <label>出生日期</label>
               <div class="birthday-group">
                 <div class="readonly-box">{{ profile.birthYear }}</div>
@@ -153,23 +142,20 @@
         avatarFile: null,
         avatarPreview: "",
         
-        //帳戶資料假資料，先寫死
+        //帳戶資料（由 currentMember_get.php 帶入）
         profile: {
           avatar: "spinix_member_default.png",
           account: "",
           username: "",
-          phone: "0912345678",
-          landline: "",
-          birthYear: "1999",
-          birthMonth: "06",
-          birthDay: "06",
-          gender: "male" // "male" | "female" | "secret"
+          birthYear: "",
+          birthMonth: "",
+          birthDay: "",
+          gender: "" // "MALE" | "FEMALE"
         },
 
         genderOptions: [
-          { value: "male", label: "男" },
-          { value: "female", label: "女" },
-          { value: "secret", label: "保密" }
+          { value: "MALE", label: "男" },
+          { value: "FEMALE", label: "女" }
         ],
 
         //當前會員約戰相關統計資料
@@ -341,6 +327,14 @@
           this.profile.avatar = data.member.photo || "spinix_member_default.png";
           this.profile.account = data.member.account;
           this.profile.username = data.member.name;
+          this.profile.gender = data.member.gender; // MALE / FEMALE
+
+          // 切分生日 "Y-m-d" → 年/月/日（缺值防呆）
+          const [birthYear, birthMonth, birthDay] = (data.member.birth || "").split("-");
+          this.profile.birthYear = birthYear || "—";
+          this.profile.birthMonth = birthMonth || "—";
+          this.profile.birthDay = birthDay || "—";
+
           console.log("目前登入會員資料：", data.member);
 
         } catch (error) {
