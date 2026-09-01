@@ -11,8 +11,8 @@
 
       <main class="build-main">
         <section class="left-col">
-          <ResultCard :selected-parts="selectedParts" />
-          <ActionGroup @clear-all="handleClearAll" />
+          <ResultCard class="result-card-target" :selected-parts="selectedParts" />
+          <ActionGroup @clear-all="handleClearAll" @download="downloadImage"/>
         </section>
 
         <section class="right-col">
@@ -58,6 +58,7 @@
   import CategoryTabs from "@/components/build/categoryTabs.vue";
   import PartGrid from "@/components/build/partGrid.vue";
   import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl.js";
+  import html2canvas from "html2canvas";
 
   export default {
     name: "BuildView",
@@ -166,6 +167,38 @@
 
       openIntroModal() {
         this.showIntroModal = true;
+      },
+
+      async downloadImage(){
+        const {blade, ratchet, bit} = this.selectedParts;
+        if(!blade || !ratchet || !bit){
+          alert("請先選擇戰刃、固鎖、軸心三個部件，才能下載配方圖片");
+          return;
+        }
+
+        const target = document.querySelector(".result-card-target");
+
+        if(!target){
+          alert("找不到要下載的配置卡片");
+          return;
+        }
+
+        try {
+          const canvas = await html2canvas(target, {
+            backgroundColor: "#141C26",
+            useCORS: true,
+            scale: 2
+          });
+
+          const link = document.createElement("a");
+          link.download = "我的陀螺配方.png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+
+        } catch (error) {
+          console.error("下載配方圖片失敗：", error);
+          alert("下載失敗，請稍後再試");
+        }
       }
     }
   }
