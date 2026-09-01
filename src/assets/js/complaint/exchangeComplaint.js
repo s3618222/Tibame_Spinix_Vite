@@ -26,7 +26,7 @@ export async function submitExchangeComplaint(post_id, comm_id, description, ima
       formData.append("evidence_images[]", image.file);
    });
 
-   const res = await fetch(`${phpBaseUrl}/exchange/post_appeal_exc_content.php`, {
+   const res = await fetch(`${phpBaseUrl}/exchange/post_appeal_exc.php`, {
       method: "POST",
       credentials: "include",
       body: formData
