@@ -83,6 +83,7 @@ export default {
             img: articleData.author_photo
           };
           this.article = {
+            id: articleData.art_id,
             title: articleData.title,
             content: articleData.content,
             category: CATEGORY_LABELS[articleData.category] ?? articleData.category,
@@ -91,8 +92,12 @@ export default {
             removeReason: articleData.remove_reason,
             memId: articleData.mem_id
           }
+
+          // 修改網頁title
+          document.title = `${this.article.title} | Spinix論壇`;
         } else {
           this.notFound = true;
+          document.title = `找不到您要的文章 | Spinix論壇`;
         }
       }catch(error){
         console.error("文章資料載入失敗", error);

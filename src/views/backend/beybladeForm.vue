@@ -64,7 +64,11 @@
           </div>
 
           <div v-else class="image-preview">
-            <img :src="resolvedPicUrl" :alt="form.name">
+            <img v-if="resolvedPicUrl && !imgFailed" 
+            :src="resolvedPicUrl" 
+            :alt="form.name"
+            @error="imgFailed = true">
+            <i v-else class="fa-solid fa-image" aria-hidden="true"></i>
             <div class="image-preview-overlay">
               <span>更換圖片</span>
             </div>
@@ -182,7 +186,9 @@ export default {
         nameTooLong: false, //超過100字
         category: false,
         pic: false
-      }
+      },
+
+      imgFailed: false
     };
   },
 
@@ -411,6 +417,7 @@ export default {
 
       this.selectedFile = file;
       this.form.pic = URL.createObjectURL(file); // 產生本機暫時預覽網址，讓使用者立刻看到選了什麼圖
+      this.imgFailed = false; //選新圖時重置失敗記錄
       this.fieldErrors.pic = false;
     }
   }

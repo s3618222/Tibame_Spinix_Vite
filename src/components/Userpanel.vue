@@ -331,6 +331,7 @@
 
                .notice-txt {
                   line-height: 1.5;
+                  white-space: pre-line;
                }
 
                &.isUnread::after{

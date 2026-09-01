@@ -98,7 +98,7 @@
         <div class="user-info">
           <div class="info-header">
             <p class="user-name">{{ article.mem_name }}</p>
-            <a href="complaint.html" target="_blank">
+            <a :href="complaintUrl">
               <i class="fa-solid fa-triangle-exclamation" v-if="!isOwner && !isAdmin"></i>
             </a>
           </div>
@@ -219,13 +219,14 @@
               :articleStatus="article.status"
               :postId="article.post_id"
               :posterName="article.mem_name"
-              :contact="comment.comm_contact"
+              :contact="comment.contact"
               :remove_reason="comment.remove_reason"
               :isShow="comment.is_show"
               :isAdmin="isAdmin"
               @select-applicant="handleSelectApplicant"
               @toggle-comment-status="handleToggleCommentStatus"
               @reply-confirmed="handleReplyConfirmed"
+              @exchange-completed="handleReplyConfirmed"
             />
           </ul>
           <p v-if="!sortedComments.length" class="empty-state">這裡還很安靜，成為第一個提出交換的人吧！</p>
@@ -301,6 +302,7 @@ import ContactDrawer from '@/components/ContactDrawer.vue';
 import WarningBanner from '@/components/WarningBanner.vue';
 import StatusToggleButton from '@/components/StatusToggleButton.vue';
 import ConfirmReasonModal from '@/components/common/ConfirmReasonModal.vue';
+import { fa } from 'element-plus/es/locales.mjs';
 
 const statusColorMap = {
   available: 'chip--exchangeable', 
@@ -314,15 +316,14 @@ const statusChipClass = computed(() => {
   return statusColorMap[article.value.status] ?? '';
 });
 
-// 登入會員
-let currentUserId = ref(null);
-
 const phpBaseUrl =
   location.hostname === "localhost" ||
       location.hostname === "127.0.0.1"
       ? "http://localhost:8888/Spinix/php"
       : `${location.origin}/ckd101/g2/php`;
 
+// 登入會員
+let currentUserId = ref(null);
 function fetchCurrentMember() {
   return fetch(`${phpBaseUrl}/member/currentMember_get.php`, {
       credentials: "include"
@@ -338,6 +339,22 @@ function fetchCurrentMember() {
 
 fetchCurrentMember();
 
+// 判斷是否為管理者
+let isAdmin = ref(false);
+async function fetchGetAdmin(){
+  try{
+    const res = await fetch(`${phpBaseUrl}/admin/admin_current_get.php`,{
+      credentials: "include"
+    });
+
+    const result = await res.json();
+    isAdmin.value = result.success && result.isLoggedIn;
+  }catch(err){
+    isAdmin = false;
+  }
+}
+
+fetchGetAdmin();
 
 // 嘗試取得 route,如果沒有 router 環境會是 undefined，不會報錯
 let route;
@@ -349,6 +366,7 @@ try {
 
 async function handleReplyConfirmed() {
   await fetchArticle();
+  await fetchComments();
 }
 
 const articleId = computed(() => {
@@ -362,8 +380,6 @@ const articleId = computed(() => {
   }
 });
 
-// console.log(articleId.value); // 回傳網址上的商品id
-
 const context = computed(() => {
   if (route) {
     return route.query.from || 'browse';
@@ -374,9 +390,6 @@ const context = computed(() => {
 });
 
 
-// 判斷是否從管理者畫面進來
-const isAdmin = computed(() => context.value === 'backend');
-
 // 輪播圖陣列
 const galleryImages = ref([]);
 
@@ -385,7 +398,7 @@ const article = ref(null);
 async function fetchArticle() {
   const res = await getExchangeDetail(articleId.value);
   article.value = res.data;
-
+console.log('article.value:', article.value);
   const rawPics = [
     article.value.post_pic1,
     article.value.post_pic2,
@@ -419,16 +432,61 @@ const alreadyApplied = computed(() => {
 const isRemoveModalOpen = ref(false);
 const removeTarget = ref(null);   // 記錄這次要下架的是誰
 
+
+function handleCancelRemove() {
+  isRemoveModalOpen.value = false;
+  removeTarget.value = null;
+}
+
+async function toggleShowStatus({target,id,action,reason = null}) {
+  const payload = { target, id, action, remove_reason: reason };
+
+  try{
+    const res = await fetch(`${phpBaseUrl}/exchange/toggleShowStatus.php`,{
+      method: "PATCH",
+      credentials: "include",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    return  await res.json();
+
+  }catch(err){
+    alert(result.message || '下架失敗，請稍後在試');
+  }
+}
+
+
+// 上架
 function handleToggleArticleStatus() {
   if (article.value.is_show) {
     removeTarget.value = { type: 'article' };
     isRemoveModalOpen.value = true;
   } else {
-    const isConfirm = window.confirm('確定要恢復此文章上架嗎？');
-    if (!isConfirm) return;
-    article.value.is_show = true;
-    article.value.remove_reason = '';
+    handleRestoreShow('post', article.value.post_id);
+  }
+}
+
+async function handleRestoreShow(target, id) {
+  const isConfirm = window.confirm(`確定要恢復${target === 'post' ? '此文章' : '此留言'}上架嗎？`);
+  if (!isConfirm) return;
+
+  const result = await toggleShowStatus({ target, id, action: 'show' });
+
+  if (result.success) {
+    if (target === 'post') {
+      article.value.is_show = true;
+      article.value.remove_reason = null;
+    } else {
+      const comment = articleComments.value.find(c => c.comm_id === id);
+      if (comment) {
+        comment.is_show = true;
+        comment.remove_reason = null;
+      }
+    }
     window.alert('已恢復上架！');
+  } else {
+    alert(result.message || '恢復上架失敗，請稍後再試');
   }
 }
 
@@ -440,36 +498,40 @@ function handleToggleCommentStatus({ commentId }) {
     removeTarget.value = { type: 'comment', commentId };
     isRemoveModalOpen.value = true;
   } else {
-    const isConfirm = window.confirm('確定要恢復此留言上架嗎？');
-    if (!isConfirm) return;
-    comment.is_show = true;
-    comment.remove_reason = '';
-    window.alert('已恢復上架！');
+    handleRestoreShow('comment', commentId);   // 改成呼叫共用函式，不再是本地假更新
   }
 }
 
-function handleConfirmRemove(reason) {
-  if (removeTarget.value.type === 'article') {
-    article.value.is_show = false;
-    article.value.remove_reason = reason;
-    window.alert('文章已下架！');
-  } else if (removeTarget.value?.type === 'comment') {
-    const comment = articleComments.value.find(c => c.comm_id === removeTarget.value.commentId);
-    if (comment) {
-      comment.is_show = false;
-      comment.remove_reason = reason;
+// 下架
+async function handleConfirmRemove(reason) {
+
+
+  if(!removeTarget.value) return;
+  const target = (removeTarget.value.type === 'article') ? 'post' : 'comment';
+  const id = (removeTarget.value.type === 'article') ? article.value.post_id : removeTarget.value.commentId;
+
+  const result = await toggleShowStatus({ target, id, action: 'hide', reason });
+
+  if(result.success){
+    if(removeTarget.value.type === 'article'){
+      article.value.is_show = false;
+      article.value.remove_reason = reason;
+      alert('文章已被下架');
+    }else{
+      const comment = articleComments.value.find(c => c.comm_id === removeTarget.value.commentId);
+      if(comment){
+        comment.is_show = false;
+        comment.remove_reason = reason;
+      }
+      alert('留言已被下架');
     }
-    window.alert('留言已下架！');
+  }else{
+    alert('下架失敗，請稍後再試');
   }
 
-  isRemoveModalOpen.value = false;
-  removeTarget.value = null;
+  handleCancelRemove();
 }
 
-function handleCancelRemove() {
-  isRemoveModalOpen.value = false;
-  removeTarget.value = null;
-}
 
 // 依 context 決定標題文字
 const pageTitleMap = {
@@ -613,7 +675,7 @@ const sortedComments = computed(() => {
 const activeImageIndex = ref(0);
 
 
-console.log("我是articleId:",articleId.value);
+console.log("我是articleId.value:",articleId.value);
 
 // 留言表單燈箱
 const isModalOpen = ref(false);
@@ -725,6 +787,13 @@ async function handleSelectApplicant({ commentId , username}) {
   }
 }
 
+// 檢舉連結
+
+// const baseURL= import.meta.env.BASE_URL;
+
+const complaintUrl = computed(()=>{
+  return `complaint.html?type=exchange&post_id=${articleId.value}`;
+});
 
 
 </script>

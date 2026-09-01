@@ -182,7 +182,29 @@ export default {
       }
 
       if (this.appealType === "forum") {
-        //串聯論壇申訴詳情API
+        try {
+          const response = await fetch(`${this.phpBaseUrl}/forum/forum_appeal_detail_get.php?appeal_id=${this.appealId}`,
+            {
+              credentials: "include"
+            }
+          );
+
+          const data = await response.json();
+
+          if (!response.ok || !data.success) {
+            throw new Error(data.message || "取得論壇申訴詳情失敗");
+          }
+
+          console.log("論壇申訴詳情：", data.appeal);
+
+          this.appeal = data.appeal;
+
+        } catch (error) {
+
+          console.error("取得論壇申訴詳情失敗：", error);
+        }
+
+        return;
       }
 
       if (this.appealType === "exchange") {

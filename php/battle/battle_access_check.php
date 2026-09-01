@@ -84,6 +84,28 @@
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$memberId]);
 
+        //恢復權限功能時，連帶通知會員
+        if ($stmt->rowCount() > 0) {  
+          //只有這一次真的完成「停權 → 恢復」狀態轉換時，才建立一筆會員通知，避免重複產生恢復通知
+          $notificationContent = "您的約戰功能停權期限已結束，目前已恢復正常使用，您可以再次建立或參與約戰。";
+
+          $sql = "
+            INSERT INTO notification (
+              mem_id,
+              content,
+              is_read,
+              create_time
+            )
+            VALUES (?, ?, 0, NOW())
+          ";
+
+          $stmt = $pdo->prepare($sql);
+          $stmt->execute([
+            $memberId,
+            $notificationContent
+          ]);
+        }
+
         return [
           "allowed" => true,
           "status" => "ACTIVE",

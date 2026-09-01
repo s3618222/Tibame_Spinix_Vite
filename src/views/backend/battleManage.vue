@@ -477,12 +477,12 @@
                 <textarea 
                   id="memberNotice" 
                   v-model.trim="memberNotice" 
-                  placeholder="請輸入處置說明"
+                  placeholder="請說明本次處置原因"
                   @input="memberNoticeError = ''" 
                 ></textarea>
 
                 <p class="battle-handle-hint">
-                  請記錄本次管理處置的原因，供後續管理查閱。
+                  此內容將作為處置原因顯示於會員通知中。
                 </p>
 
                 <!-- 錯誤提示文字 -->

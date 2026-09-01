@@ -24,13 +24,18 @@ if ($ExchangeID <= 0) {
 
 
 try {
-   $rows = getExchange($pdo, $ExchangeID);
+   $rows = getExchange($pdo, $ExchangeID, [], true);
    $prod = $rows[0] ?? null;
 
    if ($prod) {
       // 成功找到商品
+      $isAgreed = ($prod['status'] === 'exchanging') && !empty($prod['comm_id']);
+      if (!$isAgreed) {
+         unset($prod['post_contact']);
+      }
       echo json_encode([
          'status' => 'success',
+         'agreen' => $isAgreed,
          'data' => $prod
       ], JSON_UNESCAPED_UNICODE);
    } else {

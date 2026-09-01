@@ -105,7 +105,7 @@ const props = defineProps({
    }
 });
 
-const emit = defineEmits(['reply-exchange']);
+const emit = defineEmits(['confirm-exchange', 'reject-exchange']);
 
 // 狀態文字 → chip modifier 對照，涵蓋文章狀態 & 申請狀態
 const stateChipMap = {
@@ -124,11 +124,16 @@ const buttons = computed(() => {
    const viewMore = { label: '查看詳情', action: 'view-more', type: 'btnNoFill' };
 
    if (props.context === 'myApplications' && props.state === '已回覆') {
-      return [{ label: '回覆交換', action: 'reply-exchange', type: 'btnFill' }];
+      return [
+         { label: '確認交換', action: 'confirm-exchange', type: 'btnFill' },
+         { label: '拒絕交換', action: 'reject-exchange', type: 'btnRemoveNoFill' }
+      ];
    }
 
    return [viewMore];
 });
+
+
 function getBtnClass(btn) {
    return [`${btn.type}`, { 'btn-disabled': btn.disabled }];
 }
@@ -141,10 +146,11 @@ function handleBtnClick(btn) {
       return;
    }
 
-   emit(btn.action, { 
-      
-      applyId: props.applyId, 
-      posterName:props.username });
+   emit(btn.action, {
+      applyId: props.applyId,
+      postId: props.post_id,
+      posterName: props.username
+   });
 }
 
 function goToDetail() {
@@ -260,7 +266,7 @@ function goToDetail() {
             justify-content: center;
             margin: 12px -12px -12px;
             border-top: 1px solid #dddddd;
-
+            
             .btnNoFill,
             .btnFill{
                border: none;
@@ -287,6 +293,7 @@ function goToDetail() {
             .card-buttons {
                display: flex;
                width: 100%;
+               justify-content: space-around;
             }
 
             .btnNoFill {

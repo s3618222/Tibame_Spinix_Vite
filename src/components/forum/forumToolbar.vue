@@ -158,8 +158,8 @@
   z-index: 99;
 
   // 覆寫同學的尺寸與圓角
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   padding: 0;           /* 清除同學原本的 padding: 8px 24px */
   border-radius: 50%;   /* 將同學的 12px 圓角覆寫成正圓形 */
 

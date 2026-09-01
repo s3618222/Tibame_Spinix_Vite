@@ -39,7 +39,7 @@
     //針對此次呼叫API時，過期的每一筆約戰，發對應通知給發起人
     foreach($expiredBattles as $battle) {
       //通知內容
-      $notificationContent = "你發起的約戰「" . $battle["BATTLE_TITLE"] . "」已超過申請截止時間，邀約已結束";
+      $notificationContent = "您發起的約戰「" . $battle["BATTLE_TITLE"] . "」已超過申請截止時間，邀約已結束";
 
       //將通知內容寫入notification資料表
       $sql = "

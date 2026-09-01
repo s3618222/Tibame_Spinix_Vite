@@ -10,25 +10,32 @@
 </template>
 
 <script>
-  export default {
-    name: "AuthorCard",
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl.js";
+export default {
+  name: "AuthorCard",
 
-    props: {
-      writer: {
-        type: Object,
-        default: () => ({})
-      }
-    },
+  props: {
+    writer: {
+      type: Object,
+      default: () => ({})
+    }
+  },
 
-    computed: {
-      avatarUrl() {
-        const baseUrl = import.meta.env.BASE_URL;
-        return this.writer.img
-          ? `${baseUrl}${this.writer.img}`
-          : `${baseUrl}spinix_member_default.png`;
+  computed: {
+    avatarUrl() {
+      const baseUrl = import.meta.env.BASE_URL;
+      if (!this.writer.img) {
+        return `${baseUrl}spinix_member_default.png`;
       }
+
+      if (this.writer.img.startsWith("uploads/member/")) {
+        return `${phpBaseUrl}/${this.writer.img}`;
+      }
+
+      return `${baseUrl}${this.writer.img}`;
     }
   }
+}
 
 </script>
 
@@ -37,6 +44,7 @@
 @use '@/assets/scss/mixin' as *;
 
 .author-card {
+  width: 100%;
   background-color: white;
   display: flex;
   gap: 12px;
@@ -54,6 +62,23 @@
   .txt-box {
     display: flex;
     align-items: center; gap: 8px;
+    width: 100%;
+    min-width: 0;
+
+    .name-writer {
+      min-width: 0;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 16px;
+      min-height: 18px;
+      max-width: 80%;
+    }
+
+    .score-writer {
+      flex-shrink: 0;
+    }
   }
 }
 
