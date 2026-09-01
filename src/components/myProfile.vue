@@ -6,10 +6,25 @@
         <h1>個人資料</h1>
         <p>管理你的個人資料設定、聯絡資訊、戰績與成就</p>
       </div>
-      <button type="button" class="edit-btn">
+      <!-- 檢視模式：編輯按鈕；編輯模式：儲存 / 取消 -->
+      <button
+        v-if="!isEditing"
+        type="button"
+        class="edit-btn"
+        @click="startEdit"
+      >
         編輯個人資料
         <i class="fa-regular fa-pen-to-square"></i>
       </button>
+      <div v-else class="edit-actions">
+        <button type="button" class="cancel-btn" @click="cancelEdit">
+          取消
+        </button>
+        <button type="button" class="edit-btn" :disabled="saving" @click="saveProfile">
+          {{ saving ? "儲存中…" : "儲存" }}
+          <i v-if="!saving" class="fa-regular fa-floppy-disk"></i>
+        </button>
+      </div>
     </div>
 
     <!-- 帳戶資料 -->
@@ -71,24 +86,46 @@
             <div class="form-group">
               <label>密碼</label>
               <div class="readonly-box">{{ passwordMask }}</div>
+              <button
+                type="button"
+                class="reset-password-link"
+                @click="showResetModal = true"
+              >
+                重設密碼
+                <i class="fa-solid fa-key"></i>
+              </button>
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
               <label>使用者名稱</label>
-              <div class="readonly-box">{{ profile.username }}</div>
+              <div v-if="!isEditing" class="readonly-box">{{ profile.username }}</div>
+              <input
+                v-else
+                type="text"
+                class="edit-box"
+                maxlength="30"
+                v-model="editForm.name"
+                placeholder="輸入使用者名稱"
+              />
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
               <label>出生日期</label>
-              <div class="birthday-group">
+              <div v-if="!isEditing" class="birthday-group">
                 <div class="readonly-box">{{ profile.birthYear }}</div>
                 <div class="readonly-box">{{ profile.birthMonth }}</div>
                 <div class="readonly-box">{{ profile.birthDay }}</div>
               </div>
+              <input
+                v-else
+                type="date"
+                class="edit-box"
+                v-model="editForm.birth"
+              />
             </div>
             <div class="form-group">
               <label>性別</label>
@@ -97,7 +134,13 @@
                   v-for="option in genderOptions"
                   :key="option.value"
                   class="gender-box"
-                  :class="{ active: profile.gender === option.value }"
+                  :class="{
+                    active: isEditing
+                      ? editForm.gender === option.value
+                      : profile.gender === option.value,
+                    editable: isEditing
+                  }"
+                  @click="isEditing && (editForm.gender = option.value)"
                 >
                   {{ option.label }}
                 </div>
@@ -130,23 +173,47 @@
         </div>
       </div>
     </section>
+
+    <!-- 重設密碼彈窗 -->
+    <ResetPasswordModal
+      v-if="showResetModal"
+      @close="showResetModal = false"
+      @success="onPasswordUpdated"
+    />
   </section>
 </template>
 
 <script>
+  import ResetPasswordModal from "@/components/member/ResetPasswordModal.vue";
+
   export default {
     name: "MyProfile",
+
+    components: {
+      ResetPasswordModal
+    },
 
     data() {
       return {
         avatarFile: null,
         avatarPreview: "",
-        
+
+        //編輯模式狀態
+        isEditing: false,
+        saving: false,
+        showResetModal: false,
+        editForm: {
+          name: "",
+          gender: "",
+          birth: "" // "Y-m-d"
+        },
+
         //帳戶資料（由 currentMember_get.php 帶入）
         profile: {
           avatar: "spinix_member_default.png",
           account: "",
           username: "",
+          birth: "", // 原始 "Y-m-d"，供編輯用
           birthYear: "",
           birthMonth: "",
           birthDay: "",
@@ -328,6 +395,7 @@
           this.profile.account = data.member.account;
           this.profile.username = data.member.name;
           this.profile.gender = data.member.gender; // MALE / FEMALE
+          this.profile.birth = data.member.birth || ""; // 原始 "Y-m-d"
 
           // 切分生日 "Y-m-d" → 年/月/日（缺值防呆）
           const [birthYear, birthMonth, birthDay] = (data.member.birth || "").split("-");
@@ -360,6 +428,77 @@
         } catch (error) {
           console.error("取得約戰統計失敗：", error);
         }
+      },
+
+      startEdit() { //進入編輯模式，帶入目前資料
+        this.editForm.name = this.profile.username;
+        this.editForm.gender = this.profile.gender;
+        this.editForm.birth = this.profile.birth;
+        this.isEditing = true;
+      },
+
+      cancelEdit() { //取消編輯，丟棄變更
+        this.isEditing = false;
+      },
+
+      async saveProfile() { //儲存個人資料變更
+        // 客端預檢
+        if (!this.editForm.name.trim()) {
+          alert("請填寫使用者名稱");
+          return;
+        }
+        if (!this.editForm.gender) {
+          alert("請選擇性別");
+          return;
+        }
+        if (!this.editForm.birth) {
+          alert("請選擇出生年月日");
+          return;
+        }
+
+        this.saving = true;
+        try {
+          const payload = new FormData();
+          payload.append("name", this.editForm.name.trim());
+          payload.append("gender", this.editForm.gender);
+          payload.append("birth", this.editForm.birth);
+
+          const response = await fetch(`${this.phpBaseUrl}/member/member_profile_update.php`, {
+            method: "POST",
+            credentials: "include",
+            body: payload
+          });
+          const data = await response.json();
+
+          if (!response.ok || !data.success) {
+            alert(data.message || "個人資料更新失敗");
+            return;
+          }
+
+          // 用回傳更新畫面
+          this.profile.username = data.member.name;
+          this.profile.gender = data.member.gender;
+          this.profile.birth = data.member.birth;
+
+          const [birthYear, birthMonth, birthDay] = (data.member.birth || "").split("-");
+          this.profile.birthYear = birthYear || "—";
+          this.profile.birthMonth = birthMonth || "—";
+          this.profile.birthDay = birthDay || "—";
+
+          this.isEditing = false;
+          alert(data.message);
+
+        } catch (error) {
+          console.error("個人資料更新失敗：", error);
+          alert("個人資料更新失敗，請稍後再試");
+        } finally {
+          this.saving = false;
+        }
+      },
+
+      onPasswordUpdated() { //重設密碼成功後
+        this.showResetModal = false;
+        alert("密碼已更新");
       }
     },
 
@@ -427,6 +566,35 @@
 
     &:hover {
       background-color: darken(map.get($color, primary), 8%);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+
+  //編輯模式：儲存 + 取消
+  .edit-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .cancel-btn {
+    padding: 16px 32px;
+    border: 1px solid map.get($color, secondary);
+    border-radius: 16px;
+    background-color: transparent;
+
+    font-size: map.get($fontSize, h4);
+    font-weight: 500;
+    color: map.get($color, secondary);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: rgba(20, 28, 38, 0.06);
     }
   }
 
@@ -582,6 +750,46 @@
     color: map.get($color, secondary);
   }
 
+  //編輯模式輸入框（名稱 / 生日 date）
+  .edit-box {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid map.get($color, secondary);
+    border-radius: 4px;
+    background-color: map.get($color, white);
+
+    font: inherit;
+    font-size: map.get($fontSize, default);
+    color: map.get($color, secondary);
+
+    &:focus {
+      outline: none;
+      border-color: map.get($color, secondary2);
+    }
+  }
+
+  //重設密碼連結按鈕
+  .reset-password-link {
+    align-self: flex-start;
+    margin-top: 4px;
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 0;
+    border: 0;
+    background: transparent;
+
+    font-size: 14px;
+    color: map.get($color, secondary2);
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
   .birthday-group {
     display: flex;
     gap: 8px;
@@ -612,6 +820,15 @@
       background-color: map.get($color, secondary);
       color: map.get($color, white);
       border-color: map.get($color, secondary);
+    }
+
+    //編輯模式：可點選
+    &.editable {
+      cursor: pointer;
+
+      &:hover {
+        border-color: map.get($color, secondary2);
+      }
     }
   }
 
