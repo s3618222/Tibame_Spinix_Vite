@@ -13,7 +13,7 @@
                      <p class="user-name">{{username}}</p>
                      <p class="msg-date">{{postDate}}</p>
                   </div>
-                  <a href="./complaint.html" target="_blank" v-if="!isMyComment && !isAdmin">
+                  <a href="./complaint.html" target="" v-if="!isMyComment && !isAdmin">
                      <i class="fa-solid fa-triangle-exclamation"></i>
                   </a>
                </div>

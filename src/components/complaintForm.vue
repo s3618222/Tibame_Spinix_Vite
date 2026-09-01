@@ -8,7 +8,7 @@
           <div class="form-group form-group--type">
             <label for="complaintType">申訴類型</label>
             <div class="select-wrap">
-              <select id="complaintType" v-model="formData.type" :disabled="isBattleSource || isForumSource">
+              <select id="complaintType" v-model="formData.type" :disabled="isBattleSource || isForumSource || isExchangeSource">
                 <option v-for="option in typeOptions" :key="option" :value="option">
                   {{ option }}
                 </option>
@@ -23,7 +23,7 @@
               id="complaintTarget"
               type="text"
               v-model="formData.target"
-              :disabled="isBattleSource || isForumSource"
+              :disabled="isBattleSource || isForumSource || isExchangeSource"
               required
             />
           </div>
@@ -35,7 +35,7 @@
             id="complaintTitle"
             type="text"
             v-model="formData.title"
-            :disabled="isBattleSource || isForumSource"
+            :disabled="isBattleSource || isForumSource || isExchangeSource"
             required
           />
         </div>
@@ -104,6 +104,7 @@
 //導入約戰申訴初始化資料API模組
 import { fetchBattleComplaintContext, submitBattleComplaint } from "@/assets/js/complaint/battleComplaint.js";
 import { fetchForumComplaintContext, submitForumComplaint } from "@/assets/js/complaint/forumComplaint.js";
+import { fetchExchangeComplaintContext, submitExchangeComplaint } from "@/assets/js/complaint/exchangeComplaint.js";
 
 const MAX_IMAGES = 5;
 
@@ -124,7 +125,9 @@ export default {
 
       battleId: null,
       artId: null,
-      msgId: null
+      msgId: null,
+      post_id:null,
+      comm_id:null
     };
   },
 
@@ -139,6 +142,11 @@ export default {
       const query = new URLSearchParams(window.location.search);
 
       return query.get("type") === "forum";
+    },
+
+    isExchangeSource(){
+      const query = new URLSearchParams(window.location.search);
+      return query.get("type") === "exchange";
     }
   },
 
@@ -217,6 +225,26 @@ export default {
         }
       }
 
+      if (this.isExchangeSource) {
+        try {
+          const data = await submitExchangeComplaint(
+            this.post_id,
+            this.comm_id,
+            this.formData.description,
+            this.images
+          );
+
+          alert(data.message);
+          window.location.href = `${import.meta.env.BASE_URL}member.html#/appeal`;
+
+        } catch (error) {
+          console.error("送出申訴失敗：", error);
+          alert(error.message);
+
+          return;
+        }
+      }
+
     },
 
     handleCancel() {
@@ -289,12 +317,43 @@ export default {
         console.error("取得論壇申訴資料失敗：", error);
         alert(error.message);
       }
+    },
+    async initExchangeSource() {
+      const query = new URLSearchParams(window.location.search);
+      const type = query.get("type");
+
+      if (type !== "exchange") {
+        return;
+      }
+
+      const post_id = query.get("post_id");
+      const comm_id = query.get("comm_id");
+
+      if (!post_id && !comm_id) {
+        alert("缺少有效的檢舉目標");
+        return;
+      }
+
+      this.comm_id = comm_id ? Number(comm_id) : null;
+      this.post_id = post_id ? Number(post_id) : null;
+
+      try {
+        const data = await fetchExchangeComplaintContext(this.post_id, this.comm_id);
+
+        this.formData.type = "二手交換區";
+        this.formData.target = data.respondentName;
+        this.formData.title = data.title;
+      } catch (error) {
+        console.error("取得申訴資料失敗：", error);
+        alert(error.message);
+      }
     }
   },
 
   mounted() {
     this.initBattleSource(); //載入申訴頁面時，讀取屬於約戰申訴的對應申訴資料
     this.initForumSource();
+    this.initExchangeSource();
   },
 };
 </script>

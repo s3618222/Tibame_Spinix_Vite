@@ -98,7 +98,7 @@
         <div class="user-info">
           <div class="info-header">
             <p class="user-name">{{ article.mem_name }}</p>
-            <a href="complaint.html" target="_blank">
+            <a :href="complaintUrl">
               <i class="fa-solid fa-triangle-exclamation" v-if="!isOwner && !isAdmin"></i>
             </a>
           </div>
@@ -786,6 +786,15 @@ async function handleSelectApplicant({ commentId , username}) {
     alert(result.message || '選擇失敗，請重新選擇');
   }
 }
+
+// 檢舉連結
+
+// const baseURL= import.meta.env.BASE_URL;
+
+const complaintUrl = computed(()=>{
+  return `complaint.html?type=exchange&post_id=${articleId.value}`;
+});
+
 
 </script>
 
