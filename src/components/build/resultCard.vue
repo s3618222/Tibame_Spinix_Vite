@@ -164,6 +164,7 @@ img {
 
 .pic-logo {
   color: map-get($color, neutral );
+  padding: 12px;
 }
 
 .pics-container {

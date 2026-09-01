@@ -10,8 +10,8 @@
       article.*,
       member.MEM_NAME AS author_name,
       member.MEM_PHOTO AS author_photo,
-      COUNT(message.msg_id) AS comment_count,
-      MAX(message.create_time) AS last_comment_time 
+      COUNT(CASE WHEN message.is_show = 1 THEN message.msg_id END) AS comment_count,
+      MAX(CASE WHEN message.is_show = 1 THEN message.create_time END) AS last_comment_time 
     FROM article 
     JOIN member ON article.mem_id = member.MEM_ID
     LEFT JOIN message ON message.art_id = article.art_id
