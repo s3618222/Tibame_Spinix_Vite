@@ -302,7 +302,7 @@ import ContactDrawer from '@/components/ContactDrawer.vue';
 import WarningBanner from '@/components/WarningBanner.vue';
 import StatusToggleButton from '@/components/StatusToggleButton.vue';
 import ConfirmReasonModal from '@/components/common/ConfirmReasonModal.vue';
-import { fa } from 'element-plus/es/locales.mjs';
+// import { fa } from 'element-plus/es/locales.mjs';
 
 const statusColorMap = {
   available: 'chip--exchangeable', 
@@ -321,6 +321,9 @@ const phpBaseUrl =
       location.hostname === "127.0.0.1"
       ? "http://localhost:8888/Spinix/php"
       : `${location.origin}/ckd101/g2/php`;
+
+// 嘗試取得 route,如果沒有 router 環境會是 undefined，不會報錯
+const route = useRoute();
 
 // 登入會員
 let currentUserId = ref(null);
@@ -341,28 +344,26 @@ fetchCurrentMember();
 
 // 判斷是否為管理者
 let isAdmin = ref(false);
-async function fetchGetAdmin(){
-  try{
-    const res = await fetch(`${phpBaseUrl}/admin/admin_current_get.php`,{
+async function fetchGetAdmin() {
+    if (!route) {
+    isAdmin.value = false;
+    return;
+  }
+
+  try {
+    const res = await fetch(`${phpBaseUrl}/admin/admin_current_get.php`, {
       credentials: "include"
     });
-
     const result = await res.json();
     isAdmin.value = result.success && result.isLoggedIn;
-  }catch(err){
-    isAdmin = false;
+  } catch (err) {
+    isAdmin.value = false; // 原本這裡寫 isAdmin = false 是錯的，見下方說明
   }
 }
 
+
 fetchGetAdmin();
 
-// 嘗試取得 route,如果沒有 router 環境會是 undefined，不會報錯
-let route;
-try {
-  route = useRoute();
-} catch (e) {
-  route = null;
-}
 
 async function handleReplyConfirmed() {
   await fetchArticle();
@@ -398,7 +399,7 @@ const article = ref(null);
 async function fetchArticle() {
   const res = await getExchangeDetail(articleId.value);
   article.value = res.data;
-console.log('article.value:', article.value);
+
   const rawPics = [
     article.value.post_pic1,
     article.value.post_pic2,
@@ -671,11 +672,8 @@ const sortedComments = computed(() => {
   return list;
 });
 
-
 const activeImageIndex = ref(0);
-
-
-console.log("我是articleId.value:",articleId.value);
+// console.log("我是articleId.value:",articleId.value);
 
 // 留言表單燈箱
 const isModalOpen = ref(false);

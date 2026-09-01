@@ -115,6 +115,8 @@
 </template>
 
 <script>
+import { da } from 'element-plus/es/locales.mjs';
+
 // import myAppealData from "@/data/myAppealData.js";
 
 export default {
@@ -194,21 +196,30 @@ export default {
           if (!response.ok || !data.success) {
             throw new Error(data.message || "取得論壇申訴詳情失敗");
           }
-
-          console.log("論壇申訴詳情：", data.appeal);
-
           this.appeal = data.appeal;
 
         } catch (error) {
-
-          console.error("取得論壇申訴詳情失敗：", error);
         }
 
         return;
       }
 
       if (this.appealType === "exchange") {
-        //串聯交換申訴詳情API
+        try{
+          const response = await fetch(`${this.phpBaseUrl}/exchange/get_appeal_exc_detail.php?appeal_id=${this.appealId}`,{
+            credentials:"include"
+          });
+
+          const data = await response.json();
+          if(!response.ok || !data.success){
+            throw new Error(data.message ||"取得申訴詳情失敗");
+          }
+          this.appeal = data.appeal;
+          console.log("申訴詳情",data.appeal);
+        }catch (error) {
+          console.error("取得申訴詳情失敗：", error);
+        }
+        return
       }
 
     },
