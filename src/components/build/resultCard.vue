@@ -69,6 +69,7 @@
 </template>
 
 <script>
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl.js";
 export default {
   name: "ResultCard",
 
@@ -99,10 +100,33 @@ export default {
     }
   },
 
+  watch: {
+    selectedParts: {
+      deep: true,
+      handler(newVal, oldVal) {
+        // 逐一比對每個槽位，如果這個槽位的零件真的換了（id 不一樣），
+        // 才重置對應的失敗記錄，避免沒換零件時被誤重置
+        this.partSlots.forEach(slot => {
+          const newPart = newVal[slot.category];
+          const oldPart = oldVal?.[slot.category];
+
+          if (newPart?.id !== oldPart?.id) {
+            this.imgFailedMap[slot.category] = false;
+          }
+        });
+      }
+    }
+  },
+
   methods: {
     imgUrl(part) {
       const baseUrl = import.meta.env.BASE_URL;
-      return `${baseUrl}${part.image.replace(/^\//, '')}`;
+      const pic = part.image;
+      if (pic.startsWith("uploads/beyblade/")) {
+        return `${phpBaseUrl}/${pic}`;
+      }
+
+      return `${baseUrl}${pic.replace(/^\//, '')}`;
     },
     statBarWidth(value) {
       return `${Math.min(value, 100)}%`;

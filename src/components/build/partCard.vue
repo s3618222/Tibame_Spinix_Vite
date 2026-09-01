@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl.js";
   export default {
     name: "PartCard",
 
@@ -64,8 +65,12 @@
     computed: {
       imgUrl() {
         const baseUrl = import.meta.env.BASE_URL;
-        // 確保 path 組合時不會多斜線或少斜線
-        return `${baseUrl}${this.part.image.replace(/^\//, '')}`;
+        const pic = this.part.image;
+        if (pic.startsWith("uploads/beyblade/")) {
+          return `${phpBaseUrl}/${pic}`;
+        }
+
+        return `${baseUrl}${pic.replace(/^\//, '')}`;
       },
       isSelected() {
         return this.part.id === this.selectedId;
