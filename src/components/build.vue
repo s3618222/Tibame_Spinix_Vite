@@ -2,30 +2,53 @@
 <template>
   <div class="build-page">
     <div class="build-container">
-      <!-- 標題區 -->
       <header class="build-header">
-        <!-- <h1>陀螺配置工坊</h1> -->
+        <h1>陀螺配置工坊</h1>
+        <button type="button" class="btn-intro-help" @click="openIntroModal">
+          <i class="fa-regular fa-circle-question"></i>
+        </button>
       </header>
 
-      <!-- 主要工作區 (電腦版左右雙欄) -->
       <main class="build-main">
-
-        <!-- 左欄：結果卡片與按鈕組 -->
         <section class="left-col">
-          <ResultCard :selected-parts="selectedParts" />
-          <ActionGroup @clear-all="handleClearAll" />
+          <ResultCard class="result-card-target" :selected-parts="selectedParts" />
+          <ActionGroup @clear-all="handleClearAll" @download="downloadImage"/>
         </section>
 
-        <!-- 右欄：頁籤與零件列表  -->
         <section class="right-col">
-          <!-- 父元件記錄的 currentTab 傳給 CategoryTabs 判斷高亮 -->
           <CategoryTabs :current-tab="currentTab" @change-tab="handleTabChange"/>
           <PartGrid :parts="filteredParts" :selected-id="currentSelectedId" @select-part="handleSelectPart"/>
           <p style="color: #fff;">右欄區域（頁籤與零件網格）</p>
         </section>
-
       </main>
     </div>
+
+    <el-dialog v-model="showIntroModal" title="陀螺配置器使用說明" width="90%" style="max-width: 500px" :show-close="true" @close="handleIntroClose">
+      <div class="intro-content">
+        <p class="intro-cta">
+          想打造屬於你的無敵戰陀嗎？只要三步驟，就能組出獨一無二的配置！
+        </p>
+
+        <div class="intro-section">
+          <h3><span class="step-num">1</span> 選擇零件</h3>
+          <p>依序切換「戰刃」「固鎖」「軸心」三個分類頁籤，點擊你想使用的零件。</p>
+        </div>
+
+        <div class="intro-section">
+          <h3><span class="step-num">2</span> 查看數值</h3>
+          <p>左側面板會即時顯示你目前配置的攻擊、防守、持久、重量四項數值加總。</p>
+        </div>
+
+        <div class="intro-section">
+          <h3><span class="step-num">3</span> 下載分享</h3>
+          <p>組好之後，點擊「下載配方圖片」，就能把你的配置存成圖片分享給朋友。</p>
+        </div>
+      </div>
+
+      <template #footer>
+        <button type="button" class="btnFill" @click="showIntroModal = false">開始配置</button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -35,6 +58,7 @@
   import CategoryTabs from "@/components/build/categoryTabs.vue";
   import PartGrid from "@/components/build/partGrid.vue";
   import { phpBaseUrl } from "@/assets/js/utils/phpBaseUrl.js";
+  import html2canvas from "html2canvas";
 
   export default {
     name: "BuildView",
@@ -53,7 +77,8 @@
         // 各分類目前已選擇的零件，key 為 category，value 為零件物件
         selectedParts: {},
         // 零件們的假資料，待補數值
-        allParts: []
+        allParts: [],
+        showIntroModal: false
       }
     },
 
@@ -81,6 +106,11 @@
 
     created() {
       this.fetchParts();
+
+      const hasSeenIntro = localStorage.getItem("build_intro_seen");
+      if (!hasSeenIntro) {
+        this.showIntroModal = true;
+      }
     },
 
     methods: {
@@ -129,6 +159,46 @@
       */
       handleClearAll() {
         this.selectedParts = {};
+      },
+
+      handleIntroClose() {
+        localStorage.setItem("build_intro_seen", "true");
+      },
+
+      openIntroModal() {
+        this.showIntroModal = true;
+      },
+
+      async downloadImage(){
+        const {blade, ratchet, bit} = this.selectedParts;
+        if(!blade || !ratchet || !bit){
+          alert("請先選擇戰刃、固鎖、軸心三個部件，才能下載配方圖片");
+          return;
+        }
+
+        const target = document.querySelector(".result-card-target");
+
+        if(!target){
+          alert("找不到要下載的配置卡片");
+          return;
+        }
+
+        try {
+          const canvas = await html2canvas(target, {
+            backgroundColor: "#141C26",
+            useCORS: true,
+            scale: 2
+          });
+
+          const link = document.createElement("a");
+          link.download = "我的陀螺配方.png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+
+        } catch (error) {
+          console.error("下載配方圖片失敗：", error);
+          alert("下載失敗，請稍後再試");
+        }
       }
     }
   }
@@ -136,7 +206,6 @@
 
 <style lang="scss" scoped>
 @use '@/assets/scss/var' as *;
-@use '@/assets/scss/reset' as *;
 
 .build-page {
   // background-color: map-get($color, secondary);
@@ -151,6 +220,9 @@
 
   .build-header {
     margin-bottom: 24px;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
     h1 { color: map-get($color, secondary2); font-size: map-get($fontSize, h1 ); font-weight: bold;}
   }
 
@@ -186,5 +258,66 @@
       }
     }
   }
+}
+
+.btn-intro-help {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  background: none;
+  border: none;
+  color: map-get($color, neutral);
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    color: map-get($color, primary);
+  }
+}
+
+.intro-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.intro-cta {
+  font-size: 15px;
+  font-weight: 600;
+  color: map-get($color, secondary);
+  margin: 0;
+}
+
+.intro-section {
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: map-get($color, secondary2);
+    margin: 0 0 6px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: map-get($color, secondary);
+    line-height: 1.6;
+  }
+}
+
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: map-get($color, secondary2);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  margin-right: 4px;
 }
 </style>

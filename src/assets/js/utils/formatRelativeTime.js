@@ -6,10 +6,12 @@ export function getRelativeTime(dateInput) {
   const diffMin = Math.floor(diffSec / 60);
   const diffHour = Math.floor(diffMin / 60);
   const diffDay = Math.floor(diffHour / 24);
+  const diffMonth = Math.floor(diffDay / 30);
 
   if (diffSec < 60) return "剛剛";
   if (diffMin < 60) return `${diffMin} 分鐘前`;
   if (diffHour < 24) return `${diffHour} 小時前`;
   if (diffDay < 30) return `${diffDay} 天前`;
+  if (diffMonth < 12) return `${diffMonth} 個月前`;
   return date.toLocaleDateString("zh-TW");
 }

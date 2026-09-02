@@ -60,9 +60,9 @@ CREATE TABLE `appeal_exchange` (
   `ae_content` text NOT NULL COMMENT '申訴案件內容',
   `ae_status` enum('PENDING','CONFIRMED','REJECTED') NOT NULL DEFAULT 'PENDING' COMMENT '申訴案件狀態',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '申訴時間',
-  `ae_evidence` varchar(255) DEFAULT NULL COMMENT '證據截圖',
+  `ae_evidence` text DEFAULT NULL COMMENT '證據截圖',
   `responded_at` datetime DEFAULT NULL COMMENT '管理員回覆時間',
-  `responded_text` varchar(200) NOT NULL COMMENT '管理員回復內容'
+  `responded_text` varchar(200) NULL COMMENT '管理員回復內容'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='申訴案件-交換';
 
 -- --------------------------------------------------------
@@ -81,7 +81,7 @@ CREATE TABLE `appeal_forum` (
   `af_content` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '申訴案件內容',
   `af_status` enum('PENDING','CONFIRMED','REJECTED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING' COMMENT '申訴案件狀態',
   `create_time` datetime NOT NULL COMMENT '申訴時間',
-  `af_evidence` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '證據截圖',
+  `af_evidence` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '證據截圖',
   `responded_at` datetime DEFAULT NULL COMMENT '管理員回覆時間',
   `responded_text` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '管理員回復內容'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='申訴案件-論壇';
@@ -95,7 +95,8 @@ INSERT INTO `appeal_forum` (`af_id`, `art_id`, `msg_id`, `complainant_mem_id`, `
 (2, 6, NULL, 2, 4, 1, '這篇被下架的文章其實沒有廣告連結，是誤判，申請重新審核。', 'REJECTED', '2026-08-14 10:15:00', 'evidence_appeal_02.jpg', '2026-08-15 09:30:00', '經複查確認文章內確實含有導購連結，維持下架決定。'),
 (3, NULL, 2, 3, 5, NULL, '這則留言散布不實資訊，內容誤導其他玩家購買管道，請協助查核。', 'PENDING', '2026-08-15 16:40:00', NULL, NULL, NULL),
 (4, 4, NULL, 8, 6, 1, '這篇貼文的保養建議根本是錯的，會損壞軸心，已誤導不少新手。', 'CONFIRMED', '2026-08-16 13:20:00', NULL, '2026-08-17 10:00:00', '經審核該建議確實有誤，已請作者更正並加註警語。'),
-(5, NULL, 3, 2, 1, NULL, '這則留言重複洗版，疑似機器人帳號行為。', 'PENDING', '2026-08-17 18:05:00', 'evidence_appeal_05.jpg', NULL, NULL);
+(5, NULL, 3, 2, 1, NULL, '這則留言重複洗版，疑似機器人帳號行為。', 'PENDING', '2026-08-17 18:05:00', 'evidence_appeal_05.jpg', NULL, NULL),
+(6, 5, NULL, 3, 7, NULL, '這篇排行沒有註明測試環境跟樣本數，內容有誤導疑慮，請管理員協助查核。', 'PENDING', '2026-08-13 10:30:00', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -122,11 +123,13 @@ CREATE TABLE `article` (
 
 INSERT INTO `article` (`art_id`, `title`, `category`, `content`, `mem_id`, `is_show`, `create_time`, `pic`, `remove_reason`, `delete_type`) VALUES
 (1, '2026年度大賽規章公告', 'announcement', '請所有參賽選手務必於期限內完成設備檢核...', 1, 1, '2026-08-01 09:00:00', NULL, NULL, NULL),
-(2, '【開箱】黃金版天翼戰神實拍', 'unboxing', '等了三個月終於從日本寄過來了...', 3, 1, '2026-08-05 14:20:00', 'article_pic_02.jpg', NULL, NULL),
-(3, '台北站賽程與交通資訊', 'event', '本次報到地點位於二樓多功能大廳...', 5, 1, '2026-08-08 10:00:00', 'article_pic_03.jpg', NULL, NULL),
-(4, '大家平常都怎麼保養軸心的？', 'chat', '最近發現我的軸心轉起來聲音怪怪的...', 6, 0, '2026-08-10 20:15:00', NULL, NULL, NULL),
+(2, '【開箱】黃金版天翼戰神實拍', 'unboxing', '等了三個月終於從日本寄過來了...', 3, 1, '2026-08-05 14:20:00', NULL, NULL, NULL),
+(3, '台北站賽程與交通資訊', 'event', '本次報到地點位於二樓多功能大廳...', 5, 1, '2026-08-08 10:00:00', NULL, NULL, NULL),
+(4, '大家平常都怎麼保養軸心的？', 'chat', '最近發現我的軸心轉起來聲音怪怪的...', 6, 1, '2026-08-10 20:15:00', NULL, NULL, NULL),
 (5, '進階配裝：攻擊型 vs 平衡型分析', 'strategy', '這篇整理近期幾場對戰中的配裝心得...', 7, 1, '2026-08-12 22:40:00', NULL, NULL, NULL),
-(6, '新手發問：固鎖環要怎麼挑？', 'faq', '剛入坑想請教大家固鎖環選擇的原則...', 4, 0, '2026-08-13 11:05:00', NULL, '內容含廣告連結，經檢舉下架', 'admin_removed');
+(6, '新手發問：固鎖環要怎麼挑？', 'faq', '剛入坑想請教大家固鎖環選擇的原則...', 4, 0, '2026-08-13 11:05:00', NULL, '內容含廣告連結，經檢舉下架', 'admin_removed'),
+(7, '進階配裝分享：暴風天馬 X 固定式鎖環的耐久測試心得', 'strategy', '<h2>前言</h2><p>最近入手了固定式的固鎖環，想跟大家分享一下這幾天在對戰場實測的心得，這次主要測試方向是<strong>耐久型配裝</strong>能不能扛住高爆發攻擊型的衝撞。</p><h3>配裝清單</h3><ul><li>戰刃：暴風天馬</li><li>固鎖：BX-50-01</li><li>軸心：UX-20（橡膠平底）</li></ul><p>選這套的原因是想測試<em>重量分布</em>對耐久的實際影響，官方數值上這套的持久看起來偏中等，但實測下來表現比我預期得好。</p><h3>對戰紀錄</h3><p>總共測試了 12 場，對手多半是攻擊特化型配裝。整體來說：</p><ul><li>對上爆發型軸心，前 10 秒容易被撞飛出場，但撐過前段之後穩定度明顯提升</li><li>持久戰的情況下，勝率大概落在 6 成左右</li></ul><h3>小結</h3><p>如果大家手邊也有固定式鎖環，歡迎留言分享你的測試心得，我打算下週再測一次<u>不同軸心</u>的組合，到時候再更新。</p>', 1, 1, '2026-07-13 09:00:00', NULL, NULL, NULL),
+(8, '陀螺配置器新增「配方分享」功能公告', 'announcement', '<h2>功能更新通知</h2><p>感謝大家長期以來對 Spinix 平台的支持！本次更新為陀螺配置器新增了「下載配方圖片」功能，讓玩家可以將自己組裝的陀螺配置存成圖片，方便分享到社群或跟朋友討論。</p><h3>使用方式</h3><ul><li>進入陀螺配置頁面，選擇戰刃、固鎖、軸心三個部件</li><li>配置完成後，點擊「下載配方圖片」即可儲存</li></ul><p>後續也將持續優化平台功能，如有任何使用上的問題或建議，歡迎至論壇留言討論。</p><h3>近期維護時程</h3><p>系統將於近期進行例行維護，維護期間可能會有短暫服務中斷，造成不便敬請見諒。</p>', 1, 1, '2026-08-09 16:00:00', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -245,13 +248,36 @@ CREATE TABLE `beyblade` (
 --
 
 INSERT INTO `beyblade` (`beyblade_id`, `category`, `name`, `attack`, `defense`, `stamina`, `weight`, `pic`, `is_show`) VALUES
-(1, 'Blade', '暴風天馬', 85, 40, 55, 32, 'build/blade/暴風天馬.png', 1),
-(2, 'Blade', '蒼龍神劍', 78, 50, 60, 30, 'build/blade/蒼龍神劍.png', 1),
-(3, 'Ratchet', 'BX-50-01', 45, 90, 65, 18, 'build/ratchet/BX-50-01.png', 1),
-(4, 'Ratchet', 'CX-17-01', 40, 75, 95, 20, 'build/ratchet/CX-17-01.png', 0),
-(5, 'Bit', 'UX-20', 30, 25, 50, 8, 'build/bit/UX-20.png', 1),
-(6, 'Bit', 'CX-17-02', 20, 60, 80, 9, 'build/bit/CX-17-02.png', 0);
 
+-- Blade（戰刃）
+(1, 'Blade', '衝擊龍神', 38, 13, 5, 39, 'build/blade/衝擊龍神.png', 1),
+(2, 'Blade', '幽靈元魂', 3, 20, 28, 27, 'build/blade/幽靈元魂.png', 1),
+(3, 'Blade', '大蛇簇擁', 33, 8, 10, 37, 'build/blade/大蛇簇擁.png', 1),
+(4, 'Blade', '玄冥戰甲', 5, 33, 13, 32, 'build/blade/玄冥戰甲.png', 1),
+(5, 'Blade', '雄獅獵爪', 20, 20, 10, 32, 'build/blade/雄獅獵爪.png', 1),
+(6, 'Blade', '蒼龍突擊', 29, 13, 9, 41, 'build/blade/蒼龍突擊.png', 1),
+(7, 'Blade', '鳳凰翔羽', 25, 10, 15, 33, 'build/blade/鳳凰翔羽.png', 1),
+(8, 'Blade', '暴風天馬', 28, 8, 15, 31, 'build/blade/暴風天馬.png', 0),
+
+-- Ratchet（固鎖）
+(9, 'Ratchet', 'BX-50-01', 2, 6, 8, 8, 'build/ratchet/BX-50-01.png', 1),
+(10, 'Ratchet', 'BX-50-03', 3, 7, 5, 5, 'build/ratchet/BX-50-03.png', 1),
+(11, 'Ratchet', 'BX-50-04', 4, 10, 7, 11, 'build/ratchet/BX-50-04.png', 1),
+(12, 'Ratchet', 'BX-50-06', 2, 6, 8, 8, 'build/ratchet/BX-50-06.png', 1),
+(13, 'Ratchet', 'CX-17-01', 8, 5, 3, 6, 'build/ratchet/CX-17-01.png', 1),
+(14, 'Ratchet', 'CX-17-04', 3, 8, 5, 5, 'build/ratchet/CX-17-04.png', 1),
+(15, 'Ratchet', 'CX-18-03', 6, 4, 5, 7, 'build/ratchet/CX-18-03.png', 1),
+(16, 'Ratchet', 'UX-16-01', 7, 5, 4, 5, 'build/ratchet/UX-16-01.png', 0),
+
+-- Bit（軸心）
+(17, 'Bit', 'BX-48-04', 5, 8, 23, 2, 'build/bit/BX-48-04.png', 1),
+(18, 'Bit', 'BXG-57-02', 23, 5, 3, 2, 'build/bit/BXG-57-02.png', 1),
+(19, 'Bit', 'BXH-22', 5, 8, 33, 4, 'build/bit/BXH-22.png', 1),
+(20, 'Bit', 'CX-17-05', 5, 25, 15, 2, 'build/bit/CX-17-05.png', 1),
+(21, 'Bit', 'UX-20', 23, 3, 5, 2, 'build/bit/UX-20.png', 1),
+(22, 'Bit', 'UX-21-01', 15, 10, 8, 3, 'build/bit/UX-21-01.png', 1),
+(23, 'Bit', 'UX-21-03', 8, 13, 25, 2, 'build/bit/UX-21-03.png', 1),
+(24, 'Bit', 'BXG-39', 10, 20, 5, 2, 'build/bit/BXG-39.png', 0);
 -- --------------------------------------------------------
 
 --
@@ -797,10 +823,18 @@ CREATE TABLE `message` (
 
 INSERT INTO `message` (`msg_id`, `mem_id`, `art_id`, `content`, `create_time`, `is_show`, `pic`, `remove_reason`, `delete_type`) VALUES
 (1, 2, 1, '推！這個規章講解得很清楚', '2026-08-01 10:30:00', 1, NULL, NULL, NULL),
-(2, 5, 2, '這顆真的稀有，羨慕！請問哪裡買的到類似的嗎', '2026-08-05 15:00:00', 1, 'message_pic_02.jpg', NULL, NULL),
+(2, 5, 2, '這顆真的稀有，羨慕！請問哪裡買的到類似的嗎', '2026-08-05 15:00:00', 1, NULL, NULL, NULL),
 (3, 1, 3, '請問交通接駁車幾點發車呢？', '2026-08-08 11:20:00', 1, NULL, NULL, NULL),
 (4, 8, 4, '我都用軟布沾一點潤滑油輕輕擦拭', '2026-08-10 21:00:00', 1, NULL, NULL, NULL),
-(5, 9, 5, '這種說法太片面了吧，內容根本亂寫', '2026-08-13 08:10:00', 0, NULL, NULL, NULL);
+(5, 9, 5, '這種說法太片面了吧，內容根本亂寫', '2026-08-13 08:10:00', 0, NULL, NULL, NULL),
+(6, 8, 4, '我都用軟布沾一點潤滑油輕輕擦拭，效果還不錯', '2026-08-10 21:00:00', 1, NULL, NULL, NULL),
+(7, 1, 4, '推！我也是這樣保養的，用了半年都還很順', '2026-08-10 21:30:00', 1, NULL, NULL, NULL),
+(8, 8, 4, '這方法根本沒用吧，我照做軸心還是卡卡的，該不會是騙人的', '2026-08-11 09:15:00', 0, NULL, '內容涉及不實指控，經審核後下架', 'admin_removed'),
+(9, 1, 4, '樓上可能是油量沒抓好，建議先用乾布擦一次再上油試試', '2026-08-11 10:00:00', 1, NULL, NULL, NULL),
+(10, 8, 4, '長知識了，謝謝分享！', '2026-08-11 14:20:00', 1, NULL, NULL, NULL),
+(11, 1, 4, '我自己是每兩週保養一次，供大家參考', '2026-08-11 18:00:00', 1, NULL, NULL, NULL),
+(12, 8, 4, '這篇文章底下這麼多人推薦潤滑油保養，我上次照做結果軸心整個卡死送修，該不會是錯誤資訊在流傳吧', '2026-08-12 09:00:00', 1, NULL, NULL, NULL),
+(13, 1, 3, '請問這個交通資訊還會更新嗎？', '2026-08-09 08:00:00', 0, NULL, NULL, 'self_deleted');
 
 -- --------------------------------------------------------
 

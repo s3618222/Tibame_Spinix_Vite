@@ -164,6 +164,7 @@ img {
 
 .pic-logo {
   color: map-get($color, neutral );
+  padding: 12px;
 }
 
 .pics-container {
@@ -222,6 +223,7 @@ img {
         z-index: 2;
         width: 60%;
         height: 60%;
+        min-width: 0;
       }
 
       .preview-fallback {
@@ -250,17 +252,6 @@ img {
 
   }
 
-
-  .preview-pic {
-    flex: 1;
-    width: 60%;
-    min-width: 0;
-    height: auto;
-    aspect-ratio: 1 / 1;
-    display: block;
-    object-fit: contain;
-
-  }
 }
 
 

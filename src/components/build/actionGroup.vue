@@ -1,11 +1,11 @@
 <!-- ActionGroup.vue -->
 <template>
   <div class="action-group">
-    <button class="btn-download">
+    <button class="btn-download btnFill" @click="handleDownload">
       <i class="fa-solid fa-download"></i> 
       <span>下載配方圖片</span>
     </button>
-    <button class="btn-reset" @click="handleClick">
+    <button class="btn-reset btnNoFill" @click="handleClick">
       <i class="fa-solid fa-rotate-right"></i>
       <span class="btn-text">再做一顆</span>
     </button>
@@ -19,6 +19,10 @@ export default {
   methods: {
     handleClick() {
       this.$emit('clear-all');
+    },
+
+    handleDownload(){
+      this.$emit('download');
     }
   }
 }
@@ -46,20 +50,18 @@ export default {
 
   .btn-download {
     flex: 1; /* 手機版黃色按鈕佔據大部分寬度 */
-    background-color: map-get($color, primary);
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
-
+  
   .btn-reset {
     width: 48px; /* 手機版變成右邊正方形重置按鈕 */
-    border: 1px solid #ccc;
-    background: #fff;
-    border-radius: 8px;
-    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     .btn-text { display: none; } /* 手機版隱藏「再做一顆」文字，只留圖示 */
   }
   button {

@@ -13,7 +13,7 @@
                      <p class="user-name">{{username}}</p>
                      <p class="msg-date">{{postDate}}</p>
                   </div>
-                  <a href="./complaint.html" target="" v-if="!isMyComment && !isAdmin">
+                  <a :href="complaintUrl" v-if="!isMyComment && !isAdmin">
                      <i class="fa-solid fa-triangle-exclamation"></i>
                   </a>
                </div>
@@ -84,12 +84,11 @@
       </div>
       </div>
       <!-- 被申訴時警告訊息 -->
-      <div>
+      <div v-if="remove_reason !== null  && (isMyComment || isAdmin)">
          <WarningBanner
-            v-if="remove_reason !== null  && (isMyComment || isAdmin)"
             title= "留言"
             :remove_reason = "remove_reason"
-            :show_contact="isOwner"
+            :show_contact="isMyComment"
             class="warning-banner"
          />
       </div>
@@ -97,7 +96,6 @@
 </template>
 <script setup>
    import { computed } from 'vue';
-   // import { exchangeList,  completeExchange } from '@/data/ExchangeData.js';
    import ContactDrawer from '@/components/ContactDrawer.vue';
    import WarningBanner from '@/components/WarningBanner.vue';
    import StatusToggleButton from '@/components/StatusToggleButton.vue';
@@ -261,6 +259,10 @@ async function handleRejectExchange() {
       }
    }
 
+   const complaintUrl = computed(()=>{
+      return `complaint.html?type=exchange&comm_id=${props.id}`;
+   });
+
 </script>
 
 <style lang="scss" scoped>
@@ -321,6 +323,7 @@ async function handleRejectExchange() {
    .msg-wrapper{
       display: flex;
       gap: 12px;
+      align-items: center;
    }
 
 
@@ -385,15 +388,16 @@ async function handleRejectExchange() {
          
          .msg-content{
             flex-direction: row;
-            align-items: center;
+            // align-items: center;
 
             .user-info{
                flex: 1;
+               // align-items: start;
 
                .user-info-txt{
                   display: flex;
                   gap: 8px;
-                  align-items: center;
+                  // align-items: center;
 
                   .msg-date{
                      padding: 0;
