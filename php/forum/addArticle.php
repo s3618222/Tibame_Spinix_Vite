@@ -3,6 +3,7 @@
 
   require_once("../common/cors.php");
   require_once("../common/connect_ckd101g2.php");
+  require_once("./forum_access_check.php");
 
   header("Content-Type: application/json; charset=utf-8");
 
@@ -31,7 +32,22 @@
     echo json_encode(["success" => false, "message" => "標題、分類、內容皆為必填"], JSON_UNESCAPED_UNICODE);
     exit();
   }
+  // 檢查論壇功能是否被限制使用
+  $access = checkForumAccess($pdo, $memberId);
 
+  if (!$access["allowed"]) {
+      http_response_code(403);
+      $message = $access["status"] === "PERMA-RESTRICT"
+          ? "您的帳號已被永久限制使用論壇功能"
+          : "您的論壇功能目前暫時受限，將於 " . $access["suspendUntil"] . " 恢復";
+
+      echo json_encode([
+          "success" => false,
+          "message" => $message
+      ], JSON_UNESCAPED_UNICODE);
+      exit;
+  }
+  
   if (mb_strlen($title, "UTF-8") > 100) {
     echo json_encode(["success" => false, "message" => "標題不可超過 100 字"], JSON_UNESCAPED_UNICODE);
     exit;
