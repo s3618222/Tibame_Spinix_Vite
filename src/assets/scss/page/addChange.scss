@@ -1,6 +1,12 @@
 @use '../_var' as *;
 
 #addChange {
+   .page-title {
+      color: #F29B00;
+      font-size: 26px;
+      font-weight: 900;
+   }
+
    .form-add-prod {
       background-color: white;
       border: 1px solid map-get($color, gray);
@@ -21,9 +27,9 @@
 
          .form-label-style {
 
-            &:has([required]) .label-title::after{
+            &:has([required]) .label-title::after {
                content: ' *';
-               color: map-get($color, error );
+               color: map-get($color, error);
             }
 
             .label-title {

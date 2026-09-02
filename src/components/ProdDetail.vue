@@ -859,6 +859,11 @@ const complaintUrl = computed(()=>{
   }
 }
 
+.page-title {
+    color: #F29B00;
+    font-size: 26px;
+    font-weight: 900;
+  }
 
 p{
   color: #141C26;
@@ -1170,12 +1175,6 @@ p{
 
 // == 桌機 ================================================
 @media screen and (width >= 992px) {
-
-  .page-title {
-    color: #F29B00;
-    font-size: 26px;
-    font-weight: 900;
-  }
   
   .next-page {
     padding: 12px 0 4px;

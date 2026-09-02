@@ -214,7 +214,7 @@ export default {
       });
     },
 
-    // 我提出的申請：從 fakeComments 篩「我留過言的」，再組合對應文章資訊
+    // 我提出的申請
     myApplyList() {
       if (!Array.isArray(this.myCommentData)) return [];
       return this.myCommentData.map(comment => {
