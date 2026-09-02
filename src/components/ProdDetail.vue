@@ -181,7 +181,7 @@
         v-else-if="!isOwner && !alreadyApplied && !isAdmin"
         type="button"
         class="btnFill"
-        @click="isModalOpen = true"
+        @click="handleOpenModal"
       >
         我想交換
       </button>
@@ -335,6 +335,7 @@ const route = useRoute();
 
 // 登入會員
 let currentUserId = ref(null);
+let isMemberChecked = ref(false);
 function fetchCurrentMember() {
   return fetch(`${phpBaseUrl}/member/currentMember_get.php`, {
       credentials: "include"
@@ -345,8 +346,11 @@ function fetchCurrentMember() {
       } else { //未登入時
         currentUserId.value = null;
       }
+  }).finally(() => {
+      isMemberChecked.value = true;
   });
 }
+
 
 fetchCurrentMember();
 
@@ -697,6 +701,19 @@ const activeImageIndex = ref(0);
 
 // 留言表單燈箱
 const isModalOpen = ref(false);
+async function handleOpenModal() {
+  // 保險：如果登入狀態還沒確認完成，先等它確認完
+  if (!isMemberChecked.value) {
+    await fetchCurrentMember();
+  }
+
+  if (!currentUserId.value) {
+    window.alert('請先登入才能提出交換申請');
+    return;
+  }
+
+  isModalOpen.value = true;
+}
 const form = reactive({
   content: '',
   comm_contact: '',
