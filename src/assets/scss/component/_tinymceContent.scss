@@ -57,4 +57,8 @@
     margin: 12px auto;
     display: block;
   }
+
+  :deep(strong) {
+    font-weight: 600;
+  }
 }
