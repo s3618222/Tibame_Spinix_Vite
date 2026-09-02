@@ -2,7 +2,7 @@
    <button
       type="button"
       class="btnRemove"
-      v-if="isShow && isAdmin"
+      v-if="isShow && isAdmin && canRemove"
       @click="emit('toggle')"
    >
       下架{{title}}
@@ -27,6 +27,10 @@
          default:true
       },
       isAdmin:{
+         type:Boolean,
+         default:true
+      },
+      canRemove:{ // 是否符合可下架的狀態（例如 status === 'available'）
          type:Boolean,
          default:true
       }

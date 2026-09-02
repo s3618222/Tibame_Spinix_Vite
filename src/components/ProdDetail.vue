@@ -164,6 +164,7 @@
           title="文章"
           :isShow="article.is_show"
           :isAdmin="isAdmin"
+          :can-remove="article.status === 'available'"
           @toggle="handleToggleArticleStatus"
         />
       </div>
@@ -229,6 +230,7 @@
               :posterName="article.mem_name"
               :isArticleShow="article.is_show"
               :isAdmin="isAdmin"
+              
               @select-applicant="handleSelectApplicant"
               @toggle-comment-status="handleToggleCommentStatus"
               @reply-confirmed="handleReplyConfirmed"
@@ -471,7 +473,7 @@ async function toggleShowStatus({target,id,action,reason = null}) {
     return  await res.json();
 
   }catch(err){
-    alert(result.message || '下架失敗，請稍後在試');
+    alert(err.message || '下架失敗，請稍後在試');
   }
 }
 
