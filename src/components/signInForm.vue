@@ -36,7 +36,6 @@
               <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
             </button>
           </div>
-          <div class="password-strength"></div>
         </div>
 
         <button type="submit" class="btn-login">

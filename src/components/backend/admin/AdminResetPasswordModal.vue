@@ -18,6 +18,7 @@
               :type="showPassword ? 'text' : 'password'"
               class="form-field__input"
               placeholder="輸入密碼"
+              @input="errorMsg = ''"
             >
             <button
               type="button"
@@ -38,6 +39,7 @@
               :type="showConfirm ? 'text' : 'password'"
               class="form-field__input"
               placeholder="再次輸入密碼"
+              @input="errorMsg = ''"
             >
             <button
               type="button"
@@ -47,6 +49,7 @@
               <i :class="showConfirm ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
             </button>
           </div>
+          <p v-if="errorMsg" class="form-field__error">{{ errorMsg }}</p>
         </div>
 
         <!-- 按鈕 -->
@@ -87,9 +90,28 @@
   const confirmPassword = ref("");
   const showPassword = ref(false);
   const showConfirm = ref(false);
+  const errorMsg = ref("");
 
   function handleSubmit() {
-    // 尚未串接 API，先 emit 給父元件
+    // 必填檢查 → 未填完整就擋下、保留輸入、不關窗
+    if (!password.value || !confirmPassword.value) {
+      errorMsg.value = "請填寫所有欄位";
+      return;
+    }
+
+    // 密碼長度不足 → 顯示 inline 紅字、保留輸入、不關窗
+    if (password.value.length < 6) {
+      errorMsg.value = "密碼至少需 6 碼";
+      return;
+    }
+
+    // 密碼不一致 → 顯示 inline 紅字、保留輸入、不關窗
+    if (password.value !== confirmPassword.value) {
+      errorMsg.value = "密碼輸入不一致";
+      return;
+    }
+
+    errorMsg.value = "";
     emit("submit", {
       adminId: props.admin.id,
       password: password.value,
@@ -200,6 +222,11 @@
 
       color: map-get($color, neutral);
       cursor: pointer;
+    }
+
+    &__error {
+      font-size: map-get($fontSize, default);
+      color: map-get($color, error);
     }
   }
 
