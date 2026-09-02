@@ -21,6 +21,37 @@ const phpBaseUrl =
 const uploadImgVm = createApp(upload).mount('#uploadImgApp');
 window.photoUploadInstance = uploadImgVm;
 
+// 進頁即檢查交換功能是否被停權，受限則擋下並導回 market
+function checkCreateExchangeAccess() {
+   fetch(`${phpBaseUrl}/exchange/exchange_access_get.php`, {
+      credentials: "include"
+   }).then(res => res.json()).then(data => {
+
+      // 未能成功確認權限時，先直接導回交換市集
+      if (!data.success) {
+         alert(data.message || "目前無法確認二手交換功能狀態");
+         window.location.href = `${import.meta.env.BASE_URL}market.html`;
+         return;
+      }
+
+      // 交換功能受限時，禁止進入刊登頁
+      if (!data.allowed) {
+         if (data.status === "TEMP-RESTRICT") {
+            alert("你的二手交換功能目前暫時受限，受限期間無法刊登交換。");
+         } else if (data.status === "PERMA-RESTRICT") {
+            alert("你的二手交換功能目前已被限制使用，無法刊登交換。");
+         } else {
+            alert("目前無法使用二手交換相關功能。");
+         }
+         window.location.href = `${import.meta.env.BASE_URL}market.html`;
+         return;
+      }
+   }).catch(error => {
+      console.error("二手交換功能權限確認失敗：", error);
+   });
+}
+checkCreateExchangeAccess();
+
 const selectCity = document.getElementById('select-city');
 const selectDistrict = document.getElementById('select-district');
 
@@ -155,7 +186,7 @@ btnSubmit.addEventListener('click', (e) => {
                window.location.href = 'homepage.html';
             }
          } else {
-            alert('錯誤');
+            alert(data.message || '刊登失敗');
          }
       })
    }

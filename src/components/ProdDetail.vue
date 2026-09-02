@@ -740,6 +740,27 @@ async function handleSubmit() {
     return;
   }
 
+  // 交換功能停權前置檢查（受限則不送出；後端仍會 403 把關）
+  try {
+    const accessRes = await fetch(`${phpBaseUrl}/exchange/exchange_access_get.php`, {
+      credentials: 'include'
+    });
+    const access = await accessRes.json();
+
+    if (!access.success || !access.allowed) {
+      if (access.status === 'TEMP-RESTRICT') {
+        window.alert('你的二手交換功能目前暫時受限，受限期間無法申請交換。');
+      } else if (access.status === 'PERMA-RESTRICT') {
+        window.alert('你的二手交換功能目前已被限制使用，無法申請交換。');
+      } else {
+        window.alert(access.message || '目前無法使用二手交換相關功能。');
+      }
+      return;
+    }
+  } catch (error) {
+    console.error('二手交換功能權限確認失敗：', error);
+  }
+
   const payload = {
     id: articleId.value,
     comm_contact: form.comm_contact,

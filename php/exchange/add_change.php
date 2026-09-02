@@ -6,6 +6,7 @@ session_start();
 require_once("../common/cors.php");
 require_once("../common/connect_ckd101g2.php");
 require_once("../common/funcs.php");
+require_once("./exchange_access_check.php");
 
 header("Content-Type: application/json; charset=utf-8");
 
@@ -24,6 +25,23 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 $memberId = $_SESSION["MEM_ID"] ?? null;
 if (!$memberId) {
    echo json_encode(["success" => false, "message" => "請先登入"], JSON_UNESCAPED_UNICODE);
+   exit;
+}
+
+// 交換功能停權檢查（受限時禁止刊登，放在圖片處理之前避免浪費上傳）
+$access = checkExchangeAccess($pdo, $memberId);
+if (!$access["allowed"]) {
+   http_response_code(403);
+
+   if ($access["status"] === "TEMP-RESTRICT") {
+      $msg = "你的二手交換功能目前暫時受限，受限期間無法刊登交換。";
+   } elseif ($access["status"] === "PERMA-RESTRICT") {
+      $msg = "你的二手交換功能目前已被限制使用，無法刊登交換。";
+   } else {
+      $msg = "目前無法使用二手交換相關功能。";
+   }
+
+   echo json_encode(["success" => false, "message" => $msg], JSON_UNESCAPED_UNICODE);
    exit;
 }
 

@@ -19,7 +19,7 @@
       <WarningBanner
         v-if="comment.isShow === false"
         title="留言"
-        remove_reason="該留言因違反社群規範，已由管理員下架"
+        :remove_reason="comment.removeReason"
         :show_contact="true"
       />
       <div class="comment-footer" v-if="isArticleShow && !isCommentAuthor && comment.isShow !== false">
