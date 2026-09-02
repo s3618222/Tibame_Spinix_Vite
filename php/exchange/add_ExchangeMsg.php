@@ -3,6 +3,7 @@ session_start();
 
 require_once("../common/cors.php");
 require_once("../common/connect_ckd101g2.php");
+require_once("./exchange_access_check.php");
 
 $rawData = file_get_contents("php://input");
 $data = json_decode($rawData, true);
@@ -16,6 +17,23 @@ if (!$memberId) {
       JSON_UNESCAPED_UNICODE
    );
 
+   exit;
+}
+
+// 交換功能停權檢查（受限時禁止申請）
+$access = checkExchangeAccess($pdo, $memberId);
+if (!$access["allowed"]) {
+   http_response_code(403);
+
+   if ($access["status"] === "TEMP-RESTRICT") {
+      $msg = "你的二手交換功能目前暫時受限，受限期間無法申請交換。";
+   } elseif ($access["status"] === "PERMA-RESTRICT") {
+      $msg = "你的二手交換功能目前已被限制使用，無法申請交換。";
+   } else {
+      $msg = "目前無法使用二手交換相關功能。";
+   }
+
+   echo json_encode(['success' => false, 'message' => $msg], JSON_UNESCAPED_UNICODE);
    exit;
 }
 
