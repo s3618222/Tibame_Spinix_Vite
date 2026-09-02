@@ -1,5 +1,5 @@
 <template>
-   <div class="card" @click="goToDetail">
+   <div class="card" :class="{ 'card--removed': isRemoved }"  @click="goToDetail">
       <div class="pic">
          <img :src="image" :alt="title">
          <!-- 格式:https://tibamef2e.com/ckd101/g2/php/uploads/articles/exchange_ab8f43ded063f855.png -->
@@ -102,6 +102,10 @@ const props = defineProps({
    applyId:{
       type:[String, Number],
       default: null
+   },
+   isRemoved: {
+      type: Boolean,
+      default: false
    }
 });
 
@@ -114,7 +118,8 @@ const stateChipMap = {
    '待確認': 'chip--state',
    '交換完成': 'chip--completed',
    '申請中': 'chip--exchangeable',
-   '已回覆': 'chip--state'
+   '已回覆': 'chip--state',
+   '已下架': 'chip--error'
 };
 
 
@@ -122,6 +127,10 @@ const chipModifier = computed(() => stateChipMap[props.state] || '');
 
 const buttons = computed(() => {
    const viewMore = { label: '查看詳情', action: 'view-more', type: 'btnNoFill' };
+
+   if (props.isRemoved) {
+      return [viewMore];  
+   }
 
    if (props.context === 'myApplications' && props.state === '已回覆') {
       return [
@@ -186,6 +195,15 @@ function goToDetail() {
       overflow: hidden;
       color: #141C26;
       position: relative;
+
+      &.card--removed {
+         opacity: 0.6;
+         background-color: #f5f5f5;
+
+         .pic img {
+            filter: grayscale(1);
+         }
+      }
 
       .tag-pos {
          position: absolute;

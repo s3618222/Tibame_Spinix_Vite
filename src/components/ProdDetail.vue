@@ -1,13 +1,13 @@
 <template>
   <h1 class="page-title">{{ pageTitle }}</h1>
   <a class="back-page" :href="backLink">返回</a>
-  <div class="removed-notice-container" v-if="article && isRemovedNotice.value">
+  <div class="removed-notice-container" v-if="article && isRemovedNotice">
     <div class="removed-notice">
       <i class="fa-solid fa-triangle-exclamation"></i>
-      <p>該文章已違反社群公約，已被下架</p>
+      <p>該文章違反社群公約，已下架</p>
     </div>
   </div>
-  <div class="container" v-if="article">
+  <div class="container" v-else-if="article">
     <!-- 商品圖片 -->
     <div class="panel" :class=" {'panel-back':isAdmin} ">
       <div v-if="!isEditing">
@@ -221,12 +221,13 @@
               :isMyComment="comment.mem_id === String(currentUserId)"
               :isOwner="isOwner"
               :isChoose="comment.is_choose"
-              :articleStatus="article.status"
-              :postId="article.post_id"
-              :posterName="article.mem_name"
               :contact="comment.contact"
               :remove_reason="comment.remove_reason"
               :isShow="comment.is_show"
+              :articleStatus="article.status"
+              :postId="article.post_id"
+              :posterName="article.mem_name"
+              :isArticleShow="article.is_show"
               :isAdmin="isAdmin"
               @select-applicant="handleSelectApplicant"
               @toggle-comment-status="handleToggleCommentStatus"
@@ -775,7 +776,6 @@ async function handleSubmit() {
   }); 
 
   const result = await res.json();
-  console.log(result);
 
   if(result.success){
     if(result.data){

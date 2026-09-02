@@ -35,8 +35,6 @@ try {
       }
 
       $isOwner = ($memberId !== null && (string)$prod['mem_id'] === (string)$memberId);
-
-
       // 文章被下架時
       if (!$prod['is_show'] && !$isOwner && !$isAdmin) {
          $hasComment = false;

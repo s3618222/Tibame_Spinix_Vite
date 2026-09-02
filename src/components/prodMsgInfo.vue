@@ -50,7 +50,7 @@
          <div class="btn-choose">
             <button
                class="btnNeutral"
-               v-if="isOwner && !isChoose && articleStatus === 'available' && !isAdmin && isShow "
+               v-if="isOwner && !isChoose && articleStatus === 'available' && !isAdmin && isArticleShow && isShow"
                type="button"
                @click="$emit('select-applicant', { commentId: id, username: username })"
             >
@@ -122,6 +122,7 @@
       contact: { type: String, required: true },   // 新增：留言者自己的聯絡方式
       isShow:{ type: Boolean , default: true },
       remove_reason:{ type: String, default:''},
+      isArticleShow: { type: Boolean, default: true },
       isAdmin:{ type:Boolean , default:false}
    });
 
