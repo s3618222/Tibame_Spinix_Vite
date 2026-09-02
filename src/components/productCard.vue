@@ -282,7 +282,6 @@ function goToDetail() {
          .card-buttons {
             display: flex;
             justify-content: center;
-            margin: 12px -12px -12px;
             border-top: 1px solid #dddddd;
             
             .btnNoFill,
