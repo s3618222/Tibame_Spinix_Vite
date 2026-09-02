@@ -204,9 +204,15 @@ export default {
     // 不需要 AuthorCard 內建的卡片版型與桌機/手機切換樣式，因此這裡不掛載該元件，改為複用同一套邏輯
     getAvatarUrl(img) {
       const baseUrl = import.meta.env.BASE_URL;
-      return img
-        ? `${baseUrl}${img}`
-        : `${baseUrl}spinix_member_default.png`;
+      if (!img) {
+        return `${baseUrl}spinix_member_default.png`;
+      }
+
+      if (img.startsWith("uploads/member/")) {
+        return `${phpBaseUrl}/${img}`;
+      }
+
+      return `${baseUrl}${img}`
     },
 
     // 下架：需要填寫原因，打開 ConfirmReasonModal
