@@ -68,7 +68,7 @@ function FormatExchangRow(array $row): array {
    }
 
    if (empty($row['remove_reason'])) {
-      unset($row['remove_reson']);
+      unset($row['remove_reason']);
    }
    return $row;
 }

@@ -48,6 +48,30 @@ if ($action === 'hide' && empty(trim($reason ?? ''))) {
    exit;
 }
 
+if ($target === 'post' && $action === 'hide') {
+   $check = "SELECT status FROM `exchange_post` WHERE post_id = ?";
+   $checkStmt = $pdo->prepare($check);
+   $checkStmt->execute([$id]);
+   $post = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+   if (!$post) {
+      http_response_code(400);
+      echo json_encode([
+         'success' => false,
+         'message' => '找不到此交換文章'
+      ], JSON_UNESCAPED_UNICODE);
+      exit;
+   }
+   if (in_array($post['status'], ['exchanging', 'pending'])) {
+      http_response_code(400);
+      echo json_encode([
+         'success' => false,
+         'message' => '此文章正在交換流程中，無法下架'
+      ],JSON_UNESCAPED_UNICODE);
+      exit;
+   }
+}
+
 $tableMap = [
    'post' => ['table' => 'exchange_post', 'idColumn' => 'post_id'],
    'comment' => ['table' => 'exchange_comment', 'idColumn' => 'comm_id']

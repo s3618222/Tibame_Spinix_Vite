@@ -21,7 +21,7 @@
       },
       remove_reason:{ // 被下架原因
          type: String,
-         required: true
+         default: null
       },
       show_contact:{ // 是否顯示「聯繫我們」
          type: Boolean,

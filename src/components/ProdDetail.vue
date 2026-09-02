@@ -1,7 +1,12 @@
 <template>
   <h1 class="page-title">{{ pageTitle }}</h1>
   <a class="back-page" :href="backLink">返回</a>
-
+  <div class="removed-notice-container" v-if="article && isRemovedNotice.value">
+    <div class="removed-notice">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <p>該文章已違反社群公約，已被下架</p>
+    </div>
+  </div>
   <div class="container" v-if="article">
     <!-- 商品圖片 -->
     <div class="panel" :class=" {'panel-back':isAdmin} ">
@@ -146,7 +151,7 @@
       
       <!-- 被申訴時警告訊息 -->
       <WarningBanner
-        v-if="article.remove_reason !== null  "
+        v-if="!article.is_show"
         title= "文章"
         :remove_reason = "article.remove_reason"
         :show_contact="isOwner"
@@ -213,7 +218,7 @@
               :username="comment.name"
               :postDate="comment.create_time"
               :msgtxt="comment.content"
-              :isMyComment="comment.mem_id === currentUserId"
+              :isMyComment="comment.mem_id === String(currentUserId)"
               :isOwner="isOwner"
               :isChoose="comment.is_choose"
               :articleStatus="article.status"
@@ -396,19 +401,31 @@ const galleryImages = ref([]);
 
 // 從 exchangeList 陣列中，找出 id 相符的那一筆資料
 const article = ref(null);
+const isRemovedNotice = ref(false);
 async function fetchArticle() {
-  const res = await getExchangeDetail(articleId.value);
-  article.value = res.data;
 
-  const rawPics = [
-    article.value.post_pic1,
-    article.value.post_pic2,
-    article.value.post_pic3,
-    article.value.post_pic4,
-    article.value.post_pic5
-  ].filter(Boolean);
+  try{
+    const res = await getExchangeDetail(articleId.value);
+    article.value = res.data;
 
-  galleryImages.value = rawPics.map(pic => `${pic}`);
+    if (res.data.removed_notice) {
+      isRemovedNotice.value = true;
+      return;
+    }
+    isRemovedNotice.value = false;
+    const rawPics = [
+      article.value.post_pic1,
+      article.value.post_pic2,
+      article.value.post_pic3,
+      article.value.post_pic4,
+      article.value.post_pic5
+    ].filter(Boolean);
+    galleryImages.value = rawPics.map(pic => `${pic}`);
+  }catch (err) {
+    // getExchangeDetail 遇到非 2xx 狀態碼（例如 400、404）會 throw，統一在這裡視為找不到文章
+    article.value = null;
+    isRemovedNotice.value = false;
+  }
 }
 
 
@@ -418,7 +435,7 @@ fetchArticle();
 // 是否為自己刊登的文章
 const isOwner = computed(() => {
   if (!article.value) return false;
-  return article.value.mem_id === currentUserId.value;
+  return String(article.value.mem_id) === String(currentUserId.value);
 });
 
 
@@ -426,7 +443,7 @@ const isOwner = computed(() => {
 const alreadyApplied = computed(() => {
   if (!article.value || isOwner.value) return false;
   if (justApplied.value) return true;
-  return articleComments.value.some(c => c.mem_id === currentUserId.value);
+  return articleComments.value.some(c => String(c.mem_id) === String(currentUserId.value));
 });
 
 // 開啟下架原因燈箱
@@ -798,6 +815,28 @@ const complaintUrl = computed(()=>{
 
 <style lang="scss" scoped>
 @use '@/assets/scss/_var' as *;
+
+.removed-notice-container {
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+
+  .removed-notice {
+    text-align: center;
+    color: map-get($color, hint);
+
+    i {
+      font-size: 32px;
+      color: #d9534f;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    p {
+      font-size: 16px;
+    }
+  }
+}
 
 
 p{
