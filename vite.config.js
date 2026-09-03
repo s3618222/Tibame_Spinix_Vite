@@ -8,7 +8,7 @@ import path from 'path'   // 載入 path
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/ckd101/g2/front/", // 設定相對路徑
+  base: "/ckd101/g2/", // 設定相對路徑
   plugins: [vue()],
   resolve: {
     alias: {

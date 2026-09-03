@@ -1,8 +1,13 @@
 <template>
   <h1 class="page-title">{{ pageTitle }}</h1>
   <a class="back-page" :href="backLink">返回</a>
-
-  <div class="container" v-if="article">
+  <div class="removed-notice-container" v-if="article && isRemovedNotice">
+    <div class="removed-notice">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <p>該文章違反社群公約，已下架</p>
+    </div>
+  </div>
+  <div class="container" v-else-if="article">
     <!-- 商品圖片 -->
     <div class="panel" :class=" {'panel-back':isAdmin} ">
       <div v-if="!isEditing">
@@ -146,7 +151,7 @@
       
       <!-- 被申訴時警告訊息 -->
       <WarningBanner
-        v-if="article.remove_reason !== null  "
+        v-if="!article.is_show"
         title= "文章"
         :remove_reason = "article.remove_reason"
         :show_contact="isOwner"
@@ -159,6 +164,7 @@
           title="文章"
           :isShow="article.is_show"
           :isAdmin="isAdmin"
+          :can-remove="article.status === 'available'"
           @toggle="handleToggleArticleStatus"
         />
       </div>
@@ -175,7 +181,7 @@
         v-else-if="!isOwner && !alreadyApplied && !isAdmin"
         type="button"
         class="btnFill"
-        @click="isModalOpen = true"
+        @click="handleOpenModal"
       >
         我想交換
       </button>
@@ -213,16 +219,18 @@
               :username="comment.name"
               :postDate="comment.create_time"
               :msgtxt="comment.content"
-              :isMyComment="comment.mem_id === currentUserId"
+              :isMyComment="comment.mem_id === String(currentUserId)"
               :isOwner="isOwner"
               :isChoose="comment.is_choose"
-              :articleStatus="article.status"
-              :postId="article.post_id"
-              :posterName="article.mem_name"
               :contact="comment.contact"
               :remove_reason="comment.remove_reason"
               :isShow="comment.is_show"
+              :articleStatus="article.status"
+              :postId="article.post_id"
+              :posterName="article.mem_name"
+              :isArticleShow="article.is_show"
               :isAdmin="isAdmin"
+              
               @select-applicant="handleSelectApplicant"
               @toggle-comment-status="handleToggleCommentStatus"
               @reply-confirmed="handleReplyConfirmed"
@@ -327,6 +335,7 @@ const route = useRoute();
 
 // 登入會員
 let currentUserId = ref(null);
+let isMemberChecked = ref(false);
 function fetchCurrentMember() {
   return fetch(`${phpBaseUrl}/member/currentMember_get.php`, {
       credentials: "include"
@@ -337,8 +346,11 @@ function fetchCurrentMember() {
       } else { //未登入時
         currentUserId.value = null;
       }
+  }).finally(() => {
+      isMemberChecked.value = true;
   });
 }
+
 
 fetchCurrentMember();
 
@@ -396,19 +408,31 @@ const galleryImages = ref([]);
 
 // 從 exchangeList 陣列中，找出 id 相符的那一筆資料
 const article = ref(null);
+const isRemovedNotice = ref(false);
 async function fetchArticle() {
-  const res = await getExchangeDetail(articleId.value);
-  article.value = res.data;
 
-  const rawPics = [
-    article.value.post_pic1,
-    article.value.post_pic2,
-    article.value.post_pic3,
-    article.value.post_pic4,
-    article.value.post_pic5
-  ].filter(Boolean);
+  try{
+    const res = await getExchangeDetail(articleId.value);
+    article.value = res.data;
 
-  galleryImages.value = rawPics.map(pic => `${pic}`);
+    if (res.data.removed_notice) {
+      isRemovedNotice.value = true;
+      return;
+    }
+    isRemovedNotice.value = false;
+    const rawPics = [
+      article.value.post_pic1,
+      article.value.post_pic2,
+      article.value.post_pic3,
+      article.value.post_pic4,
+      article.value.post_pic5
+    ].filter(Boolean);
+    galleryImages.value = rawPics.map(pic => `${pic}`);
+  }catch (err) {
+    // getExchangeDetail 遇到非 2xx 狀態碼（例如 400、404）會 throw，統一在這裡視為找不到文章
+    article.value = null;
+    isRemovedNotice.value = false;
+  }
 }
 
 
@@ -418,7 +442,7 @@ fetchArticle();
 // 是否為自己刊登的文章
 const isOwner = computed(() => {
   if (!article.value) return false;
-  return article.value.mem_id === currentUserId.value;
+  return String(article.value.mem_id) === String(currentUserId.value);
 });
 
 
@@ -426,7 +450,7 @@ const isOwner = computed(() => {
 const alreadyApplied = computed(() => {
   if (!article.value || isOwner.value) return false;
   if (justApplied.value) return true;
-  return articleComments.value.some(c => c.mem_id === currentUserId.value);
+  return articleComments.value.some(c => String(c.mem_id) === String(currentUserId.value));
 });
 
 // 開啟下架原因燈箱
@@ -453,7 +477,7 @@ async function toggleShowStatus({target,id,action,reason = null}) {
     return  await res.json();
 
   }catch(err){
-    alert(result.message || '下架失敗，請稍後在試');
+    alert(err.message || '下架失敗，請稍後在試');
   }
 }
 
@@ -677,6 +701,19 @@ const activeImageIndex = ref(0);
 
 // 留言表單燈箱
 const isModalOpen = ref(false);
+async function handleOpenModal() {
+  // 保險：如果登入狀態還沒確認完成，先等它確認完
+  if (!isMemberChecked.value) {
+    await fetchCurrentMember();
+  }
+
+  if (!currentUserId.value) {
+    window.alert('請先登入才能提出交換申請');
+    return;
+  }
+
+  isModalOpen.value = true;
+}
 const form = reactive({
   content: '',
   comm_contact: '',
@@ -758,7 +795,6 @@ async function handleSubmit() {
   }); 
 
   const result = await res.json();
-  console.log(result);
 
   if(result.success){
     if(result.data){
@@ -820,6 +856,33 @@ const complaintUrl = computed(()=>{
 <style lang="scss" scoped>
 @use '@/assets/scss/_var' as *;
 
+.removed-notice-container {
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+
+  .removed-notice {
+    text-align: center;
+    color: map-get($color, hint);
+
+    i {
+      font-size: 32px;
+      color: #d9534f;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    p {
+      font-size: 16px;
+    }
+  }
+}
+
+.page-title {
+    color: #F29B00;
+    font-size: 26px;
+    font-weight: 900;
+  }
 
 p{
   color: #141C26;
@@ -1131,12 +1194,6 @@ p{
 
 // == 桌機 ================================================
 @media screen and (width >= 992px) {
-
-  .page-title {
-    color: #F29B00;
-    font-size: 26px;
-    font-weight: 900;
-  }
   
   .next-page {
     padding: 12px 0 4px;

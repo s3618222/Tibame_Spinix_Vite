@@ -4,7 +4,7 @@
 
 
 require_once("../common/cors.php");
-require_once("../common/connect_ckd101g2.php"); // 請自行核對實際檔名與路徑
+require_once("../common/connect_ckd101g2.php");
 require_once("../common/admin_guard.php");
 
 header("Content-Type: application/json; charset=utf-8");
@@ -121,6 +121,19 @@ try {
         ";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$reason, $articleId]);
+
+        // 通知作者文章已被下架
+        $sql = "SELECT mem_id, title FROM article WHERE art_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$articleId]);
+        $articleInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $notificationContent = "您的文章「" . $articleInfo["title"] . "」已被管理員下架，原因：" . $reason;
+
+        $sql = "INSERT INTO notification (mem_id, content, is_read, create_time) VALUES (?, ?, 0, NOW())";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$articleInfo["mem_id"], $notificationContent]);
+
     } else {
         // RESTORE 時，把 delete_type/remove_reason 一併清空，
         // 避免舊的下架原因殘留、誤導成「這篇還帶著下架紀錄」
@@ -131,6 +144,18 @@ try {
         ";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$articleId]);
+
+        // 通知作者文章已恢復上架
+        $sql = "SELECT mem_id, title FROM article WHERE art_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$articleId]);
+        $articleInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $notificationContent = "您的文章「" . $articleInfo["title"] . "」已恢復上架";
+
+        $sql = "INSERT INTO notification (mem_id, content, is_read, create_time) VALUES (?, ?, 0, NOW())";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$articleInfo["mem_id"], $notificationContent]);
     }
 
     echo json_encode([

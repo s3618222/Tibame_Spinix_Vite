@@ -125,6 +125,7 @@
           :type="item.typeLabel"
           :condition="item.conditionLabel"
           :applyId="item.applyId"
+          :isRemoved="item.isRemoved"
           @confirm-exchange="handleConfirmExchange"
           @reject-exchange="handleRejectExchange"
         />
@@ -195,43 +196,54 @@ export default {
 
     // 我刊登的交換：直接從 exchangeList 篩自己刊登的文章
     myExchangeList() {
-      if (!Array.isArray(this.exchangeListData)) return [];   // 防呆
-      return this.exchangeListData.filter(item => item.mem_id === this.currentUserId).map(item => ({
-        ...item,
-        cardKey: `post-${item.post_id}`,
-        headshot: item.mem_photo,
-        name: item.mem_name,
-        product_img: item.post_pic1,
-        stateLabel: statusLabelMap[item.status] || '',
-        typeLabel: typeLabelMap[item.type],
-        conditionLabel: conditionLabelMap[item.condition]
-      }));
+      if (!Array.isArray(this.exchangeListData)) return [];
+      return this.exchangeListData.filter(item => item.mem_id === this.currentUserId).map(item => {
+        const isRemoved = !item.is_show;
+        const stateLabel = isRemoved ? '已下架' : (statusLabelMap[item.status] || '');
+        return {
+          ...item,
+          cardKey: `post-${item.post_id}`,
+          headshot: item.mem_photo,
+          name: item.mem_name,
+          product_img: item.post_pic1,
+          stateLabel: isRemoved ? '已下架' : (statusLabelMap[item.status] || ''),
+          typeLabel: typeLabelMap[item.type],
+          conditionLabel: conditionLabelMap[item.condition],
+          isRemoved
+        };
+      });
     },
 
-    // 我提出的申請：從 fakeComments 篩「我留過言的」，再組合對應文章資訊
+    // 我提出的申請
     myApplyList() {
-      if (!Array.isArray(this.myCommentData)) return [];   // 防呆
+      if (!Array.isArray(this.myCommentData)) return [];
       return this.myCommentData.map(comment => {
-        const article = this.exchangeListData.find(item => item.post_id === comment.post_id);
-
-        if (!article) return;
-
+        const isRemoved = !comment.post_is_show;
         const isChosen = comment.is_choose === true;
-        const stateLabel = (article.status === 'available' || !isChosen) ? applyStatusLabelMap['available'] : applyStatusLabelMap[article.status];
+        const stateLabel = isRemoved
+          ? '已下架'
+          : (comment.post_status === 'available' || !isChosen)
+            ? applyStatusLabelMap['available']
+            : applyStatusLabelMap[comment.post_status];
 
         return {
-          ...article,
+          post_id: comment.post_id,
+          title: comment.title,
+          product_img: comment.post_pic1,
+          headshot: comment.poster_photo,
+          name: comment.poster_name,
+          create_time: comment.post_create_time,
+          city: comment.city,
+          district: comment.district,
           cardKey: `apply-${comment.comm_id}`,
           applyId: comment.comm_id,
-          headshot: article.mem_photo,
-          name: article.mem_name,
-          typeLabel: typeLabelMap?.[article.type] || '',
-          conditionLabel: conditionLabelMap?.[article.condition] || '',
-          product_img: article.post_pic1,
+          typeLabel: typeLabelMap?.[comment.type] || '',
+          conditionLabel: conditionLabelMap?.[comment.condition] || '',
           isChosen,
-          stateLabel
+          stateLabel,
+          isRemoved   // 新增：給 ProductCard 判斷要不要顯示下架樣式
         };
-      }).filter(Boolean);
+      });
     },
 
     // 依目前分頁，決定要用哪份清單
@@ -244,12 +256,15 @@ export default {
         return this.currentList;
       }
 
-      if (this.activeTab === 'myexchange') {
-        return this.currentList.filter(item => item.status === this.currentStatus);
+      if (this.currentStatus === "已下架") {
+        return this.currentList.filter(item => item.isRemoved);
       }
 
-      // 我提出的申請：用 stateLabel 比對
-      return this.currentList.filter(item => item.stateLabel === this.currentStatus);
+      if (this.activeTab === 'myexchange') {
+        return this.currentList.filter(item => !item.isRemoved && item.status === this.currentStatus);
+      }
+
+      return this.currentList.filter(item => !item.isRemoved && item.stateLabel === this.currentStatus);
     },
 
     // 狀態篩選 tab：兩個分頁使用不同的狀態選項
@@ -259,29 +274,28 @@ export default {
     if (this.activeTab === 'myexchange') {
       return [
         { label: "全部", value: "all", count: list.length },
-        { label: "可交換", value: "available", count: list.filter(i => i.status === "available").length },
-        { label: "待確認", value: "pending", count: list.filter(i => i.status === "pending").length },
-        { label: "交換中", value: "exchanging", count: list.filter(i => i.status === "exchanging").length },
-        { label: "交換完成", value: "completed", count: list.filter(i => i.status === "completed").length }
+        { label: "可交換", value: "available", count: list.filter(i => !i.isRemoved && i.status === "available").length },
+        { label: "待確認", value: "pending", count: list.filter(i => !i.isRemoved && i.status === "pending").length },
+        { label: "交換中", value: "exchanging", count: list.filter(i => !i.isRemoved && i.status === "exchanging").length },
+        { label: "交換完成", value: "completed", count: list.filter(i => !i.isRemoved && i.status === "completed").length },
+        { label: "已下架", value: "已下架", count: list.filter(i => i.isRemoved).length }
       ];
     }
 
-  // 我提出的申請：四種狀態
-      return [
-        { label: "全部", value: "all", count: list.length },
-        { label: "申請中", value: "申請中", count: list.filter(i => i.stateLabel === "申請中").length },
-        { label: "已回覆", value: "已回覆", count: list.filter(i => i.stateLabel === "已回覆").length },
-        { label: "交換中", value: "交換中", count: list.filter(i => i.stateLabel === "交換中").length },
-        { label: "交換完成", value: "交換完成", count: list.filter(i => i.stateLabel === "交換完成").length }
-      ];
+    return [
+      { label: "全部", value: "all", count: list.length },
+      { label: "申請中", value: "申請中", count: list.filter(i => !i.isRemoved && i.stateLabel === "申請中").length },
+      { label: "已回覆", value: "已回覆", count: list.filter(i => !i.isRemoved && i.stateLabel === "已回覆").length },
+      { label: "交換中", value: "交換中", count: list.filter(i => !i.isRemoved && i.stateLabel === "交換中").length },
+      { label: "交換完成", value: "交換完成", count: list.filter(i => !i.isRemoved && i.stateLabel === "交換完成").length },
+      { label: "已下架", value: "已下架", count: list.filter(i => i.isRemoved).length }
+    ];
   },
     paginatedList() {
       const start = (this.currentPage - 1) * this.pageSize;
       const end = start + this.pageSize;
       return this.filteredList.slice(start, end);
     },
-
-    
   },
   async created(){
     await this.fetchCurrentMember();

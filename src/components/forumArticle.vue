@@ -117,6 +117,7 @@ export default {
             pic: c.pic,
             memId: c.mem_id,
             isShow: Number(c.is_show) === 1,  // 所有上架中留言
+            removeReason: c.remove_reason,
             commenter: {
               name: c.commenter_name,
               score: `勝場數：${c.commenter_battle_wins}`,

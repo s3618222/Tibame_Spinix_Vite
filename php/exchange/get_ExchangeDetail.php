@@ -8,8 +8,8 @@ define('IS_INCLUDED_AS_LIBRARY', true);
 require_once("./get_Exchange.php");
 
 $ExchangeID = isset($_GET["id"]) ? (int)$_GET["id"] : 0;
-$From = isset($_GET["from"]);
-// $memId = $_SESSION["MEM_ID"];
+$memberId = $_SESSION["MEM_ID"] ?? null;
+$isAdmin = isset($_SESSION["ADMIN_ID"]);
 
 
 // 驗證是否有傳入有效 ID
@@ -32,6 +32,37 @@ try {
       $isAgreed = ($prod['status'] === 'exchanging') && !empty($prod['comm_id']);
       if (!$isAgreed) {
          unset($prod['post_contact']);
+      }
+
+      $isOwner = ($memberId !== null && (string)$prod['mem_id'] === (string)$memberId);
+      // 文章被下架時
+      if (!$prod['is_show'] && !$isOwner && !$isAdmin) {
+         $hasComment = false;
+         if ($memberId !== null) {
+            $check = "SELECT COUNT(*) FROM `exchange_comment` WHERE post_id = ? AND mem_id = ?";
+            $checkStmt = $pdo->prepare($check);
+            $checkStmt->execute([$ExchangeID, $memberId]);
+            $hasComment = $checkStmt->fetchColumn() > 0;
+         }
+         // 有留言過的人
+         if ($hasComment) {
+            echo json_encode([
+               'status' => 'success',
+               'data' => [
+                  'post_id' => $prod['post_id'],
+                  'is_show' => false,
+                  'removed_notice' => true
+               ]
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
+         } else { // 完全無關的人
+            http_response_code(404);
+            echo json_encode([
+               'status' => 'error',
+               'message' => '此文章已被下架'
+            ]);
+            exit();
+         }
       }
       echo json_encode([
          'status' => 'success',

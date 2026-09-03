@@ -1,5 +1,5 @@
 <template> 
-   <li :class="statusClass">
+   <li :class="[statusClass, {'remove-style': !isShow &&!isMyComment && !isAdmin}]">
       <div class="msg-wrapper">
          <div class="img-msg-user">
             <div class="img-user">
@@ -13,11 +13,11 @@
                      <p class="user-name">{{username}}</p>
                      <p class="msg-date">{{postDate}}</p>
                   </div>
-                  <a :href="complaintUrl" v-if="!isMyComment && !isAdmin">
+                  <a :href="complaintUrl" v-if="!isMyComment && !isAdmin && isShow">
                      <i class="fa-solid fa-triangle-exclamation"></i>
                   </a>
                </div>
-               <p class="msg-txt">{{msgtxt}}</p>
+               <p class="msg-txt" >{{msgtxt}}</p>
                <div
                   v-if="!isAdmin"
                   class="applyer-contact"
@@ -50,7 +50,7 @@
          <div class="btn-choose">
             <button
                class="btnNeutral"
-               v-if="isOwner && !isChoose && articleStatus === 'available' && !isAdmin"
+               v-if="isOwner && !isChoose && articleStatus === 'available' && !isAdmin && isArticleShow && isShow"
                type="button"
                @click="$emit('select-applicant', { commentId: id, username: username })"
             >
@@ -74,7 +74,7 @@
          <!-- 上下架按鈕(管理員畫面) -->
          <div class="btn-statusToggle">
             <StatusToggleButton
-               v-if="articleStatus !== 'completed'"
+               v-if="articleStatus === 'available'"
                title="留言"
                :isShow="isShow"
                :isAdmin="isAdmin"
@@ -84,7 +84,7 @@
       </div>
       </div>
       <!-- 被申訴時警告訊息 -->
-      <div v-if="remove_reason !== null  && (isMyComment || isAdmin)">
+      <div v-if="!isShow && (isMyComment || isAdmin)">
          <WarningBanner
             title= "留言"
             :remove_reason = "remove_reason"
@@ -122,6 +122,7 @@
       contact: { type: String, required: true },   // 新增：留言者自己的聯絡方式
       isShow:{ type: Boolean , default: true },
       remove_reason:{ type: String, default:''},
+      isArticleShow: { type: Boolean, default: true },
       isAdmin:{ type:Boolean , default:false}
    });
 
@@ -268,6 +269,8 @@ async function handleRejectExchange() {
 <style lang="scss" scoped>
    @use '@/assets/scss/_var' as *;
 
+   
+
    .btn-statusToggle{
       padding-top: 12px;
       
@@ -330,6 +333,18 @@ async function handleRejectExchange() {
    li {
       padding: 12px 16px;
       border-bottom: 1px solid map-get($color, gray);
+
+      &.remove-style{
+         position: relative;
+         &::after{
+            content: '';
+            inset: 0;
+            background-color:rgba(170, 170, 170,0.45);
+            pointer-events: none;   // 避免遮罩擋住點擊事件
+            z-index: 1;
+            position: absolute;
+         }
+      }
 
       &.li--selected {
          background-color: #FFF2D6;   // 例如淺黃色，代表「已選中」

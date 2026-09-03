@@ -1,6 +1,7 @@
 <?php
 require_once("../common/cors.php");
 require_once("../common/connect_ckd101g2.php");
+require_once("../common/notification.php");
 
 session_start();
 
@@ -29,7 +30,7 @@ if (!in_array($action, ['complete', 'cancel'])) {
 }
 
 $checksql = "SELECT 
-p.post_id, p.mem_id, m.mem_name, p.status, p.comm_id 
+p.post_id, p.mem_id, p.title, m.mem_name, p.status, p.comm_id 
 FROM `exchange_post` p 
 JOIN member m on p.mem_id = m.MEM_ID 
 WHERE post_id = ?";
@@ -46,7 +47,7 @@ if (!$article) {
 
 $isOwner = ($article['mem_id'] == $memberId);
 
-// 直接查這篇貼文下，登入者的留言是不是 is_choose = 1，不依賴 exchange_post.comm_id
+// 直接查這篇貼文下,登入者的留言是不是 is_choose = 1,不依賴 exchange_post.comm_id
 $applicantCheckStmt = $pdo->prepare(
    "SELECT comm_id, mem_id FROM exchange_comment WHERE post_id = ? AND mem_id = ? AND is_choose = 1"
 );
@@ -54,7 +55,14 @@ $applicantCheckStmt->execute([$post_id, $memberId]);
 $selectedComment = $applicantCheckStmt->fetch(PDO::FETCH_ASSOC);
 $isSelectedApplicant = !empty($selectedComment);
 
-// 權限驗證：complete 只有擁有者；cancel 擁有者或被選中的申請者都可以
+// 查出這篇文章被選中的申請者是誰(不限定登入者,通知用)
+$selectedApplicantStmt = $pdo->prepare(
+   "SELECT mem_id FROM exchange_comment WHERE post_id = ? AND is_choose = 1"
+);
+$selectedApplicantStmt->execute([$post_id]);
+$selectedApplicant = $selectedApplicantStmt->fetch(PDO::FETCH_ASSOC);
+
+// 權限驗證:complete 只有擁有者;cancel 擁有者或被選中的申請者都可以
 if ($action === 'complete') {
    if (!$isOwner) {
       http_response_code(403);
@@ -69,7 +77,7 @@ if ($action === 'complete') {
    }
 }
 
-// 狀態驗證：complete 只能從 exchanging；cancel 可以從 pending 或 exchanging
+// 狀態驗證:complete 只能從 exchanging;cancel 可以從 pending 或 exchanging
 if ($action === 'complete') {
    if ($article['status'] !== 'exchanging') {
       http_response_code(400);
@@ -91,6 +99,12 @@ if ($action === 'complete') {
    $sql = "UPDATE `exchange_post` SET `status` = ? WHERE post_id = ?";
    $stmt = $pdo->prepare($sql);
    $stmt->execute([$newStatus, $post_id]);
+
+   // 通知被選中的申請者:交換已完成
+   if ($selectedApplicant) {
+      $notificationContent = "您與對方的交換「" . $article['title'] . "」已完成";
+      createNotification($pdo, (int) $selectedApplicant['mem_id'], $notificationContent);
+   }
 } else { // cancel
    $newStatus = 'available';
    $successMessage = '取消交換';
@@ -109,8 +123,19 @@ if ($action === 'complete') {
    } catch (PDOException $e) {
       $pdo->rollBack();
       http_response_code(500);
-      echo json_encode(['success' => false, 'message' => '取消交換失敗，請稍後再試'], JSON_UNESCAPED_UNICODE);
+      echo json_encode(['success' => false, 'message' => '取消交換失敗,請稍後再試'], JSON_UNESCAPED_UNICODE);
       exit();
+   }
+
+   // 通知另一方:交換已取消
+   $notificationContent = "您的交換申請「" . $article['title'] . "」已被取消";
+
+   if ($isOwner && $selectedApplicant) {
+      // 擁有者取消 → 通知申請者
+      createNotification($pdo, (int) $selectedApplicant['mem_id'], $notificationContent);
+   } elseif ($isSelectedApplicant) {
+      // 申請者取消 → 通知擁有者
+      createNotification($pdo, (int) $article['mem_id'], $notificationContent);
    }
 }
 

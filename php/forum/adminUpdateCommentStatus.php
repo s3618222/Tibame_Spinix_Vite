@@ -121,6 +121,23 @@ try {
         ";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$reason, $commentId]);
+
+        // 通知留言者，留言已被下架
+        $sql = "
+            SELECT message.mem_id, article.title
+            FROM message
+            JOIN article ON message.art_id = article.art_id
+            WHERE message.msg_id = ?
+        ";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$commentId]);
+        $commentInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $notificationContent = "您在文章「" . $commentInfo["title"] . "」底下的留言已被管理員下架，原因：" . $reason;
+
+        $sql = "INSERT INTO notification (mem_id, content, is_read, create_time) VALUES (?, ?, 0, NOW())";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$commentInfo["mem_id"], $notificationContent]);
     } else {
         $sql = "
             UPDATE message
@@ -129,6 +146,23 @@ try {
         ";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$commentId]);
+
+        // 通知留言者，留言已恢復上架
+        $sql = "
+            SELECT message.mem_id, article.title
+            FROM message
+            JOIN article ON message.art_id = article.art_id
+            WHERE message.msg_id = ?
+        ";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$commentId]);
+        $commentInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $notificationContent = "您在文章「" . $commentInfo["title"] . "」底下的留言已恢復上架";
+
+        $sql = "INSERT INTO notification (mem_id, content, is_read, create_time) VALUES (?, ?, 0, NOW())";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$commentInfo["mem_id"], $notificationContent]);
     }
 
     echo json_encode([
