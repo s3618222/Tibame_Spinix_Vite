@@ -90,12 +90,26 @@ function removePhoto(id) {
   emitUpdate()
 }
 
+function clearFiles() {
+
+  photos.value.forEach((p) => URL.revokeObjectURL(p.url))
+  photos.value = []
+
+
+  if (fileInput.value) {
+    fileInput.value.value = ''
+  }
+
+  emitUpdate()
+}
+
 function emitUpdate() {
   emit('update:modelValue', photos.value.map(p => p.url))
 }
 
 defineExpose({
-  getFiles: () => photos.value.map(p => p.file)
+  getFiles: () => photos.value.map(p => p.file),
+  clearFiles
 });
 
 </script>

@@ -62,7 +62,7 @@ const btnReset = document.querySelector('.btnNoFill');
 const form = document.querySelector('form');
 const btnSubmit = document.querySelector('button[type="submit"].btnFill');
 
-// console.log(btnSubmit);
+
 btnReset.addEventListener('click', (e) => {
    e.preventDefault();
    if (isFormInvalid()) {
@@ -73,45 +73,41 @@ btnReset.addEventListener('click', (e) => {
    const isConfirm = window.confirm('是否全部清空?');
    if (isConfirm) {
       form.reset();
-   } else {
-      return;
+
+      if (window.photoUploadInstance && typeof window.photoUploadInstance.clearFiles === 'function') {
+         window.photoUploadInstance.clearFiles();
+      } else {
+         console.warn('找不到圖片上傳元件的 clearFiles 方法');
+      }
    }
 });
 
 function isFormInvalid() {
 
    // 1. 檢查一般輸入框 (text, select, textarea)
-   // 排除 radio 與 checkbox，因為它們需要靠 checked 判斷
    const standardFields = document.querySelectorAll(
       'input:not([type="radio"]):not([type="checkbox"]), select, textarea'
    );
 
-   // 只要有「任何一個」一般欄位是空的，就回傳 true
+   // 只要有「任何一個」一般欄位是空的，就回傳 true（維持原本邏輯，全部都空才算空）
    const hasEmptyStandard = [...standardFields].every(
       input => input.value.trim() === ''
    );
 
-   // 2. 檢查 Radio 群組
-   const requiredRadios = document.querySelectorAll('input[type="radio"]');
-   // 取得所有 required radio 的 name（用 Set 去除重複的 name）
-   const radioNames = [...new Set([...requiredRadios].map(r => r.name))];
-
-   // 檢查是否「有任何一個 Radio 群組完全沒有被勾選」
-   const hasEmptyRadioGroup = radioNames.some(name => {
-      const isChecked = document.querySelector(`input[type="radio"][name="${name}"]:checked`);
-      return !isChecked;
-   });
-
-   // 3. 檢查檔案上傳欄位（如果該欄位是必填，沒選檔案就算空）
+   let hasEmptyPhoto = true;
+   if (window.photoUploadInstance && typeof window.photoUploadInstance.getFiles === 'function') {
+      const photos = window.photoUploadInstance.getFiles();
+      hasEmptyPhoto = !photos || photos.length === 0;
+   }
+   // 3. 檢查檔案上傳欄位：要「全部」檔案欄位都沒選檔案，才算空
    const fileFields = document.querySelectorAll('input[type="file"]');
-   const hasEmptyFile = Array.from(fileFields).some(
+   const hasEmptyFile = fileFields.length === 0 || Array.from(fileFields).every(
       field => !field.files || field.files.length === 0
    );
 
-   // 只要一般欄位有空，或 Radio 有空，就代表表單無效 (Has Empty)
-   return hasEmptyStandard || hasEmptyRadioGroup || hasEmptyFile;
+   // 只有當「一般欄位、檔案」三者全部都空，表單才算完全無效
+   return hasEmptyStandard && hasEmptyFile && hasEmptyPhoto;
 }
-
 
 
 // == 送出按鈕 =====================================
