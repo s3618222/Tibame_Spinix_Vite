@@ -458,12 +458,78 @@
     color: #64748B;
 }
 
+// ===== 約戰文案助手 =====
+.battle-copy-helper {
+    margin-top: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.battle-copy-helper-btn {
+    flex-shrink: 0;
+    padding: 8px 12px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    border: 1px solid #F29B00;
+    border-radius: 10px;
+
+    background-color: #FFF9ED;
+
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #141C26;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.battle-copy-helper-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.battle-copy-helper-btn i {
+    color: #F29B00;
+}
+
+.battle-copy-helper-btn:hover {
+    border-color: #F29B00;
+    background-color: #FFF2D6;
+}
+
+.battle-copy-helper-btn:active {
+    transform: translateY(1px);
+}
+
+// 文案助手說明文字
+.battle-copy-helper-text {
+    min-width: 0;
+}
+
+.battle-copy-helper-text .battle-copy-helper-note {
+    font-size: 14px;
+    line-height: 1.4;
+    color: #64748B;
+}
+
 // 按鈕
 .form-actions {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 28px;
+    margin-top: 12px;
 }
 
 .preview-btn,
@@ -1157,6 +1223,22 @@
             min-width: 0;
             padding-inline: 12px;
             font-size: 16px;
+        }
+
+        // 文案助手改上下排列
+        .battle-copy-helper {
+            margin-top: 6px;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        .battle-copy-helper-btn {
+            width: 100%;
+        }
+
+        .battle-copy-helper-text .battle-copy-helper-note {
+            font-size: 14px;
         }
     }
 }
