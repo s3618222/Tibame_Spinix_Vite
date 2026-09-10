@@ -268,9 +268,25 @@
                     <textarea id="battleDescription" name="description" maxlength="250" rows="5"
                       placeholder="補充對戰方式、攜帶物品或其他注意事項..." required></textarea>
 
-                    <p class="input-hint">
+                    <!-- <p class="input-hint">
                       最多 250 字
-                    </p>
+                    </p> -->
+
+                    <!-- AI文案助手 -->
+                    <div class="battle-copy-helper">
+
+                      <button type="button" class="battle-copy-helper-btn" id="battleCopyHelperBtn">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        文案助手
+                      </button>
+
+                      <div class="battle-copy-helper-text">
+                        <p class="battle-copy-helper-note">
+                          根據你的對戰條件，自動產生一段有趣的邀約說明，並可自由修改。
+                        </p>
+                      </div>
+
+                    </div>
                   </div>
                 </section>
               </div>
