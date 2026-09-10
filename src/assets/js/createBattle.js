@@ -198,6 +198,8 @@ const battleContactInput = document.querySelector("#battleContact");
 // 邀約說明
 const battleDescInput = document.querySelector("#battleDescription");
 
+// AI文案助手按鈕
+const battleCopyHelperBtn = document.querySelector("#battleCopyHelperBtn");
 
 // ===== 預覽邀約卡上的各資料顯示欄位 =====
 // 預覽卡封面
@@ -710,5 +712,97 @@ confirmCreateBtn.addEventListener("click", function () {
     confirmCreateBtn.disabled = false;
     confirmCreateBtn.textContent = "確認送出";
   });
+
+});
+
+
+//約戰文案助手功能
+
+//確保用來生成文案的必填欄位都已填寫 (對戰模式、玩家程度、適合對象)
+function checkCopyHelper() {
+  if (!battleModeSelect.value) {
+    alert("請先選擇對戰模式");
+    battleModeSelect.focus();
+    return false;
+  }
+
+  if (!battleLevelSelect.value) {
+    alert("請先選擇玩家程度");
+    battleLevelSelect.focus();
+    return false;
+  }
+
+  if (!battleTargetSelect.value) {
+    alert("請先選擇適合對象");
+    battleTargetSelect.focus();
+    return false;
+  }
+
+  return true;
+}
+
+battleCopyHelperBtn.addEventListener("click", async function () {
+
+  //先確認產生文案所需的設定條件都已填寫
+  const isValid = checkCopyHelper();
+
+  if (!isValid) {
+    return;
+  }
+
+  // 整理準備提供給AI生成文案的對戰條件資訊
+  const formData = new FormData();
+
+  formData.append("mode", battleModeSelect.selectedOptions[0].textContent);
+  formData.append("level", battleLevelSelect.selectedOptions[0].textContent);
+  formData.append("target", battleTargetSelect.selectedOptions[0].textContent);
+
+  //等待文案產生、回傳時，避免重複點擊按鈕
+  battleCopyHelperBtn.disabled = true;
+  battleCopyHelperBtn.innerHTML = `
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    產生中...
+  `;
+
+  try {
+    const response = await fetch(`${phpBaseUrl}/battle/battle_ai_generate.php`,
+      {
+        method: "POST",
+        body: formData
+      }
+    );
+
+    const data = await response.json();
+
+    // API 回傳失敗
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "文案產生失敗");
+    }
+
+    // 將產生的文案填入邀約說明欄位裡
+    battleDescInput.value = data.description;
+
+    // 更新表單完成進度 (因為這邊沒有觸發change事件，不會自動更新進度，所以要另外呼叫一次進度涵式)
+    updateFormProgress();
+
+    // 將游標移回邀約說明，讓使用者可以直接接著修改
+    battleDescInput.focus();
+
+  } catch (error) {
+
+    console.error("文案助手錯誤：", error);
+
+    alert("目前無法產生邀約文案，請稍後再試");
+
+  } finally {
+
+    // 不論回傳成功或失敗，都恢復按鈕
+    battleCopyHelperBtn.disabled = false;
+    battleCopyHelperBtn.innerHTML = `
+      <i class="fa-solid fa-wand-magic-sparkles"></i>
+      約戰文案助手
+    `;
+  }
+
 
 });
